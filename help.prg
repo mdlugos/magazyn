@@ -98,7 +98,7 @@ osk:=HB_SETKEYSAVE()
   //RESET KEY K_F10
   RESET KEY K_CTRL_W
   RESET KEY K_CTRL_K
-  RESET KEY K_ALT_A
+  RESET KEY K_ALT_X
   RESET KEY K_ALT_B
   RESET KEY K_ALT_M
   RESET KEY K_ALT_K
@@ -166,7 +166,7 @@ osk:=HB_SETKEYSAVE()
      endif
      message(m)
      loop
-    elseif k=K_ALT_B .or. k=K_ALT_A
+    elseif k=K_ALT_B .or. k=K_ALT_X
         bp:=3-bp
         b[bp]:=mlctopos(txt,ll,l,c,8,ww)
         if ch
@@ -265,7 +265,7 @@ FUNC hufunc(mode,line,column)
         return 32
      elseif key=K_F1
         return K_ESC
-     elseif 0#ascan({K_CTRL_K,K_ALT_A,K_ALT_B,K_ALT_K,K_ALT_E,K_ALT_M,K_F2,K_F10,K_CTRL_L},key)
+     elseif 0#ascan({K_CTRL_K,K_ALT_X,K_ALT_B,K_ALT_K,K_ALT_E,K_ALT_M,K_F2,K_F10,K_CTRL_L},key)
         l:=line
         c:=column
         cl:=row()

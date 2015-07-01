@@ -1413,7 +1413,7 @@ function KCR_U(mode,l,c)
        endif
        message(m)
 
-    elseif k=K_ALT_B .or. k=K_ALT_A
+    elseif k=K_ALT_B .or. k=K_ALT_X
         bp:=3-bp
         b[bp]:=oed:GetTextIndex()
         if ch
