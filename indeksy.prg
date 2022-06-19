@@ -4,12 +4,10 @@
 #ifdef A_ZAGRODA
   #define A_KASA
   #define D_KODY 55
+  #undef A_SB
 #endif
-#define CEOKR 2
 
-#ifdef A_ZAGRODA
-#undef A_SB
-#endif
+#define CEOKR 2
 
 #ifdef A_ADS
  #ifndef A_STSIMPLE
@@ -304,7 +302,7 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,9,CEOKR,"@E ",.t.)
  #else
   #ifdef A_WA
-   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(D_WA / D_ST D_CF8,9,CEOKR,"@E ",.t.)
+   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic( if((D_ST)=0,STANY->cena_przy, D_WA / D_ST) D_CF8,9,CEOKR,"@E ",.t.)
   #else
    #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,9,CEOKR,"@E ",.t.)
   #endif
@@ -377,7 +375,7 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
       #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
      #else
       #ifdef A_WA
-       #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(D_WA / D_ST D_CF8,8,CEOKR,"@E ",.t.)
+       #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(if((D_ST)=0,STANY->cena_przy, D_WA / D_ST) D_CF8,8,CEOKR,"@E ",.t.)
       #else
        #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
       #endif
@@ -528,6 +526,7 @@ DO CASE
         SET ORDER TO TAG INDX_NUM
     endif
 #endif
+    _slth:=LEN(txt)
     DO CASE
       CASE ""=txt
 #ifdef A_ENAZ
@@ -538,10 +537,16 @@ DO CASE
 #ifdef A_LFIRST
       CASE !DBSEEK(_spocz)
  #ifdef A_FILTERNAZ
-         _sfilt:='"'+UpP(txt)+'"$UPPER(INDX_MAT->naZwa)'
-         _sfilb:=&("{||"+_sfilt+"}")
+         _slth:=0
+         txt:=UpP(txt)
+         _sfilt:='['+txt+']$UPPER(INDX_MAT->naZwa)'
+         _sfilb:={||txt$UPPER(INDX_MAT->naZwa)}
          _spocz:=left(_spocz,len(_spocz)-len(txt))
-         txt:=''
+#ifdef A_ZAZNACZ
+         _sprompt:={|d,s,z,x,l,k,c|c:={_snorm,"GR+/N+","R+/N+","G+/N+","GB+/N+","BR+/N",12,13,14,15}[indx_mat->zaznacz+1],x:=lpeoma(s),if(z=.t.,x,(l:=if(empty(txt),0,at(txt,UpP(x))),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+#else
+         _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=lpeoma(s),if(z=.t.,x,(l:=if(empty(txt),0,at(txt,UpP(x))),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+#endif
  #endif
 #else
       CASE ASC(txt)>57
@@ -580,7 +585,6 @@ DO CASE
         endif
         go bl
     ENDCASE
-    _slth:=LEN(txt)
     _snagkol:=1
     IF _slth>0
       _sfilt:=NIL
@@ -647,13 +651,13 @@ DO CASE
         endif
 #endif
  #ifdef A_FILTERNAZ
-         IF '"$UPPER(INDX_MAT->naZwa)'$_sfilt
+         IF !empty(_sfilt) .and. '"$UPPER(INDX_MAT->naZwa)'$_sfilt
             _sfilt:=''
             _sfilb:=NIL
          ENDIF
  #endif
  #ifdef A_STSIMPLE
-         IF _sfilt=='STANY->NR_MAG="'+mag_biez+'"'
+         IF !empty(_sfilt) .and. _sfilt=='STANY->NR_MAG="'+mag_biez+'"'
             _sfilt:=''
             _sfilb:=NIL
          ENDIF

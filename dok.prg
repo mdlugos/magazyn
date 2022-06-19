@@ -1,6 +1,10 @@
 #include "dm_form.ch"
 #include "inkey.ch"
 #include "getexit.ch"
+#ifndef A_MKNK
+  //#define A_MKNK(x) eval({|y|mknk:=min(5,max(mknk,len(ltrim(str(y))))),pad(str(y,mknk),5)},x)
+  #define A_MKNK(x) str(x,4)+' '
+#endif
 #ifdef A_KASA
 request __msave,__mrestore,__dbzap
 #endif
@@ -65,7 +69,15 @@ request __msave,__mrestore,__dbzap
 #define dok_ew  dok_par[MAG_POZ,r,8]
 #define dok_fk  dok_par[MAG_POZ,r,A_FK]
 #define dok_kpr dok_par[MAG_POZ,r,A_KPR]
+#ifdef A_DF
 #define dok_df  dok_par[MAG_POZ,r,A_DF]
+#else
+#ifdef A_CENVAT
+#define dok_df  .t.
+#else
+#define dok_df  .f.
+#endif
+#endif
 #define dok_co  dok_par[MAG_POZ,r,A_DOKCOMP]
 #define dok_wal dok_par[MAG_POZ,r,A_WALUTA]
 #ifdef A_TPD
@@ -82,7 +94,8 @@ MEMVAR r,mag_biez,mag_poz,magazyny,adres_mag,is_spec,operator,dok_par,dokumenty,
        ce,ck,wa,chg_cen,dok_w1,nowystan,dflag,darr,dpos,dpush,kk,sk,kont_kos,;
        DZIALY,dzial,mater,kont,kos,zap,zac,nrc,uw,cz,tp,wz,rodz_sprzed,zam,;
        sp,st,pv,vat,npr,pm,zaplac,dazapl,ppos,ppush,parr,pflag,avat,stawki,;
-       stawkizby,chgpos,DOK_ZB,STANO,dok_di,kh,nazwis,posilki,diety,path_zb,defa,dv
+       stawkizby,chgpos,DOK_ZB,STANO,dok_di,kh,nazwis,posilki,diety,path_zb,defa,;
+       dv,nkp,mknk
 field  data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,numer_kol,;
        DATA_PRZY,data_dost,dost_odb,kontrahent,nr_faktury,nr_mag,kto_pisal,jm,nazwa,stan,;
        data_zmian,opis_koszt,uwagi,data_roz,gram,rodz_opak,nr_rys,konto,;
@@ -147,8 +160,11 @@ RETURN
 PROCEDURE dok_in
 local a,x,y
 #ifdef A_DOKCOMP
-//#define EVLINE self:=evline(buf,j++,@x);IF(self=NIL,,&(self[1]))
+#ifdef __HARBOUR__
+#define EVLINE self:=evline(buf,j++,@x);IF self<>NIL;IF self[3]<>NIL;__mvPrivate(Self[3]);END;x:=&(self[1]);END
+#else
 #define EVLINE self:=evline(buf,j++,@x);IF self<>NIL;IF self[3]<>NIL;x:=Self[3];PRIVATE &x;END;x:=&(self[1]);END
+#endif
 static apcomp:={}
 #else
 local _f,_s
@@ -159,7 +175,7 @@ memvar dok,nk,operator,mag_biez,lam,NOWYDM,przegl
 memvar _f,_s,j,defa,linecount,buf,self,getlist
 private _f,_s,linecount,buf,self
 #endif
-PRIVATE lam,NOWYDM,posproc:=0,canopen
+PRIVATE lam,NOWYDM,posproc:=0,canopen,nkp,mknk
 private da,dd,dv,d_o,n_f,nim,nz,il,kh,gil
 #ifdef A_WA
 private chg_cen:=.f.,ce,ck,wa
@@ -226,6 +242,9 @@ private zam
   private mag_poz:=max(1,ascan(magazyny,mag_biez))
   private r:=MAX(1,ascan(dokumenty[MAG_POZ],dok))
   private pm:=if(dok_p_r="P",1,-1)
+  if type('changed')='U'
+     PRIVATE changed
+  endif
 #ifndef STANY
   private nowystan
   SELECT STANY
@@ -259,7 +278,7 @@ endif
    select daty
    goto 1
 #else
-#define DatY MEMVAR
+   #define DatY MEMVAR
 #endif
 
    SELECT INDX_MAT
@@ -274,8 +293,16 @@ endif
       SET ORDER TO 1
       SET FILTER TO
       SET RELATION TO
-
   if nk#NIL
+#ifdef wtoT
+    nkp:=subs(nk,6)
+    if empty(nkp) .and. D_LPVAL(pozycja)>maxrow() .and. pozycja>=D_LP1
+       nkp:=pozycja
+    endif
+#else
+    nkp:=NIL
+#endif
+    nk:=left(nk,5)
     if dbseek(KEY_PAR+nk,.f.)
 #ifdef A_SUBDOK
     a:=r
@@ -347,7 +374,7 @@ endif
       return
     ENDIF
     NOWYDM:=.F.
-    nk:=val(nk)
+    //nk:=val(nk)
   ELSE
     if dok_lpm<0
        return
@@ -363,7 +390,8 @@ endif
        alarm("Caˆy rok zamkni©ty",,,3)
        return
     endif
-    nk=1
+//    DEFAULT mknk TO 4
+//    nk:=A_MKNK(1)
   ENDIF
   private _SRAMKA:="G+/B"
   IF PRZEGL
@@ -371,12 +399,12 @@ endif
     set order to TAG MAIN_NRK
     SEEK DM->(KEY_DOK+NR_DOWODU)
     select dm
-    _f:={0,79,0,2,dok_lpm,;
+    _f:=asize({0,79,0,2,dok_lpm,;
          {|_f|DOK10(_f),dok11(_f)},;
          {||NIL},{||NIL},;
-         {|_f|DBSELECTAREA("MAIN")},;
+         {|_f|DBSELECTAREA("MAIN"),ORDSETFOCUS("MAIN_NRK"),DBSEEK(DM->(KEY_DOK+NR_DOWODU)+D_LPPUT(_fi),.f.)},;
          {|_f|dok41(_f)},;
-         {|_f|dok7(_f)}}
+         {|_f|dok7(_f)}},_fLEN)
   ELSE
 #ifdef A_HLINK
 private HLINK
@@ -385,15 +413,22 @@ private HLINK
     private chgpos
 #endif
     _s:=array(_sLEN)
-    _f:={0,79,0,2,dok_lpm,;
+    _f:=asize({0,79,0,2,dok_lpm,;
          {|_f|DOK1(_f),dok10(_f)},;
          {|_f,g|dok2(_f,g)},;
          {|_f,g|dok3(_f,g)},;
          {|_f|DBSELECTAREA("MAIN"),ORDSETFOCUS("MAIN_NRK"),DBSEEK(DM->(KEY_DOK+NR_DOWODU)+D_LPPUT(_fi),.f.)},;
          {|_f,g|dok4(_f,g,_s)},;
          {|_f,g|dok5(_f,g)},;
-         {|_f|dok6(_f)}}
+         {|_f|dok6(_f)}},_fLEN)
   ENDIF
+  IF _flpmax<0
+#ifdef A_LPNUM
+    _flpmax:=D_LPVAL(replicate('9',A_LPNUM))
+#else
+    _flpmax:=D_LPVAL(chr(255))
+#endif
+  endif
 #ifdef A_DOKCOMP
     private self,j,getlist
   if valtype(dok_co)$"MC"
@@ -433,6 +468,308 @@ private HLINK
 
 RETURN
 **********************************************
+procedure dok1(_f)
+#ifdef A_LAN
+  #define D_LAN .and. rlock()
+#else
+  #define D_LAN
+#endif
+#ifdef A_VAT
+#ifdef A_FK
+  #define D_WAR .and. wart_vat=0 .and. zaplacono=0
+#else
+  #define D_WAR .and. wart_vat=0
+#endif
+#else
+  #define D_WAR
+#endif
+  local x,i,p,s
+  @ 0,0
+  @ 0,0 say trim(magazyny[mag_poz])+" "+adres_mag[mag_poz]
+  IF NOWYDM
+    IF KEY_DOK<>KEY_PAR
+      dbseek(KEY_PAR+"~")
+      skip -1
+    endif
+    while !BOF() .and. KEY_DOK=KEY_PAR .and. pozycja=D_LP0 D_WAR D_LAN //jak blokada to zaj©ty
+      skip -1
+    enddo
+//-------------------------------------
+      IF !BOF() .and. KEY_DOK=KEY_PAR //zerowka tez dobra na wz¢r
+          x:=5
+          for i:=5 to 1 step -1
+            s:=subs(nr_dowodU,i,1)
+            if isdigit(s)
+               exit
+            endif
+            if s<>' '
+               x:=i
+            endif
+          next i
+          if i=0
+             i:=x-1
+             if i=0
+                i:=4
+             endif
+          endif
+          DEFAULT mknk TO i
+          p:=recno()
+            for x:=i-1 to 1 step -1
+              s:=subs(nr_dowodU,x,1)
+              if !isdigit(s)
+                if s<>' '
+                  exit
+                endif
+                seek KEY_PAR+left(nr_dowodU,x)+"~"
+                while KEY_DOK=KEY_PAR .and. pozycja=D_LP0 D_WAR D_LAN
+                  skip
+                ENDDO
+                IF KEY_DOK<>KEY_PAR
+                   exit
+                ENDIF
+                ++x
+                loop
+              endif
+            next x
+          goto p
+          seek KEY_PAR+left(nr_dowodU,x)+"~"
+          skip -1
+
+          while !BOF() .and. KEY_DOK=KEY_PAR .and. pozycja=D_LP0 D_WAR D_LAN
+            skip -1
+          enddo
+          if x>0 .and. str(1+val(subs(nr_dowodU,x+1)),i-x)='*'
+             --x
+          endif
+          nk:=left(nr_dowodU,x)+str(1+val(subs(nr_dowodU,x+1)),i-x)+subs(nr_dowodU,i+1)
+          goto p
+      else
+        DEFAULT mknk TO 4
+        nk:=A_MKNK(1)
+      endif
+//--------------------------------------
+      da:=max(DatE(),max(DatY->d_z_mies1,DatY->data_gran)+1)
+      do while YEAR(da D_OLZA)>YEAR(DatY->D_Z_rok+1 D_OLZA)
+         da-=day(da)
+      enddo
+#ifdef A_FA
+#ifdef A_FK
+      zaplac:=0
+      dazapl:=ctod("")
+#endif
+      zac:=zap:=0
+      avat:={} //getVAT(); aeval(avat,{|x,i|avat[i,2]:=0})
+      nrc:=space(len(nr_czeku))
+      dv:=tp:=da
+      uw:="BEZ UWAG "
+#else
+#ifdef A_VAT
+      vat:=0
+#endif
+#endif
+#ifdef A_KPR
+      npr:=DatY->last_kpr+1
+#endif
+      dd:=da
+      _flp:=0
+      n_f:=nr_faktury
+#ifdef A_KHSEP
+      kh:=kontrahent
+#else
+      kh:=left(dm->dost_odb,A_NRLTH)
+#endif
+      if dok_kh.and.firMy->(dbseek(kh))
+#ifdef A_FFULL
+         d_o:=PAD(firMy->(trim(nazwa)+" * "+longname),LEN(DOST_ODB))
+#ifdef A_AF
+         KH->(dbseek(kh))
+#endif
+#else
+#ifdef A_OLZBY
+         d_o:=firMy->nazwa
+#else
+         d_o:=PAD(firMy->nazwa,LEN(DOST_ODB))
+#endif
+#endif
+      else
+         d_o:=dost_odb
+         kh:=space(A_NRLTH)
+      endif
+      IF KEY_DOK=KEY_PAR
+          dbseek(KEY_PAR+"~")
+          skip -1
+          while !BOF() .and. KEY_DOK=KEY_PAR .and. pozycja=D_LP0 D_WAR D_LAN
+             skip -1
+          enddo
+          IF BOF() .or. KEY_DOK<>KEY_PAR
+             //nk:=A_MKNK(1) po co, wyzej jest
+          else
+            skip
+            IF KEY_DOK<>KEY_PAR
+              skip -1
+            ENDIF
+          ENDIF
+/********************************
+          if nk<=0
+            nk-=2
+          endif
+*******************************/
+
+         if KEY_DOK=KEY_PAR .and. pozycja=D_LP0 D_WAR D_LAN
+      nr_dowodu:=nk //  str(nk,5)
+      _fpopkey:=.t.
+      nowydm:=.f.
+      data:=da
+      data_dost:=dd
+      wtoT:=0
+#ifdef A_SUBDOK
+      sub_dok:=subs(dok,3)
+#endif
+#ifdef A_VAT
+      wart_vat:=0
+#endif
+#ifdef A_FA
+#ifdef A_FK
+      zaplacono:=0
+      data_zap:=ctod("")
+#endif
+      czekiem:=przelewem:=0
+      replace wartosc with 0
+      uwagi:=nr_czeku:=""
+      termin_p:=ctod("")
+#ifdef A_DATAVAT
+      data_vat:=dv
+#endif
+      UW = "BEZ UWAG "
+      putVAT()
+#endif
+          endif
+      ENDIF
+  ELSE
+      DEVOUT("  POPRAWA  !","GR+*")
+      if mknk=NIL
+          x:=5
+          for i:=5 to 1 step -1
+            s:=subs(nr_dowodU,i,1)
+            if isdigit(s)
+               exit
+            endif
+            if s<>' '
+               x:=i
+            endif
+          next i
+          if i=0
+             i:=x-1
+             if i=0
+                i:=4
+             endif
+          endif
+          //DEFAULT mknk TO i
+          mknk:=i
+      endif
+      _flp:=MIN(_flp,D_LPVAL(pozycja))
+      da:=DATA
+      dd:=DATA_DOST
+      n_f:=nr_faktury
+#ifdef A_DATAVAT
+      dv:=data_vat
+#endif
+#ifdef A_KHSEP
+#define D_KHPREF
+      kh:=kontrahent
+#else
+#define D_KHPREF numer_kol+" "+
+      kh:=left(dm->dost_odb,A_NRLTH)
+#endif
+      if dok_kh.and.firMy->(dbseek(kh))
+#ifdef A_FFULL
+         d_o:=PAD(firMy->(trim(nazwa)+" * "+longname),LEN(DOST_ODB))
+#ifdef A_AF
+         KH->(dbseek(kh))
+#endif
+#else
+#ifdef A_OLZBY
+         d_o:=firMy->nazwa
+#else
+         d_o:=PAD(firMy->nazwa,LEN(DOST_ODB))
+#endif
+#endif
+      else
+         d_o:=dost_odb
+         kh:=space(A_NRLTH)
+      endif
+#ifdef A_KPR
+      npr:=if(_flp=0,DatY->last_kpr+1 ,val(nr_kpr))
+#endif
+#ifdef A_FA
+#ifdef A_FK
+      zaplac:=zaplacono
+      dazapl:=data_zap
+#endif
+      getVAT()
+      zac:=czekiem
+      zap:=przelewem
+      nrc:=nr_czeku
+      tp:=termin_p
+      IF ""=(UW:=UWAGI)
+         UW = "BEZ UWAG"
+      ENDIF
+      uw+=" "
+#else
+#ifdef A_VAT
+      vat:=wart_vat
+#endif
+#endif
+    if _flp=0
+      _fpopkey:=.t.
+    else
+      KIBORD(CHR(3))
+    endif
+  ENDIF
+//#ifndef A_OLZBY
+//#endif
+#ifdef wtoT
+#ifndef A_GRAM
+#ifndef A_JMTOT
+   posproc:=_flp
+#endif
+#endif
+#endif
+#ifdef A_OLZA
+  kk:=konto_kosz
+  sk:=stano_kosz
+#endif
+#ifdef A_FAT
+  sp:=nr_spec
+  st:=transport
+#ifdef A_NAZWISKO
+  nazwis:=nazwisko
+#endif
+#endif
+#ifdef A_ZAM
+zam:=nr_zam
+#endif
+#ifdef D_DIETA_OR_ODDO
+  dflag:=.f.
+  darr:={}
+  dpos:=1
+#endif
+#ifdef A_F9
+  pflag:=.f.
+  ppos:=0
+#endif
+#ifdef A_FA
+#ifdef A_NVAT
+  chgpos:=!nowydm .and. subs(dok,2)#"K"
+#endif
+/**********
+  if nowydm .and. dok_p_r="F"
+     go lastrec()+1
+  endif
+********/
+#endif
+return
+**********************************************
 PROCEDURE DOK10(_f)
   set color to (_sbkgr)
   @ 1,0,5,79 BOX 'ÉÍ»ºº ºº '
@@ -444,6 +781,7 @@ PROCEDURE DOK10(_f)
     @ 2,2 SAY if(dok="K","   Pow¢d:",if(pm=-1,"Odbiorca:","Dostawca:"))
   endif
 _frow:=2
+
 #ifdef A_FA
   if dok_p_r="F"
     @ 5,0,9,79 BOX 'ÌÄ¹ºº ºº '
@@ -520,8 +858,8 @@ _frow:=2
     @ 5,7 say "got¢wk¥ÄÄÄÄÄÄÄprzelewemÄÄÄÄÄÄÄÄÄkart¥ÄÄÄÄÄÄÄNr kartyÄÄÄTermin pˆatno˜ci"
     @ _frow+1,0,_frow+4,79 BOX if(pozycja>D_LP1.and.!nowydm,'ÌÍ¹º¼ÄÈº ','ÌÍ¹º¼ÍÈº ')
     @ _frow+1,2 say 'LpÍÍÍÍÍÍMateriaˆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍIlo˜†ÍÍÍÍÍÍÍÍCena zbytuÍÍ'+WANAZ
-    return
-    *******
+//    return
+//    *******
   else
 #ifdef A_FK
    if dok_fk
@@ -559,9 +897,6 @@ _frow:=2
     endif
 #endif
 endif
-#ifdef A_FA
-endif
-#endif
 #ifdef A_OLZA
     if dok_zew="W" .and. ""#dok_kon
        @ _frow-1,49 say "Konto"
@@ -599,209 +934,17 @@ endif
 #else
   @ _frow+1,25 SAY if(dok_p_r="S",'Stan bie¾.',if(""=dok_kon,'',if(dok_zew="W","Zlecenie","Rodzaj")))
 #endif
+#ifdef A_FA
+endif
+#endif
+  _flp:=MIN(_flp,D_LPVAL(DM->pozycja))
+  IF !empty(nkp)
+    _fi:=max(1,D_LPVAL(nkp))
+    _fl:=min(_flp,_fi+5)
+    nkp:=NIL
+  endif
 return
 ********************
-procedure dok1(_f)
-  local x
-  @ 0,0
-  @ 0,0 say trim(magazyny[mag_poz])+" "+adres_mag[mag_poz]
-  IF !NOWYDM
-      DEVOUT("  POPRAWA  !","GR+*")
-      _flp:=D_LPVAL(pozycja)
-      da:=DATA
-      dd:=DATA_DOST
-#ifdef A_DATAVAT
-      dv:=data_vat
-#endif
-#ifdef A_KHSEP
-#define D_KHPREF
-      kh:=kontrahent
-#else
-#define D_KHPREF numer_kol+" "+
-      kh:=left(dm->dost_odb,A_NRLTH)
-#endif
-      if dok_kh.and.firMy->(dbseek(kh))
-#ifdef A_FFULL
-         d_o:=PAD(firMy->(trim(nazwa)+" * "+longname),LEN(DOST_ODB))
-#ifdef A_AF
-         KH->(dbseek(kh))
-#endif
-#else
-#ifdef A_OLZBY
-         d_o:=firMy->nazwa
-#else
-         d_o:=PAD(firMy->nazwa,LEN(DOST_ODB))
-#endif
-#endif
-      else
-         d_o:=dost_odb
-         kh:=space(A_NRLTH)
-      endif
-#ifdef A_KPR
-      npr:=if(_flp=0,DatY->last_kpr+1 ,val(nr_kpr))
-#endif
-#ifdef A_FA
-#ifdef A_FK
-      zaplac:=zaplacono
-      dazapl:=data_zap
-#endif
-      getVAT()
-      zac:=czekiem
-      zap:=przelewem
-      nrc:=nr_czeku
-      tp:=termin_p
-      IF ""=(UW:=UWAGI)
-         UW = "BEZ UWAG"
-      ENDIF
-      uw+=" "
-#else
-#ifdef A_VAT
-      vat:=wart_vat
-#endif
-#endif
-    if _flp=0
-      _fpopkey:=.t.
-    else
-      KIBORD(CHR(3))
-    endif
-ELSE
-    dbseek(KEY_PAR+"@")
-      skip -1
-      da:=max(DatE(),max(DatY->d_z_mies1,DatY->data_gran)+1)
-      do while YEAR(da D_OLZA)>YEAR(DatY->D_Z_rok+1 D_OLZA)
-         da-=day(da)
-      enddo
-#ifdef A_FA
-#ifdef A_FK
-      zaplac:=0
-      dazapl:=ctod("")
-#endif
-      zac:=zap:=0
-      avat:={} //getVAT(); aeval(avat,{|x,i|avat[i,2]:=0})
-      nrc:=space(len(nr_czeku))
-      dv:=tp:=da
-      uw:="BEZ UWAG "
-#else
-#ifdef A_VAT
-      vat:=0
-#endif
-#endif
-#ifdef A_KPR
-      npr:=DatY->last_kpr+1
-#endif
-      dd:=da
-      _flp:=0
-#ifdef A_KHSEP
-      kh:=kontrahent
-#else
-      kh:=left(dm->dost_odb,A_NRLTH)
-#endif
-      if dok_kh.and.firMy->(dbseek(kh))
-#ifdef A_FFULL
-         d_o:=PAD(firMy->(trim(nazwa)+" * "+longname),LEN(DOST_ODB))
-#ifdef A_AF
-         KH->(dbseek(kh))
-#endif
-#else
-#ifdef A_OLZBY
-         d_o:=firMy->nazwa
-#else
-         d_o:=PAD(firMy->nazwa,LEN(DOST_ODB))
-#endif
-#endif
-      else
-         d_o:=dost_odb
-         kh:=space(A_NRLTH)
-      endif
-      IF KEY_DOK=KEY_PAR
-          nk=val(nr_dowodu)+1
-      if nk<=0
-       nk-=2
-      endif
-#ifdef A_VAT
-#ifdef A_FK
-      if pozycja=D_LP0 .and. wart_vat=0 .and. zaplacono=0
-#else
-      if pozycja=D_LP0 .and. wart_vat=0
-#endif
-#else
-      if pozycja=D_LP0
-#endif
-
-      LOCK
-      nk=val(nr_dowodu)
-      _fpopkey:=.t.
-      nowydm:=.f.
-      data:=da
-      data_dost:=dd
-      wtoT:=0
-#ifdef A_SUBDOK
-      sub_dok:=subs(dok,3)
-#endif
-#ifdef A_VAT
-      wart_vat:=0
-#endif
-#ifdef A_FA
-#ifdef A_FK
-      zaplacono:=0
-      data_zap:=ctod("")
-#endif
-      czekiem:=przelewem:=0
-      replace wartosc with 0
-      uwagi:=nr_czeku:=""
-      termin_p:=ctod("")
-#ifdef A_DATAVAT
-      data_vat:=dv
-#endif
-      UW = "BEZ UWAG "
-      putVAT()
-#endif
-      endif
-      ENDIF
-   ENDIF
-//#ifndef A_OLZBY
-   n_f=nr_faktury
-//#endif
-#ifdef wtoT
-#ifndef A_GRAM
-#ifndef A_JMTOT
-   posproc:=_flp
-#endif
-#endif
-#endif
-#ifdef A_OLZA
-  kk:=konto_kosz
-  sk:=stano_kosz
-#endif
-#ifdef A_FAT
-  sp:=nr_spec
-  st:=transport
-#ifdef A_NAZWISKO
-  nazwis:=nazwisko
-#endif
-#endif
-#ifdef A_ZAM
-zam:=nr_zam
-#endif
-#ifdef D_DIETA_OR_ODDO
-  dflag:=.f.
-  darr:={}
-  dpos:=1
-#endif
-#ifdef A_F9
-  pflag:=.f.
-  ppos:=0
-#endif
-#ifdef A_FA
-#ifdef A_NVAT
-  chgpos:=!nowydm .and. subs(dok,2)#"K"
-#endif
-  if nowydm .and. dok_p_r="F"
-     go lastrec()+1
-  endif
-#endif
-return
-**********************************************
 procedure dok11(_f)
   set color to (_snorm)
   @ 0,0
@@ -844,14 +987,14 @@ procedure dok11(_f)
 #else
     @ 2,12 say left(d_o,if(_frow<4,40,66))
 #endif
-    _flp:=D_LPVAL(pozycja)
 #ifdef wtoT
 #ifndef A_GRAM
 #ifndef A_JMTOT
-  posproc:=_flp
+  posproc:=D_LPVAL(pozycja)
 #endif
 #endif
 #endif
+  _flp:=D_LPVAL(pozycja)
   if dok_zew#"W" .or. dok="K"
     @ 4,2 SAY nr_faktury picture "@S13"
     sayl data_dost
@@ -870,7 +1013,7 @@ procedure dok11(_f)
     endif
 #endif
     getVAT()
-    @ 4,72 say nk PICTURE "## ###"
+    @ 4,73 say nk PICTURE "XXXXX"
     @ 6,19 say zap:=przelewem picture WAPIC
     @ 6,35 say zac:=czekiem picture WAPIC
     @ 6,4  say ZAG(wartosc,wart_vat) picture WAPIC
@@ -923,14 +1066,13 @@ procedure dok11(_f)
     @ 3,48 say data_zap
     endif
 #endif
-    @  _frow,72 say nk  PICTURE "## ###"
+    @  _frow,73 say nk  PICTURE "XXXXX"
 
 return
 **********************************************
 procedure dok2(_f,getlist)
     local get,txt,x,d
-    static nk1,iv
-    nk1:=nk
+    static iv
     __setproc(procname(0))
     select dm
     if dok_kh
@@ -1009,34 +1151,33 @@ procedure dok2(_f,getlist)
 #ifdef A_DF
          exec {|w|vat(proc_vat,0,WDFGR(pm*ilosc_f,cena,val(proc_vat),dok_df))} while KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu)
          if dok_df //brutto
-#ifdef A_CENVAT
+ #ifdef A_CENVAT
             aeval(avat,{|v|v[2]:=v[3]*val(v[1])/(100+val(v[1])),txt+=v[3],v[3]-=round(v[2],0)})
-#else
+ #else
             aeval(avat,{|v|v[2]:=v[3]*val(v[1])/(100+val(v[1])),txt+=v[3]-v[2],v[3]-=round(v[2],0)})
-#endif
+ #endif
          else //netto
-#ifdef A_CENVAT
+ #ifdef A_CENVAT
             aeval(avat,{|v|v[2]:=v[3]*val(v[1])/100,txt+=v[3]+v[2]})
-#else
+ #else
             aeval(avat,{|v|v[2]:=v[3]*val(v[1])/100,txt+=v[3]})
-#endif
+ #endif
          endif
 #else
          exec {|w|vat(proc_vat,0,WGR(pm*ilosc_f,cena,val(proc_vat),dok_df))} while KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu)
-#ifdef A_CENVAT
+ #ifdef A_CENVAT
          aeval(avat,{|v|v[2]:=v[3]*val(v[1])/(100+val(v[1])),txt+=v[3]})
-#else
+ #else
          aeval(avat,{|v|v[2]:=v[3]*val(v[1])/100,txt+=v[3]})
-#endif
+ #endif
 #endif
 //          endif
           select DM
 #ifdef A_A
-          dm->(fieldput(fieldpos('wart_net0',0)))
-          dm->(fieldput(fieldpos('wart_netzw',0)))
-          //dm->wart_net0 :=dm->wart_netzw:=0
-          aeval(avat,{|x|dm->(fieldput(fieldpos('wart_net'+ltrim(x[1])),x[3]/100)),if(val(x[1])#0,dm->(fieldput(fieldpos('wart_vat'+ltrim(x[1])),round(x[2],0)/100)),)})
-          //aeval(avat,{|x|dm->&('wart_net'+ltrim(x[1])):=x[3]/100,if(val(x[1])#0,dm->&('wart_vat'+ltrim(x[1])):=round(x[2],0)/100,)})
+          x:=dbstruct()
+          aeval(x,{|x,y,z|if(x[2]$'BN'.and.x[1]='WART_NET',(vat(lower(subs(x[1],9)),,@z),fieldput(y,Round(z,0)/100)),)})
+          aeval(x,{|x,y,z|if(x[2]$'BN'.and.x[1]='WART_VAT',(vat(lower(subs(x[1],9)),@z,),fieldput(y,Round(z,0)/100)),)})
+          //aeval(avat,{|x|dm->(fieldput(fieldpos('wart_net'+ltrim(x[1])),x[3]/100)),if(val(x[1])#0,dm->(fieldput(fieldpos('wart_vat'+ltrim(x[1])),round(x[2],0)/100)),)})
 #endif
           REPLACE wartosc WITH txt/100
           putVAT()
@@ -1062,7 +1203,7 @@ procedure dok2(_f,getlist)
     @ 4,66 get npr picture "@K #####" valid {|g|!g:changed .or. if(nowydm,npr=DatY->last_kpr+1,npr=val(nr_kpr)) .or. NIL#alarm("Czy numer kolejny ksi¥¾ki nie powinien by†:"+if(nowydm,str(DatY->last_kpr+1,5),nr_kpr))}
     endif
 #endif
-    @ 4,72 GET nk PICTURE "@K ## ###" VALID {|g|nk=nk1.or.nk(_f,g,@nk1)}
+    @ 4,73 GET nk PICTURE "@!K XXXXX" VALID {|g|!g:changed.or.nk(_f,g)}
     get:=getnew(6,19,{|x|if(pcount()=0,zap,zap:=ROUND(x,A_ZAOKR))},"zap",WAPIC)
     get:postblock:={|g|setpos(6,4),devout(strpic(ZAG(dm->wartosc,dm->wart_vat),12,A_ZAOKR,"@E "),_sbkgr),;
     if(if(g:original=0,zap#0,zap=0).and.tp=da+if(zap#0,0,dok_tpd),(tp:=da+if(zap=0,0,dok_tpd),getlist[ascan(getlist,{|x|x:name="tp"})]:display()),),.t.}
@@ -1084,6 +1225,7 @@ procedure dok2(_f,getlist)
 #endif
     @ row(),9+col() get sp picture "@S18K"
     @ row(),12+col() get st picture "@KS"+ltrim(str(_fco2-col()-3))
+      atail(getlist):cargo:=.t.
     endif
 #endif
 #ifdef A_FK
@@ -1179,7 +1321,7 @@ endif
     // valid {|g|!g:changed .or. if(nowydm,npr=DatY->last_kpr+1,npr=val(nr_kpr)) .or. NIL#alarm("Czy numer kolejny ksi¥¾ki nie powinien by†:"+if(nowydm,str(DatY->last_kpr+1,5),nr_kpr))}
     endif
 #endif
-    @  _frow,72 GET nk  PICTURE "@K ## ###" VALID {|g|nk=nk1.or.nk(_f,g,@nk1)}
+    @  _frow,73 GET nk  PICTURE "@!K XXXXX" VALID {|g|!g:changed.or.nk(_f,g)}
 return
 **********************************************
 procedure dok3(_f,getlist)
@@ -1190,21 +1332,38 @@ field posilek,licznik
 memvar exp_od,exp_do
 #endif
  if NOWYDM .or. updated() .or. changed=.t.
-    if NOWYDM
-#ifdef A_JMTOT
-      itot:={}
-#endif
-#ifdef A_GRAM
-      gtot:=0
-#endif
+    i:=if(NOWYDM,0,recno())
+    nk2:=KEY_DOK+NR_DOWODU
+    if nk2 <> KEY_PAR+nk //STR(nk,5)
+      SET ORDER TO TAG dm_trim    //nr_mag+smb_dow+padl(strtran(nr_dowodu,' '),5)
+      j:=ordsetfocus()<>'DM_TRIM' .or. dbSEEK(dseek(,'nr_mag,smb_dow,nr_dowodu',mag_biez,left(dok,2),nk)) .and. recno()<>i
+      //dbseek(KEY_PAR+padl(strtran(nk,' '),5)) .and. recno()<>i
+      set order to 1
+      if j
+         if ! (pozycja=D_LP0 D_WAR D_LAN)
+#undef D_LAN
+#undef D_WAR
+           alarm("Znalazˆem inny dokument o tym samym numerze z dnia "+dtoc(data)+"!;Zmieä na pierwszy wolny.",,,3)
+           goto i
+           LOCK
+           _fposg:=findget(getlist,'nk')
+           _fkey:=K_PGUP
+*****************
+           RETURN
+*****************
+         else
+
+           NOWYDM:=.f.
+         endif
+      else
+        goto i
+      endif
+     if NOWYDM
       append blank
-      _flp:=posproc:=0
-      wtoT:=0
       smb_dow := dok
 #ifndef A_MM
       nr_mag := mag_biez
 #endif
-      POZYCJA := D_LP0
       kto_pisal := chr(255)+chr(0)
       data := da
 #ifdef D_DIETA_OR_ODDO
@@ -1212,81 +1371,47 @@ memvar exp_od,exp_do
       darr:={}
       dpos:=1
 #endif
-    endif
-    if nr_dowodu # STR(nk,5)
-       nk2:=KEY_DOK+NR_DOWODU
-       nr_dowodu := STR(nk,5)
-#ifdef A_LAN
-      i:=recno()
-      go lastrec()+1
-/*
-#ifdef A_ADS
-      if dbseek(KEY_PAR+str(nk,5),.f.) .and. i<>recno()
-         j:=if(nk<0,-1,1)
-         alarm("Znalazˆem inny dokument o tym samym numerze !;Zmieniam numer dokumentu na pierwszy wolny.",,,3)
-         do while dbseek(KEY_PAR+str(nk+=j,5),.f.);enddo
-         go i
-         nr_dowodu := STR(nk,5)
-         do while dbseek(KEY_PAR+str(nk,5),.f.) .and. i<>recno()
-           do while dbseek(KEY_PAR+str(nk+=j,5),.f.);enddo
-           go i
-           nr_dowodu := STR(nk,5)
-         enddo
-         _fkey:=K_PGUP
-      endif
-#else
-*/
-      j:=ltrim(str(i))
-      //SET FILTER TO RECNO()<>i
-      dbsetfilter({||RECNO()<>i},'RECNO()<>'+ltrim(str(i)))
-      if dbseek(KEY_PAR+str(nk,5),.f.)
-         j:=if(nk<0,-1,1)
-         alarm("Znalazˆem inny dokument o tym samym numerze !;Zmieniam numer dokumentu na pierwszy wolny.",,,3)
-         do while dbseek(KEY_PAR+str(nk+=j,5),.f.);enddo
-         go i
-         nr_dowodu := STR(nk,5)
-         do while dbseek(KEY_PAR+str(nk,5),.f.)
-           do while dbseek(KEY_PAR+str(nk+=j,5),.f.);enddo
-           go i
-           nr_dowodu := STR(nk,5)
-         enddo
-         _fkey:=K_PGUP
-      endif
-      SET FILTER TO
-//#endif
-      go i
-      if nowydm
-         daty->(dbgoto(1))
-         if data<=max(DatY->d_z_mies1,DatY->data_gran)
-            if month(max(DatY->d_z_mies1,DatY->data_gran)+1 D_OLZA)=1
-              alarm("Wˆa˜nie zamkni©to rok!",,,3)
-              break
-            endif
-            alarm("Wˆa˜nie zamkni©to miesi¥c!;Zmieniam dat© dokumentu.",,,3)
-            _fkey:=K_PGUP
-            da := data := max(DatY->d_z_mies1,DatY->data_gran)+1
-         endif
-      endif
+
+      pozycja:=D_LP0
+     else
+      LOCK
+     endif
+
+      if pozycja<=D_LP0
+         wtoT:=0
+#ifdef A_JMTOT
+         itot:={}
 #endif
+#ifdef A_GRAM
+         gtot:=0
+#endif
+         _flp:=posproc:=0
+      endif
+
+      POZYCJA := D_LPPUT(_flp)
+      nr_dowodu := nk //STR(nk,5)
 #ifdef A_SUBDOK
       sub_dok:=subs(dok,3)
 #endif
       NOWYDM := .F.
-      if _flp#0
+      goto recno()
+      if _flp<>0
           SELECT MAIN
           SET ORDER TO TAG MAIN_NRK
           SEEK nk2
           rarr:={}
           exec aadd(rarr,recno()) while KEY_DOK+nr_dowodu=nk2 rest
 #ifndef A_LAN
-          aeval(rarr,{|i|dbgoto(i),nr_dowodu:=str(nk,5)})
+          aeval(rarr,{|i|dbgoto(i),nr_dowodu:=nk})
 #else
           // break lub .t.
-          aeval(rarr,{|i|dbgoto(i),if(reclock(.F.,"NIE POTRAFI¨ ZMIENI NUMERU W POZYCJI"+D_LPSTR(POZYCJA)),nr_dowodu:=str(nk,5),)})
+          aeval(rarr,{|i|dbgoto(i),if(reclock(.F.,"NIE POTRAFI¨ ZMIENI NUMERU W POZYCJI"+D_LPSTR(POZYCJA)),nr_dowodu:=nk,)})
           unlock
 #endif
           select DM
       endif
+    ELSE
+      LOCK
     ENDIF
     IF DATA#DA
 #ifdef D_DIETA_OR_ODDO
@@ -1344,7 +1469,7 @@ memvar exp_od,exp_do
     endif
 #endif
     nr_spec:=sp
-    transport:=st
+    transport:=trim(st) //bo memo
 #ifdef A_NAZWISKO
     nazwisko:=nazwis
     IF kh=firmy->numer_kol .and. empty(firmy->nazwisko)
@@ -1497,7 +1622,7 @@ begin sequence
           select 0
           nuse (path_zb+'exp_main') readonly exclusive
           darr:=array(lastrec())
-          exec {||message(10),darr[recno()]:=pad(index,len(main->index))+str(ilosc,10,ILDEC)+" "+proc_vat+"% "+str(cena,10,A_ZAOKR)+" zˆ "+str(licznik,3)+" X "+nazwa+str(wartosc,10,2)}
+          exec {||message(10),darr[recno()]:=pad(index,len(main->index))+str(ilosc,10,ILDEC)+" "+proc_vat+"% "+str(cena,10,A_ZAOKR)+" zˆ "+str(licznik,3)+" X "+nazwa+str(wartosc,10,A_ZAOKR)}
           use
        endif
        end sequence
@@ -1618,7 +1743,7 @@ begin sequence
           if dbseek(d) .and. (empty(j) .or. c$j)
             dflag:=.t.
             c:=right(trim(indeks->baza),1)+if(empty(j),c,left(j,1))
-            exec {||message(10),aadd(darr,c+if(empty(j),dieta,space(len(dieta)))+skladnik+str(ilosc,8,3))} rest while dtos(data)+posilek=d
+            exec {||message(10),aadd(darr,c+if(empty(j),pad(dieta,len(main->nr_zlec)-2),space(len(main->nr_zlec)-2))+skladnik+str(ilosc,8,3))} rest while dtos(data)+posilek=d
           endif
           next i
        endif
@@ -1730,6 +1855,7 @@ begin sequence
           next
           surowce->(dbgoto(0))
           j:=''
+          k:=''
           i:=0
           do while i<len(darr)
               message(10)
@@ -1758,8 +1884,17 @@ begin sequence
               endif
               j:=posilek
 #else
-              surowce->(dbseek(ro_zapot->skladnik,.f.))
-              darr[i]:=surowce->indx_mat+" W"+posilek+dieta+" "+surowce->nazwa+chr(255)+str(ilosc)+" "+surowce->jmag
+              if surowce->skladnik==skladnik .and. j==posilek .and. k==dieta
+                 --i
+                 darr[i]:=surowce->indx_mat+" "+pad("W"+posilek+dieta,len(main->nr_zlec))+" "+surowce->nazwa+chr(255)+str(ilosc+val(subs(darr[i],-13)),9,3)+" "+surowce->jmag
+                 adel(darr,i+1)
+                 asize(darr,len(darr)-1)
+              else
+                 surowce->(dbseek(ro_zapot->skladnik,.f.))
+                 darr[i]:=surowce->indx_mat+" "+pad("W"+posilek+dieta,len(main->nr_zlec))+" "+surowce->nazwa+chr(255)+str(ilosc,9,3)+" "+surowce->jmag
+              endif
+              j:=posilek
+              k:=dieta
 #endif
 #endif
           enddo
@@ -1838,7 +1973,11 @@ proc dok4(_f,getlist,_s)
       #undef  NZBEG
       #define NZBEG 24
       #undef  NZPIC
-      #define NZPIC "@KS" +ltrim(str(min(len(nr_zlec),34-NIMBEG-len( INDEXPIC ))))
+#ifdef A_SB
+      #define NZPIC "@KS" +ltrim(str(min(len(nr_zlec),21-NIMBEG-len( INDEXPIC ))))
+#else
+      #define NZPIC "@KS" +ltrim(str(min(len(nr_zlec),33-NIMBEG-len( INDEXPIC ))))
+#endif
 #endif
       #define NZVAL aczojs(stanowis[mag_poz])
 #ifdef A_DIETA
@@ -1890,7 +2029,8 @@ local txt,j,x,s:=0,si:='',gzl,y,z,a
         _fpos:=1
 #endif
         _fkey:=0
-        lam:=NIL
+        lam:=NIL  //INDX_MAT->(select())
+        
 #ifdef A_SZYM
         if dok_p_r="F" .and. val(kh)#0
            nim:=pad(kh,46)
@@ -1918,7 +2058,7 @@ local txt,j,x,s:=0,si:='',gzl,y,z,a
             parr[2]:=y*ilosc_f
             parr[5]:=y*cena
          else
-            parr[2]:=y*ilosc
+            parr[2]:=y*if(ilosc=0,ilosc_f,ilosc)
 #ifdef A_WA
             parr[5]:=y*wartosc
 #endif
@@ -2021,8 +2161,10 @@ endif
            il:=-val(subs(nim,rat(chr(255),nim)+1))
            nz:=subs(nim,len(index)+2,len(nr_zlec))
            @ _fk+1,48 say right(nim,4)
-           j:=rat(chr(255),nim)
-           @ _fk+2,1 SAY "ZAPOTRZEBOWANIE: "+trim(left(nim,j-1))+subs(nim,j) color _sbkgr
+           txt:=subs(nim,len(INDEX)+2+LEN(nr_zlec)+1)
+           j:=rat(chr(255),txt)
+           txt:=left(nim,len(INDEX)+2)+trim(nz)+' '+TRIM(left(txt,j-1))+' '+subs(txt,j+1)
+           @ _fk+2,1 SAY "ZAPOTRZEBOWANIE: "+txt+space(60-len(txt)) color _sbkgr
            nim:=pad(left(nim,len(index)),46)
            select STANY
            set order to 2
@@ -2049,9 +2191,11 @@ endif
         endif
 */
 #endif
-        STANY->(DBSEEK(MAIN->(NR_MAG+INDEX),.F.))
 #ifndef STANY
+        NOWYSTAN:=STANY->(DBSEEK(MAIN->(NR_MAG+INDEX),.F.))
         indx_mat->(dbseek(main->(index),.f.))
+#else
+        STANY->(DBSEEK(MAIN->(NR_MAG+INDEX),.F.))
 #endif
         lam:=i_lam(dm->data)
 #ifdef A_MM
@@ -2090,9 +2234,6 @@ endif
         @ _fk,5 SAY (lam)->nazwA
 #ifdef A_IZ
         if dok_ew#"Z"
-#endif
-#ifndef STANY
-        NOWYSTAN:=!STANY->(found())
 #endif
 #ifdef A_WA
         ce:=ROUND(ck:=if(il=0,0,wa/il),A_ZAOKR)
@@ -2248,7 +2389,7 @@ endif
             if _fnowy
                nz:=left(txt[1],a)
 #ifndef A_NOMZ
-               if dok_zew#"W" .and. (dok_kon#"?" .or. !empty(kh)) .and. empty(right(nz,A_NRLTH))
+               if dok_zew#"W" .and. (dok_kon#"?" .or. !empty(kh)) .and. empty(subs(nz,a-A_NRLTH+1,A_NRLTH))
                  nz:=left(nz,a-A_NRLTH)+kh
                endif
 #endif
@@ -2267,7 +2408,7 @@ endif
 #else
             j:postblock:=if(dok_kon="?".and.empty(kh),{||aczojs(zaMowienie[MAG_POZ])},{|g,x,y|y:=.t.,x:=nz,aczojs(zaMowienie[MAG_POZ],@x) .AND.;
                   (if(empty(subs(x,a+1-A_NRLTH,A_NRLTH)),;
-                  (nz#(nz:=left(x,a-A_NRLTH)+kh).and.updated(@y)),;
+                  (nz#(nz:=padr(left(x,a-A_NRLTH)+kh,len(NR_ZLEC))).and.updated(@y)),;
                   (nz:=x)#g:original.and.updated(@y)),y)})
 #endif
 #endif
@@ -2381,23 +2522,39 @@ endif
         if dok_ew#"Z"
 #endif
 #ifdef A_WA
-#ifndef cenA_zaK
-#ifdef A_WEBRUT
+ #ifndef cenA_zaK
+  #ifdef A_WEBRUT
          if dok_p_r="P" .and. dok_war="+"
-#else
+  #else
          if dok_p_r="P" .and. ( dok_war="+" .or. wa<>wz )
-#endif
+  #endif
             add_get(_f,getlist)
          else
             txt:reader:={|g|setkey(61,{|p|add_get(_f,getlist),setkey(61,NIL)}),getreader(g),setkey(61,NIL)}
          endif
-#endif
+ #endif
 #else
          if dok_war="-"
             txt:reader:={|g|setkey(61,{||dok_w1:="+",showwar(_f,getlist,gil),setkey(61,NIL)}),getreader(g),setkey(61,NIL)}
          endif
 #endif
 #ifdef A_IZ
+        endif
+#endif
+#ifdef cenA_zaK
+        if /*dok_df .and.*/ dok_zew$"UV"
+
+  colorselect(3)
+           x:=getnew(_fk+1,53,{|x,v|v:=val(pv),if(pcount()=0,,(x:=Round(x*il,A_ZAOKR),wz:=x-ROUND(x*v/(100+v),A_ZAOKR))),ROUND((wz+VATPZ(wz,v))/il,A_ZAOKR)},"wz",WAPIC)
+           x:postblock:=txt:postblock
+           x:display()
+           aadd(getlist,x)
+
+           y:=getnew(_fk+1,66,{|x,v|v:=val(pv),if(pcount()=0,,wz:=x-ROUND(x*v/(100+v),A_ZAOKR)),wz+VATPZ(wz,v)},"wz",WAPIC)
+           y:postblock:=txt:postblock
+           y:display()
+           aadd(getlist,y)
+  colorselect(0)
         endif
 #endif
    else
@@ -2528,7 +2685,9 @@ func stanprzed(nowy,si,s,w)
 local a:=0,b:=0,sel,rcrd
 if si#STANY->(nr_mag+index)
    s:=STANY->STAN
+#ifdef A_WA
    w:=STANY->WARTOSC
+#endif
    si:=STANY->(nr_mag+index)
    sel:=select()
    select main
@@ -2536,15 +2695,23 @@ if si#STANY->(nr_mag+index)
    set order to tag MAIN_IND
    if !nowy
       a:=ilosc
+#ifdef A_WA
       b:=wartosc
+#endif
    endif
    seek si+dtos(da)+'@'
+#ifdef A_WA
    exec {||a+=ilosc,b+=wartosc} rest while nr_mag+index=si
+#else
+   exec {||a+=ilosc} rest while nr_mag+index=si
+#endif
    go rcrd
    set order to tag MAIN_NRK
    select (sel)
    s:=s-a
+#ifdef A_WA
    w:=w-b
+#endif
 endif
 return s
 ***********************
@@ -2768,13 +2935,13 @@ endif
 #else
           il:=-val(subs(nim,rat(chr(255),nim)+1))
           nz:=subs(nim,len(index)+2,len(main->nr_zlec))
-          txt:=subs(nim,len(index)+len(main->nr_zlec)+3)
+          txt:=subs(nim,len(INDEX)+LEN(main->nr_zlec)+3)
           p:=rat(chr(255),txt)
-          txt:=trim(left(txt,p-1))+subs(txt,p)
+          txt:=left(nim,len(INDEX)+2)+trim(nz)+' '+trim(left(txt,p-1))+subs(txt,p)
           if _fi>=_flp
-             @ _fk+2,1 SAY "ZAPOTRZEBOWANIE: "+txt color _sbkgr
+             @ _fk+2,1 SAY "ZAPOTRZEBOWANIE: "+txt+space(60-len(txt)) color _sbkgr
           else
-             @ _fk,7 SAY "ZAPOTRZEB: "+txt color _sbkgr
+             @ _fk,7 SAY "ZAPOTRZEB: "+txt+space(60-len(txt)) color _sbkgr
           endif
 #endif
        endif
@@ -2971,7 +3138,15 @@ local rcrd,j,a,b,c,d,comdm,ames:={},x,y,z,cx,px
         ENDIF
         nr_mag:=mag_biez
         index:=nim
+
+#ifndef STANY
+        INDX_MAT->(dbseek(MAIN->index,.f.))
+#else
+        INDX_MAT->(dbseek(MAIN->nr_mag+MAIN->index,.f.))
+#endif        
+        
         lam:=i_lam(da)
+       
 #ifdef A_GOCZ
         MAIN->dzial:=indx_mat->INFO
 #endif
@@ -3050,11 +3225,6 @@ local rcrd,j,a,b,c,d,comdm,ames:={},x,y,z,cx,px
 #endif
 
         SELECT STANY
-#ifdef A_WA
-     if main->ilosc#il .or. main->wartosc#wa
-#else
-     if il#main->ilosc
-#endif
 
 #ifndef STANY
         if NOWYSTAN
@@ -3064,8 +3234,15 @@ local rcrd,j,a,b,c,d,comdm,ames:={},x,y,z,cx,px
         ELSE
           LOCK
         ENDIF
+        LOCK IN INDX_MAT
 #else
         LOCK
+#endif
+
+#ifdef A_WA
+     if main->ilosc#il .or. main->wartosc#wa
+#else
+     if il#main->ilosc
 #endif
 #ifdef A_FIFO
         IF dok_p_r<>'P' .and. il<0 .and. !chg_cen
@@ -3093,10 +3270,8 @@ local rcrd,j,a,b,c,d,comdm,ames:={},x,y,z,cx,px
         ENDIF
 #endif
 	IF INDX_MAT->zaznacz<>2 .and. INDX_MAT->zapas_min>0 .and. STANY->stan<INDX_MAT->zapas_min
-	   LOCK IN INDX_MAT
 	   INDX_MAT->zaznacz:=2
 	ELSEIF INDX_MAT->zaznacz=2 .and. INDX_MAT->zapas_min>0 .and. STANY->stan>=INDX_MAT->zapas_min
-	   LOCK IN INDX_MAT
 	   INDX_MAT->zaznacz:=0
 	ENDIF
 #endif
@@ -3128,6 +3303,9 @@ local rcrd,j,a,b,c,d,comdm,ames:={},x,y,z,cx,px
         WARTOSC:=round(wartosc+ (a:=wa-main->WARTOSC),A_ZAOKR)
         wtoT+=a
         main->wartosc:=Round(wa, A_ZAOKR)
+#ifdef A_CK
+        MAIN->cena_k:=ck
+#endif
 #endif
 #ifndef A_MINUS
 #ifndef A_CENFIX
@@ -3210,50 +3388,39 @@ local rcrd,j,a,b,c,d,comdm,ames:={},x,y,z,cx,px
           DATA_roz:=main->DATA
         endif
         IF main->data>=data_przy .and. pm=1 .and. main->ilosc>=0 .and. dok#'K'
-#ifdef A_ANKER
-           if isdigit(index) .and. indx_mat->status%2=0
-	   #ifndef STANY
-	      LOCK IN indx_mat
-	   #endif   
-              indx_mat->status:=4*int(indx_mat->status/4)+2
-              indx_mat->zaznacz:=1
-           endif
-#endif
 #ifdef A_AUTOMAR
 #ifndef cenA_zaK
           if dok_ew#"E"
 #endif
+/*
 #ifndef STANY
-//          lock in indx_mat
           lam:=i_lam(da)
 #endif
-
+*/
           b:=indx_mat->proc_mar
-/*
+
 #ifdef cenA_zaK
           cz:=ce
 #endif
-*/
-          cx:=eval(MEMVAR->liczCzM,cz,val(pv),b,indx_mat->przel)
-#ifdef A_NOPV
+
           px:=INDX_MAT->proc_vat
+#ifdef A_NOPV
 #else
-          px:=pv
+          if empty(px)
+            px:=pv
+          endif
 #endif
-            IF (cenA_zaK#cz .and. INDX_MAT->cena#cx) .OR. INDX_MAT->PROC_VAT#px
-#ifdef A_ANKER
-              if indx_mat->status%2=1 .and. px#indx_mat->proc_vat
-            aadd(ames,message("NIE ZMIENIEM CENY ZBYTU, PONIEWA½ TOWAR W KASIE I ZMIANA STAWKI VAT."))
-              elseif alias(lam)="INDX_MAT"
-#else
-                if alias(lam)="INDX_MAT"
-#endif
-          commit in main
-          commit in STANY
+          cx:=eval(MEMVAR->liczCzM,cz,val(px),b,indx_mat->przel)
+            IF INDX_MAT->cena<>0 .and.( (ROUND(cenA_zaK-cz,A_ZAOKR)<>0 .and. ROUND(INDX_MAT->cena-cx,A_ZAOKR)<>0) .OR. INDX_MAT->PROC_VAT#px )
+              if lam=SELECT("INDX_MAT")
+/*************
+             commit in main
+             commit in STANY
                   if comdm
              commit in dm
              comdm:=.f.
                   endif
+***************/
                 IF cx#0 .and. cz#0 .and. il#0
             a:=message("Stara cena: "+strpic(indx_mat->cena,12,A_ZAOKR,"@E ")+"; Nowa cena:;               Mar¾a:    %;   [Esc] - rezygnacja")
             c:={getnew(a[1]+2,a[2]+14,{|x|if(pcount()=0,cx,cx:=x)},"cx",WAPIC),getnew(a[3]-2,a[4]-5,{|x|if(pcount()=0,b,b:=x)},"b","##")}
@@ -3267,10 +3434,6 @@ local rcrd,j,a,b,c,d,comdm,ames:={},x,y,z,cx,px
                   enddo
             message(a)
                   if readkey()#K_ESC
-#ifndef STANY
-              lock in indx_mat
-#endif
-	    
                     if da>indx_mat->data_popr
                 SELECT IND_LAM
                 APPEND BLANK
@@ -3282,9 +3445,8 @@ local rcrd,j,a,b,c,d,comdm,ames:={},x,y,z,cx,px
                 indx_mat->data_popr:=da
                    endif
 #ifdef A_ANKER
-                   if isdigit(indx_mat->index) .and. (indx_mat->cena#cx .or. indx_mat->proc_vat#px)
+                   if isdigit(indx_mat->index) .and. (ROUND(indx_mat->cena-cx,A_ZAOKR)<>0 .or. indx_mat->proc_vat#px)
                 indx_mat->status:=4*int(indx_mat->status/4)+2
-                //status:=indx_mat->status%2+2
                 indx_mat->zaznacz:=1
                    endif
 #endif
@@ -3292,8 +3454,10 @@ local rcrd,j,a,b,c,d,comdm,ames:={},x,y,z,cx,px
 #ifdef A_ALTCEN
  #ifdef A_ANKER
   #ifdef A_ZAGRODA
+            indx_mat->proc_mar1:=max(10,b/5)
             indx_mat->cena1:=eval(MEMVAR->liczCzM,cz,val(px),indx_mat->proc_mar1,indx_mat->przel)
-            indx_mat->cena2:=eval(MEMVAR->liczCzM,indx_mat->cena1,0,indx_mat->proc_mar2,indx_mat->przel)
+          //indx_mat->cena2:=eval(MEMVAR->liczCzM,cz,val(px),indx_mat->proc_mar2,indx_mat->przel)
+            indx_mat->proc_mar2:=eval(memvar->liczM,indx_mat->cena2,cz,val(px))
             indx_mat->cena3:=eval(MEMVAR->liczCzM,cx,0,indx_mat->proc_mar3,indx_mat->przel)
   #else
             indx_mat->cena1:=eval(MEMVAR->liczCzM,cx,0,indx_mat->proc_mar1,indx_mat->przel)
@@ -3322,8 +3486,7 @@ local rcrd,j,a,b,c,d,comdm,ames:={},x,y,z,cx,px
 #else
 #ifdef A_FA
 #ifndef A_NOPV
-          if !empty(pv) .and. indx_mat->proc_vat<>pv
-            LOCK IN INDX_MAT
+          if !empty(pv) .and. empty(indx_mat->proc_vat) //<>pv
             indx_mat->proc_vat:=pv
           endif
 #endif
@@ -3434,7 +3597,8 @@ else
           commit in DM
         endif
       elseif dok_kon="&:"
-         &(trim(subs(dok_kon,3)))
+         x:=trim(subs(dok_kon,3))
+         (&x,x:=NIL)
       ENDIF
 
       UNLOCK
@@ -3473,7 +3637,11 @@ set cursor off
 
 do while _fpopkey
 
-#ifdef __PLATFORM__UNIX
+//@ _fk,_fco1 SAY '>' COLOR _sbkgr
+//@ _fk+_fskip-1,_fco2 SAY '<' COLOR _sbkgr
+
+
+#ifdef __HARBOUR__
 #define D_REST 4
 #else
 #define D_REST 2
@@ -3576,6 +3744,9 @@ endif
 #endif
 #endif
 
+//@ _fk,_fco1 SAY 'º' COLOR _sbkgr
+//@ _fk+_fskip-1,_fco2 SAY 'º' COLOR _sbkgr
+
 #ifdef A_MYSZ
    if _fkey=GE_MOUSE
       readkey(_fkey,{bx,cx,dx})
@@ -3635,7 +3806,7 @@ endif
        _fkey:=inkey()
 #ifdef A_KONTROLA
        cx:=dtoc(date())+' '+time()+' '+operator+chr(K_ENTER)+chr(K_CTRL_RET)
-       bx:={|x,i|if(x[2]$'CND'.and.x[1]#'D_',cx+=tran(fieldget(i),)+'|',)}
+       bx:={|x,i|if(x[2]$'CNDB'.and.x[1]#'D_',cx+=tran(fieldget(i),)+'|',)}
        aeval(dbstruct(),bx)
        cx+=chr(K_ENTER)+chr(K_CTRL_RET)
        SELECT MAIN
@@ -3722,12 +3893,16 @@ next
          showfak(_f,if(dok_war#"-".or.len(getlist)>gil,_sunsel,_sbkgr))
       elseif dok_ew#"E"
          showvat(_f)
-#ifdef cenA_zaK
-         return .t.
-#else
          if dok_p_r="P" .and. dok_war="-"
             return .t.
          endif
+#ifdef cenA_zaK
+#ifdef A_WA
+         @ (_fl-_fj+1)*_fskip+_frow,66 say pm*(wtoT+wa-if(_fnowy,0,main->wartosc)) PICTURE WAPIC COLOR _Sbkgr
+#else
+         @ (_fl-_fj+1)*_fskip+_frow,66 say pm*(wtoT+if(lam=NIL,0,(il-if(_fnowy,0,main->ilosc))*(lam)->cenA)) PICTURE WAPIC COLOR _Sbkgr
+#endif
+         return .t.
 #endif
       endif
 #endif
@@ -3910,7 +4085,15 @@ func showvat(_f)
 #endif
    endif
 #ifndef A_WEBRUT
-   if dok_war#'-' .and. dok_p_r='P' .and. dok_ew='Z'
+#ifdef cenA_zaK
+   if dok_war#'-' .and. dok_p_r='P' .and. dok_zew$"UV"
+#else
+   if dok_war#'-' .and. dok_p_r='P'  .and. dok_zew$"UV" .and. dok_ew='Z'
+#endif
+      //if dok_df
+        @ _fk+1,53 say ROUND((wz+VATPZ(wz,val(pv)))/il,A_ZAOKR) picture WAPIC COLOR _Sbnorm
+        @ _fk+1,66 say wz+VATPZ(wz,val(pv)) picture WAPIC COLOR _Sbnorm
+      //endif
       @ (_fl-_fj+1)*_fskip+_frow,66 say wt PICTURE WAPIC COLOR _Sbkgr
    endif
 #endif
@@ -3928,6 +4111,11 @@ func showvath(_f,wt,vt)
    endif
 #endif
 #endif
+#ifdef A_WEBRUT
+   if dok_p_r="P"
+     @ _frow,48 say wt PICTURE STRTRAN(WAPIC,"E","EZ") COLOR _Sbkgr
+   endif
+#endif
 #ifdef A_FK
   if dok_fk
      @ 3,66 say wt+vt-zaplac PICTURE WAPIC COLOR _Sbkgr
@@ -3938,31 +4126,34 @@ func showvath(_f,wt,vt)
   endif
 return .t.
 ***********
-function vat(pv,v,n)
+function vat(pv,v,n,p)
 local k
    if empty(pv)
-      v:=0;n:=0
+      v:=0;n:=0;p:=0
       if pcount()>1
-         aeval(avat,{|x|v+=x[2],n+=x[3]})
+         aeval(avat,{|x|v+=x[2],n+=x[3],p+=x[4]})
       else
-         aeval(avat,{|x|v+=ROUND(x[2],0),n+=ROUND(x[3],0)})
+         aeval(avat,{|x|v+=ROUND(x[2],0),n+=ROUND(x[3],0),p+=ROUND(x[4],0)})
       endif
-      v/=100;n/=100
+      v/=100;n/=100;p/=100
    else
       k:=ascan(avat,{|x|x[1]=pv})
       if v#NIL
          if n=NIL
             n:=0
          endif
+         if p=NIL
+            p:=0
+         endif
          if k=0
-            aadd(avat,{pv,v,n})
+            aadd(avat,{pv,v,n,p})
          else
-            v:=avat[k,2]+=v;n:=avat[k,3]+=n
+            v:=avat[k,2]+=v;n:=avat[k,3]+=n;p:=avat[k,4]+=p
          endif
       elseif k#0
-         v:=avat[k,2];n:=avat[k,3]
+         v:=avat[k,2];n:=avat[k,3];p:=avat[k,4]
       else
-         n:=v:=0
+         n:=v:=p:=0
       endif
    endif
 return v

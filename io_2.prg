@@ -20,6 +20,7 @@
   static oed:=NIL
   static win:=NIL
 #endif
+static emptyprn:=NIL
 memvar oprn
 #ifdef A_XPRN
 memvar  p_rown,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COLN,P_BON,P_BOFF,P_UON,P_UOFF,;
@@ -58,6 +59,10 @@ return .t.
 stat func icv(b,o)
 local t
      t:=valtype(b)
+#ifdef __HARBOUR__
+     if ! t$'PB'
+        o:=hb_ValToExp(b)
+#else
      if t$"MC"
         if ! "'" $ b
            o:="'"+b+"'"
@@ -82,15 +87,157 @@ local t
              break
           endif
         end
+     elseif t='U'
+        o:='NIL'
+#endif
      elseif pcount()<2
         break
-     elseif o=NIL
-        o:='NIL'
      endif
 return o
 /*****************
 x:="magazyn.ini";do while inirest(@x);(&x,x:=NIL);enddo
 ****************/
+stat func extractleft(c)
+local b,d,y,r
+    //c:=strtran(a,' ')
+    b:={{'"',0,'"'},{"'",0,"'"},{'[',0,']'}} //,{'{',,'}'},{'(',,')'}}
+    while .t.
+      aeval(b,{|x,y|x[2]:=hb_at(x[1],c,x[2])})
+      asort(b,,,{|x,y|y[2]=0 .or. x[2]<>0 .and. x[2]<y[2]})
+      y:=b[1]
+      if y[2]=0
+         exit
+      endif
+      if y[1]='['.and.y[2]>1.and.(isalpha(r:=subs(c,y[2]-1,1)).or.isdigit(r).or.r$'_}')
+         y[2]++
+         LOOP
+      endif
+      d:=(hb_at(y[3],c,y[2]+1)-y[2]+1)
+      if d<2
+       (d:=errornew(),;
+       d:description:="Syntax error",;
+       d:operation:=y[3],;
+       d:subsystem:="PPR",;
+       d:subcode:=1003,;
+       d:severity:=2,;
+       eval(errorblock(),d))
+       d:=0
+      endif
+      c:=stuff(c,y[2],d,'')
+      aeval(b,{|y|if(y[2]>0,y[2]-=d,)},2)
+    enddo
+    // probuje usun¥† funkcje i tablice itp
+    d:=0
+    while !empty(d:=hb_at(']',c,1+d))
+       y:=rat('[',left(c,d))
+       while y>1 .and. isalpha(r:=subs(c,y-1,1)) .or. isdigit(r) .or. r='_'
+          --y
+       enddo
+       c:=stuff(c,y,b:=d-y+1,'')
+       d-=b
+    enddo
+    d:=0
+    while !empty(d:=hb_at(')',c,1+d))
+       y:=rat('(',left(c,d))
+       while y>1 .and. isalpha(r:=subs(c,y-1,1)) .or. isdigit(r) .or. r='_'
+          --y
+       enddo
+       c:=stuff(c,y,b:=d-y+1,'')
+       d-=b
+    enddo
+    d:=0
+    while !empty(d:=hb_at('}',c,1+d))
+       y:=rat('{',left(c,d))
+       c:=stuff(c,y,b:=d-y+1,'')
+       d-=b
+    enddo
+    // teraz dopiero przecinek oddziela mi zmienne
+    b:=rat(':=',c)
+    if b>1
+       c:=strtran(left(c,b-1),':=',',')
+    endif
+    b:=getlines(c,',')
+    for d:=len(b) To 1 step -1
+       c:=b[d]:=alltrim(b[d])
+       y:=len(c)
+       while y>0 .and. (isalpha(r:=subs(c,y,1)) .or. isdigit(r) .or. r='_')
+          --y
+       enddo
+       if c=='' .or. y>0
+          adel(b,d)
+          asize(b,len(b)-1)
+       endif
+    next d
+return b
+***************************
+function inirestold(x)
+static a,l,i
+if a=NIL
+   x:=findfile(x)
+   if ""#x
+      a:=getlines(memoread(x))
+      i:=0
+      l:=len(a)
+   else
+      i:=l:=0
+   endif
+endif
+do while .t.
+   ++i
+   if i>l
+      x:=a:=NIL
+      return .f.
+   endif
+   x:=a[i]
+   if x='&:'
+      x:=subs(x,3)
+   elseif '&:'$x
+      x:=Trim(left(x,at('&:',x)-1))
+   endif
+   if x#';'
+      exit
+   endif
+enddo
+return .t.
+****************
+function inirest(x)
+local a,l:=0,i,j,c,y
+
+   x:=findfile(x)
+   if ""#x
+      a:=getlines(memoread(x))
+      l:=len(a)
+   endif
+
+for i:=1 to l
+   x:=a[i]
+   if x=';'
+      loop
+   elseif x='&:'
+      x:=subs(x,3)
+   elseif '&:'$x
+      x:=Trim(left(x,at('&:',x)-1))
+   endif
+    c:=extractleft(x)
+
+    if !empty(c)
+#ifdef __HARBOUR__
+    __mvPublic(c)
+#else
+    for j:=1 to len(c)
+      y:=c[j]
+      PUBLIC &y
+    next j
+#endif
+    endif
+
+    begin sequence
+    (&x,x:=NIL)
+    end sequence
+next
+
+return .f.
+/***********
 function inirest(x)
 static a,l,i
 if a=NIL
@@ -120,14 +267,17 @@ do while .t.
    endif
 enddo
 return .t.
-*******************
+**************/
 procedure inisave(name)
-local i,txt,j,b
+local i,txt,j,b,c
    name:=findfile(name)
    txt:=getlines(memoread(name))
    for i:=1 to len(txt)
      if txt[i]#';' .and. txt[i]#'&:'
         j:=at(":=",txt[i])
+        if j=0
+           loop
+        endif
         b:=subs(txt[i],j+2)
         if '&:' $ b
           b:=subs(b,at('&:',b)+2)
@@ -142,7 +292,12 @@ local i,txt,j,b
    for i:=1 to len(txt)
      j+=txt[i]+HB_EOL()
    next i
+#ifdef __HARBOUR__
+   hb_memowrit(name,j)
+   hb_idlestate()
+#else
    memowrit(name,j)
+#endif
 /*
    j:=fcreate(name)
    for i:=1 to len(txt)
@@ -155,7 +310,7 @@ return
 ******************************
 func findfile(x,netio)
 local a,l,i,y:=""
- if (HB_OsPathSeparator()$x)
+ if (HB_ps()$x)
     if file(x)
        y:=x
 #ifdef __PLATFORM__UNIX
@@ -163,7 +318,7 @@ local a,l,i,y:=""
        y:=l
 #endif
     else
-       x:=subs(x,rat(HB_OsPathSeparator(),x)+1)
+       x:=subs(x,rat(HB_ps(),x)+1)
     endif
  endif
  if y==""
@@ -173,7 +328,7 @@ local a,l,i,y:=""
 /*
        if empty(a[i])
           y:=x
-          if file('.'+HB_OsPathSeparator()+x)
+          if file('.'+HB_ps()+x)
              exit
           endif
        else
@@ -228,7 +383,7 @@ if c .and. 1#alarm("CZY DRUKOWAC ?",{"TAK","NIE"},1,2)
 //#endif
    set printer to
    set print off
-   f:='.'+HB_OsPathSeparator()+lower(left(procname(l),8))+'.txt'
+   f:='.'+HB_ps()+lower(left(procname(l),8))+'.txt'
 #ifdef A_LAN
    x:=errorblock({|e|if(e:gencode=20,break(e),eval(x,e))})
    do while .t.
@@ -263,7 +418,7 @@ if c .and. 1#alarm("CZY DRUKOWAC ?",{"TAK","NIE"},1,2)
    return .f.
 endif
 #ifdef D_HWPRN
-  if empty(oprn) //=NIL
+  if oprn=NIL
      oprn:=D_HWPRN
   endif
 #endif
@@ -319,31 +474,39 @@ endif
 #endif
     return .t.
   else
-    oprn:=NIL
+    //oprn:=NIL
     x:=set(_SET_DEFAULT,"")
-    z:=SET(_SET_PRINTFILE,'')
-    y:=SET(_SET_PRINTFILE)
-    if ! y==z
-      set printer to (z) additive
+    if emptyprn=NIL
+      z:=SET(_SET_PRINTFILE,'',.t.)
+      emptyprn:=SET(_SET_PRINTFILE)
+      if ! z==emptyprn
+        SET PRINTER TO (z) ADDITIVE
+      endif
+    endif 
+    if ! (SET(_SET_PRINTFILE)==emptyprn)
+      //set printer to (z) additive
       set default to (x)
       set print on
       return .t.
     endif
     set(_SET_DEFAULT,x)
   endif
-#command ?  [<explist,...>]         => WQ( <explist> )
+#command ?  [<explist,...>]         => (WQ(),WQQ( <explist> ))
 #command ?? [<explist,...>]         => WQQ( <explist> )
 #endif
 //wasbad:=wasbad .or. !SET(_SET_PRINTER)
 x:=set(_SET_DEFAULT,"")
-z:=SET(_SET_PRINTFILE,'')
-y:=SET(_SET_PRINTFILE)
-if y==z
+    if emptyprn=NIL
+      z:=SET(_SET_PRINTFILE,'',.t.)
+      emptyprn:=SET(_SET_PRINTFILE)
+      if ! z==emptyprn
+        SET PRINTER TO (z) ADDITIVE
+      endif
+    endif 
+if SET(_SET_PRINTFILE)==emptyprn .and. !empty(lpt)
    set printer to (lpt) additive
    binmode()
    wasbad:=.t.
-else
-   set printer to (z) additive
 endif
 set default to (x)
 ccpi(,4)
@@ -603,7 +766,7 @@ if valtype(oprn)='O'
    if p_pon$x //.and. fw=NIL
       fw:=oprn:FontWidth
 #ifdef A_WIN_PRN
-      oprn:SetFont('Roman',,{0,0},,,,255)
+      oprn:SetFont('Arial',,{0,0},,,,255)
 #else
       oprn:SetFont('Helvetica',,{0,0},,,,255)
 #endif
@@ -635,12 +798,27 @@ if valtype(oprn)='O'
       setprc(oprn:Prow(),oprn:Pcol())
    elseif c=12
       qqout(chr(c))
+#ifdef A_STOPKA
+      c:={oprn:fontName,oprn:FontPointSize,oprn:FontWidth}
+      oprn:setfont('Arial',8,{0,0},,,,255)
+      oprn:Line( oprn:LeftMargin, oprn:BottomMargin -oprn:LineHeight, oprn:RightMargin, oprn:BottomMargin - oprn:LineHeight )
+      oprn:TextOutAt(oprn:LeftMargin ,oprn:BottomMargin ,A_STOPKA,,,24)
+      oprn:setfont(c[1],c[2],c[3],,,,255)
+#endif
       oprn:NewPage(.t.)
       setprc(oprn:Prow(),oprn:Pcol())
    elseif c=10
       qqout(chr(c))
       c:=oprn:PosX
       if oprn:PosY+2*oprn:LineHeight>oprn:BottomMargin
+#ifdef A_STOPKA
+      c:={oprn:fontName,oprn:FontPointSize,oprn:FontWidth,c}
+      oprn:setfont('Arial',8,{0,0},,,,255)
+      oprn:Line( oprn:LeftMargin, oprn:BottomMargin -oprn:LineHeight, oprn:RightMargin, oprn:BottomMargin - oprn:LineHeight )
+      oprn:TextOutAt(oprn:LeftMargin ,oprn:BottomMargin ,A_STOPKA,,,24)
+      oprn:setfont(c[1],c[2],c[3],,,,255)
+      c:=c[4]
+#endif
         oprn:NewPage(.t.)
       else
         oprn:NewLine()
@@ -682,12 +860,12 @@ public  p_rown,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COLN,P_BON,P_BOFF,P_UON,P_UOFF,;
         p_init,p_colnl
 //        ,p_push,p_pop
 
-   landscape:=.f.
+   landscape:=!empty(landscape)
    p_rown :=58
    p_rownl:=40
    p_colnl:=113
    if p_pcl=.t.
-      P_INIT  := {|x|if(x,"(17U&"+"l26a0O&"+"a0L",'')+"(s1q0s0b10h12V"}
+      P_INIT  := {|x|if(x,"(17U&"+"l26a"+if(landscape,'1','0')+"O&"+"a0L",'')+"(s1q0s0b10h12V"}
 //      P_PUSH  := '&'+'f0S'
 //      P_POP   := '&'+'f1S'
       P_4XON  := '(s24v5H'
@@ -767,7 +945,12 @@ public  p_rown,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COLN,P_BON,P_BOFF,P_UON,P_UOFF,;
                     {"p0W1","W1M" ,"p0W1","p0"   ,"M"    ,"g"    ,"p0"  ,"M"   ,""      }}[s,n]}
 #endif
    endif
-   txt:="xprn.ini";do while inirest(@txt);(&txt,txt:=NIL);enddo
+   txt:="xprn.ini"
+   do while inirest(@txt)
+     begin sequence
+       (&txt,txt:=NIL)
+     end
+   enddo
 #endif
 return
 *******************
@@ -834,7 +1017,7 @@ endif
 if Valtype(oprn)='O'
    statcpi:=x
 #ifdef A_WIN_PRN
-   oprn:SetFont(if(x=9,'Roman','Courier New'),,{-5,-6,{3,-25},-10,-12,-15,{3,-50},-20,{0,0}}[x],,,,255)
+   oprn:SetFont(if(x=9,'Arial','Courier New'),,{-5,-6,{3,-25},-10,-12,-15,{3,-50},-20,{0,0}}[x],,,,255)
 #else
    oprn:SetFont(if(x=9,'Helvetica','Courier'),,{-5,-6,{3,-25},-10,-12,-15,{3,-50},-20,{0,0}}[x],,,,255)
 #endif
@@ -889,7 +1072,7 @@ if j>0
   endcase
   if i#1 .or. form#1 .or. poz=0
      txt+=' '+{{"jeden","dwa","trzy","cztery","pi©†","sze˜†","siedem","osiem","dziewi©†"},;
-           {"dziesi©†","dwadzie˜cia","trzydzie˜ci","czterdzie˜ci","pi©†dziesi¤t","sze˜†dziesi¤t","siedemdziesi¤t","osiemdziesi¤t","dziewi©†dziesi¤t"},;
+           {"dziesi©†","dwadzie˜cia","trzydzie˜ci","czterdzie˜ci","pi©†dziesi¥t","sze˜†dziesi¥t","siedemdziesi¥t","osiemdziesi¥t","dziewi©†dziesi¥t"},;
            {"sto","dwie˜cie","trzysta","czterysta","pi©†set","sze˜†set","siedemset","osiemset","dziewi©†set"},;
            {"jedena˜cie","dwana˜cie","trzyna˜cie","czterna˜cie","pi©tna˜cie","szesna˜cie","siedemna˜cie","osiemna˜cie","dziewi©tna˜cie"};
            }[i,j]
@@ -933,9 +1116,17 @@ EXTERNAL WIN_PRINTERGETDEFAULT,WIN_PRINTERLIST,WIN_PRINTERSETDEFAULT,WIN_PRINTFI
 #endif
 proc wq(...)
 memvar oprn
+local c
 qout()
 if valtype(oprn)='O'
   if oprn:PosY+2*oprn:LineHeight>oprn:BottomMargin
+#ifdef A_STOPKA
+      c:={oprn:fontName,oprn:FontPointSize,oprn:FontWidth}
+      oprn:setfont('Arial',8,{0,0},,,,255)
+      oprn:Line( oprn:LeftMargin, oprn:BottomMargin -oprn:LineHeight, oprn:RightMargin, oprn:BottomMargin - oprn:LineHeight )
+      oprn:TextOutAt(oprn:LeftMargin ,oprn:BottomMargin ,A_STOPKA,,,24)
+      oprn:setfont(c[1],c[2],c[3],,,,255)
+#endif
      oprn:NewPage(.t.)
   else
      oprn:NewLine()
@@ -964,8 +1155,10 @@ return
 
 proc wwout(...)
   local a:=HB_aparams()
-  wqq(a[1])
-  aeval(a,{|x|wqq(' ',x)},2)
+  if len(a)>0
+    wqq(a[1])
+    aeval(a,{|x|wqq(' ',x)},2)
+  endif
 return
 proc wout(...)
   wq()
@@ -1012,14 +1205,14 @@ begin sequence
     if r="??"
        y:=&(p+'wwout('+subs(r,4)+')}')
     else
-       y:=&(p+'wout('+subs(r,3)+')}')
+       y:=&(p+'wout(),wwout('+subs(r,3)+')}')
     endif
 #endif
  elseif r=">"
     if r=">>"
        y:=&(p+'wqq('+subs(r,4)+')}')
     else
-       y:=&(p+'wq('+subs(r,3)+')}')
+       y:=&(p+'wq(),wqq('+subs(r,3)+')}')
     endif
 #else
 #ifdef A_SIMPLE
@@ -1120,20 +1313,34 @@ begin sequence
 #endif
 #endif
     else
-       b:=&(p+subs(r,6)+'}')
+       r:=ltrim(subs(r,6))
+       b:=&(p+r+'}')
+       if (p=='{||')
 #ifdef A_SIMPLE
        y:={|x|x:=getlines(eval(b)),if(len(x)>0,fwrite(2,x[1]),NIL),aeval(x,{|y|fwrite(2,HB_EOL()),fwrite(2,y)},2)}
 #else
 #ifdef D_HWPRN
-       y:={|x|x:=getlines(eval(b)),if(len(x)>0,wqq(oprn,x[1]),NIL),aeval(x,{|y|wq(y)},2)}
+       y:={|x|x:=getlines(eval(b)),if(len(x)>0,wqq(x[1]),NIL),aeval(x,{|y|wq(y)},2)}
 #else
        y:={|x|x:=getlines(eval(b)),if(len(x)>0,qqout(x[1]),NIL),aeval(x,{|y|qout(y)},2)}
 #endif
 #endif
+      else
+#ifdef A_SIMPLE
+       y:={|x|x:=getlines(eval(b,x),x),if(len(x)>0,fwrite(2,x[1]),NIL),aeval(x,{|y|fwrite(2,HB_EOL()),fwrite(2,y)},2)}
+#else
+#ifdef D_HWPRN
+       y:={|x|x:=getlines(eval(b,x),x),if(len(x)>0,wqq(x[1]),NIL),aeval(x,{|y|wq(y)},2)}
+#else
+       y:={|x|x:=getlines(eval(b,x),x),if(len(x)>0,qqout(x[1]),NIL),aeval(x,{|y|qout(y)},2)}
+#endif
+#endif
+      endif
     endif
- elseif r='STORE'
+ elseif r='STORE' //wylicza tylko raz mo¾liwy bˆ¥d?
     b:=rat(" TO ",r)
     IF b=0 //do ret
+       //a:=&(p+SUBS(r,7)+'}')
        a:=&(SUBS(r,7))
        y:={||a}
     ELSE
@@ -1150,15 +1357,15 @@ begin sequence
        eval(errorblock(),d)),),a}
     ENDIF
  elseif r='PRIVATE'
-    c:=a:=ALLTRIM(SUBS(r,9))
-    b:=AT(":=",a)
-    IF b#0
-       c:=trim(left(a,b-1))
-    ENDIF
-    if "("$c
+    // probuje usun¥† teksty
+    c:=extractleft(strtran(a:=SUBS(r,9)," ") )
+
+    if empty(c)
        c:=NIL
+    elseif len(c)=1
+       c:=c[1] //clipper ˆyknie
     endif
-    y:={a,'PRIVATE',c}
+    y:={'('+a+')','PRIVATE',c}
  elseif r='&STORE'
     a:=rat(" TO ",r)
     c:=subs(r,a+4)
@@ -1199,7 +1406,6 @@ end sequence
 
 errorblock(eb)
 return ret
-
 ***************************
 func makecallbl(bx)
 bx:={bx}
@@ -1223,6 +1429,16 @@ return callfunc(,b+1,p,getlines(alltrim(subs(buf[b],len(c)+1)),','))
 func callsub(bx,g)
 return callfunc(bx,0,{g},IF(EMPTY(G),NIL,{'getlist'}))
 ***************************
+#ifdef __HARBOUR__
+#define EVLINE self:=evline(buf,j++,@bx);
+   ;IF self==NIL;
+   ;ELSE;
+     ;IF self[3]<>NIL;
+       ;__mvPrivate(self[3]);
+     ;END;
+     ;bx:=&(self[1]);
+   ;END
+#else
 #define EVLINE self:=evline(buf,j++,@bx);
    ;IF self==NIL;
    ;ELSE;
@@ -1232,13 +1448,23 @@ return callfunc(bx,0,{g},IF(EMPTY(G),NIL,{'getlist'}))
      ;END;
      ;bx:=&(self[1]);
    ;END
-
+#endif
 func callfunc(bx,b,c,d) // ({'JUMP SUB'},0,{1,2,3},{'a','b','c'})
 local x,y,l
 memvar j,self,buf
 private j:=0
 
 if !empty(d)
+#ifdef __HARBOUR__
+  __mvPrivate(d)
+     if valtype(c)='A'
+       y:=min(len(d),len(c))
+       for l:=1 to y
+         x:=d[l]
+         &x:=c[l]
+       next l
+     endif
+#else
   for l:=1 to len(d)
      x:=alltrim(d[l])
      private &x
@@ -1246,6 +1472,7 @@ if !empty(d)
         &x:=c[l]
      endif
   next l
+#endif
 endif
 
 IF empty(b) //zero,NIL
@@ -1264,6 +1491,27 @@ while j>0 .and. j<=l
 enddo
 
 return bx
+#else
+#ifdef __HARBOUR__
+proc wq(...)
+qout()
+wqq(...)
+return
+proc wqq(...)
+  aeval(hb_aparams(),{|x|if(valtype(x)='B',x:=eval(x),),x:=if(valtype(x)$'CDLMN',Tran(x,),''),if(''=x,,qqout(x))})
+return
+proc wwout(...)
+  local a:=HB_aparams()
+  wqq(a[1])
+  aeval(a,{|x|wqq(' ',x)},2)
+return
+proc wout(...)
+  wq()
+  if pcount()>0
+    wwout(...)
+  endif
+return
+#endif
 #endif
 ***************************
 func getsetup(get,valid,when,subscript)
@@ -1643,6 +1891,14 @@ proc scrlub
 return
 *********
 func tcvt(x)
+local y:=valtype(x)
+if y='S'
+  Return "@"
+elseif y='H'
+  RETURN '{=>}'
+elseif y='O'
+  RETURN 'Object'
+endif
 return tran(x,)
 *********
 func errorinhandler(x)
@@ -1697,7 +1953,12 @@ end
 return left(y,i)
 **************/
 func getlines(txt,delim)
-local a:={},i,j:=1
+local a:={},i,j
+
+if valtype(delim)='N'
+    j:=delim
+    delim:=NIL
+endif
 
 if delim=NIL
    if chr(13)+chr(10)$txt
@@ -1706,6 +1967,15 @@ if delim=NIL
      delim:=chr(10)
    endif
 endif
+
+if j#NIL
+    for i:=1 to mlcount(txt,j,8,,delim)
+      aadd(a,memoline(txt,j,i,8,,delim))
+    next
+    return a
+endif
+
+j:=1 
 
 do while .t.
   i:=hb_at(delim,txt,j)
@@ -1723,6 +1993,7 @@ do while .t.
   exit
 enddo
 return a
+
 /*
 HB_FUNC ( GETLINES )
       {
@@ -1767,24 +2038,15 @@ HB_FUNC ( GETLINES )
 func getscrtxt(txt)
 local ret:='',i,l
 
-#ifdef __PLATFORM__UNIX
+//#ifdef __PLATFORM__UNIX
 local k:=4
 l:=len(txt)/k
 for i:=0 to l-1
-/*
-#if __HARBOUR__ == 196608
-  ret+=subs(txt,i*k+1,1)
-next i
-
-return ret
-#else
-*/
   ret+=HB_utf8chr(bin2l(subs(txt,i*k+1,2)))
 next i
 
 return HB_TRANSLATE(ret,'UTF8',)
-//#endif
-
+/****************
 #else
 local k:=2
 l:=len(txt)/k
@@ -1794,7 +2056,7 @@ next i
 
 return ret
 #endif
-
+**************/
 #pragma BEGINDUMP
 #include "hbapi.h"
 
@@ -1855,17 +2117,8 @@ HB_FUNC ( ALTATTR )
          char k = (char) hb_parni( 2 );
          for( i = 0; i < j ; i++ )
          {
-#pragma ENDDUMP
-#ifdef __PLATFORM__UNIX
-#pragma BEGINDUMP
+
            if (i%4 == 2)
-#pragma ENDDUMP
-#else
-#pragma BEGINDUMP
-           if (i%2 == 1)
-#pragma ENDDUMP
-#endif
-#pragma BEGINDUMP
            ret[i] = src[i] ^ k;
            else
            ret[i] = src[i];

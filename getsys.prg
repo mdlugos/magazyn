@@ -636,7 +636,7 @@ return (when)
 */
 func GetPostValidate(get)
 
-local valid := .t.,x
+local valid := .t.,x,y,z
 
 
   if ( get:exitState == GE_ESCAPE )
@@ -653,11 +653,21 @@ local valid := .t.,x
 
   // if editing occurred, assign the new value to the variable
   if ( get:changed )
+    x:=get:varget()
+    y:=get:untransform()
+    /*
     if get:type$"CM" .and. valtype(get:cargo)="L" .and. get:cargo
         get:varput(get:buffer) //assign u¾ywa untransform, a ten ma bˆ¥d
     else
         get:Assign()
     endif
+    */
+    get:reset()
+    if .not. y==get:untransform() // var nie byl ustawiony
+       get:varput(y)
+       get:reset()
+    endif
+    get:changed:=.t.
     Updated(@valid)
 #ifdef A_LAN
     if !valid
@@ -792,6 +802,7 @@ local exitState, ret := .t. ,b
        ret:=.f.
     else
        pos:=b
+       exitState := GE_DOWN
     endif
     endif
 
@@ -1134,10 +1145,17 @@ static proc getval(get)
      endif
      t:=padr(get:name,50)
   else
-     t:=get:untransform()
-     if t=0
-        t:=space(50)
-     else
+     t:=get:varget()
+     k:=get:untransform()
+     if get:changed
+       get:reset()
+       if .not. k==get:untransform() // var nie byl ustawiony
+         get:varput(k)
+         get:reset()
+         t:=k
+       endif
+       get:changed:=.t. //a bo ja wiem co robi reset
+     endif
 #ifdef A_JMO
        if "r."$get:buffer
           g:=get:varget()
@@ -1146,7 +1164,20 @@ static proc getval(get)
           t:=int(t)*sgn+(t%1)*1000
        endif
 #endif
-        t:=ltrim(str(t,l,if(t%1=0,0,l-get:decpos)))+space(50)
+     if t=k
+        if t=0
+          t:=space(50)
+        else
+          t:=ltrim(str(t,l,l-get:decpos))+space(50)
+        endif
+     else
+        t:=str(t,l+20,l-get:decpos+20)
+        for k:=len(t) to l step -1
+           if subs(t,k,1)<>'0'
+              exit
+           endif
+        next k
+        t:=ltrim(left(t,k))+space(50)
      endif
   endif
   pn:=readprocname
@@ -1182,15 +1213,24 @@ static proc getval(get)
          t:=int(&(t))
          fixbuff(get,alltrim(tran(int(t/sgn)+(t%sgn)/1000,get:picture)))
          //get:varput(int(t/sgn)+(t%sgn)/1000)
+         get:changed:=.t.
        else
 #endif
          //fixbuff(get,alltrim(tran(&(t),get:picture)))
+         valid:=.t.
+         updated(@valid)
+#ifdef A_LAN
+       if ( !valid )
+         get:exitState := GE_NOEXIT
+         exit
+       end
+#endif
          get:varput(&(t))
          get:reset()
+         get:changed:=.t.
 #ifdef A_JMO
        endif
 #endif
-       get:changed:=.t.
        exit
     endif
     alarm("Tego si© nie da wyliczy†",,3,3)
@@ -1284,11 +1324,11 @@ osk:=HB_SETKEYSAVE()
   RESET KEY K_F10
   RESET KEY K_CTRL_W
   RESET KEY K_CTRL_K
-  RESET KEY K_ALT_X
-  RESET KEY K_ALT_B
-  RESET KEY K_ALT_M
-  RESET KEY K_ALT_K
-  RESET KEY K_ALT_E
+  //RESET KEY K_ALT_X
+  //RESET KEY K_ALT_B
+  //RESET KEY K_ALT_M
+  //RESET KEY K_ALT_K
+  //RESET KEY K_ALT_E
   RESET KEY GE_WRITE
 
   do while .t.
@@ -1296,24 +1336,23 @@ osk:=HB_SETKEYSAVE()
     txt=MEMOEDIT(txt,r1+1,c1+1,r2-1,c2-1,.T.,"gufunc",ll,8,l,c,cl,cc)
     k:=lastkey()
     if k=K_CTRL_K
-       m:=message("PODAJ  (R, W);ROZKAZ:;... ")
+       m:=message("PODAJ  (B,M,K,E,R,W);ROZKAZ:;... ")
        k:=upper(chr(inkey(0)))
-       @ m[1]+1,m[2]+8 say "NAZW¨: "
-       n:=pad(defa,64)
-       @ m[1]+2,m[2]+2 get n picture "@KS14"
-       read
-       if empty(n)
-       elseif k="R"
-        if !file(n)
-        n:=defa+n
-       endif
-       txt:=memoread(n)
-       else
-        MEMOWRIT(n,strtran(txt,chr(141)+chr(10)))
-     endif
-     message(m)
-     loop
-    elseif k=K_ALT_B .or. k=K_ALT_X
+       if k$'RW'
+         @ m[1]+1,m[2]+8 say "NAZW¨: "
+         n:=pad(defa,64)
+         @ m[1]+2,m[2]+2 get n picture "@KS14"
+         read
+         if empty(n)
+         elseif k="R"
+          if !file(n)
+           n:=defa+n
+          endif
+          txt:=memoread(n)
+         else
+          MEMOWRIT(n,strtran(txt,chr(141)+chr(10)))
+         endif
+       elseif k$"BX"
         bp:=3-bp
         b[bp]:=mlctopos(txt,ll,l,c,8,ww)
         if ch
@@ -1325,24 +1364,22 @@ osk:=HB_SETKEYSAVE()
         hb_gtInfo( HB_GTI_CLIPBOARDDATA, bl )
 #endif
         //restscreen(cl,cc,cl,cc,hiattr(savescreen(cl,cc,cl,cc)))
-        loop
-    elseif k=K_ALT_K
+       elseif k='K'
 #ifdef __HARBOUR__
         bl:= hb_gtInfo( HB_GTI_CLIPBOARDDATA )
 #endif
-        txt:=stuff(txt,m:=mlctopos(txt,ll,l,c,8,ww),0,bl)
+        txt:=stuff(txt,k:=mlctopos(txt,ll,l,c,8,ww),0,bl)
         n:=len(bl)
-        if b[1]>m
+        if b[1]>k
            b[1]+=n
         endif
-        if b[2]>m
+        if b[2]>k
            b[2]+=n
         endif
         if abs(b[2]-b[1])#n
            ch:=.t.
         endif
-        loop
-    elseif k=K_ALT_E
+       elseif k="E"
         if !ch
 #ifdef __HARBOUR__
            hb_gtInfo( HB_GTI_CLIPBOARDDATA, bl )
@@ -1350,29 +1387,30 @@ osk:=HB_SETKEYSAVE()
            txt:=stuff(txt,min(b[1],b[2]),abs(b[2]-b[1]),"")
            ch:=.t.
         endif
-        loop
-    elseif k=K_ALT_M
+       elseif k="M"
         if !ch
 #ifdef __HARBOUR__
            hb_gtInfo( HB_GTI_CLIPBOARDDATA, bl )
 #endif
-           txt:=stuff(txt,m:=mlctopos(txt,ll,l,c,8,ww),0,bl)
+           txt:=stuff(txt,k:=mlctopos(txt,ll,l,c,8,ww),0,bl)
            n:=len(bl)
-           if b[1]>m
+           if b[1]>k
               b[1]+=n
            endif
-           if b[2]>m
+           if b[2]>k
               b[2]+=n
            endif
            if abs(b[2]-b[1])=n
               txt:=stuff(txt,min(b[1],b[2]),n,"")
-              b[1]:=m
-              b[2]:=m+n
+              b[1]:=k
+              b[2]:=k+n
            else
               ch:=.t.
            endif
-        endif
-        loop
+       endif
+     endif
+     message(m)
+     loop
     elseif k=K_F2
         if ww:=!ww
            ll:=c2-c1-3
@@ -1420,7 +1458,7 @@ FUNC gufunc(mode,line,column)
   local key
   if (mode=1 .or. mode=2)
      key:=lastkey()
-     if spec
+     if spec=.t.
         spec:=.f.
         ch:=.t.
         return 33

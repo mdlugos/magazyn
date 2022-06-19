@@ -109,9 +109,9 @@ DO CASE
     hAslo_spec(21)
     if DatY->d_z_mies1>DatY->d_z_rok .and. alarm(if(DatY->d_z_mies1>DatY->d_z_mies2,"CZY OTWORZY MIESI¤C ?","CZY OTWORZY CAY ROK ?"),{"Tak","Nie"})=1
       if stary_rok#NIL
-         txt:=defa+str(year(stary_rok+D_OLZA),4)+HB_OsPathSeparator()
+         txt:=defa+str(year(stary_rok+D_OLZA),4)+HB_ps()
          if ! file(txt+'daty.*')
-           txt:=defa+'roboczy'+HB_OsPathSeparator()
+           txt:=defa+'roboczy'+HB_ps()
          endif
 #ifdef A_DDBF
          select 0
@@ -176,7 +176,7 @@ DO CASE
    endif
    m:=year(if(stary_rok=NIL,DatY->d_z_rok D_OLDA,date()))
    do while .t.
-      if !file(defa+str(m,4)+HB_OsPathSeparator()+"daty.*")
+      if !file(defa+str(m,4)+HB_ps()+"daty.*")
          if stary_rok=NIL .or. m<year(DatY->d_z_rok+D_OLZA)
             exit
          endif
@@ -204,7 +204,7 @@ DO CASE
 #endif
       set(_SET_DATEFORMAT,txt)
    endif
-   set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_OsPathSeparator())
+   set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_ps())
    readinit()
    reuse()
    if stary_rok<>NIL .and. DatY->data_gran<>DatY->d_z_rok
@@ -360,17 +360,17 @@ IF dz1>DatY->d_z_mies1
      enddo
   endif
 
-  if stary_rok=NIL .and. DatY->d_z_mies1=DatY->d_z_rok .and. file(defa+str(year(DatY->d_z_rok),4)+HB_OsPathSeparator()+"daty.*")
+  if stary_rok=NIL .and. DatY->d_z_mies1=DatY->d_z_rok .and. file(defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty.*")
 #ifdef A_DDBF
      select 0
-     nuse (defa+str(year(DatY->d_z_rok),4)+HB_OsPathSeparator()+"daty") alias stary readonly
+     nuse (defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty") alias stary readonly
      #define D_Z1 stary->d_z_mies1
 #else
-     m:=getlines(memoread(defa+str(year(DatY->d_z_rok),4)+HB_OsPathSeparator()+"daty.ini"))[1]
+     m:=getlines(memoread(defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty.ini"))[1]
      #define D_Z1 &(subs(m,at(':=',m)+2))
 #endif
      if D_Z1<DatY->d_z_rok
-        alarm("Stary rok nie zamkni©ty !")
+        alarm("Najpierw zamknij rok"+str(year(D_Z1+D_OLZA),5)+" !;Nie mo¾na teraz zamkn¥† roku"+str(year(DatY->d_z_rok+D_OLZA),5)+" !")
         dz1:=DatY->d_z_mies1
      endif
 #ifdef A_DDBF
@@ -693,9 +693,9 @@ unlock all
 
 
 if stary_rok=dz1
-  dz2:=defa+str(year(dz1+D_OLZA),4)+HB_OsPathSeparator()
+  dz2:=defa+str(year(dz1+D_OLZA),4)+HB_ps()
   if ! file(dz2+'daty.*')
-   dz2:=defa+'roboczy'+HB_OsPathSeparator()
+   dz2:=defa+'roboczy'+HB_ps()
   endif
 #ifdef A_DDBF
      nuse (dz2+"daty") alias ndat
@@ -809,7 +809,7 @@ if stary_rok=dz1
       ENDIF
       NOWY->(DBSKIP(1))
     ELSEIF NR_MAG+INDEX<NOWY->(NR_MAG+INDEX) .OR. NOWY->(EOF())
-#ifndef A_ZAGRODA
+//#ifndef A_ZAGRODA
 #ifdef A_WA
 #ifdef A_JMALTTOT
       IF ZAMK_MIES1#0 .OR. WART_MIES1#0  // .or. sjmo_mies1#0
@@ -819,7 +819,7 @@ if stary_rok=dz1
 #else
       IF ZAMK_MIES1#0
 #endif
-#endif
+//#endif
 #ifndef STANY
         INDX_MAT->(DBSEEK(STANY->INDEX,.F.))
 #endif
@@ -871,9 +871,9 @@ if stary_rok=dz1
            NOWY->(DBSKIP(1))
          endif
          ?
-#ifndef A_ZAGRODA
+//#ifndef A_ZAGRODA
       ENDIF
-#endif
+//#endif
       DBSKIP(1)
     ELSE
 #ifndef STANY
@@ -998,14 +998,14 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
       break
    endif
 #endif
-     if !file(defa+"kopia.*") .and. !file(defa+"archiwum"+HB_OsPathSeparator()+"kopi"+str(year(DatY->d_z_mies1),4)+".*")
+     if !file(defa+"kopia.*") .and. !file(defa+"archiwum"+HB_ps()+"kopi"+str(year(DatY->d_z_mies1),4)+".*")
         alarm("Brak kopii bezpieczeästwa danych.;Nie b©d© zamyka† roku!",0,3)
         break
      endif
      mkdir(defa+"archiwum")
      ?
      ? "Przenoszenie starych danych do katalogu ARCHIWUM:"
-     AEVAL(DIRECTORY(defa+"kopia.*"),{|X|if(file(defa+"archiwum"+HB_OsPathSeparator()+"kopi"+str(year(DatY->d_z_mies1),4)+subs(x[1],at(".",x[1]))),,(QOUT(X[1]),frename(defa+X[1],defa+"archiwum"+HB_OsPathSeparator()+"kopi"+str(year(DatY->d_z_mies1),4)+subs(x[1],at(".",x[1])))))})
+     AEVAL(DIRECTORY(defa+"kopia.*"),{|X|if(file(defa+"archiwum"+HB_ps()+"kopi"+str(year(DatY->d_z_mies1),4)+subs(x[1],at(".",x[1]))),,(QOUT(X[1]),frename(defa+X[1],defa+"archiwum"+HB_ps()+"kopi"+str(year(DatY->d_z_mies1),4)+subs(x[1],at(".",x[1])))))})
 
 
    begin sequence
@@ -1016,17 +1016,17 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
   ?
   ? "Kasowanie pozostaˆo˜ci kartoteki ROBOCZY."
 
-   AEVAL(DIRECTORY(defa+"roboczy"+HB_OsPathSeparator()+"*.txt"),{|X|QOUT(X[1]),FERASE(defa+"roboczy"+HB_OsPathSeparator()+X[1])})
-   AEVAL(DIRECTORY(defa+"roboczy"+HB_OsPathSeparator()+"*.prn"),{|X|QOUT(X[1]),FERASE(defa+"roboczy"+HB_OsPathSeparator()+X[1])})
-   //AEVAL(DIRECTORY(defa+"roboczy"+HB_OsPathSeparator()+"*.??x"),{|X|QOUT(X[1]),FERASE(defa+"roboczy"+HB_OsPathSeparator()+X[1])})
+   AEVAL(DIRECTORY(defa+"roboczy"+HB_ps()+"*.txt"),{|X|QOUT(X[1]),FERASE(defa+"roboczy"+HB_ps()+X[1])})
+   AEVAL(DIRECTORY(defa+"roboczy"+HB_ps()+"*.prn"),{|X|QOUT(X[1]),FERASE(defa+"roboczy"+HB_ps()+X[1])})
+   //AEVAL(DIRECTORY(defa+"roboczy"+HB_ps()+"*.??x"),{|X|QOUT(X[1]),FERASE(defa+"roboczy"+HB_ps()+X[1])})
 
    mkdir(defa+"tmp")
-   SET DEFAULT TO (defa+"tmp"+HB_OsPathSeparator())              // roboczy katalog
+   SET DEFAULT TO (defa+"tmp"+HB_ps())              // roboczy katalog
 
   ?
   ? "Kasowanie kartoteki TMP."
 
-   AEVAL(DIRECTORY(defa+"tmp"+HB_OsPathSeparator()+"*.*"),{|X|QOUT(X[1]),FERASE(defa+"tmp"+HB_OsPathSeparator()+X[1])})
+   AEVAL(DIRECTORY(defa+"tmp"+HB_ps()+"*.*"),{|X|QOUT(X[1]),FERASE(defa+"tmp"+HB_ps()+X[1])})
   ?
   ? "Tworzenie nowych zbior¢w tymczasowo w kartotece TMP:"
   ?
@@ -1052,17 +1052,17 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
    DatY->data_gran=DatY->d_z_rok
 
 #ifndef A_DDBF
-    copy file (defa+"roboczy"+HB_OsPathSeparator()+"daty.ini") to daty.ini
+    copy file (defa+"roboczy"+HB_ps()+"daty.ini") to daty.ini
     inisave(set(_SET_DEFAULT)+"daty.ini")
 #endif
    //select 0
    xselect indeks
    key:=''
    do while !eof()
-      if .not. key==(key:=lower(trim(FIELD->baza))) .and. file(defa+"roboczy"+HB_OsPathSeparator()+key+".dbf")
+      if .not. key==(key:=lower(trim(FIELD->baza))) .and. file(defa+"roboczy"+HB_ps()+key+".dbf")
          ?
          select 0
-         nUSE (defa+"roboczy"+HB_OsPathSeparator()+key) READONLY ALIAS YYYY
+         nUSE (defa+"roboczy"+HB_ps()+key) READONLY ALIAS YYYY
          ? "Tworzenie bazy",key
          COPY structure TO (key)
          USE
@@ -1071,12 +1071,12 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
       skip
    enddo
 
-   IF FILE(defa+"tmp"+HB_OsPathSeparator()+"firmy.dbf")
+   IF FILE(defa+"tmp"+HB_ps()+"firmy.dbf")
   ?
   ?   "Przenoszenie kontrahent¢w."
 
       nuse firmy exclusive
-      append from (defa+"roboczy"+HB_OsPathSeparator()+"firmy")
+      append from (defa+"roboczy"+HB_ps()+"firmy")
    ENDIF
   ?
   ?   "Przenoszenie kartotek magazynu."
@@ -1097,20 +1097,20 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
     use
     select 4
     use
-    nUSE (defa+"roboczy"+HB_OsPathSeparator()+"indx_mat") READONLY
+    nUSE (defa+"roboczy"+HB_ps()+"indx_mat") READONLY
 #ifdef A_CDX
-     set order to tag indx_num in (defa+"roboczy"+HB_OsPathSeparator()+"indx_mat")
+     set order to tag indx_num in (defa+"roboczy"+HB_ps()+"indx_mat")
 #else
-     set index to (defa+"roboczy"+HB_OsPathSeparator()+"indx_num")
+     set index to (defa+"roboczy"+HB_ps()+"indx_num")
 #endif
 
 #ifndef STANY
      select 0
-     nUSE (defa+"roboczy"+HB_OsPathSeparator()+"stany") READONLY
+     nUSE (defa+"roboczy"+HB_ps()+"stany") READONLY
 #ifdef A_CDX
-     set order to TAG STAN_MAG in (defa+"roboczy"+HB_OsPathSeparator()+"stany")
+     set order to TAG STAN_MAG in (defa+"roboczy"+HB_ps()+"stany")
 #else
-     set index to (defa+"roboczy"+HB_OsPathSeparator()+"stan_mag")
+     set index to (defa+"roboczy"+HB_ps()+"stan_mag")
 #endif
      if key#0
 #ifdef A_WA
@@ -1168,20 +1168,20 @@ else
 endif
     SELECT STANY
     USE
-    AEVAL(DIRECTORY(defa+"tmp"+HB_OsPathSeparator()+"*.??x"),{|X|FERASE(defa+"tmp"+HB_OsPathSeparator()+X[1])})
+    AEVAL(DIRECTORY(defa+"tmp"+HB_ps()+"*.??x"),{|X|FERASE(defa+"tmp"+HB_ps()+X[1])})
     SELECT INDX_MAT
     nuse indx_mat exclusive
 #endif
     REPLACE ALL LAMUS WITH 0
 
-    nUSE (defa+"roboczy"+HB_OsPathSeparator()+"ind_lam") READONLY ALIAS YYYY
+    nUSE (defa+"roboczy"+HB_ps()+"ind_lam") READONLY ALIAS YYYY
 
     COPY STRUCTURE TO ind_lam
 
     w:=str(year(DatY->d_z_rok),4)
     close databases
 
-    SET DEFAULT TO (defa+"roboczy"+HB_OsPathSeparator())              // roboczy katalog
+    SET DEFAULT TO (defa+"roboczy"+HB_ps())              // roboczy katalog
 #ifdef A_DIETA
    nuse indx_mat READONLY EXCLUSIVE alias "YYYY" //¾eby nikt si© nie pchaˆ do "roboczy"
    if !used()
@@ -1201,7 +1201,7 @@ endif
 
     errorblock(s)
     close databases
-    set default to (defa+"roboczy"+HB_OsPathSeparator())
+    set default to (defa+"roboczy"+HB_ps())
 
 #define NTRIM(n)    ( LTrim(Str(n)) )
   ?
@@ -1240,7 +1240,7 @@ endif
 
   ? "Kasowanie kartoteki TMP."
   ?
-    AEVAL(DIRECTORY(defa+"tmp"+HB_OsPathSeparator()+"*.*"),{|X|FERASE(defa+"tmp"+HB_OsPathSeparator()+X[1])})
+    AEVAL(DIRECTORY(defa+"tmp"+HB_ps()+"*.*"),{|X|FERASE(defa+"tmp"+HB_ps()+X[1])})
     break
 
     end sequence
@@ -1253,13 +1253,13 @@ endif
    mkdir(defa+w)
 
                 
-   AEVAL(DIRECTORY(defa+"roboczy"+HB_OsPathSeparator()+"*.*"),{|X|QOUT(X[1]),frename(defa+"roboczy"+HB_OsPathSeparator()+x[1],defa+w+HB_OsPathSeparator()+X[1])})
+   AEVAL(DIRECTORY(defa+"roboczy"+HB_ps()+"*.*"),{|X|QOUT(X[1]),frename(defa+"roboczy"+HB_ps()+x[1],defa+w+HB_ps()+X[1])})
 
   ?
   ? "Przenoszenie danych z kartoteki TMP do ROBOCZY."
 
 
-   AEVAL(DIRECTORY(defa+"tmp"+HB_OsPathSeparator()+"*.*"),{|X|QOUT(X[1]),frename(defa+"tmp"+HB_OsPathSeparator()+X[1],defa+"roboczy"+HB_OsPathSeparator()+x[1])})
+   AEVAL(DIRECTORY(defa+"tmp"+HB_ps()+"*.*"),{|X|QOUT(X[1]),frename(defa+"tmp"+HB_ps()+X[1],defa+"roboczy"+HB_ps()+x[1])})
 
    aadd(year2bckp,val(w))
 
@@ -1275,6 +1275,7 @@ SET PRINT OFF
        set printer to
        Print(1)
        aeval(x,{|y|wqq(y),wq()})
+       specout(chr(12))
        oprn:Destroy()
        oprn:=NIL
      endif
@@ -1286,7 +1287,7 @@ SET PRINT OFF
       A_PRINT(x)
   endif
 #endif
-set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_OsPathSeparator())
+set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_ps())
 readinit()
 reuse()
 

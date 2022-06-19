@@ -109,7 +109,7 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
   endif
 
   if _scol1=NIL.or._scol2=NIL
-     _stxt:=len(eval(_sprompt,0,_s))
+     _stxt:=len(eval(_sprompt,0,_s,.t.))
      if _scol2=NIL .and. _scol1=NIL
         _scol2:=min(maxcol(),max(_stxt,int(COL()+_stxt/2))+1)
         _scol1:=max(1,_scol2-_stxt)
@@ -335,7 +335,7 @@ elseif k=K_ENTER
 elseif k=K_ESC
    return .t.
 elseif ( k=K_CTRL_LEFT .or. k=K_CTRL_RIGHT ) .and. ordnumber()<>0
-   txt:=eval(_sprompt,0,_s)
+   txt:=eval(_sprompt,0,_s,.t.)
    if k=K_CTRL_RIGHT
       k:=at('|',subs(txt,_sbeg))
       if k=0
@@ -388,7 +388,7 @@ return .f.
 ***********************************
 *OBSùUGA MYSZY
 ************************************
-#ifdef __PLATFORM__UNIX
+#ifdef __HARBOUR__
 #define D_REST 4
 #else
 #define D_REST 2
@@ -840,6 +840,7 @@ FUNCTION _sznak(_s,_skey)
         _sexpgd(-2,_s,.t.,.f.)
       ENDIF
      ELSEif ! EVAL(_sinfo,_skey,_s)
+      CLEAR TYPEAHEAD
       tone(130,3)
       _slth:=max(0,_slth-1)
       _spocz:=left(_spocz,LEN(_spocz)-1)

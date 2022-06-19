@@ -57,7 +57,7 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,wart_vat,;
       data_dost,dost_odb,kontrahent,nr_faktury,nr_mag,kto_pisal,jm,nazwa,stan,cena,;
       czekiem,przelewem,uwagi,nr_rys,nr_czeku,proc_vat,ident,numer_kol,adres,;
       rodz_opak,gram,termin_p,przel,jm_opcja,nr_spec,transport,sub_dok,wart_ewid,;
-      info,d_wartosc,wart_par,vat_par
+      info,d_wartosc,wart_par,vat_par,cena_k
 
 #ifdef A_LPNUM
 #define D_LP0 str(0,A_LPNUM) //'  0'
@@ -85,7 +85,17 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,wart_vat,;
 #endif
 
 #ifdef A_DRUKCOMP
-
+#ifdef __HARBOUR__
+#define EVLINE(buf,lbl,lc) while j>0 .and. j<=lc .and. (valtype(buf[j])#"C" .or. buf[j]<>lbl);
+   ;self:=evline(buf,j++,@x);
+   ;IF self<>NIL;
+     ;IF self[3]<>NIL;
+        ;__mvPrivate(Self[3]);
+     ;END;
+     ;x:=&(self[1]);
+   ;END;
+;END
+#else
 #define EVLINE(buf,lbl,lc) while j>0 .and. j<=lc .and. (valtype(buf[j])#"C" .or. buf[j]<>lbl);
    ;self:=evline(buf,j++,@x);
    ;IF self<>NIL;
@@ -96,6 +106,7 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,wart_vat,;
      ;x:=&(self[1]);
    ;END;
 ;END
+#endif
 #define dok_p_r dok_def[1]
 #define dok_zew dok_def[2]
 #define dok_ew  dok_def[8]
@@ -107,6 +118,8 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,wart_vat,;
 #define D_LPT
 #endif
 
+
+static socket, ipactive
 
 memvar dok_kop
 #ifdef A_IZ
@@ -124,7 +137,7 @@ field wartosc
 #endif
 
 memvar i,j,k,s,p,r,w,v,wt,vt,ce,il,il_f,pv,nz,operator,dok_par,changed,mag_poz,dok_def,firma_n,;
-       dokumenty,firma_a,fakkorflag,fakkormem,u,ut,gt,g,pm,was,defa,ilj,dok_naz,;
+       dokumenty,firma_a,fakkorflag,fakkormem,u,ck,ut,gt,g,pm,was,defa,ilj,dok_naz,;
        mag_biez,magazyny,df,df_ver,AUX,numerp,datap,stawki,stawkizby,komunikat,self,;
        stary_rok,wabuf,buf,linecount,l,landscape,p_rownl,p_coln,oprn,na
 
@@ -133,7 +146,7 @@ local mes,jb,x,y,z,m,o,srbuf
 static apcomp:={}
 private dok_kop:=n,linecount
 private a,b,c,d,e,f,g,h,i,j,k,self,buf,l
-private s,p,u,ut,pm,il,nz,il_f,na
+private s,p,u,ck,ut,pm,il,nz,il_f,na
 #ifdef A_FA
 private pv,ce,w,v,wt,vt,fakkorflag,fakkormem,wabuf
 /*
@@ -157,7 +170,7 @@ private gt
     mes:=message("Wydruk dokumentu;IloòÜ kopii:")
     x:=getnew(mes[1]+2,mes[2]+15,{|x|if(x=NIL,str(dok_kop,1),dok_kop:=val(x))},'dok_kop','#')
     GETREADER(x)
-    if x:exitstate=K_ESC .or. dok_kop=0
+    if x:exitstate=K_ESC //.or. dok_kop=0
     // if 2#alarm("CZY DRUKOWAè",{"NIE","TAK"})
       message(mes)
       return
@@ -194,30 +207,34 @@ private gt
     private r:=MAX(1,ascan(dokumenty[MAG_POZ],smb_dow D_SUBDOK))
     private dok_def:=dok_par[mag_poz,r]
     private dok_naz:=dokumenty[mag_poz,r]
-#ifdef A_DF
-#ifdef A_DFP
-#ifdef A_CENVAT
-  #define D_DF wartosc
-#else
-  #define D_DF (wartosc+wart_vat)
-#endif
-    private df:=dok_df.and.kto_pisal=chr(255)+chr(0),df_ver:=-1,aux,komunikat//,numerp,datap
-#ifdef A_WP
-    IF wart_par#0.and.(round(D_DF-wart_par,2)#0.or.round(vat_par-wart_vat,2)#0)
-        alarm("WARTOóè WYDRUKOWANEGO PARAGONU WYNOSI:;"+ltrim(tran(wart_par,"@E"))+" Zù, w tym "+ltrim(tran(vat_par,"@E"))+" podatku VAT.;NIE MOΩNA DRUKOWAè RACHUNKU O WARTOóCI INNEJ NIΩ PARAGON.")
-        df:=.f.
-        break
-    endif
-#endif
-#else
-    private df:=.f.,aux,komunikat
-#endif
-#endif
 
         SELECT firmy
        set order to "FIRM_NUM"
 
        dbSEEK(dM->(D_KH),.f.)
+
+
+********
+#ifdef A_LAN
+  #define D_LOCK ,reclock()
+#else
+  #define D_LOCK
+#endif
+    if DM->kto_pisal=chr(255)
+      select main
+        SEEK dM->(KEY_DOK+NR_DOWODU)
+        y:={};l:=.f.;x:=0
+        dbeval({||aadd(y,recno()),l:=l .or. pozycja<>D_LPPUT(++x)},,{||DM->(KEY_DOK+NR_DOWODU)==KEY_DOK+NR_DOWODU})
+        if l
+          aeval(y,{|x,y|dbgoto(x) D_LOCK , main->pozycja:=D_LPPUT(y)})
+          UNLOCK
+        endif
+        if DM->pozycja<>D_LPPUT(x)
+           DM->pozycja:=D_LPPUT(x)
+           alarm("ILOóè POZYCJI NIEZGODNA Z INFORMACJ§ W NAGù‡WKU;DOKONANO KOREKTY",,,3)
+        endif
+    endif 
+********
 
     select dm
 
@@ -225,7 +242,7 @@ private gt
 
     if valtype(l)$"MC"
      if len(l)<=12
-        y:=UpP(l)
+        y:=lower(l)
         if !"."$y
            y+=".ppr"
         endif
@@ -255,6 +272,28 @@ private gt
        break
     endif
 
+#ifdef A_DF
+#ifdef A_DFP
+#ifdef A_CENVAT
+  #define D_DF wartosc
+#else
+  #define D_DF (wartosc+wart_vat)
+#endif
+    private df:=dok_p_r='F' .and. dok_df .and. kto_pisal=chr(255)+chr(0), df_ver:=-1, aux, komunikat//,numerp,datap
+#ifdef A_WP
+    IF wart_par#0.and.(round(D_DF-wart_par,2)#0.or.round(vat_par-wart_vat,2)#0)
+        alarm("WARTOóè WYDRUKOWANEGO PARAGONU WYNOSI:;"+ltrim(tran(wart_par,"@E"))+" Zù, w tym "+ltrim(tran(vat_par,"@E"))+" podatku VAT.;NIE MOΩNA DRUKOWAè RACHUNKU O WARTOóCI INNEJ NIΩ PARAGON.")
+        df:=.f.
+        break
+    endif
+#endif
+#else
+    private df:=.f.,aux,komunikat
+#endif
+#endif
+#ifdef A_PCL
+    landscape:=.f.
+#endif
 #ifdef D_HWPRN
     oprn:=D_HWPRN
 #endif
@@ -265,6 +304,7 @@ private gt
 
     j:=1
 
+
     jb:=ascan(l,{|x|valtype(x)='C'.and.x+' '='HEADER '})
 
 
@@ -273,8 +313,12 @@ private gt
       IF self==NIL
       ELSE
        IF self[3]<>NIL
+#ifdef __HARBOUR__
+         __mvPrivate(Self[3])
+#else
          x:=Self[3]
          PRIVATE &x
+#endif
        ENDIF
        x:=&(self[1])
       ENDIF
@@ -319,12 +363,28 @@ private gt
        if df
  #ifdef A_POSNET
          x:='\'
+  #ifdef A_THERMAL
          df:=rswrite(aux,chr(24))=1 .and. dfprint('0$e',' ') .and. dfprint('#s',@x)
          if df
             k:=getlines(x,'/')
             was:=array((len(k)-5)/2)
             for x:=1 to len(was)
               was[x]:={str(val(k[x+1]),2),0,0}
+  #else
+        df:=dfprint('vatget',@x)
+        if df
+            k:=getlines(x,chr(9))
+            was:=array(len(k))
+            for x:=1 to len(was)
+              y:=subs(k[x],3)
+              if y='100'
+                 was[x]:={'zw',0,0}
+              elseif y='101'
+                 was[x]:={'nd',0,0}
+              else
+                 was[x]:={str(val(y),2),0,0}
+              endif
+  #endif
             next
          else
  #else
@@ -359,7 +419,11 @@ private gt
           aux:=NIL
        ELSE
  #ifdef A_POSNET
+   #ifdef A_THERMAL
           rswrite(aux,chr(27)+'P2$d'+chr(12)+'RAZEM:'+strpic(D_DF-czekiem-przelewem,10,2,"@E ",.f.)+chr(27)+'\')
+   #else
+          dfprint({'dsptxtline','id0','no1','lnRAZEM:'+strpic(D_DF-czekiem-przelewem,10,2,"@E ",.f.)})
+   #endif
  #else
           dfprint(chr(27)+"R"+str(D_DF-czekiem-przelewem,9,2)+chr(10)+chr(27)+'S',chr(6))
  #endif
@@ -410,7 +474,11 @@ private gt
 
 #ifdef A_DFP
 #ifdef A_POSNET
+ #ifdef A_THERMAL
       df := df .and. dfprint('0$h')
+ #else
+      df := df .and. dfprint({'trinit','bm1','dm1'})
+ #endif
 #else
       df := df .and. dfprint(chr(27)+" "+l2bin(ROUND(D_DF*100,0)),chr(6))
 #endif
@@ -420,7 +488,7 @@ private gt
 #ifdef A_FA
     do while .t.
 #endif
-    ce:=il:=u:=ut:=v:=w:=wt:=vt:=0
+    ck:=ce:=il:=u:=ut:=v:=w:=wt:=vt:=0
     nz:=''
     p:=D_LP0
 #ifdef A_GRAM
@@ -594,18 +662,24 @@ private gt
         indx_mat->(dbseek(main->NR_MAG+main->INDEX,.f.))
 #endif
          message(1)
-         j:=l
          s:=i_lam(dM->data)
          il:=pm*ilosc
          il_f:=pm*ilosc_f
          nz:=nr_zlec
-#ifndef A_WA
+#ifdef A_WA
+#ifdef A_CK
+         ck:=cena_k
+#else
+         ck:=wartosc/ilosc
+#endif
+#else
    #define WartosC (s)->cenA*il*pm
 #endif
          u:=pm*WartosC
          ut+=u
 #undef WartosC
 
+       j:=l
 
 #ifdef A_FA
 #ifdef A_WB
@@ -697,12 +771,23 @@ private gt
  #define D_DF (w+v)
 #endif
       if df
+ #ifdef A_POSNET
+   #ifdef A_THERMAL
         if was[k,1]=='zw'
            k:=0
         endif
- #ifdef A_POSNET
         df := dfprint(D_LPSTR(p)+'$l'+trim(left(na,40))+chr(13)+str(il_f,11,3)+chr(13)+chr(k+64)+'/'+str(WDFGR(1,ce,val(pv),.t.)/100,10,2)+'/'+str(D_DF,10,2)+'/')
+   #else
+        x:={'trline','na'+trim(na),'vt'+str(k-1,1),'pr'+ltrim(str(WDFGR(1,ce,val(pv),.t.),10))}
+        if il_f<>1
+           aadd(x,'il'+ltrim(str(il_f,11,3)))
+        endif
+        df := dfprint(x)
+   #endif
  #else
+        if was[k,1]=='zw'
+           k:=0
+        endif
         x:=3
         y:=ROUND(1000*il_f,0)
         do while x>0 .and. y%10=0
@@ -990,6 +1075,11 @@ private gt
     endif
 
 #ifdef A_DFP
+  #ifdef A_CENVAT
+   #define D_DF wt
+  #else
+   #define D_DF (wt+vt)
+  #endif
       if aux#NIL
          if df
             tone(164.8,1)
@@ -1016,11 +1106,7 @@ private gt
             @ mes[3]-1,mes[2]+2 SAY '   (reszta)   '
             x:=0
             k:=getnew(mes[1]+1,mes[2]+2,{|z|if(pcount()=0,x,x:=z)},"x","@E ## ### ###.##")
- #ifdef A_CENVAT
-            k:postblock:={||setpos(mes[3]-1,mes[2]+2),dispout(if(x=0,'              ',tran(x-wt,"@E ## ### ###.##"))),.t.}
- #else
-            k:postblock:={||setpos(mes[3]-1,mes[2]+2),dispout(if(x=0,'              ',tran(x-wt-vt,"@E ## ### ###.##"))),.t.}
- #endif
+            k:postblock:={||setpos(mes[3]-1,mes[2]+2),dispout(if(x=0,'              ',tran(x-(D_DF),"@E ## ### ###.##"))),.t.}
             readmodal({k})
             if readkey() = K_ESC
                df:=.f.
@@ -1028,11 +1114,10 @@ private gt
             endif
  #ifdef A_POSNET
          endif
-
-  #ifdef A_CENVAT
-         if df .and. (k:=' ',dfprint('1;0;1;0$e1'+left(operator,1)+subs(operator,1+at(' ',operator),1)+chr(13)+"#"+nr_mag+smb_dow+nr_dowodu+chr(13)+str(x,10,2)+'/'+str(wt,10,2)+'/',@k).and.asc(k)%8=5)
+  #ifdef A_THERMAL
+         if df .and. (k:=' ',dfprint('1;0;1;0$e1'+left(operator,1)+subs(operator,1+at(' ',operator),1)+chr(13)+"#"+nr_mag+smb_dow+nr_dowodu+chr(13)+str(x,10,2)+'/'+str(D_DF,10,2)+'/',@k).and.asc(k)%8=5)
   #else
-         if df .and. (k:=' ',dfprint('1;0;1;0$e1'+left(operator,1)+subs(operator,1+at(' ',operator),1)+chr(13)+"#"+nr_mag+smb_dow+nr_dowodu+chr(13)+str(x,10,2)+'/'+str(wt+vt,10,2)+'/',@k).and.asc(k)%8=5)
+         if df .and. (x=0 .or. dfprint({'trpayment','ty0','wa'+ltrim(str(x*100,10))})) .and. dfprint({'trend','to'+ltrim(str(D_DF*100,10))})
   #endif
  #else
             if x#0
@@ -1049,20 +1134,18 @@ private gt
 
             kto_pisal:=operator
  #ifdef A_WP
-  #ifdef A_CENVAT
-   #define D_DF wt
-  #else
-   #define D_DF (wt+vt)
-  #endif
             wart_par:=D_DF
             vat_par:=vt
-  #undef D_DF
  #endif
             changed:=.t.
          else
  #ifdef A_POSNET
+   #ifdef A_THERMAL
             rswrite(aux,chr(24))
             dfprint('0$e')
+   #else
+            dfprint('trcancel')
+   #endif
             alarm("WYDRUK PARAGONU ZOSTAù ANULOWANY!",,,3)
  #else
             if !df
@@ -1099,14 +1182,19 @@ endif
 #ifdef A_DFP
   if aux#NIL
 #ifdef A_POSNET
-     rswrite(aux,chr(24))
-     dfprint('0$e')
+   #ifdef A_THERMAL
+            rswrite(aux,chr(24))
+            dfprint('0$e')
+   #else
+            dfprint('trcancel')
+   #endif
      alarm("WYDRUK PARAGONU ZOSTAù ANULOWANY!",,,3)
 #else
      dfprint(chr(27)+"#",chr(6),"PARAGON NIE ZOSTAù WYDRUKOWANY PRAWIDùOWO!;") //uniewaænienie paragonu i test przy okazji
 #endif
      rsclose(aux)
   endif
+  #undef D_DF
 #endif
   SET CONSOLE ON
 return
@@ -1186,6 +1274,7 @@ return
 
 #ifdef A_DFP
  #ifdef A_POSNET
+  #ifdef A_THERMAL
 #include 'hbcom.ch'
 function rswrite(n, c, l)
   local ret:=hb_comSend( n, c, l, D_TIMEOUT )
@@ -1300,6 +1389,285 @@ if ndclose
    aux:=closeaux
 endif
 return ret
+  #else
+//POSNET POSNET
+
+#include 'hbcom.ch'
+function rswrite(n, c, l)
+  local ret
+
+  if valtype(n)='P'
+  elseif !empty(socket) .and. !empty(ipactive)
+     n:=socket
+  endif
+
+  if valtype(n)='P'
+     ret:=hb_inetSend( n, c, l )
+  else
+     ret:=hb_comSend( n, c, l, D_TIMEOUT )
+  endif
+
+  hb_idlestate()
+return ret
+************************
+function rsclose(n)
+  if valtype(n)='P'
+  elseif !empty(socket) .and. !empty(ipactive)
+     n:=socket
+     //socket:=NIL
+  endif
+  ipactive:=.f.
+  if valtype(n)='P'
+     hb_inetClose(n)
+     //hb_inetDestroy(n)
+     //hb_inetCleanup()
+     //n:=NIL
+     return .t.
+  endif
+return hb_comClose( n )
+************************
+function rsopen(x)
+local p,i
+   if empty(x)
+      x:=getenv("MDSCOM")
+      if ""=x
+  #ifdef __PLATFORM__UNIX
+         x:="/dev/ttyS0"
+  #else
+         x:="COM1"
+  #endif
+      endif
+   endif
+
+   hb_comClose( 3 )
+
+   if 0<>(p:=val(subs(x,i:=rat(':',x)+1)))
+      if !empty(socket) .or. valtype(socket:=hb_inetCreate(D_TIMEOUT))='P'
+         ipactive:=.t.
+         hb_inetClearError(Socket)
+         hb_inetConnect( left(x,i-2), p, socket )
+         x := socket
+         if hb_inetErrorCode(x)=0
+            hb_idlestate()
+            return 3
+         endif
+         rsclose()
+         x:= NIL
+      endif
+      return -1
+   endif
+
+   if !empty(socket)
+      hb_inetClose(socket)
+      ipactive:=.f.
+   endif
+
+   hb_comSetDevice( 3, x )
+   IF hb_comOpen( 3 )
+
+      IF hb_comInit( 3, A_DFP, 'N', 8, 1 ) .and. hb_comflowcontrol(3, @x, HB_COM_FLOW_XON) .and. hb_comflowchars(3,17,19)
+         hb_idlestate()
+         RETURN 3
+      ELSE
+         hb_comClose( 3 )
+      ENDIF
+   ENDIF
+
+RETURN -1
+***********************
+function rsread(n,x,y)
+static spare:=''
+local c, i:=0 , j:=len(spare), k
+
+if valtype(x)<>'C' .or. !empty(y) .and. len(x)<y
+   x:=space(y)
+endif
+if empty(y)
+   y:=len(x)
+endif
+
+  if j>0
+     k:=at(chr(3),left(spare,j))
+     if k>0
+        j:=k
+     endif
+     x:=stuff(@x,i+1,j,left(spare,j))
+     spare:=subs(spare,j+1)
+     i+=j
+     if k>0
+        return i
+     endif
+  endif
+
+  if valtype(n)='P'
+  elseif !empty(socket) .and. !empty(ipactive)
+     n:=socket
+  endif
+  c:=space(y-i)
+
+  if valtype(n)='P'
+   while (j:=hb_inetRecv( n, @c, y-i )) > 0
+     k:=at(chr(3),left(c,j))
+     if k>0
+        spare:=subs(c,k+1,j-k)
+        j:=k
+     endif
+     x:=stuff(@x,i+1,j,left(c,j))
+     i+=j
+     if y<=i .or. k>0
+        exit
+     endif
+     hb_idlestate()
+   end
+   return i
+  endif
+
+while (j:=hb_comRecv( n, @c, y-i , D_TIMEOUT )) > 0
+   k:=at(chr(3),left(c,j))
+   if k>0
+      spare:=subs(c,k+1,j-k)
+      j:=k
+   endif
+   x:=stuff(@x,i+1,j,left(c,j))
+   i+=j
+   if i>=y .or. k>0
+      exit
+   endif
+end
+
+return i
+***********************
+static function chgmaz(a)
+external HB_CODEPAGE_PLWIN
+return HB_TRANSLATE(a,,'PLWIN')
+************************
+
+#pragma BEGINDUMP
+
+#include "hbapi.h"
+
+
+HB_FUNC ( POSCHECK )
+{
+const unsigned char crc16htab[] = {
+0x00, 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70,0x81, 0x91, 0xa1, 0xb1, 0xc1, 0xd1, 0xe1, 0xf1,
+0x12, 0x02, 0x32, 0x22, 0x52, 0x42, 0x72, 0x62,0x93, 0x83, 0xb3, 0xa3, 0xd3, 0xc3, 0xf3, 0xe3,
+0x24, 0x34, 0x04, 0x14, 0x64, 0x74, 0x44, 0x54,0xa5, 0xb5, 0x85, 0x95, 0xe5, 0xf5, 0xc5, 0xd5,
+0x36, 0x26, 0x16, 0x06, 0x76, 0x66, 0x56, 0x46,0xb7, 0xa7, 0x97, 0x87, 0xf7, 0xe7, 0xd7, 0xc7,
+0x48, 0x58, 0x68, 0x78, 0x08, 0x18, 0x28, 0x38,0xc9, 0xd9, 0xe9, 0xf9, 0x89, 0x99, 0xa9, 0xb9,
+0x5a, 0x4a, 0x7a, 0x6a, 0x1a, 0x0a, 0x3a, 0x2a,0xdb, 0xcb, 0xfb, 0xeb, 0x9b, 0x8b, 0xbb, 0xab,
+0x6c, 0x7c, 0x4c, 0x5c, 0x2c, 0x3c, 0x0c, 0x1c,0xed, 0xfd, 0xcd, 0xdd, 0xad, 0xbd, 0x8d, 0x9d,
+0x7e, 0x6e, 0x5e, 0x4e, 0x3e, 0x2e, 0x1e, 0x0e,0xff, 0xef, 0xdf, 0xcf, 0xbf, 0xaf, 0x9f, 0x8f,
+0x91, 0x81, 0xb1, 0xa1, 0xd1, 0xc1, 0xf1, 0xe1,0x10, 0x00, 0x30, 0x20, 0x50, 0x40, 0x70, 0x60,
+0x83, 0x93, 0xa3, 0xb3, 0xc3, 0xd3, 0xe3, 0xf3,0x02, 0x12, 0x22, 0x32, 0x42, 0x52, 0x62, 0x72,
+0xb5, 0xa5, 0x95, 0x85, 0xf5, 0xe5, 0xd5, 0xc5,0x34, 0x24, 0x14, 0x04, 0x74, 0x64, 0x54, 0x44,
+0xa7, 0xb7, 0x87, 0x97, 0xe7, 0xf7, 0xc7, 0xd7,0x26, 0x36, 0x06, 0x16, 0x66, 0x76, 0x46, 0x56,
+0xd9, 0xc9, 0xf9, 0xe9, 0x99, 0x89, 0xb9, 0xa9,0x58, 0x48, 0x78, 0x68, 0x18, 0x08, 0x38, 0x28,
+0xcb, 0xdb, 0xeb, 0xfb, 0x8b, 0x9b, 0xab, 0xbb,0x4a, 0x5a, 0x6a, 0x7a, 0x0a, 0x1a, 0x2a, 0x3a,
+0xfd, 0xed, 0xdd, 0xcd, 0xbd, 0xad, 0x9d, 0x8d,0x7c, 0x6c, 0x5c, 0x4c, 0x3c, 0x2c, 0x1c, 0x0c,
+0xef, 0xff, 0xcf, 0xdf, 0xaf, 0xbf, 0x8f, 0x9f,0x6e, 0x7e, 0x4e, 0x5e, 0x2e, 0x3e, 0x0e, 0x1e};
+
+const unsigned char crc16ltab[] = {
+0x00, 0x21, 0x42, 0x63, 0x84, 0xa5, 0xc6, 0xe7,0x08, 0x29, 0x4a, 0x6b, 0x8c, 0xad, 0xce, 0xef,
+0x31, 0x10, 0x73, 0x52, 0xb5, 0x94, 0xf7, 0xd6,0x39, 0x18, 0x7b, 0x5a, 0xbd, 0x9c, 0xff, 0xde,
+0x62, 0x43, 0x20, 0x01, 0xe6, 0xc7, 0xa4, 0x85,0x6a, 0x4b, 0x28, 0x09, 0xee, 0xcf, 0xac, 0x8d,
+0x53, 0x72, 0x11, 0x30, 0xd7, 0xf6, 0x95, 0xb4,0x5b, 0x7a, 0x19, 0x38, 0xdf, 0xfe, 0x9d, 0xbc,
+0xc4, 0xe5, 0x86, 0xa7, 0x40, 0x61, 0x02, 0x23,0xcc, 0xed, 0x8e, 0xaf, 0x48, 0x69, 0x0a, 0x2b,
+0xf5, 0xd4, 0xb7, 0x96, 0x71, 0x50, 0x33, 0x12,0xfd, 0xdc, 0xbf, 0x9e, 0x79, 0x58, 0x3b, 0x1a,
+0xa6, 0x87, 0xe4, 0xc5, 0x22, 0x03, 0x60, 0x41,0xae, 0x8f, 0xec, 0xcd, 0x2a, 0x0b, 0x68, 0x49,
+0x97, 0xb6, 0xd5, 0xf4, 0x13, 0x32, 0x51, 0x70,0x9f, 0xbe, 0xdd, 0xfc, 0x1b, 0x3a, 0x59, 0x78,
+0x88, 0xa9, 0xca, 0xeb, 0x0c, 0x2d, 0x4e, 0x6f,0x80, 0xa1, 0xc2, 0xe3, 0x04, 0x25, 0x46, 0x67,
+0xb9, 0x98, 0xfb, 0xda, 0x3d, 0x1c, 0x7f, 0x5e,0xb1, 0x90, 0xf3, 0xd2, 0x35, 0x14, 0x77, 0x56,
+0xea, 0xcb, 0xa8, 0x89, 0x6e, 0x4f, 0x2c, 0x0d,0xe2, 0xc3, 0xa0, 0x81, 0x66, 0x47, 0x24, 0x05,
+0xdb, 0xfa, 0x99, 0xb8, 0x5f, 0x7e, 0x1d, 0x3c,0xd3, 0xf2, 0x91, 0xb0, 0x57, 0x76, 0x15, 0x34,
+0x4c, 0x6d, 0x0e, 0x2f, 0xc8, 0xe9, 0x8a, 0xab,0x44, 0x65, 0x06, 0x27, 0xc0, 0xe1, 0x82, 0xa3,
+0x7d, 0x5c, 0x3f, 0x1e, 0xf9, 0xd8, 0xbb, 0x9a,0x75, 0x54, 0x37, 0x16, 0xf1, 0xd0, 0xb3, 0x92,
+0x2e, 0x0f, 0x6c, 0x4d, 0xaa, 0x8b, 0xe8, 0xc9,0x26, 0x07, 0x64, 0x45, 0xa2, 0x83, 0xe0, 0xc1,
+0x1f, 0x3e, 0x5d, 0x7c, 0x9b, 0xba, 0xd9, 0xf8,0x17, 0x36, 0x55, 0x74, 0x93, 0xb2, 0xd1, 0xf0};
+
+  unsigned char hi = 0, lo = 0, index;
+  const char *s = hb_parc(1);
+  HB_SIZE l;
+
+  for(l = hb_parclen(1) ; l-- ; s++)
+  {
+    index = hi ^ *s;
+    hi = lo ^ crc16htab[index];
+    lo = crc16ltab[index];
+  }
+
+  char ret[5];
+  snprintf(ret,sizeof(ret),"%04X",(hi << 8) | lo);
+  hb_retclen(ret,sizeof(ret)-1);
+}
+
+#pragma ENDDUMP
+************************
+func dfprint(ft,b)
+local ret:=.t.,mes,ndclose:=.f.,closeaux,c
+memvar aux
+if type('aux')='U'
+   private aux
+endif
+if valtype(aux)<>'N'
+   closeaux:=aux
+   aux:=rsopen(closeaux)
+   if aux<1
+      aux:=closeaux
+      return .f.
+   endif
+   ndclose:=.t.
+endif
+  if Len(ft)>0
+     if valtype(ft)='A'
+       c:=''
+       aeval(ft,{|x|c+=x+chr(9)})
+       ft:=c
+     elseif right(ft,1)<>chr(9)
+       ft+=chr(9)
+     endif
+  #ifdef PC852
+     ft:=chgmaz(ft)
+  #endif
+     ret:=rswrite(aux,chr(2)+ft+'#'+poscheck(ft)+chr(3))=len(ft)+7
+  endif
+if ret
+   //b:=left(ft,at(chr(9),ft))
+   //b:=chr(2)+b+'#'+poscheck(b)+chr(3)
+   b:=''
+   ret:=.f.
+   c:=rsread(aux,@b,1024)
+   b:=left(b,c)
+   if c>5
+      if right(b,5) == poscheck(subs(b,2,len(b)-7))+chr(3)
+           c:=left(ft,at(chr(9),ft))
+           if b=chr(2)+c
+              if b=chr(2)+c +'?'
+                 message('Drukarka odesàaàa numer bà©du: '+str(val(subs(b,len(c)+3))))
+              else
+                 b:=subs(b,len(c)+2,len(b)-len(c)-7)
+                 ret:=.t.
+              endif
+           elseif b=chr(2)+'ERR'
+              message('Drukarka zgàasza bà•d ramki: '+b)
+           else
+              message('Niedorzeczna odpowied´ drukarki: '+b)
+           endif
+      else
+           message('Bà©dna odpowied´ drukarki: '+b)
+      endif
+   else
+           message('Brak odpowiedzi drukarki: '+b)
+   endif
+else
+   message('Brak transmisji do drukarki')
+endif
+if ndclose
+   rsclose(aux)
+   aux:=closeaux
+endif
+return ret
+  #endif
  #else
    #ifdef A_DFPDOS
    //__PLATFORM__WINDOWS
@@ -1538,15 +1906,39 @@ hb_storvnl(g,2,7);
 #include 'hbcom.ch'
 function rswrite(n, c, l)
   local ret
-  ret:=hb_comSend( n, c, l, D_TIMEOUT )
+
+  if valtype(n)='P'
+  elseif !empty(socket) .and. !empty(ipactive)
+     n:=socket
+  endif
+
+  if valtype(n)='P'
+     ret:=hb_inetSend( n, c, l )
+  else
+     ret:=hb_comSend( n, c, l, D_TIMEOUT )
+  endif
+
   hb_idlestate()
 return ret
 ************************
 function rsclose(n)
+  if valtype(n)='P'
+  elseif !empty(socket) .and. !empty(ipactive)
+     n:=socket
+     //socket:=NIL
+  endif
+  ipactive:=.f.
+  if valtype(n)='P'
+     hb_inetClose(n)
+     //hb_inetDestroy(n)
+     //hb_inetCleanup()
+     //n:=NIL
+     return .t.
+  endif
 return hb_comClose( n )
 ************************
 function rsopen(x)
-
+local p,i
    if empty(x)
       x:=getenv("MDSCOM")
       if ""=x
@@ -1557,8 +1949,31 @@ function rsopen(x)
   #endif
       endif
    endif
-   hb_comSetDevice( 3, x )
+
    hb_comClose( 3 )
+
+   if 0<>(p:=val(subs(x,i:=rat(':',x)+1)))
+      if !empty(socket) .or. valtype(socket:=hb_inetCreate(D_TIMEOUT))='P'
+         ipactive:=.t.
+         hb_inetClearError(Socket)
+         hb_inetConnect( left(x,i-2), p, socket )
+         x := socket
+         if hb_inetErrorCode(x)=0
+            hb_idlestate()
+            return 3
+         endif
+         rsclose()
+         x:= NIL
+      endif
+      return -1
+   endif
+
+   if !empty(socket)
+      hb_inetClose(socket)
+      ipactive:=.f.
+   endif
+
+   hb_comSetDevice( 3, x )
    IF hb_comOpen( 3 )
       IF hb_comInit( 3 , A_DFP, 'E', 8, 1 ) .and. hb_comflowcontrol(3, @x, HB_COM_FLOW_ORTSCTS)
          hb_idlestate()
@@ -1571,13 +1986,33 @@ function rsopen(x)
 RETURN -1
 ***********************
 function rsread(n,x,y)
-local c:=chr(0), i:=0
+local c:=chr(0), i:=0 , j
 if valtype(x)<>'C' .or. !empty(y) .and. len(x)<y
    x:=space(y)
 endif
 if empty(y)
    y:=len(x)
 endif
+
+  if valtype(n)='P'
+  elseif !empty(socket) .and. !empty(ipactive)
+     n:=socket
+  endif
+
+  if valtype(n)='P'
+   c:=space(y)
+   while (j:=hb_inetRecv( n, @c, y-i )) > 0
+     x:=stuff(@x,i+1,j,left(c,j))
+     i+=j
+     if y<=i
+        exit
+     endif
+     hb_idlestate()
+   end
+   return i
+  endif
+
+
 while hb_comRecv( n, @c, 1 , D_TIMEOUT ) = 1
    x:=stuff(@x,++i,1,c)
    if i=y
@@ -1649,19 +2084,15 @@ memvar aux,df_ver
         if seconds()>x+D_TIMEOUT/1000
            exit
         endif
-        s:=hb_comOutputCount( 3 )
-        if s > 0
-          HB_IDLESLEEP(10*s/A_DFP)
-          LOOP
+
+        if empty(ipactive)
+          s:=hb_comOutputCount( 3 )
+          if s > 0
+            HB_IDLESLEEP(10*s/A_DFP)
+            LOOP
+          endif
         endif
-/***********
-//#define HB_COM_TX_CTS               0x01
-        s:=hb_comOutputState( 3 )
-        IF HB_BITAND(s, HB_COM_TX_CTS)<>0
-          HB_IDLESLEEP(.1)
-          LOOP
-        endif
-************/
+
      if empty(rtr)
         ret :=  len(ack) = 0 .or. rsread( 3, @ack, len(ack) ) = len(ack)
      else
@@ -1670,7 +2101,8 @@ memvar aux,df_ver
         if len(ack)>0
            ret := rswrite( 3, rtr, 2 ) == 2
            s:=chr(0)
-           ret := ret .and. ( hb_comRecv( 3, @s, 1, D_TIMEOUT ) == 1 ) .and. (!lack .or. asc(s) = 6)
+           ret := ret .and. ( rsread( 3, @s, 1) == 1 ) .and. (!lack .or. asc(s) = 6)
+           //( hb_comRecv( 3, @s, 1, D_TIMEOUT ) == 1 ) .and. (!lack .or. asc(s) = 6)
            ack := stuff( ack ,1, 1, s)
            rtr := subs( rtr, 3 )
         endif
@@ -1678,17 +2110,8 @@ memvar aux,df_ver
            ret := ( rtr == '' ) .or. rswrite( 3, rtr ) == len( rtr )
            if (len(ack)>1)
              ack:=space(len(ack)-1)
-/*
-             if df_ver<7 .and. len(ack)>1
-               HB_IDLESLEEP(.1)
-             endif
-*/
              ret := rsread( 3, @ack, len(ack) ) = len(ack)
              ack := s + ack
-/*
-           elseif df_ver<7 .and. len(rtr)>5
-             HB_IDLESLEEP(.1)
-*/
            endif
         endif
      endif
@@ -1698,13 +2121,16 @@ memvar aux,df_ver
 
 ***********************
 
-     hb_comFlush( 3, 3 )
+        if empty(ipactive)
+          hb_comFlush( 3, 3 )
+        endif
+
      hb_idlestate()
 
      l+=rtr+';'+ack
 
      begin sequence
-     if rswrite(3,chr(27)+chr(0x94))#2 .or. hb_comRecv(3,@s,1,D_TIMEOUT)#1 .OR. asc(S)>=0x80
+     if rswrite(3,chr(27)+chr(0x94))#2 .or. rsread(3,@s,1)#1 .OR. asc(S)>=0x80
         break
      endif
      S:=ASC(S)
@@ -1738,7 +2164,7 @@ memvar aux,df_ver
         rtr:=NIL
         disp:=.t.
      endif
-     if rswrite(3,chr(27)+chr(0x9b))#2 .or. hb_comRecv(3,@s,1,D_TIMEOUT)#1
+     if rswrite(3,chr(27)+chr(0x9b))#2 .or. rsread(3,@s,1)#1
         break
      endif
      S:=ASC(S)
@@ -1747,7 +2173,7 @@ memvar aux,df_ver
         rtr:=NIL
         disp:=.t.
      endif
-     if rswrite(3,chr(27)+chr(149))#2 .or. hb_comRecv(3,@s,1,D_TIMEOUT)#1 .OR. S>=chr(0x80)
+     if rswrite(3,chr(27)+chr(149))#2 .or. rsread(3,@s,1)#1 .OR. S>=chr(0x80)
         break
      endif
      S:=ASC(S)
@@ -1787,7 +2213,7 @@ memvar aux,df_ver
            tone(130,3)
            if 1=alarm("Bù§D DRUKARKI PARAGON‡W!"+l+";CZY PR‡BOWAè JESZCZE RAZ?",{"TAK","NIE"})
               s:=' '
-              if rswrite(3,chr(27)+"*")=2 .and. hb_comRecv(3,@s,1,D_TIMEOUT)=1 .and. s=chr(6)
+              if rswrite(3,chr(27)+"*")=2 .and. rsread(3,@s,1)=1 .and. s=chr(6)
                  alarm("PONAWIAM WYDRUK!")
               endif
               l:=""
@@ -1799,7 +2225,7 @@ memvar aux,df_ver
         if "RAPORT D" $ l
            tone(130,3)
            if 1=alarm("Bù§D DRUKARKI PARAGON‡W!"+l+";CZY PR‡BOWAè JESZCZE RAZ?",{"TAK","NIE"})
-              if rswrite(3,chr(27)+"%")=2 .and. hb_comRecv(3,@s,1,D_TIMEOUT)=1 .and. s=chr(6)
+              if rswrite(3,chr(27)+"%")=2 .and. rsread(3,@s,1)=1 .and. s=chr(6)
                  alarm("DRUKUJ® ZALEGùY RAPORT DOBOWY!")
               endif
               l:=""
@@ -1838,6 +2264,17 @@ return RET
 #endif
 *******************
 #undef EVLINE
+#ifdef __HARBOUR__
+#define EVLINE(buf,lbl,lc) while j>0 .and. j<=lc .and. (j=1 .or. valtype(buf[j-1])#"C" .or. buf[j-1]<>lbl);
+   ;self:=evline(buf,j++,@x);
+   ;IF self<>NIL;
+     ;IF self[3]<>NIL;
+        ;__mvPrivate(Self[3]);
+     ;END;
+     ;x:=&(self[1]);
+   ;END;
+;ENDDO
+#else
 #define EVLINE(buf,lbl,lc) while j>0 .and. j<=lc .and. (j=1 .or. valtype(buf[j-1])#"C" .or. buf[j-1]<>lbl);
    ;self:=evline(buf,j++,@x);
    ;IF self<>NIL;
@@ -1848,10 +2285,11 @@ return RET
      ;x:=&(self[1]);
    ;END;
 ;ENDDO
+#endif
 *****************************
 func w_zes(it_zesmnu)
 memvar _sbnorm,defa,strona
-memvar j,while,for,a,b,c,d,e,f,g,h,skip,getlist,self,buf
+memvar j,while,for,a,b,c,d,e,f,g,h,skip,getlist,self,buf,found
 field baza,order,nr_zes,nazwa,pola,relacje,druk_proc
 local i,k,l,win,ap,txt,jh,jf,jl,jt,el,x,y
 static apcomp:={}
@@ -1895,9 +2333,11 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
       else
         k+=1
         if ZES_DEF->baza#"MEMVAR"
-          j:=(ap[i,2])
-          PRIVATE &j
-          &j:=ZES_DEF->&j
+          if ZES_DEF->(fieldpos(ap[i,2])) > 0
+             j:=(ap[i,2])
+             PRIVATE &j
+             &j:=ZES_DEF->&j
+          endif
         endif
         @ win[1]+k,win[2]+1 say padl(ap[i,1],15)
         txt:=GETnew(row(),col()+1,memvarblock(ap[i,2]),ap[i,2])
@@ -1929,7 +2369,7 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
       if ZES_DEF->baza#"MEMVAR"
          lock recno()
          for i:=1 to l
-          if valtype(ap[i])='A'
+          if valtype(ap[i])='A' .and. fieldpos(ap[i,2]) > 0
            FIELD->&(ap[i,2]):=MEMVAR->&(ap[i,2])
           endif
          next
@@ -1940,10 +2380,12 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
       else
          select 0
       endif
-      private while:={||!eof()}
+      private while:=NIL //{||!eof()}
       private skip,for
+      PRIVATE found:={||__dbLocate( for,while,,,.t.),found()}
+
 #ifdef B_SKIP
-      skip:=B_SKIP
+      skip:=B_SKIP // skip:={|x|dbskip(x),eval(found)}
 #else
       skip:={||dbskip()}
 #endif
@@ -1960,16 +2402,16 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
           if !"."$txt
             txt+=".ppz"
           endif
-          i:=findfile(txt)
-          if !empty(i)
-             buf:=getlines(memoread(i))
-          endif
+          buf:=getlines(memoread(findfile(txt)))
         else
           buf:=getlines(txt)
           txt:=NIL
         endif
         aadd(apcomp,{zes_def->(recno()),buf})
       endif
+#ifdef A_PCL
+      landscape:=.f.
+#endif
 #ifdef D_HWPRN
       oprn:=D_HWPRN
 #endif
@@ -1984,8 +2426,9 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
 #ifdef B_SKIP
       y:=eval(skip,0)
 #else
-      __dbLocate( for,while,,,.t.)
-      y:=found()
+      y:=eval(found)
+      //__dbLocate( for,while,,,.t.)
+      //y:=found()
 #endif
       IF y .and. strona=0
          print()
@@ -2003,7 +2446,9 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
          do while y .and. prow()<P_ROWN // .or. !set(_SET_PRINTER))
             j:=jl
             EVLINE(buf,":FOOTER",l)
-            if j<2
+            if j<2 .or. j>l
+               y:=.f.
+               jt:=l+1
                exit
             endif
             jf:=j
@@ -2011,8 +2456,9 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
             y:=eval(skip,1)
 #else
             eval(skip)
-            __dbLocate( for,while,,,.t.)
-            y:=found()
+            y:=eval(found)
+            //__dbLocate( for,while,,,.t.)
+            //y:=found()
 #endif
          enddo
          if !y
@@ -2021,24 +2467,23 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
          endif
          if jf=NIL
             jf:=ascan(buf,{|x|valtype(x)="C".and. x=":FOOTER"})+1
-            if jf<2
-               exit
-            endif
          endif
 
-         j:=jf
-
+         IF jf>=2 
+            j:=jf
          EVLINE(buf,":TOTAL",l)
          if j<2
             exit
          endif
-         jt:=j
+            jt:=j
+         endif
+         
 
          ?? spec(chr(13)+chr(12))
          setprc(0,0)
 
       enddo
-      if strona=0 .or. j<2
+      if strona=0 .or. j<2 
          break
       endif
 
@@ -2138,7 +2583,9 @@ local txt1,txt2,txt3,r,i,j,k,s,w,p,bc,bw,x,;
       return
     endif
   ENDIF
-
+#ifdef A_PCL
+  memvar->landscape:=.f.
+#endif
 #ifdef D_HWPRN
 oprn:=D_HWPRN
 #command ?  [<exp,...>]         => wQ()[;?? <exp>]
@@ -2167,7 +2614,6 @@ oprn:=D_HWPRN
     r:=max(1,ascan(dokumenty[MAG_POZ],smb_dow D_SUBDOK))
 
   set console off
-
   print(D_LPT)
   setprc(0,0)
 
@@ -2251,7 +2697,7 @@ oprn:=D_HWPRN
 #ifdef A_FAT
        if subs(dok_naz,2)#"K"
           ?
-          ? "Numer Specyfikacji: "+nr_spec+" órodek transportu: "+transport
+          ? "Numer Specyfikacji: "+nr_spec+" órodek transportu: "+trim(transport)
        endif
 #endif
     message(1)

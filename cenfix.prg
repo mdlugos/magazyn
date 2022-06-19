@@ -1,5 +1,4 @@
-//hbmk2
-//-prgflag=-dSIMPLE -gtnul -u+polok.ch -ie:\cl cenfix io io_2 error cppl852m.c
+//hbmk2 -prgflag=-dSIMPLE -gtnul -u+polok.ch cenfix io io_2 error
 
 
 #command ? [<List,...>] => ?? HB_EOL()[;?? <List>]
@@ -42,23 +41,36 @@
 #define KEY_DOK nr_mag+smb_dow
 #endif
 
+external padl,strtran
+
 field ilosc,index,nazwa,jm,data,wartosc,nr_mag,stan,ewidencja,;
       data_zmian,smb_dow,nr_dowodu,pozycja,nr_zlec,KTO_PISAL,p_r,;
       WART_MIES1,ZAMK_MIES1,WART_MIES2,ZAMK_MIES2,wart_roku,zamkn_roku,;
       cena_przy
 
 memvar dok_rozch,defa,firma_n
+
+#ifdef A_LAN
+#ifndef A_DDBF
+  #define A_DDBF
+#endif
+#endif
 #ifndef UpP
 request upp
 #endif
 
-proc main(jaki_mag,jakie_dok,od)
+proc main(jaki_mag,jakie_dok,od,ans)
 
-local key,ws,is,cs,mprint:=.f.,ans,il,wa,a,b,c,d,rcrd,doknfa,da,r,mag_poz,;
+local key,ws,is,cs,mprint:=.f.,il,wa,a,b,c,d,rcrd,doknfa,da,daINI,r,mag_poz,;
     x,y,z,odc
 
 local dokumenty,magazyny
 field numer,smb_dok
+#ifndef A_DDBF
+memvar  d_z_mies1,d_z_mies2,d_z_rok,data_gran
+private d_z_mies1,d_z_mies2,d_z_rok,data_gran
+#define DatY MEMVAR
+#endif
 
 private dok_rozch:=""
 
@@ -74,55 +86,40 @@ endif
 
 od:=ctod(od)
 
-IF ""#defa .and. right(defa,1)<>HB_OsPathSeparator()
-   defa+=HB_OsPathSeparator()
+IF ""#defa .and. right(defa,1)<>HB_ps()
+   defa+=HB_ps()
 endif
  
 if ""=defa
-  SET PATH TO ("."+HB_OsPathSeparator())
+  SET PATH TO ("."+HB_ps())
 else
-  SET PATH TO ("."+HB_OsPathSeparator()+HB_OsPathListSeparator()+defa)
+  SET PATH TO ("."+HB_ps()+HB_OsPathListSeparator()+defa)
 endif
 
-SET DEFAULT TO (defa+"roboczy"+HB_OsPathSeparator())
+SET DEFAULT TO (defa+"roboczy"+HB_ps())
 
 DO WHILE .T.
 
-#ifdef A_LAN
-#ifndef A_DDBF
-  #define A_DDBF
-#endif
-#endif
+   #define D_Z1 max(DatY->d_z_mies1,DatY->data_gran)
+   #define D_Z2 DatY->d_z_mies2
+   #define D_Z3 DatY->d_z_rok
 
 #ifdef A_DDBF
    use daty readonly
-   #define D_Z1 max(DatY->d_z_mies1,DatY->data_gran)
-   #define D_Z2 daty->d_z_mies2
-   #define D_Z3 daty->d_z_rok
 #else
-#ifdef A_MEM
-   REST FROM DATY ADDITIVE
-   #define D_Z1 memvar->zmienna1
-   #define D_Z2 memvar->zmienna2
-   #define D_Z3 memvar->zmienna3
-#else
-   da:=getlines(memoread(set(_SET_DEFAULT)+"daty.ini"))
-   #define D_Z1 &(subs(da[1],at(':=',da[1])+2))
-   #define D_Z2 &(subs(da[2],at(':=',da[2])+2))
-   #define D_Z3 &(subs(da[3],at(':=',da[3])+2))
-#endif
+   x:="daty.ini";do while inirest(@x);(&x,x:=NIL);enddo
 #endif
 
    IF !EMPTY(od) .and. od>=D_Z3
 
    ELSEIF KEY=NIL
-      IF D_Z1=D_Z3 .and. file(defa+str(year(D_Z3),4)+HB_OsPathSeparator()+"daty.*")
-         SET DEFAULT TO (defa+str(year(D_Z3),4)+HB_OsPathSeparator() )
+      IF D_Z1=D_Z3 .and. file(defa+str(year(D_Z3),4)+HB_ps()+"daty.*")
+         SET DEFAULT TO (defa+str(year(D_Z3),4)+HB_ps() )
          KEY:=D_Z3
          LOOP
       ENDIF
    ELSEIF D_Z1=KEY
-      SET DEFAULT TO (defa+"roboczy"+HB_OsPathSeparator() )
+      SET DEFAULT TO (defa+"roboczy"+HB_ps() )
       ++KEY
       LOOP
    ENDIF
@@ -209,7 +206,10 @@ endif
              ? "DOKUMENTY "+jakie_dok+" MAGAZYNU "+JAKI_MAG+" OD "+dtoc(od)
           ENDIF
           ?
-          ACCEPT "CZY POPRAWIA CENY DOKUMENTàW OD "+dtoc(od)+" (Tak/Nie) ? " to ans
+          if empty(ans)
+             ACCEPT "CZY POPRAWIA CENY DOKUMENTàW OD "+dtoc(od)+" (Tak/Nie) ? " to ans
+          endif
+          
           if !"T"$UPPER(ans)
              quit
           ENDIF
@@ -249,6 +249,22 @@ do while found().and.nr_mag+index=jaki_mag
    ws:=ROUND(ws,A_ZAOKR)
    is:=ROUND(is,3)
    do while nr_mag+index=STANY->nr_mag+STANY->index
+#ifdef A_ZAGRODA
+      if smb_dow='UB' .and. nr_zlec='U'
+	a:=recno()
+	b:=is
+	c:=data
+	dbeval({||b+=ilosc},,{||nr_mag+index=STANY->nr_mag+STANY->index .and. data=c})
+	dbgoto(a)
+	IF round(b - val(strtran(subs(nr_zlec,2),' ')),3)<>0
+	   lock in main	
+	   STANY->stan-=main->ilosc
+	   main->ilosc+=val(strtran(subs(nr_zlec,2),' '))-b
+	   STANY->stan+=main->ilosc
+	   unlock in main	
+	endif
+      endif
+#endif
       IF CS<0
         p
         matprint()
@@ -265,7 +281,7 @@ do while found().and.nr_mag+index=jaki_mag
          if round(is-il,3)=0 .or. il=0
 
          elseif is<il //.and. is>=0 
-           cs:=odc // ostatnia dobra cena jaka by nie byˆa
+           //cs:=odc // ostatnia dobra cena jaka by nie byˆa
            if odc#0
               cs:=max(0,((il-is)*odc+ws)/il)
            endif
@@ -302,16 +318,16 @@ do while found().and.nr_mag+index=jaki_mag
                if x=0
                  x:=select()
                  begin sequence
-                   if !file(defa+y+HB_OsPathSeparator()+'main.dbf')
+                   if !file(defa+y+HB_ps()+'main.dbf')
                      break
                    endif
-                   nuse (defa+y+HB_OsPathSeparator()+'main') new alias ('main'+y)
+                   nuse (defa+y+HB_ps()+'main') new alias ('main'+y)
 #ifdef A_CDX
                    set order to tag main_ind
                    if empty(indexord())
 #else
-                   if file(defa+y+HB_OsPathSeparator()+'main_ind'+ordbagext())
-                      set index to (defa+y+HB_OsPathSeparator()+'main_ind')
+                   if file(defa+y+HB_ps()+'main_ind'+ordbagext())
+                      set index to (defa+y+HB_ps()+'main_ind')
                    else
 #endif
                       break

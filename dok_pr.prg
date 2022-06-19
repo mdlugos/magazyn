@@ -66,7 +66,12 @@
 #endif
 
 #ifdef A_FK
-#define DOLAR if(ROUND(BRUTTO-zaplacono,A_ZAOKR)=0,'³','$')
+field transport
+#ifdef A_ZAGRODA
+#define DOLAR if(ROUND(BRUTTO-zaplacono,A_ZAOKR)=0 .or. przelewem=0,'³','$')
+#else
+#define DOLAR if(ROUND(BRUTTO-val(transport)-zaplacono,A_ZAOKR)=0,'³','$')
+#endif
 #else
 #define DOLAR '³'
 #endif
@@ -79,7 +84,7 @@
 
 #endif
 
-MEMVAR n_f,nk,dd,da,lp,d_o,DOK,SCR,R,nk1,i,nim,il,wa,ce,changed,dok_zewn,;
+MEMVAR n_f,dd,da,lp,d_o,DOK,SCR,R,nk1,i,nim,il,wa,ce,changed,dok_zewn,;
       nz,MAG_BIEZ,mag_poz,doc_opcja,operator,miar_opcja,is_spec,dok_rozch,;
       dok_fak,doc_brut,dok_zby,dokumenty
 
@@ -146,10 +151,8 @@ field przelewem,czekiem
    #define STDPOZ2 STDPOZ1
    #define STDZLE nr_zlec
            #ifdef A_ZLEC11
-//#ifdef A_NOMZ
               #undef STDZLE
               #define STDZLE pad(nr_zlec,11)
-//#endif
               #define STDBG 44
               #define STDTOP "Nr/LpÂÄDataÂÄÄIlo˜†ÄÂJednÂÄInf. dod.ÄÂMGÂÄKodÂMateriaˆ:"
            #else
@@ -195,10 +198,8 @@ field przelewem,czekiem
         #endif
         #ifdef A_SWW
            #ifdef A_ZLEC11
-//#ifdef A_NOMZ
               #undef STDZLE
               #define STDZLE pad(nr_zlec,11)
-//#endif
               #define STDBG 44
               #define STDTOP "Nr/LpÂÄDataÂÄÄIlo˜†ÄÂJednÂÄInf. dod.ÄÂMGÂSymbolÂMateriaˆ:"
            #else
@@ -207,10 +208,8 @@ field przelewem,czekiem
            #endif
         #else
            #ifdef A_ZLEC11
-//#ifdef A_NOMZ
               #undef STDZLE
               #define STDZLE pad(nr_zlec,11)
-//#endif
               #define STDBG 44
               #define STDTOP "Nr/LpÂÄDataÂÄÄIlo˜†ÄÂJednÂÄInf. dod.ÄÂMGÂÄKod mater.ÄÂMateriaˆ:"
            #else
@@ -305,7 +304,7 @@ if doc_opcja
 #ifdef A_DOKCOLOR
          DEFAULT _scol2 TO min(maxcol(),_scol1+1+len(eval(_sprompt,0,_s,.t.)))
          a:=_sprompt
-         _sprompt:={|d,_s,z,x|x:=eval(a,d,_s,z),if(z=.t.,x,(devout(left(x,_scol2-_scol1-1),if(kto_pisal=chr(255),"GB+/N+",if(kto_pisal>chr(1),_snorm,"R+/N+"))),''))}
+         _sprompt:={|d,_s,z,x|x:=eval(a,d,_s,z),if(z=.t.,x,(devout(left(x,_scol2-_scol1-1),A_DOKCOLOR ),''))}
 #endif
 else
          set order to 1
@@ -492,7 +491,11 @@ DO CASE
            doc_opcja:=.f.
            _skey:=3
 #else
+#ifdef A_DOKFAK
+           _skey:=5 //wg zlecenia
+#else
            _skey:=3 //wg firmy
+#endif
 #endif
 #endif
          else
@@ -538,8 +541,13 @@ DO CASE
          _spocz+='PW'
          _slth:=2
 #else
+#ifdef A_DOKFAK
+         _spocz+=UpP(trim(n_f))
+         _slth:=len(trim(n_f))
+#else
          _spocz+=FIRMY->numer_kol
          _slth:=A_NRLTH
+#endif
 #endif
          seek _spocz+'@'
          skip -1
@@ -821,9 +829,9 @@ DO CASE
       x:=doc_opcja
       private CHANGED:=.F.
 #ifdef A_MM
-      DOK_IN(D_MM,smb_dow,nr_dowodu, ent )
+      DOK_IN(D_MM,smb_dow,nr_dowodu+if(x,'',pozycja), ent )
 #else
-      DOK_IN(D_MM,smb_dow,nr_dowodu, ent .or. mag_biez#D_MM)
+      DOK_IN(D_MM,smb_dow,nr_dowodu+if(x,'',pozycja), ent .or. mag_biez#D_MM)
 #endif
       doc_opcja:=x
       set cursor on

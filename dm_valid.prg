@@ -12,6 +12,12 @@
 #endif
 #endif
 
+#ifndef A_MKNK
+  #define A_MKNK(x) eval({|y|mknk:=min(5,max(mknk,len(ltrim(str(y))))),pad(str(y,mknk),5)},x)
+#endif
+
+#define compNk(x,y) (strtran(x,' ')==strtran(y,' '))
+
 #ifdef A_JMTOT
 #define D_JM jm
 #endif
@@ -75,7 +81,7 @@
 MEMVAR n_f,nk,dd,da,d_o,kh,DOK,SCR,nim,il,gtot,chgpos,gil,;
        nz,stary_rok,MAG_BIEZ,mag_poz,r,operator,dok_rozch,;
        nowydm,magazyny,dok_par,adres_mag,lam,itot,miar_opcja,;
-       is_spec,pm,changed,avat,defa
+       is_spec,pm,changed,avat,defa,nkp,mknk
 #ifdef A_WA
 MEMVAR wa,ce,ck,chg_cen
 field wartosc,cena_przy
@@ -118,8 +124,7 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,ilosc_f,dost_odb,kontrahent
   field proc_VAT
   memvar pv
 #ifdef A_FAT
-  memvar sp,st
-  field nr_spec,transport
+  memvar sp
 #endif
   field cena, cena_zak
   memvar cz,wz
@@ -131,24 +136,33 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,ilosc_f,dost_odb,kontrahent
 #define restouT(x,p) if(x%p=0,str(x/p,6),stuff(str(int(x/p)+x%p/1000,10,3),7,1,"r"))
 #endif
 **********************
-FUNCTION nk(_f,g,nk1)
+FUNCTION nk(_f,g)
 #ifdef A_FA
   memvar zap,zac,nrc,uw
   field czekiem, przelewem, nr_czeku
 #endif
-  LOCAL nk2:=if(nowydm,,val(nr_dowodu)),s:=RECNO(),znalaz,rf
-   if nk=nk2
-      nk1:=nk
+  LOCAL nk2:=if(nowydm,'',nr_dowodu),s:=RECNO(),znalaz,rf,l
+
+   // nie ma prawa byc niewpisane DEFAULT mknk TO 4
+
+   rf:=val(nk)
+   l:=len(ltrim(str(rf)))
+   if rf<>0 .and. l<mknk .and. l=len(trim(nk))
+      nk:=A_MKNK(rf)
+   endif
+
+   if !empty(nk) .and.  compNk(NK,NK2)
       return .t.
    endif
-   if dbSEEK(KEY_PAR+STR(NK,5)) .or. nk=0
+
+   set order to tag dm_trim
+   if empty(nk) .or. dbSEEK(dseek(,'nr_mag,smb_dow,nr_dowodu',mag_biez,left(dok,2),nk))
+
 #ifdef A_LAN
 BEGIN SEQUENCE
 DO WHILE .T.
-#ifdef A_DMDATA
-set order to 1
 #endif
-#endif
+
 #ifdef A_KHSEP
 #define D_KH kontrahent
 #define D_KH1 dost_odb
@@ -157,6 +171,7 @@ set order to 1
 #define D_KH1 if(val(dost_odb)=0,dost_odb,subs(dost_odb,A_NRLTH+2))
 #endif
      rf:=firMy->(recno())
+     set order to 1
 #ifdef A_FK
     znalaz:= szukam({1,40,maxrow(),,1,0,"Przegl¥d "+dok,;
         {||nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+if(data>DatY->d_z_mies1 .and. kto_pisal="ÿ","³","|")+D_KH+"³"+DTOV(data)+"³"+D_KH1},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
@@ -166,12 +181,11 @@ set order to 1
 #endif
      firMy->(dbgoto(rf))
     if znalaz
+      nk:=NR_DOWODU
       if deleted()
-         nk:=val(NR_DOWODU)
          GO s
-         nk1:=nk
       else
-         nk1:=val(NR_DOWODU)
+         LOCK
 #ifdef A_SUBDOK
          sub_dok:=subs(dok,3)
 #endif         
@@ -191,12 +205,15 @@ set order to 1
             data := max(DatY->d_z_mies1,DatY->data_gran)+1
          endif
 #endif
+         _flp:=_flpmax
+         nkp:=if(pozycja>=D_LP1,pozycja,nil)
          eval(_fdmpre,_f)
          //dok1(_f)
          KIBORD(CHR(18))
       endif
     ELSEIF !NOWYDM
       go s
+      LOCK
     ENDIF
 #ifdef A_LAN
 EXIT
@@ -210,13 +227,13 @@ END SEQUENCE
     set filter to
     set relation to
    else
+    set order to 1
     go s
     if _flp=0 .or. (tone(130,3),1=alarm("CZY CHCESZ ZMIENI NUMER BIE½¤CEGO DOKUMENTU ?",{"TAK","NIE"},2))
-       nk1:=nk
        return .t.
     endif
+    g:undo()
    ENDIF
-   nk:=nk1
 return .f.
 
 **************************
@@ -234,9 +251,9 @@ do case
 #endif
 #define DEF_WAR1
 #ifdef A_LAN
-  if DEF_WAR data>max(DatY->d_z_mies1,DatY->data_gran) .and. lanwar(_skey,_f,nk2)
+  if DEF_WAR (pozycja=D_LP0 .or. data>max(DatY->d_z_mies1,DatY->data_gran)) .and. lanwar(_skey,_f,nk2)
 #else
-  if DEF_WAR data>max(DatY->d_z_mies1,DatY->data_gran) .and. (val(nr_dowodu)=nk2 .or. _flp=0 .or. _skey=13 .and. pozycja=D_LP0 DEF_WAR1 .and.;
+  if DEF_WAR (pozycja=D_LP0 .or. data>max(DatY->d_z_mies1,DatY->data_gran) ).and. (compNk(nr_dowodu,nk2) .or. _flp=0 .or. _skey=13 .and. pozycja=D_LP0 DEF_WAR1 .and.;
      (tone(130,3),1=alarm("CZY CHCESZ ZMIENI NUMER BIE½¤CEGO DOKUMENTU ?",{"TAK","NIE"},2)) .and.;
     (dbdelete(),.t.))
 #endif
@@ -258,7 +275,7 @@ do case
 #else
  #define D_MM nr_mag
 #endif
-     DOK_IN(D_MM,smb_dow D_SUBDOK,nr_dowodu,.t.)
+     DOK_IN(D_MM,smb_dow D_SUBDOK,nr_dowodu+pozycja,.t.)
      set order to (_skey)
   endif
 
@@ -348,7 +365,7 @@ RETURN(.F.)
 ****************
 #ifdef A_LAN
 static function lanwar(_skey,_f,nk2)
-local r:=val(nr_dowodu)=nk2
+local r:=compNk(nr_dowodu,nk2)
   if !r .and. (_flp=0 .or. _skey=13 .and. pozycja=D_LP0 DEF_WAR1 .and.(tone(130,3),1=alarm("CZY CHCESZ ZMIENI NUMER BIE½¤CEGO DOKUMENTU ?",{"TAK","NIE"},2)))
      r:=reclock(.f.,"DOKUMENT NIEDOST¨PNY DO POPRAWY;jest poprawiany przez innego u¾ytkownika sieci",.f.,,recno())
      if r .and. _flp#0
@@ -594,15 +611,15 @@ endif
                  v:=ordkey()
                  x:=select()
                  begin sequence
-                   if !file(defa+y+HB_OsPathSeparator()+'main.dbf')
+                   if !file(defa+y+HB_ps()+'main.dbf')
                      break
                    endif
 
-                   nuse (defa+y+HB_OsPathSeparator()+'main') new alias ('main'+y)
+                   nuse (defa+y+HB_ps()+'main') new alias ('main'+y)
 #ifdef A_CDX
                    set order to tag main_ind
                    if empty(indexord())
-                     w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_OsPathSeparator()+"main.dbf,;klucz: "+v+";.")
+                     w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
                        index on &v tag main_ind eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
@@ -611,17 +628,17 @@ endif
                      //break
                    endif
 #else
-                   if !file(defa+y+HB_OsPathSeparator()+'main_ind'+ordbagext())
-                     index on &v to (defa+y+HB_OsPathSeparator()+'main_ind')
-                     w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_OsPathSeparator()+"main.dbf,;klucz: "+v+";.")
+                   if !file(defa+y+HB_ps()+'main_ind'+ordbagext())
+                     index on &v to (defa+y+HB_ps()+'main_ind')
+                     w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
-                       index on &v to (defa+y+HB_OsPathSeparator()+'main_ind') eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
-                       index on &v to (defa+y+HB_OsPathSeparator()+'main_ind') for &u eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') for &u eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      endif
                      //break
                    else
-                     set index to (defa+y+HB_OsPathSeparator()+'main_ind')
+                     set index to (defa+y+HB_ps()+'main_ind')
                    endif
 #endif
                    x:=nil
@@ -681,7 +698,7 @@ endif
                   loop
                 endif
                 if valtype(ames)='A'
-                  aadd(ames,{smb_dow,nr_dowodu,data,ilosc,wartosc,a,b})
+                  aadd(ames,{smb_dow+nr_dowodu+pozycja,nr_zlec,data,ilosc,wartosc,a,b})
                 endif
              endif
              if round(a+il,3)>0  //? czemu nie >=
@@ -711,15 +728,15 @@ endif
                  v:=ordkey()
                  x:=select()
                  begin sequence
-                   if !file(defa+y+HB_OsPathSeparator()+'main.dbf')
+                   if !file(defa+y+HB_ps()+'main.dbf')
                      break
                    endif
 
-                   nuse (defa+y+HB_OsPathSeparator()+'main') new alias ('main'+y)
+                   nuse (defa+y+HB_ps()+'main') new alias ('main'+y)
 #ifdef A_CDX
                    set order to tag main_ind
                    if empty(indexord())
-                     w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_OsPathSeparator()+"main.dbf,;klucz: "+v+";.")
+                     w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
                        index on &v tag main_ind eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
@@ -728,17 +745,17 @@ endif
                      //break
                    endif
 #else
-                   if !file(defa+y+HB_OsPathSeparator()+'main_ind'+ordbagext())
-                     index on &v to (defa+y+HB_OsPathSeparator()+'main_ind')
-                     w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_OsPathSeparator()+"main.dbf,;klucz: "+v+";.")
+                   if !file(defa+y+HB_ps()+'main_ind'+ordbagext())
+                     index on &v to (defa+y+HB_ps()+'main_ind')
+                     w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
-                       index on &v to (defa+y+HB_OsPathSeparator()+'main_ind') eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
-                       index on &v to (defa+y+HB_OsPathSeparator()+'main_ind') for &u eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') for &u eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      endif
                      //break
                    else
-                     set index to (defa+y+HB_OsPathSeparator()+'main_ind')
+                     set index to (defa+y+HB_ps()+'main_ind')
                    endif
 #endif
                    x:=nil
@@ -800,7 +817,7 @@ endif
              a-=ilosc
              b-=wartosc
 
-             if round(a+il,3)<=0                //dotarˆem do wˆa˜ciwego PZ
+             if if(valtype(ames)='A', round(a+il,3)<0, round(a+il,3)<=0)              //dotarˆem do wˆa˜ciwego PZ
                 ck:=((a+il)*wartosc/ilosc - b)/il
 #ifdef A_CEOKR
                 x:=Round(wartosc/ilosc,A_ZAOKR)
@@ -808,7 +825,7 @@ endif
                 ck:=max(max(0,Round(ck-1,0)),min(Round(ck+1,0),((a+il)*x - b - y)/il))
 #endif
                 if valtype(ames)='A'
-                  aadd(ames,{smb_dow,nr_dowodu,data,ilosc,wartosc,a,b})
+                  aadd(ames,{smb_dow+nr_dowodu+pozycja,nr_zlec,data,ilosc,wartosc,a,b})
                 endif
                 exit
              endif
@@ -937,17 +954,16 @@ func cenpz(_f,getlist) //zawsze na koäcu po zmianach il, wa, ce ,ck
   if dok_p_r="F" .or. dok_ew="Z" .or. dok_ew="E"      //.or. dok_p_r#"P" bo KW w TISie
      Return .t.
   endif
-#ifdef A_AUTOMAR
-#ifdef A_WA
-#ifdef cenA_zaK
+ #ifdef A_WA
+  #ifdef A_AUTOMAR
+   #ifdef cenA_zaK
       if ce#cz .or. wz#pm*wa
-      ce:=cz
-      wa:=pm*wz
-      chg_cen:=.t.
-      showwar(_f,getlist,gil)
+        ce:=cz
+        wa:=pm*wz
+        chg_cen:=.t.
+        showwar(_f,getlist,gil)
       endif
-#else
-
+   #else
       if (ce#cz .or. wz#pm*wa) .and. dok_p_r<>'F' .and. !( atail(getlist):name="wa" .and. wz=0 )
         ce:=cz
         wa:=pm*wz
@@ -955,22 +971,24 @@ func cenpz(_f,getlist) //zawsze na koäcu po zmianach il, wa, ce ,ck
         showwar(_f,getlist,gil)
       endif
       showvat(_f)
-#endif //cena_zak
-#else //a_wa
-      showvat(_f)
-#endif //a_wa
-#else //automar
-#ifdef A_WEBRUT
+   #endif //cena_zak
+  #else //automar
+   #ifdef A_WEBRUT
       cx:=avat
       private avat:=aclone(cx)
       if !_fnowy
          vat(proc_vat,-VATPZGR(pm*cena,val(proc_vat)))
       endif
-      vt:=vat()
+
+      vt:= round( A_WEBRUT vat() , A_ZAOKR)
+
       vat(pv,VATPZGR(wz,val(pv)))
-      vt:=pm*(wz+vat()-vt)
+
+      vt:=pm* (wz + round( A_WEBRUT vat() , A_ZAOKR) -vt)
+
       avat:=cx
-      if wa# vt
+
+      if round(wa - vt, A_ZAOKR)<>0
          wa:=vt
          ce:=ck:=wa/il
          chg_cen:=.t.
@@ -978,19 +996,22 @@ func cenpz(_f,getlist) //zawsze na koäcu po zmianach il, wa, ce ,ck
       else
          showvat(_f)
       endif
-#else
-#ifdef cenA_zaK
+   #else
+    #ifdef cenA_zaK
     if ce#cz .or. wz#pm*wa
       chg_cen:=.t.
       ce:=cz
       wa:=pm*wz
       showwar(_f,getlist,gil)
     endif
-#else
+    #else
       showvat(_f)
-#endif
-#endif
-#endif
+    #endif
+   #endif
+  #endif 
+ #else //a_wa
+      showvat(_f)
+ #endif //a_wa
 return .t.
 #endif
 ***************************
@@ -1197,7 +1218,7 @@ return .F.
 #endif
 ***************************
 FUNCTION pomval(g,_f,getlist,_s)
-LOCAL ZNALAZ,recf,RECM,RECS,RECI,RECD,rec1,rec2,PRZE:=IL,A,B,c,d,j,oldp,dpushl,ames,x,y,z
+LOCAL ZNALAZ,recf,RECM,RECS,RECI,RECD,rec1,rec2,PRZE:=IL,A,B,c,d,j,oldp,dpushl,ames,x,y,z,fchg:=.f.
 #ifdef A_KASA
   #define A_DIETA
 #endif
@@ -1233,13 +1254,15 @@ LOCAL ZNALAZ,recf,RECM,RECS,RECI,RECD,rec1,rec2,PRZE:=IL,A,B,c,d,j,oldp,dpushl,a
      wa:=pm*val(right(nim,10))
      if wa<>0
         ce:=ck:=wa/il
-        chg_cen:=.t.
+        fchg:=.t.
+        //chg_cen:=.t.
      endif
   #ifdef A_CENSPEC
     if sp='CZ'
        ce:=ck:=&sp
        wa:=il*ce
-       chg_cen:=.t.
+       fchg:=.t.
+       //chg_cen:=.t.
     endif
   #endif
      wz:=ROUND(pm*il*cz,A_ZAOKR)
@@ -1275,12 +1298,17 @@ if ppush
    if dok_p_r#"F".and.dok_ew#"Z"
       wa:=pm*parr[5]
       ck:=ce:=ROUND(wa/il,A_ZAOKR)
-      chg_cen:=.t. //dla POLOKA
+      fchg:=.t.
+      //chg_cen:=.t. //dla POLOKA
    endif
 #endif
 #ifdef A_FA
    cz:=parr[3]
-   if dok_p_r#"F"
+   if dok_p_r="F"
+#ifdef A_ZAGRODA
+      dpushl:=.f. // bo cena przeliczana przez &sp
+#endif
+   else
       cz*=pm
    endif
    pv:=parr[4]
@@ -1328,6 +1356,11 @@ if ppush
   IF (g:exitstate=GE_TOP .or. g:exitstate=GE_UP) .and. empty(nim)
      Return .t.
   endif
+#endif
+
+
+#ifdef A_WA
+  chg_cen:=fchg .or. chg_cen .and. (pm=1 .or. nim=indx_mat->index)
 #endif
 
   RECS:=STANY->(RECNO())
@@ -1380,6 +1413,7 @@ ames:={}
    _srowe:=maxrow()
    _sbeg:=1
    _slth:=0
+   _swar:=NIL
    DEFAULT _sinfo TO {|_skey,_s D_MYSZ|peoma(_skey,_s D_MYSZ)}
 #ifdef D_MINUS
    _skon:=D_MINUS
@@ -1550,7 +1584,7 @@ ames:={}
           set order to "MAIN_NRK"
 #ifdef A_WA
           c:=if(ROUND(STANY->stan-a,3)=0,0,(STANY->wartosc-b)/(STANY->stan-a)) // przed zaksi©gowaniem
-          d:=if(ROUND*STANY->stan+ilosc-a,3)=0,0,(wartosc+STANY->wartosc-b)/(ilosc+STANY->stan-a)) // po zaksi©gowaniu
+          d:=if(ROUND(STANY->stan+ilosc-a,3)=0,0,(wartosc+STANY->wartosc-b)/(ilosc+STANY->stan-a)) // po zaksi©gowaniu
           if ROUND(b-c*a,A_ZAOKR)#0
              aadd(ames,message(trim(index+" "+indx_mat->nazwa)+";Wyci¥gasz t© pozycj© ze ˜rodka kartoteki !;Przed wyksi©gowaniem cena na dzieä "+dtoc(data)+";wynosiˆa "+ltrim(strpic(d,12,A_ZAOKR,"@E "))+", a po "+ltrim(strpic(c,12,A_ZAOKR,"@E "))+" zˆ."))
           endif
@@ -1594,13 +1628,13 @@ ames:={}
 
 #ifdef A_WA
            wtoT:=Round(wtoT-wartosc,A_ZAOKR)
+#else
+           wtoT:=Round(wtoT-ilosc*(lam)->cenA,A_ZAOKR)
+#endif
 #ifdef wtoT
-           if wartosc#0
+           if wtoT#0
               commit in DM
            endif
-#endif
-#else
-           wtot:=Round(wtot-ilosc*(lam)->cenA,A_ZAOKR)
 #endif
 #ifdef A_SPECYF
           c:=(lam)->jm //specyfik(_f,0) //refresh
@@ -1840,10 +1874,10 @@ endif
    #define D_KOB
   #endif
 //tu byˆo D_CZ
-    if D_IZ !nowystan .and. (_fnowy D_KOB .or. il=0 .or. dok_war#"+" .or. (tone(130,3),1=alarm("CZY AKTUALIZOWA WARTO— EWIDENCYJN¤ DOKUMENTU ?" ,{"TAK","NIE"},2)))
+    if D_IZ !nowystan .and. (_fnowy D_KOB .or. il=0 .or. dok_war#"+" .or. pm=-1 .or. (tone(130,3),1=alarm("CZY AKTUALIZOWA WARTO— EWIDENCYJN¤ DOKUMENTU ?" ,{"TAK","NIE"},2)))
 #else
 //tu te¾
-    if D_IZ (_fnowy .or. il=0 .or. dok_war#"+" .or. (tone(130,3),1=alarm("CZY AKTUALIZOWA WARTO— EWIDENCYJN¤ DOKUMENTU ?" ,{"TAK","NIE"},2)))
+    if D_IZ (_fnowy .or. il=0 .or. dok_war#"+" .or. pm=-1 .or. (tone(130,3),1=alarm("CZY AKTUALIZOWA WARTO— EWIDENCYJN¤ DOKUMENTU ?" ,{"TAK","NIE"},2)))
 #endif
       if pm=1 .and. dok_zew#"W" .and. !chg_cen
             chg_cen:=.t.
@@ -1878,6 +1912,8 @@ endif
       else
 #ifdef A_FIFO
             getck(_fnowy)
+            aeval(getlist,{|g|g:display()},gil+1)
+            showwar(_f,getlist,gil)
 #endif
             if round(wa-(wa:=ROUND(ck*il,A_ZAOKR)),A_ZAOKR)#0
                private _sunsel:=_sel
@@ -2269,7 +2305,7 @@ field spec_nr
    if jmsp='m2'
       b:addcolumn(tbcolumnnew('il.szt',{||tran(asp[i,2],"@Z ######")}))
       b:addcolumn(tbcolumnnew('dˆug.m',{||tran(asp[i,3],"@Z ###.##")}))
-#ifdef A_KASA
+#ifdef A_KAMIX
       b:addcolumn(tbcolumnnew('sz.m',{||tran(asp[i,4],"@Z ###.##")}))
       b:addcolumn(tbcolumnnew('RAZEM m2',{||tran(asp[i,2]*asp[i,3]*asp[i,4],"@Z ######.##")}))
 #else
@@ -2280,7 +2316,7 @@ field spec_nr
    elseif jmsp='m3'
       b:addcolumn(tbcolumnnew('il.szt',{||tran(asp[i,2],"@Z ######")}))
       b:addcolumn(tbcolumnnew('dˆug.m',{||tran(asp[i,3],"@Z ###.##")}))
-#ifdef A_KASA
+#ifdef A_KAMIX
       b:addcolumn(tbcolumnnew('sz.m',{||tran(asp[i,4],"@Z ###.##")}))
       b:addcolumn(tbcolumnnew('gr.m',{||tran(asp[i,5],"@Z ##.##")}))
 #else
@@ -2288,7 +2324,7 @@ field spec_nr
       b:addcolumn(tbcolumnnew('gr.mm',{||tran(asp[i,5],"@Z ###")}))
 #endif
       b:addcolumn(tbcolumnnew('mi©¾sz.m3/m',{||tran(asp[i,6],"@Z ##.###")}))
-#ifdef A_KASA
+#ifdef A_KAMIX
       b:addcolumn(tbcolumnnew('RAZEM m3',{||tran(if(asp[i,6]#0,asp[i,2]*asp[i,3]*asp[i,6],asp[i,2]*asp[i,3]*asp[i,4]*asp[i,5]),"@Z ######.###")}))
 #else
       b:addcolumn(tbcolumnnew('RAZEM m3',{||tran(if(asp[i,6]#0,asp[i,2]*asp[i,3]*asp[i,6],asp[i,2]*asp[i,3]*asp[i,4]*asp[i,5]/1000000),"@Z ######.###")}))
@@ -2339,7 +2375,7 @@ field spec_nr
 #ifdef A_OLZBY
          readmodal({_GET_(x,"x",{"@KS10","@K #####","@!","@K #####"}[j],,)})
 #else
-#ifdef A_KASA
+#ifdef A_KAMIX
          readmodal({_GET_(x,"x",{"@KS10","@K ######","@K ###.##","@K ##.##","@K ###.##","@K ##.###"}[j],,)})
 #else
          readmodal({_GET_(x,"x",{"@KS10","@K ######","@K ###.##","@K #####","@K ###","@K ##.###"}[j],,)})
@@ -2420,13 +2456,13 @@ local j:=0
       aeval(asp,{|x|j+=x[2]})
 #else
       if jmsp='m2'
-#ifdef A_KASA
+#ifdef A_KAMIX
          aeval(asp,{|x|j+=ROUND(x[2]*x[3]*x[4],ILDEC-1)})
 #else
          aeval(asp,{|x|j+=ROUND(x[2]*x[3]*x[4],ILDEC-3)/1000})
 #endif
       elseif jmsp='m3'
-#ifdef A_KASA
+#ifdef A_KAMIX
          aeval(asp,{|x|j+=if(x[6]#0,ROUND(x[2]*x[3]*x[6],ILDEC),ROUND(x[2]*x[3]*x[4]*x[5],ILDEC))})
 #else
          aeval(asp,{|x|j+=if(x[6]#0,ROUND(x[2]*x[3]*x[6],ILDEC),ROUND(x[2]*x[3]*x[4]*x[5],ILDEC-6)/1000000)})
@@ -2577,7 +2613,7 @@ DO CASE
 #endif
                      return gfirma(13,_s,getlist)
                   endif      
-                 else
+               else
                   if dok_kon="?"
                       /*
                       if dok_p_r="F"
@@ -2588,8 +2624,34 @@ DO CASE
                      _sret=.T.
                      return .t.
                   endif
-                  _spocz:=""
+                  txt:=_spocz
+                  re:=at(' * ',txt)
+                  if re>0 
+                     txt:=left(txt,re)
+                  endif
+ 
+#ifdef A_FFULL
+                  SET ORDER TO TAG FIRM_LNG
+
+                  if indexord()>2 .and. dbSEEK(_spocz)
+                     _sbeg:=A_NRLTH+3+len(nazwa)
+                     if _spocz=UpP(trim(longname))
+                        return gfirma(13,_s,getlist)
+                     endif
+                  else
+                     _spocz:=''
+                     _slth:=0
+                     _sfilt:='['+txt+']$UPPER(longname)'
+                     _sfilb:={||txt$UPPER(longname)}
+                     _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"|","*")+nazwa+"³"+longname,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+                  endif
+#else
+                  _spocz:=''
                   _slth:=0
+                  _sfilt:='['+txt+']$UPPER(naZwa)'
+                  _sfilb:={||txt$UPPER(naZwa)}
+                  _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"|","*")+nazwa,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+#endif
                endif
       ENDCASE
 #ifdef A_FDO
@@ -2692,11 +2754,15 @@ DO CASE
       _skey=val(numer_kol)+1
 #endif
 //#endif
-      if _sbeg#1
+      if _sbeg=A_NRLTH+2
 #ifdef A_AF
         set order to tag KH2
 #else
         set order to tag FIRM_NAZ
+#endif
+#ifdef A_FFULL
+      elseif _sbeg>A_NRLTH+2
+        SET ORDER TO TAG FIRM_LNG
 #endif
       endif
       goto lastrec()+1
@@ -2708,24 +2774,62 @@ DO CASE
       endif
 
    CASE _skey=2  // ^>
-      _sbeg:=A_NRLTH+2
+      if _sbeg=1
+        _sbeg:=A_NRLTH+2
 #ifdef A_AF
-      set order to tag KH2
+        set order to tag KH2
 #else
-      SET ORDER TO "FIRM_NAZ"
+        SET ORDER TO "FIRM_NAZ"
+#endif 
+      elseif _sbeg=A_NRLTH+2
+#ifdef A_FFULL
+         SET ORDER TO TAG FIRM_LNG
+         if indexord()>2
+            _sbeg+=len(nazwa)+1
+         else
+            _sbeg:=1
+            SET ORDER TO TAG FIRM_NUM
+         endif
+      else
 #endif
+       _sbeg:=1
+#ifdef A_AF
+        set order to tag KH
+#else
+        SET ORDER TO "FIRM_NUM"
+#endif
+      endif
       _swar=&('{|p|'+IndexkeY(0)+'=p'+'}')
       _spocz:=""
       _slth:=0
       refresh(1,_s)
 
    CASE _skey=26  // ^<
-      _sbeg=1
+      if _sbeg=A_NRLTH+2
 #ifdef A_AF
-      set order to tag KH
+        set order to tag KH
 #else
-      SET ORDER TO "FIRM_NUM"
+        SET ORDER TO "FIRM_NUM"
 #endif
+        _sbeg:=1
+      elseif _sbeg=1
+         _sbeg:=A_NRLTH+2
+#ifdef A_FFULL
+         SET ORDER TO TAG FIRM_LNG
+         if indexord()>2
+            _sbeg+=len(nazwa)+1
+         else
+            SET ORDER TO TAG FIRM_NUM
+         endif
+      else
+#endif
+         _sbeg:=A_NRLTH+2
+#ifdef A_AF
+        set order to tag KH2
+#else
+        SET ORDER TO "FIRM_NAZ"
+#endif
+      endif
       _swar=&('{|p|'+IndexkeY(0)+'=p'+'}')
       _spocz:=""
       _slth:=0

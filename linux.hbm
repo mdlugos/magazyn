@@ -1,10 +1,4 @@
--w1 -m -n -u+kamix.ch -oma
--gttrm
-#-gtxwc
-#-gtqtc
+-w1 -m -n -oma 
+-lhbmxml hbmxml.hbc
 #-lrddads rddads.hbc
-#-lhbmxml hbmxml.hbc
-#-lhbcurl hbcurl.hbc
-main ind_val dok dm_valid dm_form dok_druk dok_pr dodatki druk_zes io io_2 help error clp_brow mds mds_spec frmrun getsys indeksy
-#zagroda
-#cppl852m.c
+main ind_val dok dm_valid dm_form dok_druk dok_pr dodatki druk_zes io io_2 help error clp_brow mds mds_spec frmrun getsys indeksy jpk

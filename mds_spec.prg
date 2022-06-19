@@ -3,7 +3,7 @@
 #include "inkey.ch"
 *************
 FUNCTION _sLIST(txt,_s)
-  local hwbuf,sel,lfor,getlist:={},older,r,bl,x,y,z
+  local hwbuf,sel,lfor,getlist:={},older,r,bl,x,y,z,skf2
   static old:="",oldar:=0
   memvar linia,a,b,c,d,e,f,g,h,oprn
 
@@ -23,7 +23,7 @@ if sel#oldar .or. ""=old
 else
   txt:=old
 endif
-  setkey(-1,{|a,x|a:=listfields(sel,{},{}),x:=0,if(aczojs(a[1],"",@x,a[2],"Wybierz pola"),(txt:=trim(txt),txt+=if(""=txt,""," + ")+trim(a[1,x]),updated(.t.)),)})
+  skf2:=setkey(-1,{|a,x|a:=listfields(sel,{},{}),x:=0,if(aczojs(a[1],"",@x,a[2],"Wybierz pola"),(txt:=trim(txt),txt+=if(""=txt,""," + ")+trim(a[1,x]),updated(.t.)),)})
   ? "Prosz© okre˜li†, kt¢re z dost©pnych p¢l maj¥ by† listowane."
   ? "Sci¥gawka pod [F2]. Listing od bie¾¥cej pozycji w d¢ˆ.    Scroll Lock - pˆynny."
   ?
@@ -59,8 +59,8 @@ endif
   END SEQUENCE
   EXIT
   ENDDO
+  setkey(-1,skf2)
   errorblock(older)
-  setkey(-1,NIL)
   if ""=txt .or. ReadkeY()=K_ESC
      RESTore SCREEN FROM hwbuf
      RETURN .F.
@@ -220,7 +220,7 @@ ELSEIF valtype(_s)='A' .and. ReadkeY()#K_ESC .AND.! _sfilt==txt
       if _sm>_si .and. _si>0
          --_sm
       endif
-#ifdef __PLATFORM__UNIX
+#ifdef __HARBOUR__
 #define D_REST 4
 #else
 #define D_REST 2

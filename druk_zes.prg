@@ -1,5 +1,5 @@
 //#define FIXDOK
-memvar strona,stawki,stawkizby,it_zesmnu,oprn
+memvar strona,stawki,stawkizby,it_zesmnu,oprn,defa
 #ifdef A_KHSEP
 #define D_KH kontrahent
 #define D_KH1 dost_odb
@@ -39,14 +39,14 @@ memvar strona,stawki,stawkizby,it_zesmnu,oprn
 //#define speC(x) if(set(_SET_PRINTER),x,"")
 
 #ifdef A_PCL
-#ifndef A_15CALI
-#define A_15CALI
-#endif
-#ifdef A_XPRN
+  #ifndef A_15CALI
+    #define A_15CALI
+  #endif
+  #ifdef A_XPRN
 memvar landscape
-#else
+  #else
 static landscape:=.f.
-#endif
+  #endif
 #define P_ROWN if(landscape,p_rownl,p_rown)
 #define P_COLN if(landscape,p_colnl,p_coln)
 #endif
@@ -117,14 +117,14 @@ MEMVAR magazyny,adres_mag,;
        firma_n,firma_a,rodz_sprzed,zamowienie,stanowis,miar_opcja
 
 MEMVAR GETLIST,NAZWA_MAG,mag_poz,MAG_BIEZ,;
-       dok_par,dokumenty,dok_rozch,dok_zewn,pm
+       dok_par,dokumenty,dok_rozch,dok_zewn,dok_ewid,pm
 
 FIELD WARTOSC,ILOSC,DATA,INDEX,nr_mag,smb_dow,nr_dowodu,pozycja,nr_zlec,dost_odb,kontrahent,;
       przelewem,czekiem,cena,proc_vat,nr_faktury,jm,jm_opcja,przel,info,wart_vat,;
       numer_kol,uwagi,nazwa,adres,rodz_opak,gram,wart_net,nr_kpr,data_dost,;
       ZAMK_MIES1,ZAMK_MIES2,ZAMKN_ROKU,wart_MIES1,wart_MIES2,wart_ROKU,longname,;
       sub_dok,wart_ewid,d_wartosc,konto,opis_koszt,SJMO,SJMO_MIES1,SJMO_MIES2,SJMO_ROKU,;
-      data_vat
+      data_vat,cena_k
 
 #ifdef A_LPNUM
 #define D_LP0 str(0,A_LPNUM) //'  0'
@@ -142,7 +142,7 @@ FIELD WARTOSC,ILOSC,DATA,INDEX,nr_mag,smb_dow,nr_dowodu,pozycja,nr_zlec,dost_odb
 #define D_LPPUT(x) chr(x+48)
 #endif
 
-#ifdef A_KASA
+#ifdef A_KAMIX
   #undef D_GRAM
   #undef D_JMTOT
 #endif
@@ -273,6 +273,9 @@ r:=.t.
 #ifdef A_WIN_PRN
   #define D_HWPRN A_WIN_PRN
 #endif
+#ifdef A_PCL
+MEMVAR->landscape:=.f.
+#endif
 #ifdef D_HWPRN
 oprn:=D_HWPRN
 #command ?  [<exp,...>]         => wQ()[;?? <exp>]
@@ -324,21 +327,22 @@ IF STRONA>0
 ? A_WADO
 //'Sporz¥dziˆ:                                             Zatwierdziˆ:'
 #endif
+   ?? speC(chr(13)+chr(12))
+#ifdef A_PCL
+/**********
+if landscape
+   ?? speC(eval(P_LAND,.f.)) //'&l0O')
+endif
+********/
+//   ?? speC("E")
+
+//   landscape:=.f.
+#endif
 #ifdef D_HWPRN
 if valtype(oprn)='O'
    oprn:Destroy()
    oprn:=NIL
 endif
-#endif
-   ?? speC(chr(13)+"")
-#ifdef A_PCL
-
-if landscape
-   ?? speC(eval(P_LAND,.f.)) //'&l0O')
-endif
-//   ?? speC("E")
-
-//   landscape:=.f.
 #endif
    setprc(0,0)
    set print off
@@ -414,6 +418,7 @@ DO := IF(DatY->DATA_GRAN>DatY->D_Z_MIES2,DatE(),DatY->D_Z_MIES1)
 pm:=-1
 
   SET ORDER TO TAG MAIN_ZLE
+  SET RELATION TO KEY_DOK+nr_dowodu INTO DM
 
   @ 18,20 say "DATA od   :" get od valid {||od:=max(od,DatY->d_z_rok+1),do:=max(od,do),.t.}
   @ 18,50 say "DATA do   :" get do valid {||do:=max(od,do),.t.}
@@ -454,14 +459,14 @@ endif
 I_OD=UpP(TRIM(I_OD))
 I_DO=UpP(TRIM(I_DO))
 a:=len(&(INDEXKEY()))-10-len(index)
-#ifdef A_FA
-return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,"ZESTAWIENIE SPRZEDA½Y W/G KONTRAHENTàW",{||NIL},{||;
-  FIRMY->(IF(i_gr>=a.and.DBSEEK(subs(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),if(i_gr>=a+2,QOUT(subs(magazyny[ascan(magazyny,nr_mag)],4)),)}})
-#else
 #ifdef A_OBR
 stanowis->(ordsetfocus("kont_num"))
 return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,"ZESTAWIENIE ROZCHODàW W/G KONT",{||NIL},{|x,y|;
   if(i_gr>=a.and.stanowis->(dbseek(left(main->nr_zlec,a))),QQOUT(stanowis->opis_koszt),)}})
+#else
+#ifdef A_FA
+return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,"ZESTAWIENIE SPRZEDA½Y W/G KONTRAHENTàW",{||NIL},{||;
+  FIRMY->(IF(i_gr>=a.and.DBSEEK(subs(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),if(i_gr>=a+2,QOUT(subs(magazyny[ascan(magazyny,nr_mag)],4)),)}})
 #else
 return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,"ZESTAWIENIE ROZCHODàW W/G KONT",{||NIL},{|x,y,z|z:='',;
   if(i_gr>=a+2.and.(x:=ascan(magazyny,nr_mag),y:=if(x=0,x,ascan(stanowis[x],{|x|nr_zlec=strtran(trim(left(x,a)),'*')})),y#0),z:=subs(stanowis[x,y],8),),;
@@ -480,6 +485,8 @@ DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
 @ 15,20 say "PODAJ ZAKRES DANYCH DLA WYDRUKU"
 
   SET ORDER TO TAG MAIN_ZLE
+  SET RELATION TO KEY_DOK+nr_dowodu INTO DM
+
   @ 18,20 say "DATA od   :" get od valid {||od:=max(od,DatY->d_z_rok+1),do:=max(od,do),.t.}
   @ 18,50 say "DATA do   :" get do valid {||do:=max(od,do),.t.}
 #ifdef A_OLZA
@@ -592,6 +599,7 @@ SELECT STANY
   I_DO=UpP(TRIM(I_DO))
 
   SELECT MAIN
+  SET RELATION TO KEY_DOK+nr_dowodu INTO DM
   SET ORDER TO TAG MAIN_IND
   SET FILTER TO smb_dow$dok_sp
   seek i_od
@@ -603,8 +611,6 @@ proc druk(i)
 LOCAL od,do,W,TXT,i_od,i_do,sel,bkey,WTOT,DFLAG,IR,IW,IN,multiflag,zby_flag,;
       bw,bc,t_gr,i_gr,i_mul,gri,grt,jm_o,wat,wai,pm,v,VTOT,iv,bv,bpic,nz,;
       _dnazwa,_dhead,_dhead2,pzdok,dfdok,j,x,wd,vd,txth,bi,wa_flag
-
-  SET RELATION TO KEY_DOK+nr_dowodu INTO DM
 
       asize(i,max(len(i),17))
      od:=i[1]
@@ -679,16 +685,28 @@ DEFAULT _dhead2 TO {||NIL}
 #ifdef A_CENVAT
      if pm=1 // netto
      DEFAULT bw TO {|x|if(KEY_DOK$pzdok,cena,WbezVATGR(ilosc_f,cena,val(proc_vat),D_DF)/100)}
+#ifdef A_WEBRUT
+     DEFAULT bv TO {|x|if(KEY_DOK$pzdok,if(KEY_DOK$dok_ewid,wartosc-cena,VATPZ(cena,val( proc_vat))),ILEVATGR(ilosc_f,cena,val(proc_vat),D_DF)/100)}
+#else
      DEFAULT bv TO {|x|if(KEY_DOK$pzdok,VATPZ(cena,val( proc_vat)),ILEVATGR(ilosc_f,cena,val(proc_vat),D_DF)/100)}
+#endif
      DEFAULT bc TO {|x|if(KEY_DOK$pzdok,cena/ilosc_f,WbezVAT(1,cena,val(proc_vat),D_DF))}
      else // brutto
      DEFAULT bw TO {|x|-if(KEY_DOK$pzdok,cena+VATPZ(cena,val( proc_vat)),WGR(ilosc_f,cena,val(proc_vat),D_DF)/100)}
+#ifdef A_WEBRUT
+     DEFAULT bv TO {|x|-if(KEY_DOK$pzdok,if(KEY_DOK$dok_ewid,wartosc-cena,VATPZ(cena,val( proc_vat))),ILEVATGR(ilosc_f,cena,val(proc_vat),D_DF)/100)}
+#else
      DEFAULT bv TO {|x|-if(KEY_DOK$pzdok,VATPZ(cena,val( proc_vat)),ILEVATGR(ilosc_f,cena,val(proc_vat),D_DF)/100)}
+#endif
      DEFAULT bc TO {|x|if(KEY_DOK$pzdok,(cena+VATPZ(cena,val( proc_vat)))/ilosc_f,cena)}
      endif
 #else
      DEFAULT bw TO {|x|pm*if(KEY_DOK$pzdok,cena,WGR(ilosc_f,cena,val(proc_vat),D_DF)/100)}
+#ifdef A_WEBRUT
+     DEFAULT bv TO {|x|pm*if(KEY_DOK$pzdok,if(KEY_DOK$dok_ewid,wartosc-cena,VATPZ(cena,val( proc_vat))),ILEVATGR(ilosc_f,cena,val(proc_vat),D_DF)/100)}
+#else
      DEFAULT bv TO {|x|pm*if(KEY_DOK$pzdok,VATPZ(cena,val( proc_vat)),ILEVATGR(ilosc_f,cena,val(proc_vat),D_DF)/100)}
+#endif
      DEFAULT bc TO {|x|if(KEY_DOK$pzdok,cena/ilosc_f,cena)}
 #endif
 #undef D_DF
@@ -702,7 +720,15 @@ DEFAULT _dhead2 TO {||NIL}
 #endif
 #ifdef A_WA
      DEFAULT bw TO {||pm*wartosc}
+#ifdef A_CK
+     if fieldpos('cena_k')=0
+       DEFAULT bc TO {||wartosc/ilosc}
+     else
+       DEFAULT bc TO {||cena_k}
+     endif
+#else
      DEFAULT bc TO {||wartosc/ilosc}
+#endif
 #else
      DEFAULT bw TO {||pm*ilosc*(sel)->cenA}
      DEFAULT bc TO {||(sel)->cenA}
@@ -712,7 +738,11 @@ DEFAULT _dhead2 TO {||NIL}
 #else
 #ifdef A_WA
   #define D_WARTOSC pm*wartosc
+#ifdef A_CK
+  #define D_CENA    if(fieldpos('cena_k')=0,wartosc/ilosc,cena_k)
+#else
   #define D_CENA    wartosc/ilosc
+#endif
 #else
   #define D_WARTOSC pm*ilosc*(sel)->cenA
   #define D_CENA    (sel)->cenA
@@ -1232,6 +1262,7 @@ endif
 #else
       INDX_MAT->(DBSEEK(MAIN->INDEX,.F.))
 #endif
+      j:=INDX_MAT->(recno())
       SEL:=I_LAM(MAIN->DATA)
 #ifdef A_PLUDRY
       nz:=MAIN->nr_zlec
@@ -1274,6 +1305,7 @@ endif
       nz:=nr_zlec
 #endif
       skip
+      INDX_MAT->(dbgoto(j))
        IF eval(bkey)+DTOS(DATA)>TXT+DTOS(do) .or. eof() .or. (sel)->data_popr#(i_lam(data))->data_popr
          if multiflag>1
 if wa_flag
@@ -1298,6 +1330,7 @@ endif
 #else
       SUM D_ILOSC,D_WARTOSC,1 TO IR,IW,MULTIFLAG rest WHILE eval(bkey)+DTOS(DATA)<=TXT+DTOS(do) .and. (sel)->data_popr=(i_lam(data))->data_popr
 #endif
+      INDX_MAT->(dbgoto(j))
 if wa_flag
         W+=IW
         addVAT(v,iv)
@@ -1496,42 +1529,12 @@ return
 **************
 #ifdef A_FA
 ************
-stat proc mkdmbis
-FIELD for,unique,descend,klucz,baza,nazwa
-  if upper(ordname()) # "DM_BIS"
-     sel("INDEKS")
-     Locate FOR baza=='DM      '
-     DO WHILE baza=='DM      ';skip;enddo
-     skip -1
-     insrec()
-     skip
-     nazwa:='DM_BIS'
-     for:=''
-     unique:=descend:=.f.
-#ifdef A_MM
-#ifdef A_SUBDOK
-     klucz:='SMB_DOW+SUB_DOK+DTOS(DATA)'
-#else
-     klucz:='SMB_DOW+DTOS(DATA)'
-#endif
-#else
-#ifdef A_SUBDOK
-     klucz:='NR_MAG+SMB_DOW+SUB_DOK+DTOS(DATA)'
-#else
-     klucz:='NR_MAG+SMB_DOW+DTOS(DATA)'
-#endif
-#endif
-     select DM
-     use
-     sel('DM','DM_BIS')
-  endif
-return
-**********************
 static PROCEDURE W_REJ()
 
 MEMVAR GETLIST,NAZWA_MAG,dok_par,dokumenty
 LOCAL OD,DO,TXT,i,wd,wp,wc,dok_i,wv,W,v,was,j,k,wn,wat,wnt:=0,wag,wvt:=0,wpt:=0,wct:=0,dok_sp,wdt:=0,mag_poz,mag_biez,cl,cc,kl,x,lp
 local ok
+
 OD := DatY->data_gran+1
 DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
   dok_sp:=""
@@ -1563,8 +1566,23 @@ dok_sp:=upper(alltrim(dok_sp))+'  '
   SET RELATION TO NR_MAG+INDEX INTO INDX_MAT
 #endif
   SELECT DM
-  set order to TAG DM_BIS
-  mkdmbis()
+
+#ifdef A_MM
+#ifdef A_SUBDOK
+  #define mkdmbIs() mkindex('DM_BIS','SMB_DOW+SUB_DOK+DTOS(DATA)')
+#else
+  #define mkdmbIs() mkindex('DM_BIS','SMB_DOW+DTOS(DATA)')
+#endif
+#else
+#ifdef A_SUBDOK
+  #define mkdmbIs() mkindex('DM_BIS','NR_MAG+SMB_DOW+SUB_DOK+DTOS(DATA)')
+#else
+  #define mkdmbIs() mkindex('DM_BIS','NR_MAG+SMB_DOW+DTOS(DATA)')
+#endif
+#endif
+
+  mkdmbIs()
+
   SET FILTER TO POZYCJA>D_LP0
   go top
   if eof()
@@ -1847,7 +1865,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
       endif
       if j>1
       ?  "             ----------------------------------"
-      ?  "             =      RAZEM "+TrAN(Wnt+wvt,"@E ",A_ZAOKR,15)
+      ?  "             =      RAZEM "+TrAN(wdt,"@E ",A_ZAOKR,15)
       endif
       ?
       for j:=1 to len(wag)
@@ -1892,7 +1910,7 @@ ELSE
   aeval(stawkizby,{|x|if(val(x)#0,++cc,)})
   cl:=13
 #ifdef A_15CALI
-  do while 30+35+cc*cl>D_COLN*D_CPI .and. cl>10
+  do while 30+35+cc*cl>D_COLN*D_CPI .and. cl>11
      --cl
   enddo
 #endif
@@ -1964,11 +1982,11 @@ ELSE
          setprc(0,0)
         else
 #ifdef D_HWPRN
-         landscape:=.t.
+         memvar->landscape:=.t.
 #endif
          print()
 #ifdef A_PCL
-         landscape:=.f.
+         memvar->landscape:=.f.
          ?? speC(eval(P_LAND,.t.)) //+"&l1O")
 #endif
         ENDIF
@@ -2399,8 +2417,9 @@ dok_zak:=upper(alltrim(dok_zak))+'  '
   SET RELATION TO NR_MAG+INDEX INTO INDX_MAT
 #endif
   SELECT DM
-  set order to TAG DM_BIS
-  mkdmbis()
+
+  mkdmbIs()
+
   SET FILTER TO POZYCJA>D_LP0
   go top
   if eof()
@@ -2640,7 +2659,7 @@ ELSE
   aeval(stawki,{|x|if(val(x)#0,++cc,)})
   cl:=13
 #ifdef A_15CALI
-  do while 30+41+cc*cl D_KPR >D_COLN*D_CPI .and. cl>10
+  do while 30+41+cc*cl D_KPR >D_COLN*D_CPI .and. cl>11
      --cl
   enddo
 #endif
@@ -2713,11 +2732,11 @@ ELSE
         setprc(0,0)
       else
 #ifdef D_HWPRN
-         Landscape:=.t.
+         memvar->Landscape:=.t.
 #endif
          print()
 #ifdef A_PCL
-         landscape:=.f.
+         memvar->landscape:=.f.
          ?? speC(eval(P_LAND,.t.)) //+"&l1O")
 #endif
         ENDIF
@@ -3090,13 +3109,13 @@ RETURN
  #undef D_CPI
 #endif
 ***********************************
-PROCEDURE w_p_r(OD,DO,wa_flag)
+PROCEDURE w_p_r(OD,DO,wa_flag,i_od,i_do,i_snt,i_gr,t_gr,kg_flag,jm_o)
 
 MEMVAR GETLIST,NAZWA_MAG,adres_mag,grupy_indx
 
-LOCAL D_G,SP,SR,WP,WR,S,W,TXT,i_od,i_do,mag_poz,sel,SPT:=0,PT:=0,RT:=0,jm_o,;
+LOCAL D_G,SP,SR,WP,WR,S,W,TXT,mag_poz,sel,SPT:=0,PT:=0,RT:=0,;
 SKT:=0,SPTOT:=0,PTOT:=0,RTOT:=0,SKTOT:=0,lam,flag,bw,nmat,njob,cedat,;
-i_gr,t_gr,last_gr:="",spgr,pgr,rgr,skgr,gri,ws,is,bkey,x
+last_gr:="",spgr,pgr,rgr,skgr,gri,ws,is,bkey,x
 
 
 #ifdef A_JMO
@@ -3115,7 +3134,7 @@ i_gr,t_gr,last_gr:="",spgr,pgr,rgr,skgr,gri,ws,is,bkey,x
 
 #ifdef D_GRAM
 local wag,wagsp,wagp,wagr,wagsk,wagspt:=0,wagpt:=0,wagrt:=0,wagskt:=0,wagsptot:=0,;
-wagptot:=0,wagrtot:=0,wagsktot:=0,wagspgr,wagpgr,wagrgr,wagskgr,kg_flag
+wagptot:=0,wagrtot:=0,wagsktot:=0,wagspgr,wagpgr,wagrgr,wagskgr
 //#define TraN(a,b,c,d) strpic(a,d,c,b)    //TraN(W,"@E ",A_ZAOKR,15)
 #define D_A_ZAOKR if(kg_flag,2,A_ZAOKR)
 #else
@@ -3130,6 +3149,8 @@ DEFAULT OD TO DatY->data_gran+1
 DEFAULT DO TO IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
 @ 13,10 SAY "ZESTAWIENIE PRZYCHODàW I ROZCHODàW DLA POSZCZEGàLNTCH MATERIAàW"
 
+if pcount()<2
+
 @ 15,20 say "PODAJ ZAKRES DANYCH DLA WYDRUKU"
 
 @ 18,20 say "DATA od   :" get od valid {||od:=max(od,DatY->d_z_rok+1),do:=max(od,do),.t.}
@@ -3139,14 +3160,22 @@ if readkey()=27
   break
 endif
 
+endif
+
+select MAIN
+
 #ifdef A_IZ
+#ifdef A_WA
 set filter to ilosc#0 .or. wartosc#0
+#else
+set filter to ilosc#0
+#endif
 #endif
 
-
-
-
 SELECT STANY
+
+if pcount()<5
+
 #ifndef A_STSIMPLE
 IF tak("CZY KOJEJNO— W/G NAZW",20,,.F.,.F.)
    set order to 1
@@ -3175,28 +3204,61 @@ READ
 if readkey()=27
   break
 endif
+
 I_OD=UpP(TRIM(I_OD))
 I_DO=UpP(TRIM(I_DO))
+
+else
+
+   bkey:=&('{||'+IndexkeY(0)+'}')
+
+endif
+
 SEEK I_OD
-IF od<=do .and. TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
+
+IF od>do
+   i_snt:=.f.
+ENDIF
+
+IF i_snt=NIL
+   i_snt:=TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
+ENDIF
+***********
+if i_snt
+*************
+IF i_gr=NIL
+
 i_gr:=2
+
 @ 22,10 SAY 'grupowanie wedˆug pierwszych' GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=len(eval(bkey))
   devout(" znak¢w klucza")
 read
+
 if readkey()=27
   break
 endif
-t_gr:=TAK("CZY TYLKO GRUPY",23,,.F.,.f.)
+
+ENDIF
+
+if t_gr=NIL
+   t_gr:=TAK("CZY TYLKO GRUPY",23,,.F.,.f.)
+endif
 #ifdef D_GRAM
+if kg_flag=NIL
    kg_flag:=TAK("CZY ILO—CI W KILOGRAMACH ZAMIAST WARTO—CI",,,.F.,.F.)
+endif
 #endif
 #ifdef A_JMO
-if jm_o:=!t_gr
+if t_gr
+   jm_o:=.f.
+elseif jm_o=NIL
    jm_o:=TAK("CZY W ALTERNATYWNEJ JEDNOSTCE MIARY",,,miar_opcja,.F.)
 endif
 #else
 #ifdef A_JMALTTOT
-jm_o:=TAK("CZY W ALTERNATYWNEJ JEDNOSTCE MIARY",,,miar_opcja,.F.)
+IF jm_o=NIL
+   jm_o:=TAK("CZY W ALTERNATYWNEJ JEDNOSTCE MIARY",,,miar_opcja,.F.)
+ENDIF
 #endif
 #endif
 
@@ -3392,7 +3454,7 @@ endif
     else
          print()
 #ifdef A_OKI4W
-         landscape=.f.
+         memvar->landscape=.f.
          ?? speC(eval(P_LAND,.t.)) //+"&l1O")
 #endif
     ENDIF
@@ -3883,13 +3945,20 @@ DO WHILE EVAL(BKEY)<=I_DO .AND. !EOF()
       S+=is:=D_ILOSC
 #ifdef A_WA
       W+=ws:=WARTOSC
+      x:=ws/is
+#ifdef A_CK
+      IF fieldpos('cena_k')<>0
+         x:=cena_k
+      ENDIF
+#endif
 #else
-      ws:=ilosc*(sel)->cenA
-      w:=s*(sel)->cenA
+      x:=(sel)->cenA
+      ws:=ilosc*x
+      w:=s*x
 #endif
 #ifdef A_OLZA
       DM->(DBSEEK(MAIN->(KEY_DOK+MAIN->NR_DOWODU),.F.))
-      ? ccpi(7)+SMB_DOW,NR_DOWODU+"/"+STR(D_LPVAL(POZYCJA),2)+"|"+DTOV(DATA)+"|"+;
+      ? ccpi(7)+SMB_DOW,NR_DOWODU+"/"+STR(D_LPVAL(POZYCJA),3)+"|"+DTOV(DATA)+"|"+;
         dm->konto_kosz+"|"+dm->stano_kosz+"|"+NR_ZLEC+"|"
         ?? ccpi(4)+;
         izreS(PRZYCH(is),(sel)->przel)+"|"+;
@@ -3899,8 +3968,8 @@ DO WHILE EVAL(BKEY)<=I_DO .AND. !EOF()
         izreS(S,(sel)->przel)+"|"+;
         TrAN(W,"@E ",A_ZAOKR,11)+"|"
 #else
-      ? SMB_DOW,NR_DOWODU+"/"+STR(D_LPVAL(POZYCJA),2)+"|"+DTOV(DATA)+"|"+nr_zleC+"|"+;
-        TrAN(ws/is,"@EZ ",A_ZAOKR,10)+"|"+;
+      ? SMB_DOW,NR_DOWODU+"/"+STR(D_LPVAL(POZYCJA),3)+"|"+DTOV(DATA)+"|"+nr_zleC+"|"+;
+        TrAN(x,"@EZ ",A_ZAOKR,10)+"|"+;
         izreS(PRZYCH(is),(sel)->przel)+"|"+;
         TrAN(PRZYCH(ws),"@EZ ",A_ZAOKR,11)+"|"+;
         izreS(ROZCH(Is),(sel)->przel)+"|"+;
@@ -4503,7 +4572,11 @@ ELSE
 #endif
             if ROUND(pm*wd-warT_ewiD,A_ZAOKR)#0
                ? "NIE ZGADZA SI¨ SUMA WSZYSTKICH POZYCJI !!!"
-               wd:=pm*warT_ewiD
+               ?? 'DOKONANO KOREKTY Z',pm*warT_ewiD,'NA',wd
+               //wd:=pm*warT_ewiD
+               LOCK
+               warT_ewiD:=pm*wd
+               UNLOCK
             endif
 
 #ifdef A_FA
@@ -4711,7 +4784,7 @@ if !i
 endif
 #endif
 #ifdef D_HWPRN
-   Landscape:=.t.
+   memvar->Landscape:=.t.
 #endif
    print()
 IF i
@@ -4721,7 +4794,7 @@ IF i
       lp:=0
       STRONA:=1
 #ifdef A_PCL
-      landscape:=.f.
+      memvar->landscape:=.f.
       ?? speC(eval(P_LAND,.t.)+eval(P_MARGIN,10)) //specout('&l1O&a10L')
 #endif
       ?? firma_n,' ',year(data)," r."
@@ -4844,7 +4917,7 @@ ELSE
 
   @ 8,0 CLEAR
 #ifdef A_PCL
-  landscape:=.f.
+  memvar->landscape:=.f.
   ?? speC(eval(P_LAND,.t.)) //+"&l1O")
 #endif
   afill(coltot,0)
@@ -4856,7 +4929,7 @@ ELSE
          if i=12 .and. dtos(od)>'2006'
             loop
          endif
-         ?? "³"+strpic(coltot[i],v-1,A_ZAOKR,"@EZ ")
+         ?? "|"+strpic(coltot[i],v-1,A_ZAOKR,"@EZ ")
 #else
       ? CPAD("| RAZEM - DO PRZENIESIENIA NA NAST¨PN¤ STRON¨",139,20,1)
       for i:=7 to 16
@@ -4958,13 +5031,13 @@ ENDIF
 #endif
 #ifdef A_PCL
 #ifdef A_FFULL
-        ? "³"+nr_kpr+"³"+str(day(data),3)+"  ³"+padr(if(dok_par[mag_poz,r,1]="F",D_SUBDOK,nr_faktury),10)+;
-          "³"+if(FIRMY->(dbseek(DM->(D_KH))),left(FIRMY->D_FFULL,39)+"³"+left(FIRMY->adres,35),padr(dost_odb,75))+;
-          "³"+padr(subs(dokumenty[mag_poz,r],F_SUBDOK),20)
+        ? "|"+nr_kpr+"|"+str(day(data),3)+"  |"+padr(if(dok_par[mag_poz,r,1]="F",D_SUBDOK,nr_faktury),10)+;
+          "|"+if(FIRMY->(dbseek(DM->(D_KH))),left(FIRMY->D_FFULL,39)+"|"+left(FIRMY->adres,35),padr(dost_odb,75))+;
+          "|"+padr(subs(dokumenty[mag_poz,r],F_SUBDOK),20)
 #else
-        ? "³"+nr_kpr+"|"+str(day(data),3)+"  ³"+padr(if(dok_par[mag_poz,r,1]="F",D_SUBDOK,nr_faktury),10)+;
-          "³"+if(FIRMY->(dbseek(DM->(D_KH))),left(FIRMY->D_FFULL,39)+"³"+left(alltrim(left(FIRMY->adres,24))+','+subs(FIRMY->adres,25),35),padr(dost_odb,75))+;
-          "³"+padr(subs(dokumenty[mag_poz,r],F_SUBDOK),20)
+        ? "|"+nr_kpr+"|"+str(day(data),3)+"  |"+padr(if(dok_par[mag_poz,r,1]="F",D_SUBDOK,nr_faktury),10)+;
+          "|"+if(FIRMY->(dbseek(DM->(D_KH))),left(FIRMY->D_FFULL,39)+"|"+left(alltrim(left(FIRMY->adres,24))+','+subs(FIRMY->adres,25),35),padr(dost_odb,75))+;
+          "|"+padr(subs(dokumenty[mag_poz,r],F_SUBDOK),20)
 #endif
 #else
         ? "|"+nr_kpr+"|"+str(day(data),3)+"  |"+padr(if(dok_par[mag_poz,r,1]="F",D_SUBDOK,nr_faktury),12)+;
@@ -4989,7 +5062,7 @@ ENDIF
           y:=ascan(x,i)
           if y<>0
              if valtype(z[y])='N'
-               ?? "³"+strpic(z[y],v-1,A_ZAOKR,"@EZ ")
+               ?? "|"+strpic(z[y],v-1,A_ZAOKR,"@EZ ")
                coltot[i]+=z[y]
                strontot[i]+=z[y]
              else
@@ -5070,9 +5143,9 @@ ENDIF
          if i=12 .and. dtos(od)>'2006'
             loop
          endif
-         ?? "³"+strpic(coltot[i],v-1,A_ZAOKR,"@EZ ")
+         ?? "|"+strpic(coltot[i],v-1,A_ZAOKR,"@EZ ")
       next
-      ?? "³"
+      ?? "|"
       ? "ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ"+repl(padr("Á",v,"Ä"),20-v)+"Ù"
 #else
       ? CPAD("| RAZEM",139,20,1)

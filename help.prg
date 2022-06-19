@@ -17,17 +17,20 @@ elseif pro=="ACZOJS"
   pro:="c_"+procname(4)
 endif
 
-
-      htext=lower(left(pro,8))
-      do case
+  if '.'$pro
+     htext:=pro
+  else
+     htext=lower(left(pro,8))
+     do case
          case right(htext,3)="_in"
           htext="dok_in"
          case htext="wydruk"
          htext="wydruk"
-      endcase
-      
-    htext+=".hlp"
-    IF FILE("."+HB_OsPathSeparator()+htext).or.FILE(htext:=defa+"pomoc"+HB_OsPathSeparator()+htext)
+     endcase
+     htext+=".hlp"
+  endif
+
+    IF FILE(htext).or.FILE(htext:=defa+"pomoc"+HB_ps()+htext)
        txt=MEMOREAD(htext)
     else
        txt="Brak pomocy na ten temat."

@@ -63,7 +63,7 @@ MEMVAR jmiar,miar_opcja,iord,s,SB,se,s3,s2,s1,da,i,W,Wb,We,W3,W2,W1,il,defa
 
 field nr_mag,index,nazwa,stan,smb_dow,nr_dowodu,nr_zlec,ilosc,KTO_PISAL,przel,;
 WAZNOSC,cena_przy,data_przy,nr_rys,cena,cena_zak,proc_VAT,polka,cena_huty,sub_dok,;
-zaznacz,info,data
+zaznacz,info,data,pozycja
 
 stat FUNCTION JM(j_m,j_o,p,r)
    field jm
@@ -235,8 +235,8 @@ PROCEDURE KIM_EDIT(_s,beg)
     zapas_min,zapas_max,data_popr,nazwa,jm,gram,kod,;
     jm_opcja,przel,lamus,data_zmian,NR_MAG,UWAGI,SWW,nr_zlec,proc_mar
 #ifdef A_ALTCEN
-  field cena1,cena2,cena3,cena4
-  field proc_mar1,proc_mar2,proc_mar3,proc_mar4
+  field cena1,cena2,cena3
+  field proc_mar1,proc_mar2,proc_mar3
 #endif
 #ifdef A_WA
   field wartosc,Wart_mies1,wart_mies2,wart_roku
@@ -422,7 +422,7 @@ endif
 
   DevPos(9,78-len(ni) ); DevOut(ni,"RG+/BG" )
 #ifdef A_SZYM
-  if beg#NIL
+  if !empty(beg)
 #ifdef STANY
      seek nr_mag+beg
 #else
@@ -442,9 +442,9 @@ endif
 #endif
 
 #ifdef A_ZAGRODA
-  if (beg=.t.)
-    rt:=space(len(rt))
-  endif
+  rt:=space(len(rt))
+  gr:=0
+  UW := "BEZ UWAG "
 #endif
 
 #ifdef A_SHARP
@@ -463,27 +463,34 @@ endif
     j_o:=jm_opcja
     p:=przel
 #ifdef A_SZYM
-    if beg#NIL
+    if !empty(beg)
        ni:=beg
     else
+#else
+    if empty(beg)
 #endif
-  if !(beg=.t.)
-    ni:=index
-  endif
-#ifdef A_SZYM
+      ni:=index
+#ifdef A_ZAGRODA
+      rt:=rodz_tow
+      gr:=gram
+#endif
     endif
-#endif
 #ifdef A_KODY
     kw:=KoD
 #endif
 #ifdef A_ANKER
     sn:=shortname
 #endif
+#ifdef A_ZAGRODA
+    if empty(beg)
+#endif
     IF ""=(UW:=UWAGI)
       UW := "BEZ UWAG"
     ENDIF
     uw+=" "
-
+#ifdef A_ZAGRODA
+    endif
+#endif
     if lamus#0
       @ 10,3 say "*"
     else
@@ -497,7 +504,7 @@ endif
     @ 10,61 SAY "Symbol"
     @ 11,3  say dp
     @ 11,14 GET pom picture "@K"
-#ifdef A_KASA
+#ifdef A_KAMIX
     s:=sww
     @ 10,61 SAY "      "
     @ 10,38 SAY 'Kod:' GET ni PICTURE '@!' valid {||ni:=UpP(ni),.t.}
@@ -505,6 +512,11 @@ endif
     @ 11,61 SAY 'gram/'+trim(jm)+':' GET gr PICTURE "@EK ### ###"
 #else
 #ifdef A_ANKER
+#ifndef A_WA
+    if empty(beg)
+      atail(getlist):preblock:={||.f.} 
+    endif
+#endif
 //    atail(getlist):postblock:={|g|!g:changed .or. g:original=left(pom,12).or.(sn:=left(pom,12),getlist[ascan(getlist,{|x|x:name='sn'})]:display(),.t.)}
     GETL sn picture "@KS7"
     GETL ST PICTURE '#'
@@ -648,22 +660,26 @@ endif
    #ifdef A_ZAGRODA
   if (ni#index)
     c3:=ce
-    pm3:=0  
+    pm3:=0
+    pm1:=10
   endif
 
-       getlist[len(getlist)-8]:postblock:={|g,v|!g:changed .or. ni=index .and. (varput(getlist,'pm',eval(memvar->liczm,STANY->cenA_zaK,ce,val(pv)),.t.),.f.) .or. (x:=g,aeval(getlist,{|g,y|if(g:name='pm3'.and.len(g:name)=3,eval(g:postblock,x,g:varget(),getlist,y),)}),.t.)}
+       getlist[len(getlist)-8]:postblock:={|g,v|!g:changed .or. ni=index .and. (varput(getlist,'pm',eval(memvar->liczm,STANY->cenA_zaK,ce,val(pv)),.t.),varput(getlist,'pm1',max(10,pm/5),g),.f.) .or. (x:=g,aeval(getlist,{|g,y|if(g:name='pm3'.and.len(g:name)=3,eval(g:postblock,x,g:varget(),getlist,y),)}),.t.)}
+
        x:=getlist[len(getlist)-5]
        x:postblock:={|g|!g:changed .or. ni#index .or. pm1=0 .or. (varput(getlist,'c1',eval(MEMVAR->liczCzM,D_KASA,val(pv),pm1,p),g),.t.)}
        if round(pm1 - eval(MEMVAR->liczm,D_KASA,c1,val(pv)) ,0 )<>0
           @ x:row(),x:col()+4 SAY "%" COLOR "R+/B"
        endif
-       getlist[len(getlist)-4]:postblock:={|g|!g:changed .or. (ni#index .or. c1=0 .or. (varput(getlist,'pm1',eval(memvar->liczm,D_KASA,c1,val(pv)),.t.),.f.),.f.) .or. pm2=0 .or. (varput(getlist,'c2',eval(MEMVAR->liczCzM,c1,0,pm2,p),.t.),.t.)}
+       getlist[len(getlist)-4]:postblock:={|g|!g:changed .or. (ni#index .or. c1=0 .or. (varput(getlist,'pm1',eval(memvar->liczm,D_KASA,c1,val(pv)),.t.),.f.),.t.)}
+
        x:=getlist[len(getlist)-3]
-       x:postblock:={|g|!g:changed .or. pm2=0 .or. (varput(getlist,'c2',eval(MEMVAR->liczCzM,c1,0,pm2,p),.t.),.t.)}
-       if round(pm2 - eval(MEMVAR->liczm,c1,c2,0) ,0 )<>0
+       x:postblock:={|g|!g:changed .or. ni#index .or. pm2=0 .or. (varput(getlist,'c2',eval(MEMVAR->liczCzM,D_KASA,val(pv),pm2,p),g),.t.)}
+       if round(pm2 - eval(MEMVAR->liczm,D_KASA,c2,val(pv)) ,0 )<>0
           @ x:row(),x:col()+4 SAY "%" COLOR "R+/B"
        endif
-       getlist[len(getlist)-2]:postblock:={|g|!g:changed .or. c2=0 .or. (varput(getlist,'pm2',eval(memvar->liczm,c1,c2,0),.t.),.t.)}
+       getlist[len(getlist)-2]:postblock:={|g|!g:changed .or. (ni#index .or. c2=0 .or. (varput(getlist,'pm2',eval(memvar->liczm,D_KASA,c2,val(pv)),.t.),.f.),.t.)}
+
        x:=getlist[len(getlist)-1]
        x:postblock:={|g|!g:changed .or. (varput(getlist,'c3',eval(MEMVAR->liczCzM,ce,0,pm3,p),.t.),.t.)}
        if round(pm3 - eval(MEMVAR->liczm,ce,c3,0) ,0 )<>0
@@ -701,11 +717,10 @@ endif
        getlist[len(getlist)  ]:postblock:={|g|!g:changed .or. c3=0 .or. pm3#(pm3:=eval(memvar->liczm,c1,c3,0)).and.(g:=getlist[ascan(getlist,{|x|x:name=='pm3'})],g:display(),.t.),.t.}
   #endif
  #else
-    c1:=cena1;    c2:=cena2;    c3:=cena3;    c4:=cena4
+    c1:=cena1;    c2:=cena2;    c3:=cena3
     @ 13,3 say "Cena1:" get c1 picture WAPICT
           sayl "Cena2:" get c2 picture WAPICT
           sayl "Cena3:" get c3 picture WAPICT
-          sayl "Cena4:" get c4 picture WAPICT
  #endif
 #endif
 
@@ -737,7 +752,9 @@ endif
 #endif
 
 #ifdef A_GRAM
+#ifndef A_ZAGRODA
     gr:=gram
+#endif    
     sayl 'gram/'+trim(jm)+':' GET gr PICTURE "@EK #####" WHEN {||if(jm='kg',gr:=1000,),.t.}
 #endif
 
@@ -796,7 +813,7 @@ endif
 //    S12' send cargo:=.t.
 #endif
 #ifdef A_7
-#ifdef A_KASA
+#ifdef A_KAMIX
     @ 16,43 SAY "Cena1 brutto za 1 "+trim(j_o)+': '+ltrim(tran(c1*p*(1+val(pv)*.01),WAPICT))+' zˆ'
 #else
 #ifdef A_CENVAT
@@ -1134,11 +1151,9 @@ endif
 #ifdef A_FA
           cena:= ce
 #ifdef A_ALTCEN
-#ifdef A_PROCMAR
           cena1:=c1;cena2:=c2;cena3:=c3
+#ifdef A_PROCMAR
           proc_mar1:=pm1;proc_mar2:=pm2;proc_mar3:=pm3
-#else
-          cena1:= c1;cena2:= c2;cena3:= c3;cena4:= c4
 #endif
 #endif
           proc_vat:=pv
@@ -1364,11 +1379,9 @@ endif
            proc_vat:=pv
            cena:= ce
 #ifdef A_ALTCEN
-#ifdef A_PROCMAR
            cena1:=c1;cena2:=c2;cena3:=c3
+#ifdef A_PROCMAR
            proc_mar1:=pm1;proc_mar2:=pm2;proc_mar3:=pm3
-#else
-           cena1:= c1;cena2:= c2;cena3:= c3;cena4:= c4
 #endif
 #endif
 #ifdef A_BIG
@@ -1553,10 +1566,17 @@ RETURN(DTOV(data)+if(data>DatY->d_z_mies1,"³","|")+smb_dow+nr_dowodu+"/"+D_LPSTR
   +str(wartosC,10,CEOKR)+if(INDX_MAT->data_POPR>DATA,"|","³")+smiaR(s,10)+"³"+str(w,10,CEOKR))
 #else
 #ifdef A_ANKER
+#ifdef A_ZAGRODA
+dispout(DTOV(data)+if(data>DatY->d_z_mies1,"³","|")+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+"³"+nr_zleC+"³";
+  +if(NR_MAG+smb_dow$dok_rozch,"         ³"+smiaR(-ilosc,9)+"³",smiaR(ilosc,9)+"³         ³");
+  +str(wartosC,10,CEOKR)+if(INDX_MAT->data_POPR>DATA,"|","³")+smiaR(s,10)+"³"+str(w,10,CEOKR),if(year(data)<year(DatY->d_z_rok+1),'GR+/N',if(smb_dow='PA' .and. ilosc<>0,'W/R','W/N')))
+RETURN('')
+#else
 dispout(DTOV(data)+if(data>DatY->d_z_mies1,"³","|")+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+"³"+nr_zleC+"³";
   +if(NR_MAG+smb_dow$dok_rozch,"         ³"+smiaR(-ilosc,9)+"³",smiaR(ilosc,9)+"³         ³");
   +str(wartosC,10,CEOKR)+if(INDX_MAT->data_POPR>DATA,"|","³")+smiaR(s,10)+"³"+str(w,10,CEOKR),if(year(data)<year(DatY->d_z_rok+1),'GR+/N',{'W/N','W/N','W/N','W/N','W/N','W/N','W/R'}[dow(data)]))
 RETURN('')
+#endif
 #else
 RETURN(DTOV(data)+if(data>DatY->d_z_mies1,"³","|")+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+"³"+nr_zleC+"³";
   +if(NR_MAG+smb_dow$dok_rozch,"         ³"+smiaR(-ilosc,9)+"³",smiaR(ilosc,9)+"³         ³");
@@ -1567,6 +1587,7 @@ RETURN(DTOV(data)+if(data>DatY->d_z_mies1,"³","|")+smb_dow+nr_dowodu+"/"+str(D_L
 #undef nr_zleC
 *****************************************
 FUNCTION TAB(_skey,_s)
+static dg
 local prptxt,u,v,w,x,y,z
 field ilosc,index,smb_dow,nr_dowodu,nr_mag,dost_odb,kontrahent
 field zamkn_roku,zamk_mies1,zamk_mies2,wart_roku,wart_mies1,wart_mies2 IN STANY
@@ -1584,7 +1605,7 @@ field data
 
    DO CASE 
       CASE _SKEY=0
-
+      dg:=DatY->data_gran
       SELECT MAIN
       SET ORDER TO TAG MAIN_IND
       SET RELATION TO
@@ -1639,8 +1660,39 @@ field data
         _sef:=.f.
         return .t.
 
-      case _skey=5
+   case _skey=5
 
+     if dg>DatY->d_z_rok
+        dg:=if(dg>DatY->d_z_mies2,DatY->d_z_mies2,DatY->d_z_rok)
+        _spocz:=STANY->nr_mag+STANY->index+DTOS(dg)
+        _sbf:=.f.
+
+#ifdef A_WA
+    do case
+      case dg=DatY->d_z_rok
+        sb:=zamkn_roku
+        wb:=wart_roku
+      case dg<=DatY->d_z_mies2
+        sb:=zamk_mies2
+        wb:=wart_mies2
+      otherwise //case DatY->data_gran=DatY->d_z_mies1
+        sb:=zamk_mies1
+        wb:=wart_mies1
+    endcase
+#else
+    do case
+      case dg=DatY->d_z_rok
+        sb:=zamkn_roku
+      case dg<=DatY->d_z_mies2
+        sb:=zamk_mies2
+      otherwise //case DatY->data_gran=DatY->d_z_mies1
+        sb:=zamk_mies1
+    endcase
+    wb:=sb*(i_lam(dg))->cenA
+#endif
+    _snagl:="DataÂÄÄDokumentÂKosztyÂÄPrzych¢dÂÄRozch¢dÄÂÄÄÄ"+WANAZ+"Â"+str(sb,10,3)+"Â"+str(wb,10,CEOKR)
+        Return .t.
+     else
 *
         y:=str(year(data)-1,4)
         x:=select('MAIN'+y)
@@ -1649,15 +1701,15 @@ field data
            v:=ordkey()
            x:=select()
            begin sequence
-             if !file(defa+y+HB_OsPathSeparator()+'main.dbf')
+             if !file(defa+y+HB_ps()+'main.dbf')
                 break
              endif
 
-             nuse (defa+y+HB_OsPathSeparator()+'main') new alias ('MAIN'+y)
+             nuse (defa+y+HB_ps()+'main') new alias ('MAIN'+y)
 #ifdef A_CDX
              set order to tag main_ind
              if empty(indexord())
-                w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_OsPathSeparator()+"main.dbf,;klucz: "+v+";.")
+                w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                 if empty(u)
                    index on &v tag main_ind eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                 else
@@ -1666,17 +1718,17 @@ field data
                 //break
              endif
 #else
-             if !file(defa+y+HB_OsPathSeparator()+'main_ind'+ordbagext())
-                index on &v to (defa+y+HB_OsPathSeparator()+'main_ind')
-                w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_OsPathSeparator()+"main.dbf,;klucz: "+v+";.")
+             if !file(defa+y+HB_ps()+'main_ind'+ordbagext())
+                index on &v to (defa+y+HB_ps()+'main_ind')
+                w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                 if empty(u)
-                   index on &v to (defa+y+HB_OsPathSeparator()+'main_ind') eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                   index on &v to (defa+y+HB_ps()+'main_ind') eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                 else
-                   index on &v to (defa+y+HB_OsPathSeparator()+'main_ind') for &u eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                   index on &v to (defa+y+HB_ps()+'main_ind') for &u eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                 endif
                 //break
              else
-                set index to (defa+y+HB_OsPathSeparator()+'main_ind')
+                set index to (defa+y+HB_ps()+'main_ind')
              endif
 #endif
              x:=nil
@@ -1693,9 +1745,10 @@ field data
            set order to tag main_ind
            seek _spocz+"@"
            _sbf:=.f.
+           //dg:=stod(left(dtos(data),4)+'0101')-1
            return .t.
         endif
-
+     endif
    case select()<>MAIN->(select())
 
       if _skey=27 .or. _skey=4 .or. _skey=19
@@ -1728,9 +1781,9 @@ field data
          w:=s*(i_lam(data))->cenA
 #endif
 #ifdef A_MM
-         DOK_IN(nr_mag,smb_dow,nr_dowodu,il#NIL)
+         DOK_IN(nr_mag,smb_dow,nr_dowodu+pozycja,il#NIL)
 #else
-         DOK_IN(nr_mag,smb_dow,nr_dowodu,il#NIL.OR.NR_MAG#MAG_BIEZ)
+         DOK_IN(nr_mag,smb_dow,nr_dowodu+pozycja,il#NIL.OR.NR_MAG#MAG_BIEZ)
 #endif
          SELECT MAIN
          SET ORDER TO TAG MAIN_IND
@@ -1830,7 +1883,7 @@ field data
   CASE _SKEY=1 .OR. _SKEY=29
 
 #ifdef A_ZERUJSTAN
-  CASE (_sef .or. _sbf).and. DatY->data_gran>DatY->d_z_rok
+  CASE (_sef .or. _sbf).and. dg>DatY->d_z_rok
 #else
   CASE _sef .or. _sbf
 #endif
@@ -1845,10 +1898,10 @@ field data
        endif
 #ifdef A_WA
     do case
-      case DatY->data_gran=DatY->d_z_rok
+      case dg=DatY->d_z_rok
         sb:=zamkn_roku
         wb:=wart_roku
-      case DatY->data_gran<=DatY->d_z_mies2
+      case dg<=DatY->d_z_mies2
         sb:=zamk_mies2
         wb:=wart_mies2
       otherwise //case DatY->data_gran=DatY->d_z_mies1
@@ -1860,14 +1913,14 @@ field data
     we := wartOSC
 #else
     do case
-      case DatY->data_gran=DatY->d_z_rok
+      case dg=DatY->d_z_rok
         sb:=zamkn_roku
-      case DatY->data_gran<=DatY->d_z_mies2
+      case dg<=DatY->d_z_mies2
         sb:=zamk_mies2
       otherwise //case DatY->data_gran=DatY->d_z_mies1
         sb:=zamk_mies1
     endcase
-    wb:=sb*(i_lam(DatY->data_gran))->cenA
+    wb:=sb*(i_lam(dg))->cenA
     se := stan
     we := stan*(i_lam(STANY->data_zmian))->cenA
 #endif

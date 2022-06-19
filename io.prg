@@ -1,6 +1,11 @@
 //#define SIMPLE
 #include "inkey.ch"
 #include "set.ch"
+
+#ifdef A_SX
+#include "dbinfo.ch"
+#endif
+
 #ifdef SIMPLE
 #undef A_MYSZ
 #endif
@@ -10,10 +15,13 @@ static apro:={}
 #ifndef __HARBOUR__
 request errorsys
 #endif
+
+
+
 ANNOUNCE RDDSYS
 
 static _a:={}
-********************************
+*******************************
 #ifdef mkdir
 function MKDIR(x)
 return mkdir(x)
@@ -59,20 +67,66 @@ endif
 return x
 ******************
 function compile(x)
-return &x
+return if(empty(x),,&x)
 ******************
 //#ifndef XOR
 function xor(a,b)
 return if(a,!b,b)
 //#endif
 ******************
-//#ifndef __HARBOUR__
+#ifdef __HARBOUR__
+func netdo(ip,port,timeout,block)
+local a,ad,socket,s
+
+hb_inetInit()
+socket := hb_inetServer(port, , ip)
+
+
+if hb_inetErrorCode(socket) <> 0
+  alarm( tran(hb_inetErrorCode(socket),) + ' '+hb_inetErrorDesc(socket))
+
+  return .f.
+endif
+
+hb_inetTimeout( socket, timeout * 1000 )
+
+while !EMPTY(s:=hb_inetRecvLine(socket))
+     hb_idlestate()
+     ad:=hb_inetAddress(socket)
+
+     a := eval(block, s, ad)
+
+     if !empty(a)
+         hb_inetSend(socket, ad, port, a)
+
+         hb_idlestate()
+     endif
+end
+hb_inetClose(socket)
+
+return .t.
+#else
+function DiskName()
+local i
+i:=6400
+sysint(33,@i)
+Return chr(65+i%256)
+
+function hb_at(a,b,c)
+local x
+c:=max(1,c)
+x:=at(a,subs(b,c))
+if x>0
+   x+=c-1
+endif
+return x
+*******************
 function stod(s)
 local d:=set(_SET_DATEFORMAT,'YYYY.MM.DD'),r
 r:=ctod(tran(s,'@R ####.##.##'))
 set(_SET_DATEFORMAT,d)
 return r
-//#endif
+#endif
 ******************
 function sign(x)
 return if(x<0,-1,if(x>0,1,0))
@@ -117,13 +171,15 @@ endif
 
 return a
 ************************
-#ifdef A_NETIO
 func netuse(a,b,file,alias,shared,rdo)   // w netio sciezka serwera
+#ifdef A_NETIO
 memvar netio
  if !empty(netio) .and. file=netio
     file:='net:'+subs(file,len(netio)+1)
  endif
 return dbusearea(a,b,file,alias,shared,rdo)
+#else
+return NetusE(a,b,file,alias,shared,rdo)
 #endif
 **************************
 func linpath(x)
@@ -158,7 +214,7 @@ s:=select(alias)
          if !empty(b)
            a:=b
          endif
-         dbusearea(,,a,alias)
+         NUSE (a) ALIAS (alias)
       else
          a:=b:=alias
 #ifdef A_CDX
@@ -172,8 +228,8 @@ s:=select(alias)
                   a:=trim(&(subs(a,3)))
                 endif
                 a:=expand(a)
-                if right(a,1)<>HB_OsPathSeparator()
-                  a+=HB_OsPathSeparator()
+                if right(a,1)<>HB_ps()
+                  a+=HB_ps()
                 endif
                endif
                if fieldpos("PLIK")#0 .and. !empty(plik)
@@ -192,24 +248,33 @@ s:=select(alias)
          if !empty(b)
            a:=b
          endif
-         dbusearea(,,a,alias,shared,rdo)
+         NetusE(NIL,NIL,a,alias,shared,rdo)
          if !empty(a)
             a:=left(a,len(a)-4)
          endif
          s:=select()
-         if order#NIL .and. empty(ordbagname(order))
-/*
-#ifdef A_ADS
-            c:=errornew()
-            c:filename:=a+ordbagext()
-            c:subsystem:='DBF'
-            c:subcode:=1003
-            c:candefault:=.t.
-            eval(errorblock(),c)
-#endif
-*/
+         if !empty(order) .and. empty(ordbagname(order)) .and. select("indeks")#0 .and. indeks->(found())
+            select indeks
+            c:=pad(c,len(baza))
+            if valtype(order)='C'
+              b:=pad(upper(order),len(nazwa))
+              locate while baza==c for nazwa==b
+            else
+              skip (order-1)
+            endif
+            select (s)
+          if indeks->baza==c
             ordlistadd(a+ordbagext())
-            //ordsetfocus(order)
+            ordsetfocus(order)
+            if empty(ordbagname(order))
+              c:=errornew()
+              c:filename:=a+ordbagext()
+              c:subsystem:='DBF'
+              c:subcode:=1003
+              c:candefault:=.t.
+              eval(errorblock(),c)
+            endif
+          endif
          elseif !empty(ordbagname(1))
             ordsetfocus(1)
          endif
@@ -224,7 +289,7 @@ s:=select(alias)
             if !empty(b)
               a:=b
             endif
-            dbusearea(,,a,alias,shared,rdo)
+            NetusE(NIL,NIL,a,alias,shared,rdo)
             s:=select()
          else
             locate for {||c:=trim(baza), lower(expand(c))==alias}
@@ -235,8 +300,8 @@ s:=select(alias)
                   a:=trim(&(subs(a,3)))
                 endif
                 a:=expand(a)
-                if right(a,1)<>HB_OsPathSeparator()
-                  a+=HB_OsPathSeparator()
+                if right(a,1)<>HB_ps()
+                  a+=HB_ps()
                 endif
                endif
                b:=a
@@ -251,12 +316,12 @@ s:=select(alias)
             if !Empty(b)
                a:=b
             endif
-            b:=left(a,rat(HB_OsPathSeparator(),a))
+            b:=left(a,rat(HB_ps(),a))
             select (s)
             if used()
                select 0
             endif
-            dbusearea(,,a,alias,shared,rdo)
+            NetusE(NIL,NIL,a,alias,shared,rdo)
             s:=select()
             select indeks
             if found()
@@ -982,7 +1047,7 @@ asize(v,j)
 asize(w,j)
 
 i:=max(5,len(a))
-if !empty(t)
+if t<>NIL
    i+=2
 endif
 if valtype(n)='A'

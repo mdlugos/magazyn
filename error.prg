@@ -1,12 +1,14 @@
 #ifdef A_EXT
 request A_EXT
 #endif
+
 //#define SIMPLE
 #define NONTXERR
 //#define TCVT(x) tran(x,)
 #include "error.ch"
 #include "inkey.ch"
 #ifdef __HARBOUR__
+#include "hbgtinfo.ch"
 init proc esys()
 #else
 ANNOUNCE _ntxerr
@@ -20,13 +22,8 @@ local sc:=A_SUMK,a:=A_AUTOR,f:=A_KOMU_N,fa:=A_KOMU_A
 local i,n,t
 
 #ifdef SIMPLE
-#ifdef __HARBOUR__
-#define OuterR(x) outerr(HB_TRANSLATE(TRAN(x,),,'UTF8'))
+#include "simpleio.ch"
 #endif
-#endif
-#command ? [<list,...>]   =>  ?? HB_EOL() [; ?? <list>]
-#command ?? <x1> [,<xn>] => OuterR(<x1>)[;OuterR(<xn>)]
-
 
 SET(_SET_DEBUG,.t.)
 ErrorBlock( {|e| DefError(e)} )
@@ -45,11 +42,14 @@ endif
 public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_a:=fa
 
 #ifdef __HARBOUR__
+  hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
+  REQUEST HB_LANG_PL
+  HB_LANGSELECT('PL')
+
   REQUEST HB_CODEPAGE_PL852
   #ifdef PLWIN
    REQUEST HB_CODEPAGE_PLWIN
    request hb_translate
-    #include   'hbgtinfo.ch'
    hb_gtInfo( HB_GTI_FONTNAME , "Lucida Console" )
    hb_gtInfo( HB_GTI_FONTWIDTH, 10  )
    hb_gtInfo( HB_GTI_FONTSIZE , 20 )
@@ -57,28 +57,20 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
    hb_gtInfo( HB_GTI_ALTENTER, .T. )  // allow alt-enter for full screen
    SetCursor( 0 )
    hb_gtInfo( HB_GTI_CLOSABLE, .t. )
+   hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
 
     #ifdef PC852
-     REQUEST HB_LANG_PL852
-     HB_LANGSELECT('PL852')
      HB_CDPSELECT('PL852')
     #else
-     REQUEST HB_LANG_PLWIN
-     HB_LANGSELECT('PLWIN')
      HB_CDPSELECT('PLWIN')
     #endif
 
-  #else
-   REQUEST HB_LANG_PL852
-   HB_LANGSELECT('PL852')
-   HB_CDPSELECT('PL852')
   #endif
    //SET(_SET_DEBUG, .t.)
 #ifdef A_ADS
 #ifdef __PLATFORM__WINDOWS
       #include "ads.ch"
 #endif
-      altd()
       REQUEST ADS
       RddRegister( "ADS", 1 )
       rddsetdefault("ADS")
@@ -91,10 +83,11 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
       AdsSetServerType( A_ADS )
       //  /* ADS_LOCAL_SERVER + */ ADS_REMOTE_SERVER )
       SET AXS LOCKING ON
-//#ifndef PC852
-//      SET CHARTYPE TO OEM
-//#endif
-
+#ifdef PC852
+#ifndef __PLATFORM__UNIX
+      AdsSetCharType(ADS_OEM,.t.)
+#endif
+#endif
 #else
       REQUEST _DBF
 #ifdef A_CDX
@@ -167,7 +160,7 @@ else // MDA, VGA MONO
   SET COLOR TO W,I,,W,W+
 endif
 #ifdef __HARBOUR__
-  setmode(min(maxrow()+1,(maxcol()+1)*5/8),maxcol()+1)
+  setmode(min(maxrow()+1,Round((maxcol()+1)*5/16,0)),maxcol()+1)
 #endif
 INIT SCREEN
 CLEAR screen
@@ -259,7 +252,7 @@ static s:=0,ee:=NIL
     return 0 // (e:args[1])
 #ifdef A_LAN
   elseif e:genCode == EG_OPEN .AND. e:osCode == 5 .AND. e:subcode==1001 .and. procname(2)=='DBUSEAREA'
-    dbusearea(,,e:filename,,.t.,.t.)
+    nuse (e:filename) SHARED READONLY
     ee:=NIL
     return (.f.)
   elseIf ( e:genCode == EG_OPEN .OR. e:genCode == EG_CREATE).AND. e:osCode == 55
@@ -361,9 +354,9 @@ static s:=0,ee:=NIL
 
 #ifdef A_ADS
   elseif  e:subsystem = 'ADS' .and. e:subcode=7041 .and. file("indeks.dbf")
-#ifndef __PLATFORM__LINUX
+ #ifndef __PLATFORM__LINUX
           AdsRegCallBack( {|nPercent|dispout(replicate( "±", int(npercent/100*(f[4]-f[2]-5))-(i-f[2]))),message(1),i:=col(),dispout(str(nPercent,3)+'%'),setpos(row(),i),.f.}  )
-#endif
+ #endif
 
     cMessage:=lower(alias())
     sel("indeks")
@@ -371,14 +364,14 @@ static s:=0,ee:=NIL
     go top
     locate for expand(b:=Lower(trim(BAZA))) == CMESSAGE
     Do while Found()
-#ifdef A_CDX
+ #ifdef A_CDX
       d:=Expand(Lower(trim(nazwa)))
-#else
-      locate while Lower(trim(BAZA))==b FOR {||d:=Expand(Lower(trim(nazwa))),(HB_OsPathSeparator()+d+'.')$(HB_OsPathSeparator()+Lower(e:filename)+'.')  }
+ #else
+      locate while Lower(trim(BAZA))==b FOR {||d:=Expand(Lower(trim(nazwa))),(HB_ps()+d+'.')$(HB_ps()+Lower(e:filename)+'.')  }
       IF !found()
          Exit
       endif
-#endif
+ #endif
           if empty(nazwa) .or. empty(klucz)
              skip
              loop
@@ -388,11 +381,11 @@ static s:=0,ee:=NIL
           f:=MESSAGE("Odtwarzanie skorowidza "+d+", baza: "+expand(b)+".DBF, klucz: "+expand(a)+";.")
           setpos(f[3]-1,f[2]+1)
           select (cMessage)
-#ifndef A_CDX
+ #ifndef A_CDX
           c:=e:filename
-          c:=left(c,rat(HB_OsPathSeparator(),c))
+          c:=left(c,rat(HB_ps(),c))
           nchoice:=0 ; while !empty(ordbagname(++nchoice)) ; aadd(aoptions,c+ordbagname(nchoice)) ; enddo
-#endif
+ #endif
           c:=trim(indeks->for)
           if empty(c)
              ordCondSet(,,,,{||dispout("±"),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
@@ -402,26 +395,26 @@ static s:=0,ee:=NIL
           i:=f[2]
           //a:=strtran(expand(a),'UPP(','UPPER(')
 
-#ifdef A_CDX
+ #ifdef A_CDX
           ordCreate(,d,a,,indeks->unique)
           Message(f)
           dbselectar('INDEKS')
           CONTINUE
-#else
+ #else
           ordCreate(d,,a,,indeks->unique)
           Message(f)
           ordlistclear() ; aeval(aoptions,{|x|ordlistadd(x)})
           ordlistadd(d)
           exit
-#endif
+ #endif
     enddo
     indeks->(dbgoto(n))
-#ifndef __PLATFORM__LINUX
+ #ifndef __PLATFORM__LINUX
           AdsClrCallBack()
-#endif
-#ifdef A_CDX
+ #endif
+ #ifdef A_CDX
     select (cMessage)
-#endif
+ #endif
     ee:=NIL
     return .f.
 
@@ -471,8 +464,8 @@ static s:=0,ee:=NIL
                 a:=trim(&(subs(a,3)))
              ENDIF
              a:=expand(a)
-             if right(a,1)<>HB_OsPathSeparator()
-                a+=HB_OsPathSeparator()
+             if right(a,1)<>HB_ps()
+                a+=HB_ps()
              endif
           endif
           if fieldpos("PLIK")=0 .or. empty(indeks->plik)
@@ -482,22 +475,27 @@ static s:=0,ee:=NIL
           endif
           t:=findfile(expand(a)+".dbf")
           t:=left(t,rat(".",t)-1)
-#ifdef A_CDX
+ #ifdef A_CDX
           if lower(e:filename)#lower(t+ordbagext())
              e:filename:=Lower(t+ordbagext())
           endif
-#endif
+ #endif
        ******
        select (cMessage)
        h:=shared()
        if h
           bk:=get_relat()
           ee:=NIL
-          dbusearea(,,t,,.f.)
+          nuse (t) EXCLUSIVE
           ee:=e
           aeval(bk,{|x|dbsetrelation(x[1],&('{||'+x[2]+'}'),x[2])})
        endif
        ordlistclear()
+ #ifdef A_SX
+       if !DBINFO(132)
+          DBINFO(140,A_SX)
+       endif
+ #endif
        select INDEKS
        while trim(INDEKS->BAZA) == b
           if empty(nazwa)
@@ -507,8 +505,9 @@ static s:=0,ee:=NIL
           a:=trim(klucz)
           c:=trim(for)
           d:=Expand(Lower(trim(nazwa)))
-#ifdef SIMPLE
-          ? "Odtwarzanie skorowidza "+d+", baza: "+expand(b)+".DBF, klucz: "+expand(a)
+ #ifdef SIMPLE
+          ?
+          ?? "Odtwarzanie skorowidza "+d+", baza: "+expand(b)+".DBF, klucz: "+expand(a)
           ?
           select (cMessage)
           if empty(c)
@@ -516,7 +515,7 @@ static s:=0,ee:=NIL
           else
              ordCondSet( expand(c),{||&c},,,{||outerr("."),.t.},int(1+lastrec()/79),RECNO(),,,,indeks->descend)
           endif
-#else
+ #else
           f:=MESSAGE("Odtwarzanie skorowidza "+d+", baza: "+expand(b)+".DBF, klucz: "+expand(a)+";.")
           setpos(f[3]-1,f[2]+1)
           select (cMessage)
@@ -525,29 +524,29 @@ static s:=0,ee:=NIL
           else
              ordCondSet( expand(c),{||&c},,,{||dispout("±"),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
           endif
-#endif
-#ifdef A_ADS
+ #endif
+ #ifdef A_ADS
 
-#ifdef SIMPLE
+  #ifdef SIMPLE
           i:=0
           AdsRegCallBack( {|nPercent|outerr(replicate(".",nPercent/2-i),i:=nPercent/2,.f.}  )
-#else
+  #else
           i:=f[2]
           AdsRegCallBack( {|nPercent|dispout(replicate( "±", int(npercent/100*(f[4]-f[2]-5))-(i-f[2]))),message(1),i:=col(),dispout(str(nPercent,3)+'%'),setpos(row(),i),.f.}  )
-#endif
+  #endif
 
-#ifdef A_CDX
+  #ifdef A_CDX
           //ordCreate(,d,strtran(expand(a),'UPP(','UPPER('),,indeks->unique)
           ordCreate(,d,expand(a),,indeks->unique)
-#else
+  #else
           if !empty(indeks->path)
              c:=trim(indeks->path)
              if c="&:"
                 c:=&(subs(c,3))
              endif
              c:=expand(c)
-             if right(c,1)<>HB_OsPathSeparator()
-                c+=HB_OsPathSeparator()
+             if right(c,1)<>HB_ps()
+                c+=HB_ps()
              endif
           else
              if indeks->(fieldpos("PLIK"))=0 .or. empty(indeks->plik)
@@ -556,18 +555,18 @@ static s:=0,ee:=NIL
                 c:=trim(indeks->plik)
              endif
              c:=findfile(expand(c)+".dbf")
-             c:=left(c,rat(HB_OsPathSeparator(),c))
+             c:=left(c,rat(HB_ps(),c))
           endif
           //ordCreate(c+d,,strtran(expand(a),'UPP(','UPPER('),,indeks->unique)
           ordCreate(c+d,,expand(a),,indeks->unique)
-#endif
+  #endif
           AdsClrCallBack()
-#else
-          ordCreate(,d,expand(a),&('{||'+a+'}'),indeks->unique)
-#endif
-#ifndef SIMPLE
+ #else
+          ordCreate(,d,expand(a),{||&a},indeks->unique)
+ #endif
+ #ifndef SIMPLE
           MESSAGE(f)
-#endif
+ #endif
           select INDEKS
           skip
        enddo
@@ -579,7 +578,7 @@ static s:=0,ee:=NIL
        select (cMessage)
        if h
           ee:=NIL
-          dbusearea(,,t,,.t.)
+          nuse (t) SHARED
           aeval(bk,{|x|dbsetrelation(x[1],&('{||'+x[2]+'}'),x[2])})
           ee:=e
        endif
@@ -597,8 +596,8 @@ static s:=0,ee:=NIL
                 a:=&(subs(a,3))
              endif
              t:=expand(a)
-             if right(t,1)<>HB_OsPathSeparator()
-                t+=HB_OsPathSeparator()
+             if right(t,1)<>HB_ps()
+                t+=HB_ps()
              endif
              e:filename:=t+i+Lower(ordbagext())
           else
@@ -607,8 +606,8 @@ static s:=0,ee:=NIL
              else
                 c:=trim(indeks->plik)
              endif
-             t:=findfile(expand(c)+".dbf")
-             t:=left(t,rat(HB_OsPathSeparator(),t))
+             a:=findfile(expand(c)+".dbf")
+             t:=left(a,rat(HB_ps(),a))
              if Lower(e:filename)#Lower(t)
                 e:filename:=t+i+Lower(ordbagext())
              endif
@@ -621,8 +620,10 @@ static s:=0,ee:=NIL
 #else
           nchoice:=0 ; while !empty(t:=ordbagname(++nchoice)) ; aadd(aoptions,t) ; enddo
 #endif
+
 #ifdef SIMPLE
-          ? "Odtwarzanie skorowidza "+expand(d)+", baza: "+expand(b)+".dbf, klucz: "+expand(a)
+          ?
+          ?? "Odtwarzanie skorowidza "+expand(d)+", baza: "+expand(b)+".dbf, klucz: "+expand(a)
           ?
           ordCondSet( expand(c),if(empty(c),,{||&c}),,,{||outerr("."),.t.},int(1+lastrec()/80),recno(),,,,indeks->descend)
 #else
@@ -631,9 +632,9 @@ static s:=0,ee:=NIL
           ordCondSet( expand(c),if(empty(c),,{||&c}),,,{||dispout("±"),message(1),.t.},int(1+lastrec()/(t[4]-t[2]-1)),recno(),,,,indeks->descend)
 #endif
 #ifdef IndexkeY
-          ordCreate(e:filename,,strtran(expand(a),'UPP(','UPPER('),&('{||'+a+'}'),indeks->unique)
+          ordCreate(e:filename,,strtran(expand(a),'UPP(','UPPER('),{||&a},indeks->unique)
 #else
-          ordCreate(e:filename,,expand(a),&('{||'+a+'}'),indeks->unique)
+          ordCreate(e:filename,,expand(a),{||&a},indeks->unique)
 #endif
           if r=0
              indeks->(dbclosearea())
@@ -816,26 +817,10 @@ local txt:='',y,x,a
            if !empty(klucz)
               a:=expand(lower(trim(nazwa)))
               ferase(x+a+ordbagext())
-/*
-#ifdef STANY
-              select 1
-              begin sequence
-              ordlistadd(x+a)
-              end sequence
-              SELECT indeks
-#endif
-*/
            endif
 #endif
               skip
            endif
-/*
-#ifndef A_CDX
-           select 1
-           USE
-           select indeks
-#endif
-*/
            a:=''
            txt:=lower(trim(baza))
            x:=trim(path)
@@ -844,8 +829,8 @@ local txt:='',y,x,a
                 x:=trim(&(subs(x,3)))
              endif
              x:=expand(x)
-             if right(x,1)<>HB_OsPathSeparator()
-                x+=HB_OsPathSeparator()
+             if right(x,1)<>HB_ps()
+                x+=HB_ps()
              endif
            endif
            x+=if(fieldpos("PLIK")=0 .or. empty(plik),txt,trim(plik))
@@ -865,15 +850,9 @@ local txt:='',y,x,a
               ordlistclear()
               use
               ferase(x+ordbagext())
-/*
-              nUSE (x) EXCLUSIVE ALIAS (expand(txt))
-              ordlistadd(x)
-              USE
-*/
            ENDIF
 #else
-           //nUSE (x) EXCLUSIVE ALIAS (expand(txt))
-           x:=left(x,rat(if(HB_OsPathSeparator()$x,HB_OsPathSeparator(),":"),x))
+           x:=left(x,rat(if(HB_ps()$x,HB_ps(),":"),x))
 #endif
            end sequence
            select indeks

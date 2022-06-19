@@ -1,5 +1,8 @@
 #include "inkey.ch"
-memvar _snorm,operator
+#ifdef __HARBOUR__
+#include "hbgtinfo.ch"
+#endif
+memvar _snorm,operator,_sramka
 field index,HASLO,HASLO_SPEC
 #ifdef A_OBR
 field nr_rys,nazwa
@@ -450,7 +453,36 @@ endif
 
 return (.t.)
 ************
-proc insrec()
+proc mkindex(n,k)
+FIELD for,unique,descend,klucz,baza,nazwa
+local b:=lower(alias()),c
+  n:=upper(n)
+  if empty(ordbagname(n))
+     sel("INDEKS")
+     Locate FOR {||c:=trim(baza), lower(expand(c))==b}
+     n:=pad(n,len(nazwa))
+     c:=pad(c,len(baza))
+     Locate FOR nazwa==n WHILE baza==c
+     IF ! FOUND()
+       skip -1
+       insrec()
+       skip
+       LOCK
+       nazwa:=n
+       for:=''
+       unique:=descend:=.f.
+       klucz:=k
+       UNLOCK
+     endif
+     select (b)
+     use
+     sel(b,n)
+  else
+     ordsetfocus(n)
+  endif
+return
+************
+stat proc insrec()
 local r,ar,i,l
 r:=recno()
 l:=fcount()
@@ -769,24 +801,28 @@ PROCEDURE POWR_GET
  RETURN
 ************
 func mkcolumn(m)
+local fb:=fieldblock(m[1])
+local b:=TBColumnNew(m[1],fb)
 
-local b:=TBColumnNew(m[1],fieldblock(m[1]))
-
+#ifndef A_SX
     if m[1]=="HASLO"
          B:block:={|X|IF(X=NIL,X:=L2BIN(FIELD->HASLO),FIELD->HASLO:=BIN2L(PADR(UpP(X),4))),X}
     elseif m[1]=="HASLO_SPEC"
          B:block:={|X|IF(X=NIL,X:=L2BIN(FIELD->HASLO_SPEC),FIELD->HASLO_SPEC:=if(x="    ",0,BIN2L(PADR(lower(UpP(X)),4)))),X}
+#else
+    if .f.
+#endif
 #ifdef __HARBOUR__
     elseif m[2]=="B"
          m[3]:=12
          b:picture:='@Z '+replicate('#',m[3]-5)+'.####'
 #endif
     elseif m[1]="D_" .and. m[2]="C" .and. m[3]=8
-         b:block:=&('{|x|if(x=NIL,round(BIN2D(FIELD->'+m[1]+'),4),FIELD->'+m[1]+':=D2BIN(x))}')
+         b:block:={|x|IF(x=NIL,,x:=D2BIN(x)),ROUND(BIN2D(eval(fb,x)),4)}
     elseif m[2]=="M"
          b:width:=maxcol()-1
          b:cargo:=.t.
-         b:block:=&("{|x|if(x=NIL,if(len(FIELD->"+m[1]+")<maxcol(),padr(FIELD->"+m[1]+",maxcol()-1),FIELD->"+m[1]+"),FIELD->"+m[1]+":=x)}")
+         b:block:={|x,y|y:=eval(fb,x),if(x=NIL.and.y<>NIL.and.len(y)<maxcol(),padr(y,maxcol()-1),y)}
     elseif m[2]=="C" .and. m[3]>maxcol()-3
          b:width:=maxcol()-1
     endif
@@ -905,11 +941,11 @@ static i,b,lth
 #else
   eol:=if(i<lth.or.subs(b,r+a[i,2]-1,2)=nl,2,0)
 #endif
-return subs(b,r+1+j,a[i,2]-j-eol)
+return strtran(subs(b,r+1+j,a[i,2]-j-eol),chr(9)," ")
 #undef D_BLEN
 **********************
 proc fview(f)
-local a,h,b,c,j,txt,key,scrlflag:=0
+local a,h,b,c,j,txt,key,scrlflag:=0,frow:=1
 f:=findfile(f)
 h:=fopen(f,64)
 if h<0
@@ -920,9 +956,9 @@ b:=tbrowsenew(0,0,maxrow(),maxcol())
 c:=tbcolumnnew("",{||txt})
 c:width:=maxcol()+1
 b:addcolumn(c)
-b:skipblock:={|x|txt:=sk(@x,a,h,j),x}
-b:gotopblock:={||txt:=sk(.t.,a,h,j)}
-b:gobottomblock:={||txt:=sk(.f.,a,h,j)}
+b:skipblock:={|x|txt:=sk(@x,a,h,j),frow+=x,x}
+b:gotopblock:={||txt:=sk(.t.,a,h,j),frow:=1}
+b:gobottomblock:={||txt:=sk(.f.,a,h,j),frow:=0}
 c:=array(31)
 c[K_DOWN]     :={|b|if(b:rowpos=b:rowcount,scrlflag:=1,),b:down()}
 c[K_UP]       :={|b|if(b:rowpos=1,scrlflag:=-1,),b:up()}
@@ -938,9 +974,17 @@ c[K_HOME]     :={|b|j:=0,b:refreshall()}
 a:=array(3*maxrow())
 j:=0
 txt:=pad(sk(.t.,a,h,j),maxcol()+1)
+#ifdef __HARBOUR__
+if nextkey()=0 //.and. fseek(h,0,2) < 65536
+  b:forcestable()
+  @ maxrow(),maxcol()-31 SAY 'ALT+B - kopiuj CAO— do schowka' COLOR _sramka
+endif
+#endif
 do while .t.
    b:stabilize()
    if b:stable
+      key:=ltrim(str(frow))
+      @ 0,1+maxcol()-len(key) SAY key COLOR _sramka
       key:=inkey(0)
    else
       key:=inkey()
@@ -949,6 +993,10 @@ do while .t.
       loop
    elseif key=K_ESC
       exit
+#ifdef __HARBOUR__
+   elseif key=K_ALT_B //.and. fseek(h,0,2) < 65536
+      hb_gtInfo( HB_GTI_CLIPBOARDDATA , strtran(strtran(memoread(f),'³','|'),"|",chr(9)) )
+#endif
    elseif key>0 .and. key<32 .and. c[key]#NIL
       eval(c[key],b)
       if scrlflag=1

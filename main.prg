@@ -30,6 +30,7 @@ request A_EXT
 
 #ifdef A_DRUKCOMP
 EXTERNAL __DBSDF,__DBDELIM,__COPYFILE,__RUN,__DBCONTINUE,__DBZAP
+EXTERNAL STOD
 EXTERNAL BIN2I
 EXTERNAL BIN2L
 EXTERNAL BIN2W
@@ -62,9 +63,6 @@ memvar  landscape,p_rown,p_colnl,p_rownl,p_land,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COL
 #ifdef A_WIN_PRN
   #define D_HWPRN A_WIN_PRN
 #endif
-#ifdef D_HWPRN
-memvar oprn
-#endif
 
 #ifdef A_NETIO
 memvar netio
@@ -74,8 +72,8 @@ memvar netio
     #include   'hbgtinfo.ch'
 #endif
 
-MEMVAR  year2bckp,mag_biez,mag_poz,magazyny,adres_mag,mag_link,_sbkgr,_sbnorm,;
-    dok_par,dokumenty,firma_n,DOK_ROZCH,dok_zewn,dok_zby,dok_fak,dok_ewid,dok_vat
+MEMVAR  oprn,year2bckp,mag_biez,mag_poz,magazyny,adres_mag,mag_link,_sbkgr,_sbnorm,;
+        dok_par,dokumenty,firma_n,DOK_ROZCH,dok_zewn,dok_zby,dok_fak,dok_ewid,dok_vat,r
 
 MEMVAR  stary_rok,operator,is_spec,jmiar,stanowis,zamowienie,level1,defa,_snorm
 memvar rodz_sprzed
@@ -90,28 +88,26 @@ field nazwa,konto,symbol,opis_koszt,kod,opis,numer,haslo,haslo_spec,;
     ewidencja,kol_kpr,wyr_kpr,printdev,sub_dok,rozlicz,path,czy_hurt,paragon,;
     dok_comp,waluta
 
-PROCEDURE MAIN(parametr,menu,level1)
-memvar bckp
-local scr_menu,i,txt,mlog,a,mf:=.f.
+PROCEDURE MAIN()
+parameters parametr,mag_biez,operator
+memvar bckp,parametr,mag_biez,operator
+local scr_menu,txt,mlog,a,mf:=.f.,i,menu
 
-public defa
-
+public defa,oprn
 #ifdef PLWIN
    hb_gtInfo( HB_GTI_WINTITLE , "Magazyn" )
 #endif
-#ifdef D_HWPRN
-   public oprn
-#endif
 if parametr='MAGDEF='
    defa:=subs(parametr,8)
-   parametr:=menu
-   menu:=level1
+   parametr:=mag_biez
+   mag_biez:=operator
+   operator:=NIL
 else
    defa:=getenv("MAGDEF")
 endif
 
-IF ""#defa .and. right(defa,1)<>HB_OsPathSeparator()
-   defa+=HB_OsPathSeparator()
+IF ""#defa .and. right(defa,1)<>HB_ps()
+   defa+=HB_ps()
 endif
 
 #ifdef A_NETIO
@@ -130,28 +126,50 @@ endif
       netio:=defa
    endif
 #endif
+  a:=DiskName()+HB_OsDriveSeparator()+HB_ps()+curdir(DiskName())+HB_ps()
 
-if ""=defa
-  defa:="."+HB_OsPathSeparator()
+#ifdef __PLATFORM__WINDOWS
+if curdir()=HB_ps()
+  a:=HB_ps()+curdir()+HB_ps()
+endif
+#endif
+
+if defa='.'+HB_ps()
+   defa:=a+subs(defa,3)
+elseif defa='..'+HB_ps()
+   i:=rat(HB_ps(),left(a,len(a)-1))
+   if i>0
+     defa:=left(a,i)+subs(defa,4)
+   endif
+endif
+
+if lower(a)=lower(defa)
+  i:=len(defa)
+  if i=0 
+     defa:=a
+  else
+     defa:=left(a,i)
+  endif
   SET PATH TO (defa)
 else
-  SET PATH TO ("."+HB_OsPathSeparator()+HB_OsPathListSeparator()+defa)
+  SET PATH TO (a+HB_OsPathListSeparator()+defa)
 endif
+
 #ifdef A_DIETA
 a:=getenv('DIETADEF')
   if empty(a)
-    i:=rat(HB_OsPathSeparator(),left(defa,len(defa)-1))
-    a:=if(i=0,defa+'..'+HB_OsPathSeparator(),left(defa,i))+'dieta'+HB_OsPathSeparator()
+    i:=rat(HB_ps(),left(defa,len(defa)-1))
+    a:=if(i=0,defa+'..'+HB_ps(),left(defa,i))+'dieta'+HB_ps()
   endif
-  SET PATH TO (set(_SET_PATH)+HB_OsPathListSeparator()+a+'roboczy'+HB_OsPathSeparator()+HB_OsPathListSeparator()+a)
+  SET PATH TO (set(_SET_PATH)+HB_OsPathListSeparator()+a+'roboczy'+HB_ps()+HB_OsPathListSeparator()+a)
 #endif
 
 setpos(3,0)
-? padc(" ЫЫЫЫЫЫ Ы     Ы  ЫЫЫЫЫЫ ЫЫЫЫЫЫЫ ЫЫЫЫЫЫЫ Ы       Ы",maxcol()-1)
-? padc("Ы        Ы   Ы  Ы          Ы    Ы       ЫЫ     ЫЫ",maxcol()-1)
-? padc(" ЫЫЫЫЫ    Ы Ы    ЫЫЫЫЫ     Ы    ЫЫЫЫЫЫ  Ы Ы   Ы Ы",maxcol()-1)
-? padc("      Ы    Ы          Ы    Ы    Ы       Ы  Ы Ы  Ы",maxcol()-1)
-? padc("ЫЫЫЫЫЫ     Ы    ЫЫЫЫЫЫ     Ы    ЫЫЫЫЫЫЫ Ы   Ы   Ы",maxcol()-1)
+? padc(" ЫЫЫЫЫЫ Ы     Ы  ЫЫЫЫЫЫ ЫЫЫЫЫЫЫ ЫЫЫЫЫЫЫ Ы       Ы",maxcol())
+? padc("Ы        Ы   Ы  Ы          Ы    Ы       ЫЫ     ЫЫ",maxcol())
+? padc(" ЫЫЫЫЫ    Ы Ы    ЫЫЫЫЫ     Ы    ЫЫЫЫЫЫ  Ы Ы   Ы Ы",maxcol())
+? padc("      Ы    Ы          Ы    Ы    Ы       Ы  Ы Ы  Ы",maxcol())
+? padc("ЫЫЫЫЫЫ     Ы    ЫЫЫЫЫЫ     Ы    ЫЫЫЫЫЫЫ Ы   Ы   Ы",maxcol())
 ?
 ? padc("Ы       Ы     Ы      ЫЫЫЫ      Ы     ЫЫЫЫЫЫ Ы     Ы ЫЫ    Ы",maxcol())
 ? padc("ЫЫ     ЫЫ    Ы Ы    Ы    Я    Ы Ы        ЬЯ  Ы   Ы  Ы Ы   Ы",maxcol())
@@ -167,7 +185,7 @@ setpos(3,0)
 ? trim(padc("Ы   Ы   Ы Ы       Ы  ЫЫЫЫ  Ы       Ы ЫЫЫЫЫЫ    Ы    Ы    ЫЫ",maxcol()))
 
 
-set default to (defa+"roboczy"+HB_OsPathSeparator())
+set default to (defa+"roboczy"+HB_ps())
 
 STARY_ROK=NIL
 year2bckp:={}
@@ -203,11 +221,11 @@ year2bckp:={}
 
 
 i:=row()
-setpos(i-6,maxcol()/2)
+setpos(i-6,0)
 
 *******************                    Tworzenie tablic dla aczojs() itp
 
-i:={maxrow(),maxcol()}
+i:={maxrow(),maxcol(),}
 #ifdef DatE
 private dzisiaj:=date()
 #endif
@@ -219,10 +237,13 @@ begin sequence
 end sequence
    enddo
 
-
-txt:=savescreen(0,0,i[1],i[2])
-clear screen
-restscreen(0,0,i[1],i[2],txt)
+   if maxrow()>i[2] .or. maxcol()>i[2]
+     i[1]:=min(i[1],maxrow())
+     i[2]:=min(i[2],maxcol())
+     i[3]:=savescreen(0,0,i[1],i[2])
+     clear screen
+     restscreen(0,0,i[1],i[2],i[3])
+   endif
 
 readinit()
 reuse()
@@ -246,10 +267,15 @@ reuse()
 #endif
 
 txt:={}
-IF DISKSPACE(if(":"$defa,asc(upper(defa))-64,))<1000000
-    aadd(txt,message("TYLKO"+STR(DISKSPACE(),7)+" BAJTаW;WOLNEGO MIEJSCA NA DYSKU !"))
-ENDIF
+#ifdef __HARBOUR__
+a:=HB_DISKSPACE(defa)
+#else
+a:=DISKSPACE(if(subs(defa,2,1)==':',(asc(defa)-64)%32,0))
+#endif
 
+IF a<104857600
+    aadd(txt,message("TYLKO"+STR(int(a/1024/1024),3)+" MEGABAJTаW;WOLNEGO MIEJSCA NA DYSKU !"))
+ENDIF
 IF date()-45>DatY->D_Z_MIES1
     aadd(txt,MESSAGE("ZAMKNIJ MIESI¤C !"))
 ENDIF
@@ -263,9 +289,8 @@ endif
 @ 18,0
 if !empty(parametr)
     set color to w
-    mag_biez:=menu
     mag_poz:=max(1,ascan(magazyny,mag_biez))
-    operator:=''
+    if(empty(operator),operator:='',)
     (&parametr,parametr:=NIL)
     set cursor on
     quit
@@ -450,6 +475,15 @@ endif
         SET RELATION TO
     ++i
     enddo
+#ifdef D_HWPRN
+if valtype(oprn)='O'
+   if prow()>1
+      specout(chr(12))
+   endif
+   oprn:Destroy()
+   oprn:=NIL
+endif
+#endif
     set console on
     set print off
 #ifdef A_PRINT
@@ -459,30 +493,24 @@ endif
      endif
 #endif
     SET PRINTER TO
-#ifdef D_HWPRN
-if valtype(oprn)='O'
-   oprn:Destroy()
-   oprn:=NIL
-endif
-#endif
 *********************
-
    ENDDO
 ********************************
 
 //  save_zm()
    inisave("magazyn.ini")
-
    IF menu
       EXIT
    ENDIF
-
 ENDDO
 
-CLOSE DATABASES
+menu:=tak("CZY ARCHIWOWAЏ",18,,.t.,.F.)
 
-
-IF tak("CZY ARCHIWOWAЏ",18,,.t.,.F.)
+IF menu
+   CLOSE ALL
+#ifdef __HARBOUR__
+   hb_idlesleep(0.5)
+#endif
    IF type('bckp')='C' .and. !empty(year2bckp)
 #ifdef A_BACKUP
       if len(bckp)>12
@@ -510,9 +538,10 @@ SET CURSOR ON
 return
 **********
 STATIC PROCEDURE MAKE_ARR(AR,CB)
-LOCAL MAG_POZ,buf,l
+LOCAL buf,l
 MEMVAR MAGAZYNY
 FIELD NR_MAG
+PRIVATE mag_poz
   DO WHILE !EOF()
     mag_poz:=ascan(magazyny,nr_mag)
     buf:=eval(cb)
@@ -531,13 +560,13 @@ FIELD NR_MAG
 RETURN
 **********************
 proc readinit
-
-local r,mag_poz,txt,mag_biez
+local txt
 #ifdef A_DIETA
 field posilek,dieta,grupa,stawka,waga
 MEMVAR posilki,diety,grupy,g_stawki,p_wagi,PosStr,DietyStr,GrStr
 public posilki:={},diety:={},grupy:={},g_stawki:={},p_wagi:={},PosStr:="",DietyStr:="",GrStr:=""
 #endif
+private mag_biez,mag_poz,r
 
 public jmiar:={},;
        magazyny:={},;
@@ -552,7 +581,9 @@ public dok_rozch:="",dok_zewn:=""
 #ifdef A_FA
 public dok_zby:="",;
        dok_fak:="",;
-       dok_vat:=""
+       dok_vat:="",;
+       dok_ewid:=""
+#else
 #ifdef A_IZ
 public dok_ewid:=""
 #endif
@@ -660,62 +691,11 @@ MAKE ARRAY ZAMOWIENIE with KOD+" "+OPIS
 USE
 XSELECT DOK_DEF READONLY
 
-#ifdef A_FA
-#ifndef A_DRUKCOMP
-#define D_FA ,trim(podpisy),ewidencja,tp_dni,trim(stempel),trim(spec_line)
-#else
-#define D_FA ,trim(druk_proc),ewidencja,tp_dni
-#endif
-#else
-#ifdef A_IZ
-#define D_FA ,trim(podpisy),ewidencja
-#else
-#define D_FA ,trim(podpisy)
-#endif
-#endif
-
-
-#ifdef A_KPR
-#define D_KPR ,trim(kol_kpr),trim(wyr_kpr)
-#else
-#define D_KPR
-#endif
-
-#ifdef A_LPTN
-#define D_LPT ,trim(printdev)
-#else
-#define D_LPT
-#endif
-
-#ifdef A_FK
-#define D_FK ,rozlicz
-#else
-#define D_FK
-#endif
-
 
 #ifdef A_SUBDOK
 #define D_SUBDOK +sub_dok
 #else
 #define D_SUBDOK
-#endif
-
-#ifdef A_DF
-#define D_DF ,paragon
-#else
-#define D_DF
-#endif
-
-#ifdef A_DOKCOMP
-#define D_DC ,trim(dok_comp)
-#else
-#define D_DC
-#endif
-
-#ifdef A_WALUTA
-#define D_WA ,if(fieldpos('waluta')<>0,waluta,.f.)
-#else
-#define D_WA
 #endif
 
   go top
@@ -727,38 +707,25 @@ XSELECT DOK_DEF READONLY
       for mag_poz=1 to r
         mag_biez:=left(magazyny[mag_poz],2)
         if 0=ascan(dokumenty[mag_poz],smb_dok D_SUBDOK)
-          aadd(dokumenty[mag_poz],SMB_DOK D_SUBDOK+" "+NAZWA_DOK)
-          aadd(dok_par[mag_poz],{P_R,ZEWN,trim(KONTO),trim(WARTOSC),lpmax,ile_kop D_FA D_KPR D_LPT D_FK D_DF D_DC D_WA})
-          if p_r#"P"
-             dok_rozch+=mag_biez+SMB_DOK D_SUBDOK+","
-          endif
-          if zewn#"W"
-             dok_zewn+=mag_biez+SMB_DOK D_SUBDOK+","
-          endif
-#ifdef A_FA
-          if zewn$"UV"
-             dok_vat+=mag_biez+SMB_DOK D_SUBDOK+","
-          endif
-          if p_r="F"
-             dok_fak+=mag_biez+SMB_DOK D_SUBDOK+","
-          endif
-          if ewidencja#"E"
-             dok_zby+=mag_biez+SMB_DOK D_SUBDOK+","
-          endif
-#ifdef A_IZ
-          if ewidencja#"Z"
-             dok_ewid+=mag_biez+SMB_DOK D_SUBDOK+","
-          endif
-#endif
-#endif
+          mkdokpar(0)
         endif
       next
     ELSE
       r:=ascan(dokumenty[mag_poz],smb_dok D_SUBDOK)
+      mkdokpar(r)
+    ENDIF
+    SKIP
+  ENDDO
+  use
+return
+***********************
+proc mkdokpar(r)
+
+local i,j,txt
       if r=0
          aadd(dokumenty[mag_poz],NIL)
          r:=len(dokumenty[mag_poz])
-         aadd(dok_par[mag_poz],{})
+         aadd(dok_par[mag_poz],NIL)
       else
          dok_rozch:=strtran(dok_rozch,mag_biez+SMB_DOK D_SUBDOK+",",'')
          dok_zewn :=strtran(dok_zewn, mag_biez+SMB_DOK D_SUBDOK+",",'')
@@ -766,13 +733,74 @@ XSELECT DOK_DEF READONLY
          dok_vat  :=strtran(dok_vat , mag_biez+SMB_DOK D_SUBDOK+",",'')
          dok_fak  :=strtran(dok_fak , mag_biez+SMB_DOK D_SUBDOK+",",'')
          dok_zby  :=strtran(dok_zby , mag_biez+SMB_DOK D_SUBDOK+",",'')
+         dok_ewid :=strtran(dok_ewid, mag_biez+SMB_DOK D_SUBDOK+",",'')
+#else
 #ifdef A_IZ
          dok_ewid :=strtran(dok_ewid, mag_biez+SMB_DOK D_SUBDOK+",",'')
 #endif
 #endif
       endif
+
          dokumenty[mag_poz,r]:=SMB_DOK D_SUBDOK+" "+NAZWA_DOK
-         dok_par[mag_poz,r]:={P_R,ZEWN,trim(KONTO),trim(WARTOSC),lpmax,ile_kop D_FA D_KPR D_LPT D_FK D_DF D_DC D_WA}
+         j:=fcount()
+#ifdef A_SUBDOK
+         i:=j-4
+#else
+         i:=j-3
+#endif
+         dok_par[mag_poz,r]:=array(i)
+
+         dok_par[mag_poz,r,1]:=P_R
+         dok_par[mag_poz,r,2]:=ZEWN
+         dok_par[mag_poz,r,3]:=trim(KONTO)
+         dok_par[mag_poz,r,4]:=trim(WARTOSC)
+         dok_par[mag_poz,r,5]:=lpmax
+         dok_par[mag_poz,r,6]:=ile_kop
+
+#ifdef A_FA
+#ifdef A_DRUKCOMP
+         dok_par[mag_poz,r,7]:=trim(druk_proc)
+#else
+         dok_par[mag_poz,r,7]:=trim(podpisy)
+         dok_par[mag_poz,r,10]:=trim(stempel)
+         dok_par[mag_poz,r,11]:=trim(spec_line)
+#endif
+         dok_par[mag_poz,r,8]:=ewidencja
+         dok_par[mag_poz,r,9]:=tp_dni
+#ifdef A_KPR
+         dok_par[MAG_POZ,r,A_KPR]:=trim(kol_kpr)
+         dok_par[MAG_POZ,r,A_KPR+1]:=trim(wyr_kpr)
+#endif
+#ifdef A_FK
+         dok_par[MAG_POZ,r,A_FK]:=rozlicz
+#endif
+#ifdef A_DF
+         dok_par[MAG_POZ,r,A_DF]:=paragon
+#endif
+#ifdef A_WALUTA
+         dok_par[MAG_POZ,r,A_WALUTA]:=if(fieldpos('waluta')<>0,waluta,.f.)
+#endif
+#else
+         dok_par[mag_poz,r,7]:=trim(podpisy)
+#ifdef A_IZ
+         dok_par[mag_poz,r,8]:=ewidencja
+#endif
+#endif
+#ifdef A_LPTN
+         dok_par[MAG_POZ,r,A_LPTN]:=trim(printdev)
+#endif
+#ifdef A_DOKCOMP
+         dok_par[MAG_POZ,r,A_DOKCOMP]:=trim(dok_comp)
+#endif
+
+         do while dok_par[MAG_POZ,r,i]=NIL
+          txt:=fieldget(j--)
+          if valtype(txt)='C'
+            txt:=trim(txt)
+          endif
+          dok_par[MAG_POZ,r,i--]:=txt
+         enddo
+
           if p_r#"P"
              dok_rozch+=left(magazyny[mag_poz],2)+SMB_DOK D_SUBDOK+","
           endif
@@ -789,26 +817,21 @@ XSELECT DOK_DEF READONLY
           if ewidencja#"E"
              dok_zby+=left(magazyny[mag_poz],2)+SMB_DOK D_SUBDOK+","
           endif
+          if ewidencja#"Z"
+             dok_ewid+=left(magazyny[mag_poz],2)+SMB_DOK D_SUBDOK+","
+          endif
+#else
 #ifdef A_IZ
           if ewidencja#"Z"
              dok_ewid+=left(magazyny[mag_poz],2)+SMB_DOK D_SUBDOK+","
           endif
 #endif
 #endif
-    ENDIF
-    SKIP
-  ENDDO
-  use
-#undef D_WA
-#undef D_DC
-#undef D_DF
-#undef D_FK
-#undef D_FA
-#undef D_KPR
-#undef D_LPT
-#undef D_SUBDOK
 
 return
+
+return
+#undef D_SUBDOK
 **********************
 proc reuse
 local a,i,txt
@@ -817,9 +840,27 @@ field index
     if stary_rok#NIL .and. 0=ascan(year2bckp,year(stary_rok))
        aadd(year2bckp,year(stary_rok))
     endif
-    set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_OsPathSeparator())
+    set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_ps())
 
           sel("DM",1)
+
+       if stary_rok=NIL //tymczasowo bo nie wszyscy majҐ
+#ifdef A_ADS
+#ifdef A_MM
+          mkindex('DM_TRIM','SMB_DOW+PADL(RTRIM(NR_DOWODU),5)')
+#else
+          mkindex('DM_TRIM','NR_MAG+SMB_DOW+PADL(RTRIM(NR_DOWODU),5)')
+#endif
+#else
+#ifdef A_MM
+          mkindex('DM_TRIM','SMB_DOW+PADL(STRTRAN(NR_DOWODU," "),5)')
+#else
+          mkindex('DM_TRIM','NR_MAG+SMB_DOW+PADL(STRTRAN(NR_DOWODU," "),5)')
+#endif
+#endif
+          set order to 1
+       endif
+
           sel("MAIN",2)
           select 4
 #ifdef A_DIETA
@@ -856,10 +897,10 @@ field index
 
 #ifdef A_DDBF
    select 0
-   nUSE daty
-   if !used() .and. !Empty(txt:=Findfile("daty.ini"))
+
+   if Empty(Findfile('daty.dbf')) .and. !Empty(txt:=Findfile("daty.ini"))
      a:={}
-     do while inirest(@txt)
+     do while inirestold(@txt)
        i:=at(':=',txt)
        if i>0
          aadd(a,{left(txt,i-1),type(subs(txt,i+2)),10,2})
@@ -869,7 +910,7 @@ field index
      nUSE daty
      dbappend()
      txt:="daty.ini"
-     do while inirest(@txt)
+     do while inirestold(@txt)
        i:=at(':=',txt)
        if i>0
          txt:='DATY->'+txt
@@ -880,12 +921,20 @@ field index
      enddo
      UNLOCK
    endif
+   nUSE daty
 #else
+   if Empty(txt:=Findfile("daty.ini"))
+      nUSE daty
+      txt:=''
+      aeval(dbstruct(),{|x|txt+=x[1]+':='+x[1]+HB_EOL()})
+      memowrit(set(_SET_DEFAULT)+"daty.ini",txt)
+      inisave("daty.ini")
+   endif
    txt:="daty.ini"
    do while inirest(@txt)
    begin sequence
    (&txt,txt:=NIL)
-   end
+   end sequence
    enddo
 #endif
 #ifdef A_XPRN

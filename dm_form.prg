@@ -9,7 +9,7 @@ local stat,rmpos,getlist,job
 
 asize(_f,_fLEN)
 
-_flp:=_flpmax
+DEFAULT _flp TO _flpmax
 _fi:=1
 _fj:=0
 _fl:=1
@@ -81,7 +81,9 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
       exit
     endif
 
+
     eval(_fmainpre,_f)
+
     stat:=(_fi=1 .and. _fl=1)
 #ifdef A_MYSZ
     if _fkey=GE_MOUSE .and. job[3]<=_frow+(_fl-_fj+1)*_fskip
@@ -90,6 +92,43 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
         _fi:=job
     endif
 #endif
+
+    if nextkey()=0 .and. !stat .and. !_fpopkey .and. _flp>1
+       stat:={_fi,recno()}
+       _fj:=max(0,max(_fl,_fi)-int((maxrow()-_frow)/_fskip)+1)
+       skip _fj+1-_fi
+       _fl:=_fi:=_fj+1
+       _fpos:=_fkey:=0
+       while _fi<=_flp .and. _frow+_fskip*(_fi-_fj+1)<=maxrow()
+         @ _fskip*(_fi-_fj)+_frow,_fco1,_fskip*(_fi-_fj+1)+_frow,_fco2 BOX IF( _flp<=_fi,'º ºº¼ÍÈº ','º ºº¼ÄÈº ') COLOR _sbkgr
+         _fl:=_fi
+         _fk:=_frow+_fskip*(_fi-_fj)
+         job:=right(ltrim(str(_fi,6,0)),4)
+         @ _fk,_fco1+max(0,4-len(job)) say job+'.' color _sbkgr
+         getlist:={}
+         SET COLOR TO (_SNORM)
+         _fkey:=nextkey()
+         eval(_fmainget,_f,getlist)
+         if _fpopkey .or. _fkey<>0
+            _fpopkey:=.t.
+            exit
+         endif
+         skip
+         ++_fi
+       enddo
+       if !_fpopkey
+         _fi:=stat[1]
+          goto stat[2]
+         _fpopkey:=.t.
+         _fk:=_frow+_fskip*(_fi-_fj)
+         @ _fk,_fco1 SAY '>' COLOR _sbkgr
+         @ _fk,_fco2 SAY '<' COLOR _sbkgr
+         @ _fk+_fskip-1,_fco1 SAY '>' COLOR _sbkgr
+         @ _fk+_fskip-1,_fco2 SAY '<' COLOR _sbkgr
+       endif
+       stat:=.t.
+    endif
+
         DO WHILE .t.
 
   SET COLOR TO (_SNORM)
@@ -130,7 +169,10 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
       rmpos:=_fpos
       if stat
          _fpos:=0
-         @ _fk,_fco1+1 say str(_fi,3)+'.' color _sbkgr
+         job:=right(ltrim(str(_fi,6,0)),4)
+         @ _fk,_fco1 SAY 'º   .' color _sbkgr
+         @ _fk,_fco1+max(0,4-len(job)) say job color _sbkgr
+         //@ _fk,_fco1+1 say str(_fi,3)+'.' color _sbkgr
          eval(_fmainget,_f,getlist)
          if _fpos=0
             _fpos:=rmpos
@@ -206,7 +248,13 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
               else
                  @ (_fl-_fj)*_fskip+_frow,_fco1,(_fl-_fj+1)*_fskip+_frow,_fco2 BOX 'º ºº¼ÍÈº'
               endif
-              scroll(_fskip+_frow,_fco1+1,_frow+_fskip*(_fl-_fj+1)-1,_fco2-1,-_fskip)
+              scroll(_fskip+_frow,_fco1,_frow+_fskip*(_fl-_fj+1)-1,_fco2,-_fskip)
+              if _fskip<2
+                @  _fskip+_frow,_fco1 SAY 'º'
+                @  _fskip+_frow,_fco2 SAY 'º'
+              else
+                @  _fskip+_frow,_fco1,2*_fskip+_frow-1,_fco2 BOX 'º ººº ºº'
+              endif
               Skip -job
               loop
            elseif job[3]=_frow+_fskip*(_fl-_fj+1) .and. _fl<_flp
@@ -217,7 +265,13 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                 stat:=.t.
                 ++_fj
                 ++_fl
-                scroll(_frow+_fskip,_fco1+1,_frow+_fskip*(_fi-_fj+1)-1,_fco2-1,_fskip)
+                scroll(_frow+_fskip,_fco1,_frow+_fskip*(_fi-_fj+1)-1,_fco2,_fskip)
+                if _fskip<2
+                  @  _fskip*(_fi-_fj)+_frow,_fco1 SAY 'º'
+                  @  _fskip*(_fi-_fj)+_frow,_fco2 SAY 'º'
+                else
+                  @  _frow+_fskip*(_fi-_fj),_fco1,_frow+_fskip*(_fi-_fj+1)-1,_fco2 BOX 'º ººº ºº'
+                endif
               endif
               if _fi>_fl
                 stat:=.t.
@@ -235,7 +289,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
            endif
         endif
 #endif
-#ifdef __PLATFORM__UNIX
+#ifdef __HARBOUR__
 #define D_REST 4
 #else
 #define D_REST 2
@@ -250,11 +304,16 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                        scroll(_fk,_fco1,_frow+_fskip*(_fl-_fj+1),_fco2,_fskip)
                        --_fl
                        RESTSCREEN(1+_fskip*(_fl-_fj+1)+_frow,_fco1,maxrow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(1+_fskip*(_fl-_fj+1)+_frow)+1))
+                       *********
                        _fkey:=_fi
                        do while _fk<=_frow+_fskip*(_fl-_fj)
-                          @ _fk,_fco1+1 say str(_fkey++,3)+'.' color _sbkgr
+                          job:=right(ltrim(str(_fkey++,6,0)),4)
+                          @ _fk,_fco1 SAY 'º   .' color _sbkgr
+                          @ _fk,_fco1+max(0,4-len(job)) say job color _sbkgr
+                          //@ _fk,_fco1+1 say str(_fkey++,3)+'.' color _sbkgr
                           _fk+=_fskip
                        enddo
+                       ************
                     endif
                  elseIF _fi>1
                      --_fi
@@ -269,7 +328,12 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                    endif
                 else
                    skip
-                   scroll(_fk,_fco1+1,_fk+_fskip-1,_fco2-1,0)
+                   //scroll(_fk,_fco1,_fk+_fskip-1,_fco2,0)
+                   if _fskip<2
+                     @ _frow+_fskip*(_fi-_fj), _fco1 SAY  'º'+space(_fco2-_fco1-2)+'º'
+                   else
+                     @  _fk,_fco1,_fk+_fskip-1,_fco2 BOX 'º ººº ºº '
+                   endif
                    exit
                 endif
 
@@ -292,7 +356,13 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                     else
                         @ (_fl-_fj)*_fskip+_frow,_fco1,(_fl-_fj+1)*_fskip+_frow,_fco2 BOX 'º ºº¼ÍÈº'
                     endif
-                    scroll(_fskip+_frow,_fco1+1,_frow+_fskip*(_fl-_fj+1)-1,_fco2-1,-_fskip)
+                    scroll(_fskip+_frow,_fco1,_frow+_fskip*(_fl-_fj+1)-1,_fco2,-_fskip)
+                    if _fskip<2
+                      @  _fskip+_frow,_fco1 SAY "º"
+                      @  _fskip+_frow,_fco2 SAY "º"
+                    else
+                      @  _fskip+_frow,_fco1,2*_fskip+_frow-1,_fco2 BOX 'º ººº ºº'
+                    endif
                  ENDIF
                  Skip -1
 
@@ -305,11 +375,17 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
               case _fkey=K_PGDN .or. _fkey=K_ENTER // PgDn
             skip
             ++_fi
-          if _frow+_fskip*(_fi-_fj+1)>maxrow()
+	  if _frow+_fskip*(_fi-_fj+1)>maxrow()
             stat:=.t.
             ++_fj
             ++_fl
-            scroll(_frow+_fskip,_fco1+1,_frow+_fskip*(_fi-_fj+1)-1,_fco2-1,_fskip)
+            scroll(_frow+_fskip, _fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2, _fskip)
+            if _fskip<2
+              @ _frow+_fskip*(_fi-_fj), _fco1 SAY  'º'
+              @ _frow+_fskip*(_fi-_fj), _fco2 SAY  'º'
+            else
+              @  _frow+_fskip*(_fi-_fj), _fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2 BOX 'º ººº ºº'
+            endif
           endif
           if _fi>_fl
             stat:=.t.

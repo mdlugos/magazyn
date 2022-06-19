@@ -10,6 +10,17 @@
 #include "frmdef.ch"
 #include "error.ch"
 
+#ifdef A_XPRN
+memvar p_coln
+#else
+//#define P_ROWN 58
+#ifdef A_PCL
+#define P_COLN 78
+#else
+#define P_COLN 80
+#endif
+#endif
+
 // Definitions for buffer sizes
 #define  SIZE_FILE_BUFF             1990       // Size of report file
 #define  SIZE_LENGTHS_BUFF          110
@@ -180,21 +191,21 @@ FUNCTION __ReportForm( cFRMName, lPrinter, cAltFile, lNoConsole, bFor, ;
     else
 #endif
 #ifdef A_17CPI
-    IF aReportData[ RP_WIDTH ] <=80
+    IF aReportData[ RP_WIDTH ] <= P_COLN
 #else
-    IF aReportData[ RP_WIDTH ] >136
+    IF aReportData[ RP_WIDTH ] > P_COLN * 1.66
        ?? ccpi(8)
 #endif
 #ifdef A_15CPI
-    elseIF aReportData[ RP_WIDTH ] >120
+    elseIF aReportData[ RP_WIDTH ] > P_COLN * 1.5
        ?? ccpi(7)
-    elseIF aReportData[ RP_WIDTH ] >96
+    elseIF aReportData[ RP_WIDTH ] > P_COLN * 1.2
        ?? ccpi(6)
 #else
-    elseIF aReportData[ RP_WIDTH ] >96
+    elseIF aReportData[ RP_WIDTH ] > P_COLN * 1.2
        ?? ccpi(7)
 #endif
-    elseIF aReportData[ RP_WIDTH ] >80
+    elseIF aReportData[ RP_WIDTH ] > P_COLN
        ?? ccpi(5)
     endif
 #ifdef A_15CALI
@@ -821,7 +832,7 @@ STATIC FUNCTION PrintIt( cString )
 */
 STATIC FUNCTION EjectPage
    IF lFormFeeds
-      EJECT
+      specout(chr(12))
    ENDIF
    RETURN NIL
 
@@ -944,7 +955,7 @@ FUNCTION __FrmLoad( cFrmFile )
   nFrmHandle = FOPEN( cFrmFile )
   nFileError = FERROR()
 
-  IF !( HB_OsPathSeparator() $ cFrmFile .or. ":" $ cFrmFile )
+  IF !( HB_ps() $ cFrmFile .or. ":" $ cFrmFile )
     // if not found and no path in name, go looking
 
     IF nFileError != F_OK
@@ -952,7 +963,7 @@ FUNCTION __FrmLoad( cFrmFile )
       s := SET( _SET_DEFAULT )
 
       IF !Empty( s )
-        nFrmHandle := FOPEN( s + HB_OsPathSeparator() + cFrmFile )
+        nFrmHandle := FOPEN( s + HB_ps() + cFrmFile )
         nFileError := FERROR()
       END
     END
@@ -965,7 +976,7 @@ FUNCTION __FrmLoad( cFrmFile )
       paths := ListAsArray( s )
 
       FOR i := 1 to Len(paths)
-        nFrmHandle := FOPEN( paths[i] + HB_OsPathSeparator() + cFrmFile )
+        nFrmHandle := FOPEN( paths[i] + HB_ps() + cFrmFile )
         nFileError := FERROR()
 
         IF nFileError == F_OK

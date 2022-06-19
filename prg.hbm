@@ -1,12 +1,12 @@
 -oma -w1 -m -n
-#-llibhpdf -lhbhpdf
-#-ie:\h\contrib\hbhpdf
 -gui -gtwvt
--lhbwin
-#-lrddads -lace32 rddads.hbc
--lhbzebra
-#-lhbnetio -mt hbnetio.hbc
+-lhbwin hbwin.hbc
 #-lelzabdr
-#-lhbmxml hbmxml.hbc
-main ind_val dok dm_valid dm_form dok_druk dok_pr dodatki druk_zes io io_2 help error clp_brow mds mds_spec frmrun getsys indeksy
-#zagroda.prg
+#-lhbzebra hbzebra.hbc
+-lhbmxml hbmxml.hbc
+#sddmy.hbc
+main ind_val dok dm_valid dm_form dok_druk dok_pr dodatki druk_zes io io_2 help error clp_brow mds mds_spec frmrun getsys indeksy jpk
+#boromeus
+#puszczew
+#zagroda
+#cppl852m.c
