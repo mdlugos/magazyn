@@ -49,115 +49,27 @@ memvar mag_poz,mag_biez,magazyny,adres_mag,defa
 
 
 **************************
-func curl(line,res,ans,no_wait,no_error)
-local ok:=.f.,head,a,b,c,h:=-1,e
+func curl(res,line,post,ans,no_wait,no_error)
 
-if token=NIL .and. !empty(a:=memoread(defa+'token.json'))
-   token:=hb_hGetDef(hb_jsondecode(a),'access_token',NIL)
-endif
+    DEFAULT line TO ''
+    if !'-D'$ line
+      line+=' -i'
+    endif
+    if !empty(post)
+      line+=' --data-binary @-'
+    endif
 
-hb_default(@line,'')
-
-if empty(ans)
-  a:=at('/',res)
-  ans:=if(a=0,res,left(res,a-1))+'.json'
-endif
-
-e:=errorblock({|e|break(e)})
-begin sequence
-while .t.
-  if h>0
-    fclose(h)
-    h:=0
-    ferase(defa+'curl.lock')
-  endif    
-
-  if file(defa+'curl.lock') .and. (hb_fGetDateTime( defa+'curl.lock', @a, @b),b:=int(secs(b))+val(subs(b,9)),c:=max(0,int(seconds()+86400-b)%86400*2),c<10) //secs obcina setne  
-     if !empty(no_wait) .or. nextkey()=27
-        exit
-     endif
-     hb_idlesleep(.3)
-     loop 
-  endif
-/*
-  if waitshop(no_wait,head)=0 .or. nextkey()=27
-     exit
-  endif
-*/
-  h:=fcreate(defa+'curl.lock') 
-
-  if h=-1
-     if !empty(no_wait) .or. nextkey()=27
-        exit
-     endif
-     hb_idlesleep(.3)
-//     ferase(defa+'curl.lock')
-     loop 
-  endif  
-  ferase(ans)
-  if token=NIL
-     head:='HTTP/1.1 401 access token '
-  else
-//  ferase(defa+[header.txt])
-    a:='curl -D '+defa+'header.txt '+line+' https://ksef.mf.gov.pl/api/online/'+res+' > '+ans
     altd()
-    hb_run(a)
-    head:=memoread(defa+[header.txt])
-  endif
-  c:=val(subs(head,at(' ',head)+1,5))
-  if !empty(no_error) .or. c>=100 .and. c<=300
-     ok:=.t.
-     exit
-/****************
-  elseif c=401 .and. " access token " $ head
-     c:=if(empty(c:=memoread(defa+'token.json')),token,hb_hGetDef(hb_jsondecode(c),'access_token',token))
-     if c<>token
-        token:=c
-        loop
-     endif
-     ferase(defa+'token.json')
-     ferase(defa+'header.txt')
-     hb_run([curl --insecure -D ]+defa+[header.txt -u dim:Shoper77 -X POST https://zagroda.cieszyn.pl/webapi/rest/auth > ]+defa+[token.json])
-     c:=if(empty(c:=memoread(defa+'token.json')),NIL,hb_hGetDef(hb_jsondecode(c),'access_token',NIL))
-     if !empty(c)
-      token:=c
-      loop
-     endif
-***************/
-  endif 
-  if !empty(head)
-        head:=getlines(head)[1] 
-  endif
-  IF hb_jsondecode(memoread(ans),@c)>0
-        head+=hb_jsonencode(c,.t.)
-  ENDIF
-  alarm(head)
-  exit
-end
+    hb_processrun('curl '+line+' https://ksef.mf.gov.pl/api/online/'+res,post,@ans)
+    altd()
 
-  recover using c
-    errorblock(e)
-    if h>0
-      fclose(h)
-      h:=0
-    endif 
-    ferase(defa+'curl.lock')
-    eval(e,c)
-  end sequence 
-  if h>0
-    fclose(h)
-  endif 
-  ferase(defa+'curl.lock')
-  errorblock(e)
-
-return ok
-
+return ans
 
 static func token(bin)
 return subs(bin,HB_HEXTONUM(subs(bin,1,2))+1,HB_HEXTONUM(subs(bin,3,2)))
 
 func ksef_initsession()
-local ans,s:=select(),j,h:={"contextIdentifier"=>{"type"=>"onip","identifier"=>Trim(strtran(memvar->firma_NIP,'-',''))}}
+local ans,s:=select(),j
 
 if token=NIL
    sel('MAGAZYNY')
@@ -165,21 +77,27 @@ if token=NIL
    token:=token(field->ksef_token)
    dbselectarea(s)
 endif
-hb_memowrit('Auth.json',hb_jsonencode(h,.f.),.f.)
 
-curl([-X POST -H Content-Type:application/json -T Auth.json],'Session/AuthorisationChallenge',@ans)
+curl('Session/AuthorisationChallenge','-H Content-Type:application/json',hb_jsonencode({"contextIdentifier"=>{"type"=>"onip","identifier"=>memvar->firma_NIP}},,'UTF8'),@ans)
 
-j:=hb_jsondecode(hb_memoread(ans))
+j:=at('{',ans)
+if j<=5
+   alert(ans)
+   return
+endif
+j:=hb_jsondecode(substr(ans,j),,'UTF8')
 
 s:=token+"|"+str(hb_ttomsec(hb_ctot(j["timestamp"],"yyyy-mm-dd","HH:MM:SS.FFF"))-hb_ttomsec(0d19700101),13,0)
 altd()
 hb_processrun('openssl.exe pkeyutl -encrypt -pubin -keyform DER -inkey publicKey.der',s,@ans)
+altd()
 s:=HB_BASE64ENCODE(ans)
-     ans:=hb_MEMOREAD(defa+"InitSessionTokenRequest.xml")
+     ans:=hb_MEMOREAD(findfile("InitSessionTokenRequest.xml"))
      ans:=stuff(ans,at('</Challenge>',ans),0,j["challenge"])
-     ans:=stuff(ans,at('</ns2:Identifier>',ans),0,h["contextIdentifier","identifier"])
-     ans:=stuff(ans,at('</Token>',ans),0,s)
-     hb_MEMOwrit("ISTR.xml", ans, .f. )
+     ans:=stuff(ans,at('</ns2:Identifier>',ans),0,memvar->firma_NIP)
+     s:=stuff(ans,at('</Token>',ans),0,s)
+
+curl('Session/InitToken','-H Content-Type:application/octet-stream',HB_BASE64ENCODE(s),@ans)
 
 return ans
 
