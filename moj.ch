@@ -1,9 +1,9 @@
 #ifdef __PLATFORM__WINDOWS
 //    #define PLWIN
     #define A_WIN_PRN eval(memvar->do_getoprn)
-    #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usˆug Informatycznych Marek Dˆugosz, 43-400 Cieszyn, ul. R¢wna 16'
-//    #define A_ZEBRA
 #endif
+#define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usˆug Informatycznych Marek Dˆugosz, 43-400 Cieszyn, ul. R¢wna 16'
+//    #define A_ZEBRA
 //#define A_ADS 1
 #define UpP(x) UPPER(x)
 #define PC852
@@ -18,6 +18,7 @@
 //#define A_NOREFRESH
 #command init screen  =>
 #command INIT PRINTER => specout(eval(memvar->p_init,wasbad))
+#define A_WL memvar->do_wl
 #define A_XPRN
 #define A_PCL
 #define isPrinter() .t.

@@ -113,7 +113,7 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,wart_vat,;
 #define dok_df  dok_def[A_DF]
 #define dok_wal dok_def[A_WALUTA]
 #ifdef A_LPTN
-#define D_LPT ,dok_def[A_LPTN]
+#define D_LPT ,lpt
 #else
 #define D_LPT
 #endif
@@ -139,12 +139,12 @@ field wartosc
 memvar i,j,k,s,p,r,w,v,wt,vt,ce,il,il_f,pv,nz,operator,dok_par,changed,mag_poz,dok_def,firma_n,;
        dokumenty,firma_a,fakkorflag,fakkormem,u,ck,ut,gt,g,pm,was,defa,ilj,dok_naz,;
        mag_biez,magazyny,df,df_ver,AUX,numerp,datap,stawki,stawkizby,komunikat,self,;
-       stary_rok,wabuf,buf,linecount,l,landscape,p_rownl,p_coln,oprn,na
+       stary_rok,wabuf,buf,linecount,l,landscape,p_rownl,p_coln,oprn,na,lpt
 
 procedure wydruk_dok(n,dok)
 local mes,jb,x,y,z,m,o,srbuf
 static apcomp:={}
-private dok_kop:=n,linecount
+private dok_kop:=n,linecount,lpt
 private a,b,c,d,e,f,g,h,i,j,k,self,buf,l
 private s,p,u,ck,ut,pm,il,nz,il_f,na
 #ifdef A_FA
@@ -163,6 +163,9 @@ private ilj
 #ifdef A_GRAM
 private gt
 #endif
+#ifdef A_LPTN
+  lpt:=dok_def[A_LPTN]
+#endif
 
   IF dok_kop=NIL
     dok_kop=1
@@ -177,7 +180,7 @@ private gt
     endif
     @ mes[1]+2,mes[2]+2 SAY "Prosz© czeka†"
   ELSE
-  mes:=message("Prosz© czeka†;TRWA WYDRUK.")
+    mes:=message("Prosz© czeka†;TRWA WYDRUK.")
   ENDIF
 
   begin sequence
@@ -333,8 +336,8 @@ private gt
     ENDIF
 
     set console off
-    print(D_LPT)
     setprc(0,0)
+    print(1,lpt)
 
 #ifdef A_DFP
     changed:=kto_pisal=chr(255)
@@ -1097,7 +1100,7 @@ private gt
   #endif
                set printer to
                if i>1
-                  print(0)
+                  print(1 D_LPT)
                endif
             endif
  #endif
@@ -2506,7 +2509,7 @@ return x
 ***************
 
 #ifdef A_LPTN
-#define D_LPT dok_par[MAG_POZ,r,A_LPTN]
+#define D_LPT ,dok_par[MAG_POZ,r,A_LPTN]
 #else
 #define D_LPT
 #endif
@@ -2614,7 +2617,7 @@ oprn:=D_HWPRN
     r:=max(1,ascan(dokumenty[MAG_POZ],smb_dow D_SUBDOK))
 
   set console off
-  print(D_LPT)
+  print(1 D_LPT)
   setprc(0,0)
 
     IF KTO_PISAL=CHR(255)

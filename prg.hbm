@@ -1,8 +1,8 @@
 -oma -w1 -m -n
--gui -gtwvt
+#-gui -gtwvt
 -lhbwin hbwin.hbc
 #-lelzabdr
-#-lhbzebra hbzebra.hbc
+-lhbzebra hbzebra.hbc
 -lhbmxml hbmxml.hbc
 #sddmy.hbc
 main ind_val dok dm_valid dm_form dok_druk dok_pr dodatki druk_zes io io_2 help error clp_brow mds mds_spec frmrun getsys indeksy jpk

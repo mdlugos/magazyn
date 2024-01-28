@@ -13,9 +13,6 @@
 #endif
 #endif
 
-#ifndef A_GETLPT
-  #define A_GETLPT getenv("MDSLPT")
-#endif
 #ifdef A_HBGET
   static oed:=NIL
   static win:=NIL
@@ -175,7 +172,16 @@ static a,l,i
 if a=NIL
    x:=findfile(x)
    if ""#x
-      a:=getlines(memoread(x))
+      a:=memoread(x)
+#ifndef __HARBOUR__
+      i:=at(chr(10),a)
+      if i>1 .and. subs(a,i-1,1)=chr(13)
+         i:=chr(13)+chr(10)
+      else
+         i:=chr(10)
+      endif
+#endif
+      a:=getlines(a,i)
       i:=0
       l:=len(a)
    else
@@ -205,7 +211,16 @@ local a,l:=0,i,j,c,y
 
    x:=findfile(x)
    if ""#x
-      a:=getlines(memoread(x))
+      a:=memoread(x)
+#ifndef __HARBOUR__
+      i:=at(chr(10),a)
+      if i>1 .and. subs(a,i-1,1)=chr(13)
+         i:=chr(13)+chr(10)
+      else
+         i:=chr(10)
+      endif
+#endif
+      a:=getlines(a,i)
       l:=len(a)
    endif
 
@@ -243,7 +258,16 @@ static a,l,i
 if a=NIL
    x:=findfile(x)
    if ""#x
-      a:=getlines(memoread(x))
+      a:=memoread(x)
+#ifndef __HARBOUR__
+      i:=at(chr(10),a)
+      if i>1 .and. subs(a,i-1,1)=chr(13)
+         i:=chr(13)+chr(10)
+      else
+         i:=chr(10)
+      endif
+#endif
+      a:=getlines(a,i)
       i:=0
       l:=len(a)
    else
@@ -271,7 +295,17 @@ return .t.
 procedure inisave(name)
 local i,txt,j,b,c
    name:=findfile(name)
-   txt:=getlines(memoread(name))
+   txt:=memoread(name)
+
+#ifndef __HARBOUR__
+      i:=at(chr(10),txt)
+      if i>1 .and. subs(txt,i-1,1)=chr(13)
+         i:=chr(13)+chr(10)
+      else
+         i:=chr(10)
+      endif
+#endif
+   txt:=getlines(txt,i)
    for i:=1 to len(txt)
      if txt[i]#';' .and. txt[i]#'&:'
         j:=at(":=",txt[i])
@@ -357,14 +391,13 @@ local a,l,i,y:=""
 return y
 *********************
 #ifndef SIMPLE
-#ifdef A_LPTN
 FUNCTION PRINT(l,lpt)
-#else
-FUNCTION PRINT(l)
-local lpt
-#endif
 static wasbad:=.t.,NCHOICE
 local x,y,z,c:=set(_SET_CONSOLE),f,h
+
+  if lpt='NUL'
+     return .f.
+  endif
 setprc(0,0)
 if l=NIL
    l:=1
@@ -422,7 +455,19 @@ endif
      oprn:=D_HWPRN
   endif
 #endif
-  lpt:=A_GETLPT
+#ifdef A_LPTN
+  if lpt=NIL
+#endif
+#ifdef A_GETLPT
+    lpt:=A_GETLPT
+#else
+    lpt:=getenv("MDSLPT")
+#endif
+#ifdef A_LPTN
+  else
+    lpt:=trim(lpt)
+  endif
+#endif
 #ifdef D_HWPRN
   if !empty(oprn)
 #ifdef A_HPDF
@@ -463,7 +508,6 @@ endif
     oprn:SetFont('Courier New',12,-10,,,,255)
     oprn:TopMargin:=oprn:LineHeight
     ccpi(,4)
-    setprc(0,0)
     INIT PRINTER
     if ! oprn:StartDoc()
        oprn:Destroy()
@@ -471,6 +515,7 @@ endif
        Alarm('Bˆ¥d Drukarki')
        Return .f.
     endif
+    setprc(oprn:PRow(),oprn:PCol())
 #endif
     return .t.
   else
@@ -685,6 +730,7 @@ set(_SET_CONSOLE,cons)
 return
 *******************
 #ifdef A_ZEBRA
+
 func DrawBarcode( cType, cCode, nFlags, ... )
   LOCAL hZebra, nLineHeight
 
@@ -702,6 +748,7 @@ func DrawBarcode( cType, cCode, nFlags, ... )
    CASE "CODE128"    ; hZebra := hb_zebra_create_code128( cCode, nFlags ) ; EXIT
    CASE "PDF417"     ; hZebra := hb_zebra_create_pdf417( cCode, nFlags ); EXIT //nLineHeight := nLineWidth * 3 ; EXIT
    CASE "DATAMATRIX" ; hZebra := hb_zebra_create_datamatrix( cCode, nFlags ); EXIT //nLineHeight := nLineWidth ; EXIT
+   CASE "QRCODE"     ; hZebra := HB_ZEBRA_CREATE_QRCODE(cCode, nFlags); EXIT
   ENDSWITCH
 
 
@@ -724,78 +771,166 @@ func oprn(x)
    return ''
 #endif
 *******************
+static func getnum(x,i,c)
+local y:=''
+DEFAULT i TO 1
+for i:=i to len(x)
+   c:=subs(x,i,1)
+   if isdigit(c)
+      y+=c
+   else
+      exit
+   endif
+next i
+return y
+******************
 func spec(x)
 static fw:=NIL,fw4:=NIL,fs4:=NIL,fsu:=NIL
-local cons,i,c
+local cons,i,j,k,c,d,z
+  local b:={|y,b,k,m|z:=y$x,if(z.or.(k:=(m:=left(y,3))+lower(subs(y,4)))$x,(x:=if(z,strtran(x,y),strtran(x,k,m)),.t.),.f.)}
+//local b:={|y,b,k,m|i:=at(y,x),if((z:=(i>0)).or.(i:=at(k:=(m:=left(y,3))+lower(subs(y,4)),x))>0,(i+=3,c:=getnum(x,@i),x:=if(z,strtran(x,y),strtran(x,k,m)),.t.),.f.)}
 
 #ifdef D_HWPRN
-if valtype(oprn)='O'
+while valtype(oprn)='O' .and. ""<>x
+
 #ifdef A_WIN_PRN
-   if p_bon$x
+   if eval(b,p_bon)
       oprn:Bold(700)
-   elseif p_boff$x
+      if !z
+        loop
+      endif
+   elseif eval(b,p_boff)
       oprn:Bold(400)
+      if !z
+        loop
+      endif
    endif
 #else
-   if p_bon$x
+   if eval(b,p_bon)
       oprn:Bold(.t.)
-   elseif p_boff$x
+      if !z
+        loop
+      endif
+   elseif eval(b,p_boff)
       oprn:Bold(.f.)
+      if !z
+        loop
+      endif
    endif
 #endif
-   if p_uon$x
+   if eval(b,p_uon)
       oprn:Underline(.t.)
-   elseif p_uoff$x
+      if !z
+        loop
+      endif
+   elseif eval(b,p_uoff)
       oprn:Underline(.f.)
+      if !z
+        loop
+      endif
    endif
-   if p_4xon$x //.and. fs4=NIL
+   if eval(b,p_4xon) //.and. fs4=NIL
       fw4:=oprn:FontWidth
       fs4:=oprn:FontPointSize
       oprn:SetFont(,fs4*2,if(empty(fw4[1]),,{fw4[1]*2,fw4[2]}))
-   elseif p_4xoff$x .and. fs4<>NIL
+      if !z
+        loop
+      endif
+   elseif eval(b,p_4xoff) .and. fs4<>NIL
       oprn:SetFont(,fs4,fw4)
       fs4:=NIL
+      if !z
+        loop
+      endif
    endif
-   if p_supon$x //.and. fsu=NIL
+   if eval(b,p_supon) //.and. fsu=NIL
       fsu:=oprn:FontPointSize
       oprn:SetFont(,fsu*7/12)
-   elseif p_supoff$x .and. fsu<>NIL
+      if !z
+        loop
+      endif
+   elseif eval(b,p_supoff) .and. fsu<>NIL
       oprn:SetFont(,fsu)
       fsu:=NIL
+      if !z
+        loop
+      endif
    endif
-   if p_pon$x //.and. fw=NIL
+   if eval(b,p_pon) //.and. fw=NIL
       fw:=oprn:FontWidth
 #ifdef A_WIN_PRN
       oprn:SetFont('Arial',,{0,0},,,,255)
 #else
       oprn:SetFont('Helvetica',,{0,0},,,,255)
 #endif
-   elseif p_poff$x .and. fw<>NIL
+      if !z
+        loop
+      endif
+   elseif eval(b,p_poff) .and. fw<>NIL
 #ifdef A_WIN_PRN
       oprn:SetFont('Courier New',,fw,,,,255)
 #else
       oprn:SetFont('Courier',,fw,,,,255)
 #endif
       fw:=NIL
+      if !z
+        loop
+      endif
    endif
-   if p_6lpi$x
-      oprn:LineHeight:=Int(oprn:PixelsPerInchY/6)
-      oprn:SetFont(,12)
-   elseif p_7lpi$x
-      oprn:LineHeight:=Int(oprn:PixelsPerInchY/7)
-      oprn:SetFont(,11)
-   elseif p_8lpi$x
-      oprn:LineHeight:=Int(oprn:PixelsPerInchY/8)
-      oprn:SetFont(,9)
-   elseif p_12lpi$x
-      oprn:LineHeight:=Int(oprn:PixelsPerInchY/12)
+
+   i:=at(chr(27)+'&'+'a',x)
+   if i>0
+      j:=i+3
+      c:=val(getnum(x,@j,@k))
+      k:=lower(k)
+      if k='l'
+        k:=oprn:PosX-oprn:Leftmargin
+        oprn:Leftmargin:=oprn:CharWidth*c
+        oprn:PosX:=oprn:Leftmargin+k
+        if isupper(subs(x,j,1))
+           x:=stuff(x,i,j-i+1,'')
+        else
+           x:=stuff(x,i+3,j-i-2,'')
+           loop
+        endif
+      elseif k='c'
+        oprn:PosX:=oprn:CharWidth*c
+        if isupper(subs(x,j,1))
+           x:=stuff(x,i,j-i+1,'')
+        else
+           x:=stuff(x,i+3,j-i-2,'')
+           loop
+        endif
+      endif
+
    endif
+
+   i:=at(chr(27)+'&'+'l',x)
+   if i>0
+      j:=i+3
+      c:=val(getnum(x,@j,@k))
+      k:=lower(k)
+      if k$'cd'
+         if k='c'
+            c:=48/c
+         endif
+         oprn:LineHeight:=Int(oprn:PixelsPerInchY/c)
+         oprn:SetFont(,74/c)
+        if isupper(subs(x,j,1))
+           x:=stuff(x,i,j-i+1,'')
+        else
+           x:=stuff(x,i+3,j-i-2,'')
+           loop
+        endif
+      endif
+   endif
+
    for i:=1 To len(x)
       c:=asc(subs(x,i,1))
    if c=13
       qqout(chr(c))
       oprn:PosX := oprn:LeftMargin
-      setprc(oprn:Prow(),oprn:Pcol())
+      setprc(oprn:pRow(),oprn:pCol())
    elseif c=12
       qqout(chr(c))
 #ifdef A_STOPKA
@@ -840,7 +975,7 @@ if valtype(oprn)='O'
    endif
    next i
    return ''
-endif
+enddo
 #endif
 if !set(_SET_PRINTER)
    return ''
@@ -890,11 +1025,7 @@ public  p_rown,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COLN,P_BON,P_BOFF,P_UON,P_UOFF,;
 */
       P_SUPON := '(s7V'
       P_SUPOFF:= '(s12V'
-#ifdef D_HWPRN
-      p_margin:= {|x,y|if(valtype(oprn)='O',(y:=oprn:PosX-oprn:Leftmargin,oprn:Leftmargin:=oprn:CharWidth*x,oprn:PosX:=oprn:Leftmargin+y,''),'&'+'a'+ltrim(str(x,3))+'L')}
-#else
       p_margin:= {|x|'&'+'a'+ltrim(str(x,3))+'L'}
-#endif
 
       P_PON   := "(s1P"
       P_POFF  := "(s0P"
@@ -921,11 +1052,7 @@ public  p_rown,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COLN,P_BON,P_BOFF,P_UON,P_UOFF,;
       P_6LPI  := '2'
       P_SUPON := 'S1'
       P_SUPOFF:= 'T'
-#ifdef D_HWPRN
-      p_margin:= {|x,y|if(valtype(oprn)='O',(y:=oprn:PosX-oprn:Leftmargin,oprn:Leftmargin:=oprn:CharWidth*x,oprn:PosX:=oprn:Leftmargin+y,''),'l'+chr(x))}
-#else
       p_margin:= {|x|'l'+chr(x)}
-#endif
       P_PON   := "p1"
       P_POFF  := "p0"
       P_HALFPAGE:= {|x|"C"+chr(x)}
@@ -1092,7 +1219,7 @@ if form<0
    txt+=" zero"
 endif
 
-if form<1  && tysi‰c zŒotych
+if form<1  && tysi¥c zˆotych
    form=3
 endif
 

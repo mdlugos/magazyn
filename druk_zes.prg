@@ -604,7 +604,7 @@ SELECT STANY
   SET FILTER TO smb_dow$dok_sp
   seek i_od
 
-return {od,do,i_od,i_do,i_gr,bkey,bpic,if(D_MM+left(dok_sp,2)$dok_rozch,-1,1),"ZESTAWIENIE W/G SYMBOLU MATERIAùU",{||", Dokumenty: "+d},{||NIL}}
+return {od,do,i_od,i_do,i_gr,bkey,bpic,if(D_MM+left(dok_sp,2)$dok_rozch,-1,1),"ZESTAWIENIE W/G SYMBOLU MATERIAùU",{||QOUT("Dokumenty: "+d)},{||NIL}}
 ***********
 proc druk(i)
 

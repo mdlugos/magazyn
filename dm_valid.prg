@@ -2475,7 +2475,7 @@ return j
 #endif
 *****************************************************************************
 FUNCTION gfirma(_skey,_s,getlist)
-local re,txt
+local re,txt,h
 memvar d_o,kh,tp,nazwis
 field numer_kol,nazwa,p_r,longname,tp_dni,uwagi,nazwisko,cennik IN FIRMY
 field nr_faktury IN DM
@@ -2517,6 +2517,31 @@ DO CASE
                set order to tag FIRM_NIP
 #endif
                if !dbseek(_spocz)
+#ifdef A_WL
+                  h:=getwl(_spocz,@txt)
+                  if h<>'n/n'
+                       _scol2:=_scol1+len(eval(_sprompt))+1
+                       if _scol2>maxcol()
+                          _scol1-=_scol2-maxcol()
+                          _scol1:=max(1,_scol1)
+                          _scol2:=min(_scol2,maxcol())
+                       endif
+                       _scoln:=_scol2-_scol1
+                       re:=txt['residenceAddress']
+                       if empty(re)
+                       re:=txt['workingAddress']
+                       endif
+                       _skey:=at(', ',re)
+                       if subs(re,_skey+4,1)='-'
+                          re:=trim(subs(re,_skey+2))+', '+left(re,_skey-1)
+                       endif
+                       goto lastrec()+1
+                       FIRM_EDIT(numer_kol,_s,pad(txt['name'],len(nazwa)),pad(txt['name'],len(longname)),pad(re,len(adres)),pad(txt['nip'],len(firMy->ident)),h)
+                       return .f.
+                  endif
+#endif
+
+
 #ifdef A_AF
                   set order to tag KH
 #else
@@ -3117,12 +3142,12 @@ stat func getf(i,r,f,b,a,c,u,getlist,n,tp,nzw)
     endif
 return .t.
 #else
-PROCEDURE FIRM_EDIT(n,_s)
+PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
 #ifdef A_ZAM
 #define A_VAT
 #endif
 
-  local a,b,c,u,s,f,r,i,ord,getlist,rp,nzw,k,tp
+  local c,u,s,r,ord,getlist,rp,nzw,k,tp
   field nazwa,adres,numer_kol,uwagi,ident,cennik,longname,regon,nazwisko,konto,tp_dni
 
 #ifdef A_LAN
@@ -3132,18 +3157,18 @@ PROCEDURE FIRM_EDIT(n,_s)
 #endif
       getlist:={}
 #ifdef A_VAT
-      i:=ident
+      DEFAULT i TO ident
 #ifdef A_REGON
       r:=regon
 #endif
 #endif
-      f:=nazwa
+      DEFAULT f TO nazwa
+      DEFAULT a TO adres
 #ifdef A_FFULL
-      b:=longname
-      a:=adres
+      DEFAULT b TO longname
 #else
-      a:=LEFT(adres,23)
-      b:=SUBSTR(ADRES,25)
+      b:=SUBSTR(a,25)
+      a:=LEFT(a,23)
 #endif
 #ifdef A_CENSPEC
       c:=cennik
@@ -3202,6 +3227,10 @@ PROCEDURE FIRM_EDIT(n,_s)
       @ 19,_scol1 SAY 'Nazwisko:' GET nzw picture "@K"
       SAYL "T.p. dni" GET tp PICTURE "@K"
 #endif
+#ifdef A_WL
+      DEFAULT h TO 'n/n'
+      SAYL "BL" GET h PICTURE "@KS"+ltrim(str(_scol2-col(),2)) VALID {||if(empty(h),(h:=getwl(i,),if(h='n/n',,kibord(chr(10))),.f.),.t.)}
+#endif      
       set color to (_snorm)
       do while .t.
       READmodal(getlist,rp)
@@ -3210,7 +3239,9 @@ PROCEDURE FIRM_EDIT(n,_s)
               RESTSCREEN(9,_scol1-1, 20, _scol2,s)
               exit
          case empty(f)
-              if tak('WYKASOWA FIRM¨',20,_scol1+5,.f.,.F.)
+              if eof()
+                 loop
+              elseif tak('WYKASOWA FIRM¨',20,_scol1+5,.f.,.F.)
                  lock
                  delete
                  unlock
@@ -3223,12 +3254,14 @@ PROCEDURE FIRM_EDIT(n,_s)
                  loop
               ENDIF
          case n#numer_kol .or. empty(n)
-              ord=ordnumber()
-              set order to "FIRM_NUM"
-              seek n
-              set order to ord
+              ord:=ordnumber()
+              if !empty(n)
+                set order to "FIRM_NUM"
+                dbseek(n,.f.)
+                set order to ord
+              endif
               do case
-                 case found() .or. empty(n)
+                 case empty(n) .or. found()
                    if tak("CZY NADA KOLEJNY NUMER",20,_scol1+5,.F.,.F.)
                       SET ORDER TO "FIRM_NUM"
                       GO BOTTOM
@@ -3247,7 +3280,7 @@ PROCEDURE FIRM_EDIT(n,_s)
                       endif
                       loop
                    ENDIF
-              case tak('NOWA FIRMA',20,_scol1+5,.F.,.F.)
+                 case tak('NOWA FIRMA',20,_scol1+5,.F.,.F.)
                    APPEND BLANK
               otherwise
                    loop
@@ -3289,11 +3322,25 @@ PROCEDURE FIRM_EDIT(n,_s)
        _slth:=0
        _spocz:=""
        RESTSCREEN(9,_scol1-1, 20, _scol2,s)
-       refresh(,_s)
+       if _si>0
+          refresh(,_s)
+       endif
        exit
     enddo
     unlock
 RETURN
+#ifdef A_WL
+FUNCTION getwl(i,h)
+   if 0=hb_run('curl -o '+defa+'curl.txt https://wl-api.mf.gov.pl/api/search/nip/'+trim(i)+'?date='+hb_dtoc(date(),'YYYY-MM-DD'))
+      h:=hb_jsondecode(hb_translate(memoread(defa+'curl.txt'),'UTF8',))
+      h:=hb_hgetdef(h,"result",{=>})
+      h:=hb_hgetdef(h,"subject",{=>})
+      if !empty(h)
+         return hb_jsonencode(h,.t.)
+      endif
+   endif 
+return 'n/n'
+#endif
 *****************
 #endif
 **************
