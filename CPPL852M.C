@@ -4,7 +4,7 @@
 
 /*
  * Harbour Project source code:
- * National Collation Support Module ( PL852 )
+ * National Collation Support Module ( PL852M )
  *
  * Copyright 2009 Przemyslaw Czerpak <druzus / at / priv.onet.pl>
  * www - http://harbour-project.org
@@ -12,7 +12,7 @@
  * This file is generated automatically by cpinfo.prg
  */
 
-#define HB_CP_ID        PL852
+#define HB_CP_ID        PL852M
 #define HB_CP_INFO      "PL852 NTXPLUSA.OBJ compatible by MD"
 #define HB_CP_UNITB     HB_UNITB_852
 

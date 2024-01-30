@@ -6,7 +6,8 @@
 #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usˆug Informatycznych Marek Dˆugosz, 43-400 Cieszyn, ul. R¢wna 16'
 //#define A_ADS 1
 #define UpP(x) UPPER(x)
-#define PC852
+#define PC852 'PL852M'
+//#define A_HBGET
 //#include "lan.ch"
 #include "mdstd.ch"
 //#define A_CDX DBFCDX

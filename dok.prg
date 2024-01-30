@@ -3675,7 +3675,7 @@ else
         endif
         cx:=mcol()
         dx:=mrow()
-        _fkey:=GE_MOUSE
+        _fkey:=GE_MOUSEHIT
      endif
 #else
      sysint(51,1)
@@ -3686,7 +3686,7 @@ else
         if bx#0
             cx:=int(cx/8+.1)
             dx:=int(dx/8+.1)
-            _fkey:=GE_MOUSE
+            _fkey:=GE_MOUSEHIT
             exit
         endif
     enddo
@@ -3723,7 +3723,7 @@ endif
         endif
         cx:=mcol()
         dx:=mrow()
-        _fkey:=GE_MOUSE
+        _fkey:=GE_MOUSEHIT
      endif
 #else
      sysint(51,1)
@@ -3731,7 +3731,7 @@ endif
      do while (_fkey:=inkey())=0
         sysint(51,3,@bx,@cx,@dx)
         if bx#0
-            _fkey:=GE_MOUSE
+            _fkey:=GE_MOUSEHIT
             cx:=int(cx/8+.1)
             dx:=int(dx/8+.1)
             exit
@@ -3748,7 +3748,7 @@ endif
 //@ _fk+_fskip-1,_fco2 SAY 'º' COLOR _sbkgr
 
 #ifdef A_MYSZ
-   if _fkey=GE_MOUSE
+   if _fkey=GE_MOUSEHIT
       readkey(_fkey,{bx,cx,dx})
       exit
    endif

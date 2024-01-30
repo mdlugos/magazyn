@@ -188,7 +188,7 @@ local NumFlag:=.f.,b,x,y,key,mfl,maxlth:=0
                MSHOW()
                loop
             endif
-            get:exitState := GE_MOUSE
+            get:exitState := GE_MOUSEHIT
             mysz:={b,x,y}
             exit
          endif
@@ -785,7 +785,7 @@ local exitState, ret := .t. ,b
   */
   do case
 #ifdef A_MYSZ
-  case ( exitState == GE_MOUSE )
+  case ( exitState == GE_MOUSEHIT )
     if mysz[1]=2
 #ifndef __HARBOUR__
        b:=2
@@ -1026,6 +1026,8 @@ local oldPos := LastPos
   end
 return ( OldPos )
 
+func ReadUpdated(...)
+Return Updated(...)
 
 /***
 *  Updated()

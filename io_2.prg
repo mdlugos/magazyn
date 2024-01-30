@@ -1932,6 +1932,7 @@ local txt,i,j,k,o,osk,getlist:={}
 
 
   win:=Window(i,k,"W,,,BG+/BG")
+  @ win[1],win[2]+3 SAY IF(get:type$'MC',"Wpis wielowierszowy","Kalkulator: + - * / ^ ( )") COLOR "BG+/BG"
 
   SetCursor(if(set(_SET_INSERT),2,1))
 

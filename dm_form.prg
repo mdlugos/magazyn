@@ -38,7 +38,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
 
     rmpos:=_fposg
 #ifdef A_MYSZ
-    if job#NIL .and. readkey()=GE_MOUSE
+    if job#NIL .and. readkey()=GE_MOUSEHIT
        job:=readkey(,)
        if job[1]=2 .or. job[2]<=_fco1 .or. job[2]>=_fco2 .or. job[3]=0 .or. job[3]>_frow+_fskip
           exit
@@ -65,7 +65,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
     eval(_fdmpost,_f,getlist)
 
 #ifdef A_MYSZ
-    if _fkey=GE_MOUSE
+    if _fkey=GE_MOUSEHIT
            job:=readkey(,)
            if job[1]=2 .or. job[2]<=_fco1 .or. job[2]>=_fco2 .or. job[3]=0 .or. job[3]>_frow+(_fl-_fj+1)*_fskip
               exit
@@ -86,7 +86,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
 
     stat:=(_fi=1 .and. _fl=1)
 #ifdef A_MYSZ
-    if _fkey=GE_MOUSE .and. job[3]<=_frow+(_fl-_fj+1)*_fskip
+    if _fkey=GE_MOUSEHIT .and. job[3]<=_frow+(_fl-_fj+1)*_fskip
        job:=max(min(_fl,int((job[3]-_frow)/_fskip)+_fj),1+_fj)
         skip job-_fi
         _fi:=job
@@ -199,7 +199,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
             _flp:=_fi
          endif
 #ifdef A_MYSZ
-         if !stat .and. readkey()=GE_MOUSE
+         if !stat .and. readkey()=GE_MOUSEHIT
            job:=readkey(,)
            job:=ascan(getlist,{|g|g:row=job[3] .and. g:col<=job[2] .and. g:col+len(tran(g:varGet(),g:picture))>=job[2]})
            if job#0
@@ -230,7 +230,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
             stat:= .f.
 
 #ifdef A_MYSZ
-        if _fkey=GE_MOUSE .and. !_fnowy
+        if _fkey=GE_MOUSEHIT .and. !_fnowy
            job:=readkey(,)
            if job[1]=2 .or. job[2]<=_fco1 .or. job[2]>=_fco2 .or. job[3]<_frow+_fskip-1 .or. job[3]>_frow+_fskip*(_fl-_fj+1)
               _fkey:=K_CTRL_L //K_CTRL_W

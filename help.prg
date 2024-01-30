@@ -1,6 +1,17 @@
 #include "set.ch"
 #include "inkey.ch"
 
+#ifdef A_HBGET
+static procnm:=''
+
+function __SetProc(x)
+   local y:=procnm
+   if PCount()>0
+     procnm:=x
+   endif
+return y
+#endif
+
 procedure help(pro)
 memvar c1,c2,r1,r2,defa,l,c,cl,cc,ww,ch,oprn
 
@@ -18,7 +29,7 @@ elseif pro=="ACZOJS"
 endif
 
   if '.'$pro
-     htext:=pro
+     htext:=lower(pro)
   else
      htext=lower(left(pro,8))
      do case
@@ -30,12 +41,26 @@ endif
      htext+=".hlp"
   endif
 
+  n:=3
+  do while .t.
+  
     IF FILE(htext).or.FILE(htext:=defa+"pomoc"+HB_ps()+htext)
-       txt=MEMOREAD(htext)
+       txt:=MEMOREAD(htext)
+       exit
+#ifdef A_HBGET
+    elseif n=3 .and. !empty(procnm)
+       htext:=lower(procnm)+'.hlp'
+       n:=4
+#endif
     else
-       txt="Brak pomocy na ten temat."
+       htext:=procname(n)+'.hlp'
     ENDIF
-
+    if empty(htext)
+       txt:="Brak pomocy na ten temat."
+       exit
+    endif 
+    n+=1
+   enddo
 
    r1=ROW()+1    // sciaga pod polem
    c1=MAX(0,col()-33)

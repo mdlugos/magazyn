@@ -46,7 +46,7 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
   REQUEST HB_LANG_PL
   HB_LANGSELECT('PL')
 
-  REQUEST HB_CODEPAGE_PL852
+  REQUEST HB_CODEPAGE_PL852M
   #ifdef PLWIN
    REQUEST HB_CODEPAGE_PLWIN
    request hb_translate
@@ -60,11 +60,12 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
    hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
 
     #ifdef PC852
-     HB_CDPSELECT('PL852')
+     HB_CDPSELECT(PC852)
     #else
      HB_CDPSELECT('PLWIN')
     #endif
-
+  #else
+     HB_CDPSELECT(PC852)
   #endif
    //SET(_SET_DEBUG, .t.)
 #ifdef A_ADS

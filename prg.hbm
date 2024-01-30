@@ -1,12 +1,14 @@
--oma -w1 -m -n
+-oma -w1 -m -n -static
 #-gui -gtwvt
 -lhbwin hbwin.hbc
 #-lelzabdr
 -lhbzebra hbzebra.hbc
 -lhbmxml hbmxml.hbc
 #sddmy.hbc
-main ind_val dok dm_valid dm_form dok_druk dok_pr dodatki druk_zes io io_2 help error clp_brow mds mds_spec frmrun getsys indeksy jpk
+main ind_val dok dm_valid dm_form dok_druk dok_pr dodatki druk_zes io io_2 help error clp_brow mds mds_spec frmrun indeksy
+jpk
+getsys
 #boromeus
 #puszczew
 #zagroda
-#cppl852m.c
+cppl852m.c

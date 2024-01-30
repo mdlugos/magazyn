@@ -59,9 +59,7 @@ func curl(res,line,post,ans,no_wait,no_error)
       line+=' --data-binary @-'
     endif
 
-    altd()
     hb_processrun('curl '+line+' https://ksef.mf.gov.pl/api/online/'+res,post,@ans)
-    altd()
 
 return ans
 
@@ -88,17 +86,21 @@ endif
 j:=hb_jsondecode(substr(ans,j),,'UTF8')
 
 s:=token+"|"+str(hb_ttomsec(hb_ctot(j["timestamp"],"yyyy-mm-dd","HH:MM:SS.FFF"))-hb_ttomsec(0d19700101),13,0)
-altd()
-hb_processrun('openssl.exe pkeyutl -encrypt -pubin -keyform DER -inkey publicKey.der',s,@ans)
-altd()
+if 0<>hb_processrun('openssl rsautl -encrypt -pubin -inkey '+findfile('publicKey.pem'),s,@ans)
+   alert('openssl')
+   return
+endif
 s:=HB_BASE64ENCODE(ans)
-     ans:=hb_MEMOREAD(findfile("InitSessionTokenRequest.xml"))
+     ans:=HB_MEMOREAD(findfile("InitSessionTokenRequest.xml"))
      ans:=stuff(ans,at('</Challenge>',ans),0,j["challenge"])
      ans:=stuff(ans,at('</ns2:Identifier>',ans),0,memvar->firma_NIP)
      s:=stuff(ans,at('</Token>',ans),0,s)
 
-curl('Session/InitToken','-H Content-Type:application/octet-stream',HB_BASE64ENCODE(s),@ans)
+     hb_memowrit("InitSesTokenRequest.xml",s,.f.)
 
+curl('Session/InitToken','-H Content-Type:application/octet-stream',HB_BASE64ENCODE(s),@ans)
+hb_memowrit('ans.txt',ans,.f.)
+altd()
 return ans
 
 //http://www.e-deklaracje.mf.gov.pl/Repozytorium/Slowniki/KodyKrajow_v3-0.xsd
@@ -117,7 +119,7 @@ static func uwagi2odb(uwagi)
           uwagi:=strtran(uwagi,';',hb_eol())
           l:=mlcount(uwagi,254,,.f.)     
           for i:=1 to l
-               s:=trim(memoline(uwagi,254,i+1,,.f.))
+               s:=trim(memoline(uwagi,254,i,,.f.))
                if ''<>s
                     aadd(a,s)
                endif
@@ -128,8 +130,7 @@ static func uwagi2odb(uwagi)
           elseif l<3
                s:=a[1]
                a:=adres2arr(a[2])
-               aadd(a,NIL)
-               ains(a,s,1)
+               hb_ains(a,1,s,.t.)
           endif
      endif
 return a
@@ -157,9 +158,9 @@ func ksef_fah()
      local a:=adres2arr(firmy->adres),b:=uwagi2odb(firmy->uwagi)
      if len(b)>0
         b:={hb_hash("IDNabywcy",,"NrEORI",,;
-          "DaneIdentyfikacyjne",hb_hash("NIP",,"IDWew",,"KodUE",,"NrVatUE",,"KodKraju",,;
-               "NrID",,"BrakID",1,"Nazwa",b[1]),;
-          "Adres",hb_hash("KodKraju",,"AdresL1",b[2],"AdresL2",b[3],"GLN",),;
+          "DaneIdentyfikacyjne",hb_hash("NIP",,"IDWew",,"KodUE",,"NrVatUE",,;
+             "KodKraju",,"NrID",,"BrakID",1,"Nazwa",b[1]),;
+          "Adres",hb_hash("KodKraju",nip2kraj(firmy->ident),"AdresL1",b[2],"AdresL2",b[3],"GLN",),;
           "AdresKoresp",,"DaneKontaktowe",,"Rola",2,"RolaInna",,"OpisRoli",,"Udzial",,"NrKlienta",)}
      endif
 
@@ -169,7 +170,7 @@ return hb_hash('Naglowek',hb_hash("KodFormularza","FA","WariantFormularza",D_KSE
           'Podmiot1',hb_hash("PrefiksPodatnika",,"NrEORI",,;
                "DaneIdentyfikacyjne",{"NIP"=>Trim(strtran(memvar->firma_NIP,'-','')),"Nazwa"=>Trim(memvar->firma_pelnaz)},;
                "Adres",hb_hash("KodKraju","PL","AdresL1",trim(memvar->firma_Ul)+" "+trim(memvar->firma_Dom),"AdresL2",trim(memvar->firma_poczta),"GLN",),;
-               "AdresKoresp",,"DaneKontaktowe",{},"StatusInfoPodatnika",),;
+               "AdresKoresp",,"DaneKontaktowe",{hb_hash('Email',memvar->firma_email)},"StatusInfoPodatnika",),;
           'Podmiot2',hb_hash("NrEORI",,"DaneIdentyfikacyjne",{"NIP"=>Trim(strtran(firmy->ident,'-','')),"Nazwa"=>Trim(firmy->longname)},;
                "Adres",hb_hash("KodKraju",nip2kraj(firmy->ident),"AdresL1",a[1],"AdresL2",a[2],"GLN",),;
                "AdresKoresp",,"DaneKontaktowe",{},"NrKlienta",ltrim(firmy->numer_kol),"IDNabywcy",),;
@@ -199,14 +200,14 @@ local element, node, s
           break
           return nil
      endif
-        
+
      tree:= mxmlNewXML()
 
      jpk := mxmlNewElement( tree, 'Faktura' )
 
-     mxmlElementSetAttr( jpk, "xmlns:etd", "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/")
      mxmlElementSetAttr( jpk, "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
-     mxmlElementSetAttr( jpk, "xmlns", "http://crd.gov.pl/wzor/2023/06/29/12648/")
+     mxmlElementSetAttr( jpk, hb_eol()+chr(9)+"xmlns:xsd", "http://www.w3.org/2001/XMLSchema")
+     mxmlElementSetAttr( jpk, hb_eol()+chr(9)+"xmlns", "http://crd.gov.pl/wzor/2023/06/29/12648/")
 
      element   := mxmlNewElement( jpk, 'Naglowek' )
 
@@ -295,7 +296,7 @@ local element,node
     //set date format to "YYYY-MM-DD"
     jpk := mxmlNewElement( tree, 'JPK' )
         mxmlElementSetAttr( jpk,'xmlns:etd',"http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2016/01/25/eD/DefinicjeTypy/")
-        mxmlElementSetAttr( jpk,'xmlns',"http://jpk.mf.gov.pl/wzor/2016/03/09/03091/")
+        mxmlElementSetAttr( jpk,hb_eol()+chr(9)+'xmlns',"http://jpk.mf.gov.pl/wzor/2016/03/09/03091/")
 
 
     element   := mxmlNewElement( jpk, 'Naglowek')
@@ -622,7 +623,7 @@ if dekl
 
 
     mxmlElementSetAttr( jpk, "xmlns:etd", if(ver=2,"http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2021/06/08/eD/DefinicjeTypy/","http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2020/03/11/eD/DefinicjeTypy/"))
-    mxmlElementSetAttr( jpk, "xmlns", DD_NAMESPACE)
+    mxmlElementSetAttr( jpk, hb_eol()+chr(9)+"xmlns", DD_NAMESPACE)
     element   := mxmlNewElement( jpk, 'Naglowek' )
 
      node := mxmlNewElement( element, "KodFormularza")
@@ -666,7 +667,7 @@ if dekl
 
 else
     mxmlElementSetAttr( jpk, "xmlns:etd", "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2016/01/25/eD/DefinicjeTypy/")
-    mxmlElementSetAttr( jpk, "xmlns", D_NAMESPACE)
+    mxmlElementSetAttr( jpk, hb_eol()+chr(9)+"xmlns", D_NAMESPACE)
     element   := mxmlNewElement( jpk, 'Naglowek' )
 
      node := mxmlNewElement( element, "KodFormularza")
@@ -1312,7 +1313,7 @@ DEFAULT waluta TO 'PLN'
     jpk := mxmlNewElement( tree, 'JPK' )
 
     mxmlElementSetAttr( jpk, "xmlns:etd", D_FASCHEMA)
-    mxmlElementSetAttr( jpk, "xmlns", D_FANAMESPACE)
+    mxmlElementSetAttr( jpk, hb_eol()+chr(9)+"xmlns", D_FANAMESPACE)
     element   := mxmlNewElement( jpk, 'Naglowek' )
 
      node := mxmlNewElement( element, "KodFormularza")
@@ -1527,7 +1528,7 @@ local a,b,c,d,element,node
     jpk := mxmlNewElement( tree, 'JPK' )
 
     mxmlElementSetAttr( jpk, "xmlns:etd", "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2016/01/25/eD/DefinicjeTypy/")
-    mxmlElementSetAttr( jpk, "xmlns", D_MAGNAMESPACE)
+    mxmlElementSetAttr( jpk, hb_eol()+chr(9)+"xmlns", D_MAGNAMESPACE)
     element   := mxmlNewElement( jpk, 'Naglowek' )
 
      node := mxmlNewElement( element, "KodFormularza")
@@ -1990,13 +1991,15 @@ stat FUNC wscb( node, where )
    IF Left( name, 4 ) == "?xml"
 
    ELSEIF where == MXML_WS_BEFORE_OPEN
-
       RETURN if(waslf,'',hb_eol())+Replicate( chr(9), nLevel )
+
    ELSEIF where == MXML_WS_AFTER_CLOSE
       waslf:=.t.
       RETURN hb_eol()
+
    elseif where == MXML_WS_BEFORE_CLOSE .and. waslf
       RETURN Replicate( chr(9), nLevel )
+
    ENDIF
    waslf:=.f.
    RETURN NIL /* Return NIL for no added whitespace... */
