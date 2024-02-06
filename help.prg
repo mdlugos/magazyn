@@ -1,17 +1,6 @@
 #include "set.ch"
 #include "inkey.ch"
 
-#ifdef A_HBGET
-static procnm:=''
-
-function __SetProc(x)
-   local y:=procnm
-   if PCount()>0
-     procnm:=x
-   endif
-return y
-#endif
-
 procedure help(pro)
 memvar c1,c2,r1,r2,defa,l,c,cl,cc,ww,ch,oprn
 

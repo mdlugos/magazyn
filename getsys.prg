@@ -3,12 +3,15 @@
 #include "getexit.ch"
 #ifdef __HARBOUR__
 #include "hbgtinfo.ch"
+#define HB_COMPAT_C53
 #endif
+
 ANNOUNCE GETSYS
 
 #define K_UNDO          K_CTRL_U
-
 #define CTRL_END_SPECIAL
+
+
 // state variables for active READ
 static Updated
 #ifdef A_MYSZ
@@ -41,7 +44,6 @@ static aGetList:={}
 #define GSV_EDITBLOCK   10
 #define GSV_GETLIST     11
 #define GSV_COUNT       11
-
 
 
 
@@ -1025,6 +1027,11 @@ local oldPos := LastPos
     LastPos := p
   end
 return ( OldPos )
+
+#ifdef __HARBOUR__
+PROCEDURE __SetFormat( bFormat )
+  RETURN
+#endif
 
 /***
 *  Updated()

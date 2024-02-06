@@ -1760,6 +1760,13 @@ return
 ************************************
 #ifdef __HARBOUR__
 #ifdef A_HBGET
+function __SetProc(x)
+   static procnm:=''
+   local y:=procnm
+   if PCount()>0
+     procnm:=x
+   endif
+return y
 ***************************
 function KCR_U(mode,l,c)
   static spec:=.f.,b:={0,0},bp:=2,ww:=.f.,bl:='',ch:=.f.

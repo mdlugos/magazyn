@@ -24,6 +24,8 @@
 #define GE_ESCAPE     K_ESC
 #define GE_WHEN       K_CTRL_O      // when clause unsatisfied
 #define GE_MOUSE      K_CTRL_N
+#define GE_MOUSEHIT   K_CTRL_N      /* introduced in x5.3 */
+#define GE_SHORTCUT   K_CTRL_P
 #define GE_PGUP       K_PGUP
 #define GE_PGDN       K_PGDN
 #define GE_NOEDIT     K_CTRL_Q
