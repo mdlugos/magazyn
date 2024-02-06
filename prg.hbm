@@ -5,10 +5,11 @@
 -lhbzebra hbzebra.hbc
 -lhbmxml hbmxml.hbc
 #sddmy.hbc
-main ind_val dok dm_valid dm_form dok_druk dok_pr dodatki druk_zes io io_2 help error clp_brow mds mds_spec frmrun indeksy
-jpk
+main
+cppl852m.c io error help io_2 clp_brow mds mds_spec frmrun
 getsys
+ind_val dok dm_valid dm_form dok_druk dok_pr dodatki druk_zes indeksy
+jpk
 #boromeus
 #puszczew
 #zagroda
-cppl852m.c

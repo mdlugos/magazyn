@@ -1,10 +1,13 @@
--w1 -m -n
+-w1 -m -n -oma -static 
 -gttrm
 #-gtxwc
 #-gtqtc
 #-lrddads rddads.hbc
 #hbnetio.hbc -mt
 hbmxml.hbc
-#-lhbcurl hbcurl.hbc
-main ind_val dok dm_valid dm_form dok_druk dok_pr dodatki druk_zes io io_2 help error clp_brow mds mds_spec frmrun getsys indeksy
-#cppl852m.c
+-lhbcurl hbcurl.hbc
+-lhbssl hbssl.hbc
+main ind_val dok dm_valid dm_form dok_druk dok_pr dodatki druk_zes io io_2 help error clp_brow mds mds_spec frmrun indeksy
+getsys tgetlist
+jpk
+cppl852m.c

@@ -1026,9 +1026,6 @@ local oldPos := LastPos
   end
 return ( OldPos )
 
-func ReadUpdated(...)
-Return Updated(...)
-
 /***
 *  Updated()
 */

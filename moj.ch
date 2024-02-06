@@ -7,9 +7,10 @@
 //#define A_ADS 1
 #define UpP(x) UPPER(x)
 #define PC852 'PL852M'
-//#define A_HBGET
+#define A_HBGET
 //#include "lan.ch"
 #include "mdstd.ch"
+//#include "md_add.ch"
 //#define A_CDX DBFCDX
 #define A_LPNUM 3
 #define A_LPKPR

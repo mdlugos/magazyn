@@ -134,12 +134,23 @@ public pcl:=.f.
 ?
 #else
 #ifdef A_HBGET
-    SetKey(K_CTRL_RET,{||Key_Ctrl_Ret(GetActive())},{||GetActive()<>NIL .and. PROCNAME(2)='HBGETLIST:GETAPPLYKEY'})
-    SetKey(K_F10,{||hb_keyput(K_CTRL_W),.t.},{||GetActive()<>NIL .and. PROCNAME(2)='HBGETLIST:GETAPPLYKEY'})
-    SetKey(K_CTRL_L,{||hb_keyput(K_CTRL_W),.t.},{||GetActive()<>NIL .and. PROCNAME(2)='HBGETLIST:GETAPPLYKEY'})
+    n:={||Key_Ctrl_Ret(GetActive())}
+    t:={||GetActive()<>NIL .and. PROCNAME(2)='HBGETLIST:GETAPPLYKEY'}
+    i:={||hb_keyput(K_CTRL_W),.t.}
+#ifdef __PLATFORM__WINDOWS
+    SetKey(K_CTRL_RET,n,t)
+#else
+    SetKey(K_ALT_RET,n,t)
+#endif
+    SetKey(K_ALT_K,{|get,b|get:=GetActive(),b:= hb_gtInfo( HB_GTI_CLIPBOARDDATA ),if(""<>b,kibord(getlines(b)[1]),),.t.},t)
+    SetKey(K_ALT_B,{|get|get:=GetActive(),hb_gtInfo( HB_GTI_CLIPBOARDDATA, Alltrim(get:buffer) ),.t.},t)
+    SetKey(K_F10,i,t)
+    SetKey(K_CTRL_L,i,t)
 #endif
 //setkey(28,{|x|help(x)})
+#ifndef __HARBOUR__
 isega() //musi, bo korzysta z jej wyniku d.asm
+#endif
 SET CURSOR OFF
 SET SCOREBOARD OFF
 SET CONFIRM ON

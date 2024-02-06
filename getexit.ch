@@ -23,7 +23,7 @@
 #define GE_WRITE      K_CTRL_L
 #define GE_ESCAPE     K_ESC
 #define GE_WHEN       K_CTRL_O      // when clause unsatisfied
-#define GE_MOUSEHIT   K_CTRL_N
+#define GE_MOUSE      K_CTRL_N
 #define GE_PGUP       K_PGUP
 #define GE_PGDN       K_PGDN
 #define GE_NOEDIT     K_CTRL_Q

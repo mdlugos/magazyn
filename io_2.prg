@@ -1763,9 +1763,11 @@ return
 ***************************
 function KCR_U(mode,l,c)
   static spec:=.f.,b:={0,0},bp:=2,ww:=.f.,bl:='',ch:=.f.
-  local k,getlist,m,n,i,j,defa,txt
+  local k,getlist,m,n,i,j,txt
+
   if (mode=1 .or. mode=2)
      k:=lastkey()
+     altd()
      if spec
         spec:=.f.
         return 33
@@ -1776,7 +1778,7 @@ function KCR_U(mode,l,c)
        m:=message("PODAJ  (R, W);ROZKAZ:;... ")
        k:=upper(chr(inkey(0)))
        @ m[1]+1,m[2]+8 say "NAZW¨: "
-       n:=pad(defa,64)
+       n:=pad(MAMVAR->defa,64)
        getlist:={}
        @ m[1]+2,m[2]+2 get n picture "@KS14"
        read
@@ -1796,6 +1798,7 @@ function KCR_U(mode,l,c)
            b[3-bp]:=b[bp]
         endif
         bl:=subs(oed:GetText( .f. ),min(b[1],b[2]),abs(b[2]-b[1]))
+        hb_gtInfo( HB_GTI_CLIPBOARDDATA, bl )
 
     elseif k=K_ALT_K
         l:=oed:RowPos() //nRow

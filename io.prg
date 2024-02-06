@@ -609,7 +609,7 @@ FUNCTION KIBORD(txt)
 #ifdef __HARBOUR__
 local a:={},b
 
-do while (b:=inkey())#0
+do while (b:=inkey(,INKEY_ALL))#0
    aadd(a,b)
 enddo
 
