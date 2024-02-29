@@ -1,3 +1,9 @@
+#ifdef A_WL
+#ifdef __PLATFORM__UNIX_
+   #require "hbcurl"
+#endif
+#endif
+
 #include "dm_form.ch"
 #include "inkey.ch"
 #include "getexit.ch"
@@ -3331,8 +3337,21 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
 RETURN
 #ifdef A_WL
 FUNCTION getwl(i,h)
-   if 0=hb_run('curl -o '+defa+'curl.txt https://wl-api.mf.gov.pl/api/search/nip/'+trim(i)+'?date='+hb_dtoc(date(),'YYYY-MM-DD'))
-      h:=hb_jsondecode(hb_translate(memoread(defa+'curl.txt'),'UTF8',))
+#ifdef __PLATFORM__UNIX_
+   local curl
+   curl_global_init()
+   curl := curl_easy_init()
+   curl_easy_setopt( curl, HB_CURLOPT_URL, 'https://wl-api.mf.gov.pl/api/search/nip/'+trim(strtran(i,'-'))+'?date='+hb_dtoc(date(),'YYYY-MM-DD'))
+   curl_easy_setopt( curl, HB_CURLOPT_DL_BUFF_SETUP )
+   if curl_easy_perform( curl )=0
+      h:=hb_jsondecode(curl_easy_dl_buff_get( curl ),,'UTF8')
+      curl_easy_cleanup( curl )
+      curl_global_cleanup()
+#else
+   local ans
+   if 0=hb_processrun('curl https://wl-api.mf.gov.pl/api/search/nip/'+trim(strtran(i,'-'))+'?date='+hb_dtoc(date(),'YYYY-MM-DD'),,@ans)
+      h:=hb_jsondecode(ans,,'UTF8')
+#endif
       h:=hb_hgetdef(h,"result",{=>})
       h:=hb_hgetdef(h,"subject",{=>})
       if !empty(h)

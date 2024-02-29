@@ -5,11 +5,15 @@
 #endif
 
 #require "hbmxml"
+
+#ifdef __PLATFORM__UNIX_
 #require "hbssl"
+#require "hbcurl"
+#endif
 
 #define D_KSEF_VARIANT 2
-//#define D_KSEF_API MEMVAR->ksef_api
-#define D_KSEF_API 'https://ksef.mf.gov.pl/'
+#define D_KSEF_API MEMVAR->ksef_api
+//#define D_KSEF_API 'https://ksef.mf.gov.pl/'
 
 #define D_MAGVARIANT "1"
 #define D_MAGNAMESPACE "http://jpk.mf.gov.pl/wzor/2016/03/09/03093/"
@@ -52,8 +56,28 @@ memvar mag_poz,mag_biez,magazyny,adres_mag,defa
 
 
 **************************
-func curl(res,line,post,ans,no_wait,no_error)
+func curl(res,line,post,ans)
 
+#ifdef __PLATFORM__UNIX_
+// jakie˜ ˜mieci w outpucie
+   local curl,a:=getlines(line,' -H ')
+   curl_global_init()
+   curl := curl_easy_init()
+   curl_easy_setopt( curl, HB_CURLOPT_URL, D_KSEF_API + 'api/online/' + res )
+   curl_easy_setopt( curl, HB_CURLOPT_DL_BUFF_SETUP )
+   curl_easy_setopt( curl, HB_CURLOPT_HEADER )
+   if post<>NIL
+      curl_easy_setopt( curl, HB_CURLOPT_UL_BUFF_SETUP, post )
+      curl_easy_setopt( curl, if(a[1]='-X POST', HB_CURLOPT_POST, HB_CURLOPT_PUT ))
+   endif
+   hb_adel(a,1,.t.)
+   curl_easy_setopt( curl, HB_CURLOPT_HTTPHEADER, a )
+   if curl_easy_perform( curl )=0
+      ans:=curl_easy_dl_buff_get( curl )
+   endif
+   curl_easy_cleanup( curl )
+   curl_global_cleanup()
+#else
     DEFAULT line TO ''
     if !'-D'$ line
       line+=' -i'
@@ -63,7 +87,7 @@ func curl(res,line,post,ans,no_wait,no_error)
     endif
 
     hb_processrun('curl '+line+' '+ D_KSEF_API + 'api/online/' + res,post,@ans)
-
+#endif
 return ans
 
 static func token(bin)
@@ -130,8 +154,6 @@ if empty(token['sessiontoken'])
    if i>20
       s:=stuff(s,i,0,ans)
    endif
-   //hb_memowrit("InitSesTokenRequest.xml",s,.f.)
-   //   curl('Session/InitToken','-X POST -H Accept:application/json -H Content-Type:application/octet-stream',s,@ans)
    curl('Session/InitToken','-X POST -H Content-Type:application/octet-stream',s,@ans)
    i:=at(' 201 ',memoline(ans,,1))
    if i=0
