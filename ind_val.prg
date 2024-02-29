@@ -854,7 +854,7 @@ endif
 
 #ifdef A_MYSZ
     i:=readkey()
-    if i=K_ESC .or. i=GE_MOUSEHIT
+    if i=K_ESC .or. i=GE_MOUSE
 #else
     IF readkey()=K_ESC
 #endif

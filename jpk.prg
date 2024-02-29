@@ -5,8 +5,11 @@
 #endif
 
 #require "hbmxml"
+#require "hbssl"
 
 #define D_KSEF_VARIANT 2
+//#define D_KSEF_API MEMVAR->ksef_api
+#define D_KSEF_API 'https://ksef.mf.gov.pl/'
 
 #define D_MAGVARIANT "1"
 #define D_MAGNAMESPACE "http://jpk.mf.gov.pl/wzor/2016/03/09/03093/"
@@ -44,7 +47,7 @@ external hb_base64encode,hb_sha256,URLENCODE
 
 static tree,jpk,lp,aj //aj w groszach
 static group,dekl := .f.,groupd,ver
-static token
+static token := {=>}
 memvar mag_poz,mag_biez,magazyny,adres_mag,defa
 
 
@@ -59,49 +62,136 @@ func curl(res,line,post,ans,no_wait,no_error)
       line+=' --data-binary @-'
     endif
 
-    hb_processrun('curl '+line+' https://ksef.mf.gov.pl/api/online/'+res,post,@ans)
+    hb_processrun('curl '+line+' '+ D_KSEF_API + 'api/online/' + res,post,@ans)
 
 return ans
 
 static func token(bin)
+if type('memvar->ksef_token')='C'
+   return memvar->ksef_token
+endif
 return subs(bin,HB_HEXTONUM(subs(bin,1,2))+1,HB_HEXTONUM(subs(bin,3,2)))
 
 func ksef_initsession()
-local ans,s:=select(),j
-
-if token=NIL
-   sel('MAGAZYNY')
-   LOCATE FOR field->numer=mag_biez
-   token:=token(field->ksef_token)
-   dbselectarea(s)
+local ans,s,i,j,nip:=trim(memvar->firma_NIP)
+if empty(token)
+   hb_hautoadd(token,.t.)
+   if type('memvar->ksef_token')='C'
+      token['token']:=memvar->ksef_token
+   else
+      s:=select()
+      sel('MAGAZYNY')
+      LOCATE FOR field->numer=mag_biez
+      token['token']:=token(field->ksef_token)
+      if s<>select()
+         USE
+         dbselectarea(s)
+      endif
+   endif
+   s:=findfile('session.json')
+   token['sessiontoken']:=if(empty(s),,hb_jsondecode(memoread(s),,'UTF8'))
 endif
-
-curl('Session/AuthorisationChallenge','-H Content-Type:application/json',hb_jsonencode({"contextIdentifier"=>{"type"=>"onip","identifier"=>memvar->firma_NIP}},,'UTF8'),@ans)
-
-j:=at('{',ans)
-if j<=5
-   alert(ans)
-   return
+if !empty(token['sessiontoken'])
+   curl('Session/Status/'+token['sessiontoken','referenceNumber'],'-X GET -H sessionToken:'+token['sessiontoken','sessionToken','token'],,@ans)
+   i:=at(' 200 ',memoline(ans,,1))
+   if i=0
+     token['sessiontoken']:=NIL
+     s:=findfile('session.json')
+     if !empty(s)
+        ferase(s)
+     endif
+   endif
 endif
-j:=hb_jsondecode(substr(ans,j),,'UTF8')
-
-s:=token+"|"+str(hb_ttomsec(hb_ctot(j["timestamp"],"yyyy-mm-dd","HH:MM:SS.FFF"))-hb_ttomsec(0d19700101),13,0)
-if 0<>hb_processrun('openssl rsautl -encrypt -pubin -inkey '+findfile('publicKey.pem'),s,@ans)
-   alert('openssl')
-   return
+if empty(token['sessiontoken'])
+   curl('Session/AuthorisationChallenge','-X POST -H Content-Type:application/json',hb_jsonencode({"contextIdentifier"=>{"type"=>"onip","identifier"=>nip}},,'UTF8'),@ans)
+   j:=at('{',ans)
+   if j<=5
+     alert(ans)
+     return NIL
+   endif
+   token['Challenge']:=j:=hb_jsondecode(substr(ans,j),,'UTF8')
+   s:=token['token']+"|"+hb_ntoc(hb_ttomsec(hb_ctot(j["timestamp"],"yyyy-mm-dd","HH:MM:SS.FFF"))-hb_ttomsec(0d19700101),0)
+   s:=hb_processrun('openssl pkeyutl -encrypt -pubin -pkeyopt rsa_padding_mode:pkcs1 -inkey '+findfile('publicKey.pem'),s,@ans)
+   if s<>0
+      alert('openssl '+hb_ntoc(s,0))
+      return NIL
+   endif
+   ans:=HB_BASE64ENCODE(ans)
+   s:=HB_MEMOREAD(findfile("InitSessionTokenRequest.xml"))
+   i:=at('<Challenge></Challenge>',s)+11
+   if i>20
+        s:=stuff(s,i,0,j["challenge"])
+   endif
+   i:=at(':Identifier></',s)+12
+   if i>20
+      s:=stuff(s,i,0,nip)
+   endif
+   i:=at('<Token></Token>',s)+7
+   if i>20
+      s:=stuff(s,i,0,ans)
+   endif
+   //hb_memowrit("InitSesTokenRequest.xml",s,.f.)
+   //   curl('Session/InitToken','-X POST -H Accept:application/json -H Content-Type:application/octet-stream',s,@ans)
+   curl('Session/InitToken','-X POST -H Content-Type:application/octet-stream',s,@ans)
+   i:=at(' 201 ',memoline(ans,,1))
+   if i=0
+      alert(ans)
+      return NIL
+   endif
+   j:=at('{',ans)
+   ans:=subs(ans,j)
+   hb_memowrit(defa+'session.json',ans,.f.)
+   token['sessiontoken']:=hb_jsondecode(ans,,'UTF8')
 endif
-s:=HB_BASE64ENCODE(ans)
-     ans:=HB_MEMOREAD(findfile("InitSessionTokenRequest.xml"))
-     ans:=stuff(ans,at('</Challenge>',ans),0,j["challenge"])
-     ans:=stuff(ans,at('</ns2:Identifier>',ans),0,memvar->firma_NIP)
-     s:=stuff(ans,at('</Token>',ans),0,s)
+return token['sessiontoken','sessionToken','token']
 
-     hb_memowrit("InitSesTokenRequest.xml",s,.f.)
+func ksef_sendfa(faxml,b,d)
+local c:=memoread(faxml),ans,i
 
-curl('Session/InitToken','-H Content-Type:application/octet-stream',HB_BASE64ENCODE(s),@ans)
-hb_memowrit('ans.txt',ans,.f.)
-altd()
-return ans
+   b:={'invoiceHash'=>{'fileSize'=>len(c), 'hashSHA'=> {'algorithm'=> 'SHA-256', 'encoding'=> 'Base64', 'value'=> HB_BASE64ENCODE(HB_SHA256(c,.t.))}}, 'invoicePayload'=> {'type'=> 'plain', 'invoiceBody'=>HB_BASE64ENCODE(c)}}
+   hb_hautoadd(b,.t.)
+
+   DEFAULT d TO ksef_initsession()
+   IF d=NIL
+      RETURN NIL
+   endif
+   curl('Invoice/Send','-X PUT -H Content-Type:application/json -H sessionToken:'+d,hb_jsonencode(b,,'UTF8'),@ans)
+   i:=at(' 202 ',memoline(ans,,1))
+   if i=0
+      hb_memowrit('ans.txt',ans,.f.)
+      alert(ans)
+      return NIL
+   endif
+
+   i:=at('{',ans)
+   i:=hb_jsondecode(subs(ans,i),,'UTF8')
+   do while .t.
+      HB_IDLESLEEP(1)
+      curl('Invoice/Status/'+i['elementReferenceNumber'],'-X GET -H sessionToken:'+d,,@ans)
+      i:=at(' 200 ',memoline(ans,,1))
+      if i=0
+         hb_memowrit('stat.txt',ans,.f.)
+         alert(ans)
+         return NIL
+      endif
+      i:=at('{',ans)
+      i:=hb_jsondecode(subs(ans,i),,'UTF8')
+      c:=hb_hgetdef(i,"processingCode",0)
+      if c<200
+         loop
+      endif
+      if c<400
+         b["invoiceStatus"]:=i["invoiceStatus"]
+         return i["invoiceStatus","ksefReferenceNumber"]
+      endif
+      hb_memowrit('stat.txt',ans,.f.)
+      alert(ans)
+      return NIL
+
+   enddo
+
+return NIL
+
 
 //http://www.e-deklaracje.mf.gov.pl/Repozytorium/Slowniki/KodyKrajow_v3-0.xsd
 static func nip2kraj(nip)
@@ -150,7 +240,7 @@ static func adres2arr(adres)
      endif
      aeval(a,{|x,i|a[i]:=alltrim(x)})
      if len(a)<>2
-          alarm('Adres nie daje si© podzieli† na dwie cze˜ci, wstaw przecinek:;'+adres)
+          alarm('Adres nie daje si© podzieli† na dwie cz©˜ci, wstaw przecinek:;'+adres)
      endif
 return a
 
@@ -168,7 +258,7 @@ return hb_hash('Naglowek',hb_hash("KodFormularza","FA","WariantFormularza",D_KSE
           "DataWytworzeniaFa",hb_dtoc(date(),'YYYY-MM-DD')+'T'+time()+'Z',;
           "SystemInfo",A_STOPKA),;
           'Podmiot1',hb_hash("PrefiksPodatnika",,"NrEORI",,;
-               "DaneIdentyfikacyjne",{"NIP"=>Trim(strtran(memvar->firma_NIP,'-','')),"Nazwa"=>Trim(memvar->firma_pelnaz)},;
+               "DaneIdentyfikacyjne",{"NIP"=>Trim(memvar->firma_NIP),"Nazwa"=>Trim(memvar->firma_pelnaz)},;
                "Adres",hb_hash("KodKraju","PL","AdresL1",trim(memvar->firma_Ul)+" "+trim(memvar->firma_Dom),"AdresL2",trim(memvar->firma_poczta),"GLN",),;
                "AdresKoresp",,"DaneKontaktowe",{hb_hash('Email',memvar->firma_email)},"StatusInfoPodatnika",),;
           'Podmiot2',hb_hash("NrEORI",,"DaneIdentyfikacyjne",{"NIP"=>Trim(strtran(firmy->ident,'-','')),"Nazwa"=>Trim(firmy->longname)},;
@@ -706,20 +796,6 @@ DEFAULT waluta TO 'PLN'
      node := mxmlNewElement( element, "KodUrzedu")
       mxmlNewText( node,, Trim(memvar->firma_Urz) )
 #endif
-
-
-/*
-&:firma_Urz    :='2418'
-&:firma_PelNaz :=firma_n+' '+firma_n2
-&:firma_REGON  :='240799187-00000'
-&:firma_Woj    :='˜l¥skie'
-&:firma_Pow    :='Kˆobuck'
-&:firma_Gmin   :='Wr©czyca Wielka'
-&:firma_Ul     :=''
-&:firma_Dom    :='80'
-//&:firma_Lok    :='80'
-&:firma_Poczta :='42-133 W©glowice'
-*/
 
     element := group   := mxmlNewElement( jpk, 'Podmiot1' )
 

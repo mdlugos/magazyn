@@ -1,9 +1,10 @@
--oma -w1 -m -n -static
+-oma -w1 -m -n
 #-gui -gtwvt
 -lhbwin hbwin.hbc
 #-lelzabdr
 -lhbzebra hbzebra.hbc
 -lhbmxml hbmxml.hbc
+#-lhbcurl hbcurl.hbc
 #sddmy.hbc
 main
 cppl852m.c io error help io_2 clp_brow mds mds_spec frmrun

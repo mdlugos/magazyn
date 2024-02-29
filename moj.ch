@@ -1,7 +1,7 @@
 #ifdef __PLATFORM__WINDOWS
 //    #define PLWIN
-    #define A_WIN_PRN eval(memvar->do_getoprn)
-    #define A_ZEBRA
+  #define A_WIN_PRN eval(memvar->do_getoprn)
+  #define A_ZEBRA
 #endif
 #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usˆug Informatycznych Marek Dˆugosz, 43-400 Cieszyn, ul. R¢wna 16'
 //#define A_ADS 1

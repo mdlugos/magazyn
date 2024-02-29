@@ -1774,7 +1774,6 @@ function KCR_U(mode,l,c)
 
   if (mode=1 .or. mode=2)
      k:=lastkey()
-     altd()
      if spec
         spec:=.f.
         return 33
