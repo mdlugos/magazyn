@@ -130,14 +130,14 @@ if empty(token['sessiontoken'])
    curl('Session/AuthorisationChallenge','-X POST -H Content-Type:application/json',hb_jsonencode({"contextIdentifier"=>{"type"=>"onip","identifier"=>nip}},,'UTF8'),@ans)
    j:=at('{',ans)
    if j<=5
-     alert(ans)
+     alarm(ans)
      return NIL
    endif
    token['Challenge']:=j:=hb_jsondecode(substr(ans,j),,'UTF8')
    s:=token['token']+"|"+hb_ntoc(hb_ttomsec(hb_ctot(j["timestamp"],"yyyy-mm-dd","HH:MM:SS.FFF"))-hb_ttomsec(0d19700101),0)
    s:=hb_processrun('openssl pkeyutl -encrypt -pubin -pkeyopt rsa_padding_mode:pkcs1 -inkey '+findfile('publicKey.pem'),s,@ans)
    if s<>0
-      alert('openssl '+hb_ntoc(s,0))
+      alarm('openssl '+hb_ntoc(s,0))
       return NIL
    endif
    ans:=HB_BASE64ENCODE(ans)
@@ -157,7 +157,7 @@ if empty(token['sessiontoken'])
    curl('Session/InitToken','-X POST -H Content-Type:application/octet-stream',s,@ans)
    i:=at(' 201 ',memoline(ans,,1))
    if i=0
-      alert(ans)
+      alarm(ans)
       return NIL
    endif
    j:=at('{',ans)
@@ -168,7 +168,7 @@ endif
 return token['sessiontoken','sessionToken','token']
 
 func ksef_sendfa(faxml,b,d)
-local c:=memoread(faxml),ans,i
+local a,c:=memoread(faxml),ans,i
 
    b:={'invoiceHash'=>{'fileSize'=>len(c), 'hashSHA'=> {'algorithm'=> 'SHA-256', 'encoding'=> 'Base64', 'value'=> HB_BASE64ENCODE(HB_SHA256(c,.t.))}}, 'invoicePayload'=> {'type'=> 'plain', 'invoiceBody'=>HB_BASE64ENCODE(c)}}
    hb_hautoadd(b,.t.)
@@ -178,38 +178,29 @@ local c:=memoread(faxml),ans,i
       RETURN NIL
    endif
    curl('Invoice/Send','-X PUT -H Content-Type:application/json -H sessionToken:'+d,hb_jsonencode(b,,'UTF8'),@ans)
+
    i:=at(' 202 ',memoline(ans,,1))
-   if i=0
-      hb_memowrit('ans.txt',ans,.f.)
-      alert(ans)
+   if i=0 .or.;
+         empty(i:=hb_jsondecode(subs(ans,i),,'UTF8')) .or.;
+         empty(i:=hb_HGetDef(i,'elementReferenceNumber',''))
+      hb_memowrit('send.txt',ans,.f.)
+      alarm(ans)
       return NIL
    endif
-
-   i:=at('{',ans)
-   i:=hb_jsondecode(subs(ans,i),,'UTF8')
+   a:='Invoice/Status/'+i
    do while .t.
       HB_IDLESLEEP(1)
-      curl('Invoice/Status/'+i['elementReferenceNumber'],'-X GET -H sessionToken:'+d,,@ans)
-      i:=at(' 200 ',memoline(ans,,1))
-      if i=0
-         hb_memowrit('stat.txt',ans,.f.)
-         alert(ans)
-         return NIL
-      endif
+      curl(a,'-X GET -H sessionToken:'+d,,@ans)
       i:=at('{',ans)
       i:=hb_jsondecode(subs(ans,i),,'UTF8')
-      c:=hb_hgetdef(i,"processingCode",0)
-      if c<200
-         loop
+      //"invoiceStatus":{"invoiceNumber":"FA6","ksefReferenceNumber"
+      c:=hb_HGetDef(i,"invoiceStatus",{=>})
+      if !empty(c)
+         b["invoiceStatus"]:=c
+         return c["ksefReferenceNumber"]
       endif
-      if c<400
-         b["invoiceStatus"]:=i["invoiceStatus"]
-         return i["invoiceStatus","ksefReferenceNumber"]
-      endif
-      hb_memowrit('stat.txt',ans,.f.)
-      alert(ans)
-      return NIL
-
+      hb_memowrit('status.txt',ans,.f.)
+      alarm(hb_jsonencode(i,.t.))
    enddo
 
 return NIL
@@ -305,7 +296,7 @@ func ksef_fa(fa, dok, filen)
 local element, node, s
 
      DEFAULT dok TO strtran(trim(DM->smb_dow+DM->nr_dowodu),' ','0')
-     DEFAULT filen TO memvar->defa+str(year(DatY->d_z_rok+1)%100,2)+dok+".xml"
+     DEFAULT filen TO str(year(DatY->d_z_rok+1)%100,2)+dok+".xml"
 
      if tree<>NIL
           alarm("Poprzedna faktura nie zakoäczona")
@@ -342,12 +333,12 @@ local element, node, s
      addtree(jpk,fa,hb_HPos(fa,'Podmiot1'))
 
      mxmlsetwrapmargin(250)
-     mxmlSaveFile( tree, filen , @wscb() )
+     mxmlSaveFile( tree, memvar->defa+filen , @wscb() )
      mxmlDelete(tree)
      tree:=NIL
      //SET DATE A_SET_DAT
 
-return filen
+return memvar->defa+filen
 
 static function addtree(node,subtree,i)
 local j,e,t:=valtype(subtree),k,v
