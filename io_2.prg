@@ -733,6 +733,9 @@ return
 
 func DrawBarcode( cType, cCode, nFlags, ... )
   LOCAL hZebra, nLineHeight
+  if valtype(oprn)<>'O'
+    return cCode
+  endif 
 
   SWITCH cType
    CASE "EAN13"      ; hZebra := hb_zebra_create_ean13( cCode, nFlags )   ; EXIT
@@ -759,7 +762,7 @@ func DrawBarcode( cType, cCode, nFlags, ... )
      hb_zebra_destroy( hZebra )
   ENDIF
 
-RETURN ''
+RETURN cCode
 #endif
 func oprn(x)
 #ifdef D_HWPRN
@@ -1244,7 +1247,7 @@ EXTERNAL WIN_PRINTERGETDEFAULT,WIN_PRINTERLIST,WIN_PRINTERSETDEFAULT,WIN_PRINTFI
 proc wq(...)
 memvar oprn
 local c
-qout()
+qout() //if set(_SET_PRINTER)
 if valtype(oprn)='O'
   if oprn:PosY+2*oprn:LineHeight>oprn:BottomMargin
 #ifdef A_STOPKA

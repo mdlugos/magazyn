@@ -181,6 +181,7 @@ local a,c:=memoread(faxml),ans,i
 
    i:=at(' 202 ',memoline(ans,,1))
    if i=0 .or.;
+         empty(i:=at('{',ans)) .or.; 
          empty(i:=hb_jsondecode(subs(ans,i),,'UTF8')) .or.;
          empty(i:=hb_HGetDef(i,'elementReferenceNumber',''))
       hb_memowrit('send.txt',ans,.f.)
