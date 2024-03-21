@@ -980,28 +980,39 @@ func cenpz(_f,getlist) //zawsze na koäcu po zmianach il, wa, ce ,ck
    #endif //cena_zak
   #else //automar
    #ifdef A_WEBRUT
-      cx:=avat
-      private avat:=aclone(cx)
-      if !_fnowy
-         vat(proc_vat,-VATPZGR(pm*cena,val(proc_vat)))
+    if dok_p_r<>'F'
+      if ReadVar()$'CK,WA'
+        wz:=Round(Round(pm*10000*wa,0)/(100+val(pv)),0)/100
+        cz:=pm*wz/il
+        showvat(_f)
+        if A_WEBRUT 1 = 1
+          return .t.
+        endif
+        // ze wsp¢ˆczynnikiem na nowo wyliczmay wa
       endif
+        cx:=avat
+        private avat:=aclone(cx)
+        if !_fnowy
+          vat(proc_vat,-VATPZGR(pm*cena,val(proc_vat)))
+        endif
 
-      vt:= round( A_WEBRUT vat() , A_ZAOKR)
 
-      vat(pv,VATPZGR(wz,val(pv)))
+        vt:= round( A_WEBRUT vat() , A_ZAOKR)
 
-      vt:=pm* (wz + round( A_WEBRUT vat() , A_ZAOKR) -vt)
+        vat(pv,VATPZGR(wz,val(pv)))
 
-      avat:=cx
+        vt:=pm* (wz + round( A_WEBRUT vat() , A_ZAOKR) -vt)
 
-      if round(wa - vt, A_ZAOKR)<>0
-         wa:=vt
-         ce:=ck:=wa/il
-         chg_cen:=.t.
-         showwar(_f,getlist,gil)
-      else
-         showvat(_f)
-      endif
+        avat:=cx
+        if round(wa - vt, A_ZAOKR)<>0
+           wa:=vt
+           ce:=ck:=wa/il
+           chg_cen:=.t.
+           showwar(_f,getlist,gil)
+        else
+           showvat(_f)
+        endif
+    endif
    #else
     #ifdef cenA_zaK
     if ce#cz .or. wz#pm*wa
@@ -1057,11 +1068,11 @@ func gcen(_f,getlist)
    endif
 
 #ifdef A_FA
-#ifndef A_WEBRUT
+//#ifndef A_WEBRUT
    if dok_ew<>'#'
      cenpz(_f,getlist)
    endif
-#endif
+//#endif
 #endif
    showwar(_f,getlist,gil)
 
@@ -1071,11 +1082,11 @@ func gwar(_f,getlist)
      chg_cen:=.t.
      ce:=if(il=0,0,ROUND(wa/il,A_ZAOKR))
 #ifdef A_FA
-#ifndef A_WEBRUT
+//#ifndef A_WEBRUT
    if dok_ew<>'#'
      cenpz(_f,getlist)
    endif
-#endif
+//#endif
 #endif
      showwar(_f,getlist,gil)
 return .t.
@@ -3149,8 +3160,10 @@ stat func getf(i,r,f,b,a,c,u,getlist,n,tp,nzw)
 return .t.
 #else
 PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
-#ifdef A_ZAM
-#define A_VAT
+#ifdef A_KSEF
+  #ifndef A_VAT
+    #define A_VAT
+  #endif
 #endif
 
   local c,u,s,r,ord,getlist,rp,nzw,k,tp
@@ -3336,6 +3349,22 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
     unlock
 RETURN
 #ifdef A_WL
+#ifdef A_KSEF
+FUNCTION ksef_valid()
+local d:=len(trim(n_ksef)) ,s,ans
+if d=0 .or. d>=35
+   return .t.
+endif
+
+d:=ksef_initsession()
+if d=NIL
+   return .t.
+endif
+s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject1', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(dd,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(da,'YYYY-MM-DD')+'T23:59:59'}},,'UTF8')
+curl('Query/Invoice/Sync?PageSize=100&PageOffset=0','-X POST -H Content-Type:application/json -H sessionToken:'+d,s,@ans)
+alarm(s+hb_eol()+ans)
+return .t.
+#endif
 FUNCTION getwl(i,h)
 #ifdef __PLATFORM__UNIX_
    local curl

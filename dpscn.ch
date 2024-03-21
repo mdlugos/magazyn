@@ -1,14 +1,17 @@
 #include "lan.ch"
+#define A_EXT hb_jsonencode,hb_jsondecode,hb_hautoadd
 #define A_CDX DBFCDX
-#define PC852
+#define PC852 'PL852M'
 #define PLWIN
 #define UpP(x) UPPER(x)
 #define A_FIFO
+#define A_WL
 #define A_ZAZNACZ
 #command INIT SCREEN =>
 #command INIT PRINTER => specout(eval(memvar->p_init,wasbad))
 #define A_GETLPT    eval(memvar->do_getlpt)
 #define A_PRINT(x)  eval(memvar->do_print,x)
+#define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usˆug Informatycznych Marek Dˆugosz, 43-400 Cieszyn, ul. R¢wna 16'
 #define A_DRUKCOMP
 //#define A_DOKCOMP 10
 #define A_XPRN
@@ -44,7 +47,7 @@
 #define A_LPNUM 3
 #define A_ZAZNACZ
 
-
+#define A_FFULL
 #define A_VAT
 #define A_NVAT
 #define A_FA

@@ -92,7 +92,7 @@ MEMVAR r,mag_biez,mag_poz,magazyny,adres_mag,is_spec,operator,dok_par,dokumenty,
        przegl,dok,zamowienie,stanowis,stary_rok,nowydm,da,dd,hlink,;
        d_o,n_f,nk,changed,nim,nz,il,gil,lam,itot,gtot,posproc,canopen,miar_opcja,;
        ce,ck,wa,chg_cen,dok_w1,nowystan,dflag,darr,dpos,dpush,kk,sk,kont_kos,;
-       DZIALY,dzial,mater,kont,kos,zap,zac,nrc,uw,cz,tp,wz,rodz_sprzed,zam,;
+       DZIALY,dzial,mater,kont,kos,zap,zac,nrc,uw,cz,tp,wz,rodz_sprzed,n_ksef,;
        sp,st,pv,vat,npr,pm,zaplac,dazapl,ppos,ppush,parr,pflag,avat,stawki,;
        stawkizby,chgpos,DOK_ZB,STANO,dok_di,kh,nazwis,posilki,diety,path_zb,defa,;
        dv,nkp,mknk
@@ -102,7 +102,7 @@ field  data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,numer_kol,;
        jm_opcja,wartosc,cena_przy,wart_vat,ilosc_f,proc_vat,dieta,info,;
        skladnik,konto_kosz,stano_kosz,cena,przelewem,czekiem,nr_czeku,cena_zak,;
        termin_p,nr_spec,transport,nr_kpr,longname,sub_dok,zaplacono,data_zap,;
-       nr_zam,nazwisko,data_vat
+       nr_ksef,nazwisko,data_vat
 #ifdef A_LPNUM
 #define D_LP0 str(0,A_LPNUM) //'  0'
 #define D_LP1 str(1,A_LPNUM) //'  1'
@@ -227,8 +227,8 @@ private gtot:=0
 #ifdef A_KPR
 private npr
 #endif
-#ifdef A_ZAM
-private zam
+#ifdef A_KSEF
+private n_ksef
 #endif
 #ifdef A_MM
   if empty(mag_biez)
@@ -746,8 +746,8 @@ procedure dok1(_f)
   nazwis:=nazwisko
 #endif
 #endif
-#ifdef A_ZAM
-zam:=nr_zam
+#ifdef A_KSEF
+n_ksef:=trim(nr_ksef)
 #endif
 #ifdef D_DIETA_OR_ODDO
   dflag:=.f.
@@ -884,8 +884,8 @@ _frow:=2
     otherwise
           ?? "Nr  faktury   z dnia   "
     endcase
-#ifdef A_ZAM
-       ?? "Nr zam¢wienia"
+#ifdef A_KSEF
+//       ?? "  Nr KSeF"
 #endif
 #ifdef A_VAT
     if dok_zew$"UV"
@@ -1255,6 +1255,9 @@ procedure dok2(_f,getlist)
       else
 #endif
 #endif
+#ifdef A_KSEF
+      @ _frow-1,2 get n_ksef picture "@KS36" SEND cargo:=.t. VALID ksef_valid()
+#endif
       @ _frow,2 GET n_f PICTURE "@KS13"
 #ifndef A_GOCZ
 #ifdef A_ODDO
@@ -1266,9 +1269,6 @@ procedure dok2(_f,getlist)
       GETl dd VALID {|g|if(dataval(dd),(if(g:original=da.and.da#dd ,(da:=dd,x:=g,aeval(getlist,{|g|if(g:name=='da',(g:display(),eval(g:postblock,x)),)})),),if(g:original=dv.and.dv#dd ,(dv:=dd,x:=g,aeval(getlist,{|g|if(g:name=='dv',(g:display(),if(g:postblock<>NIL,eval(g:postblock,x),)),)})),)),),.t.}
 #else
       GETl dd
-#endif
-#ifdef A_ZAM
-      getl zam picture "@KS13"
 #endif
 #ifdef A_VAT
       if dok_zew$"UV"
@@ -1453,8 +1453,8 @@ memvar exp_od,exp_do
     dost_odb := if(dok_kh.and.!empty(kh),kh+' '+d_o,d_o)
 #endif
     nr_faktury := n_f
-#ifdef A_ZAM
-    nr_zam:=zam
+#ifdef A_KSEF
+    nr_ksef := n_ksef
 #endif
 #ifdef A_OLZA
     konto_kosz:=kk

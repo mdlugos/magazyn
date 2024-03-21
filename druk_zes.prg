@@ -831,7 +831,7 @@ DO WHILE eval(bkey)<=I_DO .AND. !EOF()
     ?
     if wa_flag
 #ifdef A_FA
-    IF ZBY_FLAG
+    IF zby_flag
 #ifdef A_CENVAT
         ?? if(pm=1,"PO CENACH ZAKUPU NETTO","PO CENACH ZBYTU BRUTTO")
 #else

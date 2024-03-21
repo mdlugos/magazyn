@@ -59,7 +59,6 @@ memvar mag_poz,mag_biez,magazyny,adres_mag,defa
 func curl(res,line,post,ans)
 
 #ifdef __PLATFORM__UNIX_
-// jakie˜ ˜mieci w outpucie
    local curl,a:=getlines(line,' -H ')
    curl_global_init()
    curl := curl_easy_init()
@@ -78,6 +77,9 @@ func curl(res,line,post,ans)
    curl_easy_cleanup( curl )
    curl_global_cleanup()
 #else
+    local scr
+    save screen to scr
+    cls
     DEFAULT line TO ''
     if !'-D'$ line
       line+=' -i'
@@ -85,8 +87,8 @@ func curl(res,line,post,ans)
     if !empty(post)
       line+=' --data-binary @-'
     endif
-
     hb_processrun('curl '+line+' '+ D_KSEF_API + 'api/online/' + res,post,@ans)
+    restore screen from scr
 #endif
 return ans
 
@@ -135,7 +137,16 @@ if empty(token['sessiontoken'])
    endif
    token['Challenge']:=j:=hb_jsondecode(substr(ans,j),,'UTF8')
    s:=token['token']+"|"+hb_ntoc(hb_ttomsec(hb_ctot(j["timestamp"],"yyyy-mm-dd","HH:MM:SS.FFF"))-hb_ttomsec(0d19700101),0)
+#ifdef __PLATFORM__UNIX_
+   SSL_init()
+   OpenSSL_add_all_ciphers()
+   ctx := hb_EVP_CIPHER_ctx_create()
+   EVP_CIPHER_CTX_init( ctx )
+   EVP_EncryptInit( ctx, "", hb_memoread(findfile('publicKey.pem')) )
+   EVP_CIPHER_CTX_SET_PADDING(ctx,HB_RSA_PKCS1_PADDING)
+#else   
    s:=hb_processrun('openssl pkeyutl -encrypt -pubin -pkeyopt rsa_padding_mode:pkcs1 -inkey '+findfile('publicKey.pem'),s,@ans)
+#endif   
    if s<>0
       alarm('openssl '+hb_ntoc(s,0))
       return NIL
@@ -155,8 +166,9 @@ if empty(token['sessiontoken'])
       s:=stuff(s,i,0,ans)
    endif
    curl('Session/InitToken','-X POST -H Content-Type:application/octet-stream',s,@ans)
-   i:=at(' 201 ',memoline(ans,,1))
-   if i=0
+   s:=memoline(ans,,1)
+   if ' 201 '$s .or. ' 100 '$s
+   else
       alarm(ans)
       return NIL
    endif
@@ -178,12 +190,9 @@ local a,c:=memoread(faxml),ans,i
       RETURN NIL
    endif
    curl('Invoice/Send','-X PUT -H Content-Type:application/json -H sessionToken:'+d,hb_jsonencode(b,,'UTF8'),@ans)
-
-   i:=at(' 202 ',memoline(ans,,1))
-   if i=0 .or.;
-         empty(i:=at('{',ans)) .or.; 
-         empty(i:=hb_jsondecode(subs(ans,i),,'UTF8')) .or.;
-         empty(i:=hb_HGetDef(i,'elementReferenceNumber',''))
+   if empty(i:=at('{',ans)) .or.;
+      empty(i:=hb_jsondecode(subs(ans,i),,'UTF8')) .or.;
+      empty(i:=hb_HGetDef(i,'elementReferenceNumber',''))
       hb_memowrit('send.txt',ans,.f.)
       alarm(ans)
       return NIL
@@ -200,8 +209,12 @@ local a,c:=memoread(faxml),ans,i
          b["invoiceStatus"]:=c
          return c["ksefReferenceNumber"]
       endif
-      hb_memowrit('status.txt',ans,.f.)
-      alarm(hb_jsonencode(i,.t.))
+      c:=hb_HGetDef(i,"processingCode",400)
+      if c>=400
+        hb_memowrit('status.txt',ans,.f.)
+        alarm(hb_jsonencode(i,.t.))
+        return NIL
+      endif
    enddo
 
 return NIL
@@ -277,7 +290,7 @@ return hb_hash('Naglowek',hb_hash("KodFormularza","FA","WariantFormularza",D_KSE
                "AdresKoresp",,"DaneKontaktowe",{hb_hash('Email',memvar->firma_email)},"StatusInfoPodatnika",),;
           'Podmiot2',hb_hash("NrEORI",,"DaneIdentyfikacyjne",{"NIP"=>Trim(strtran(firmy->ident,'-','')),"Nazwa"=>Trim(firmy->longname)},;
                "Adres",hb_hash("KodKraju",nip2kraj(firmy->ident),"AdresL1",a[1],"AdresL2",a[2],"GLN",),;
-               "AdresKoresp",,"DaneKontaktowe",{},"NrKlienta",ltrim(firmy->numer_kol),"IDNabywcy",),;
+               "AdresKoresp",,"DaneKontaktowe",{},"NrKlienta",,"IDNabywcy",),;
           'Podmiot3',b,'PodmiotUpowazniony',,'Fa',;
           hb_hash("KodWaluty","PLN","P_1",,"P_1M",,"P_2",,"WZ",{},;
           "P_6",,"OkresFa",,"P_13_1",,"P_14_1",,"P_14_1W",,"P_13_2",,"P_14_2",,"P_14_2W",,;

@@ -20,7 +20,8 @@
 //#define A_NOREFRESH
 #command init screen  =>
 #command INIT PRINTER => specout(eval(memvar->p_init,wasbad))
-#define A_WL memvar->do_wl
+#define A_WL
+#define A_KSEF
 #define A_XPRN
 #define A_PCL
 #define isPrinter() .t.
