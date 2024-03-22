@@ -87,7 +87,7 @@
 MEMVAR n_f,nk,dd,da,d_o,kh,DOK,SCR,nim,il,gtot,chgpos,gil,;
        nz,stary_rok,MAG_BIEZ,mag_poz,r,operator,dok_rozch,;
        nowydm,magazyny,dok_par,adres_mag,lam,itot,miar_opcja,;
-       is_spec,pm,changed,avat,defa,nkp,mknk
+       is_spec,pm,changed,avat,defa,nkp,mknk,n_ksef
 #ifdef A_WA
 MEMVAR wa,ce,ck,chg_cen
 field wartosc,cena_przy

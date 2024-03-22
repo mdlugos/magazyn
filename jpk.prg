@@ -52,7 +52,7 @@ external hb_base64encode,hb_sha256,URLENCODE
 static tree,jpk,lp,aj //aj w groszach
 static group,dekl := .f.,groupd,ver
 static token := {=>}
-memvar mag_poz,mag_biez,magazyny,adres_mag,defa
+memvar mag_poz,mag_biez,magazyny,adres_mag,defa,_snorm
 
 
 **************************
@@ -77,9 +77,6 @@ func curl(res,line,post,ans)
    curl_easy_cleanup( curl )
    curl_global_cleanup()
 #else
-    local scr
-    save screen to scr
-    cls
     DEFAULT line TO ''
     if !'-D'$ line
       line+=' -i'
@@ -88,7 +85,6 @@ func curl(res,line,post,ans)
       line+=' --data-binary @-'
     endif
     hb_processrun('curl '+line+' '+ D_KSEF_API + 'api/online/' + res,post,@ans)
-    restore screen from scr
 #endif
 return ans
 
@@ -100,6 +96,8 @@ return subs(bin,HB_HEXTONUM(subs(bin,1,2))+1,HB_HEXTONUM(subs(bin,3,2)))
 
 func ksef_initsession()
 local ans,s,i,j,nip:=trim(memvar->firma_NIP)
+    local scr
+
 if empty(token)
    hb_hautoadd(token,.t.)
    if type('memvar->ksef_token')='C'
@@ -117,6 +115,11 @@ if empty(token)
    s:=findfile('session.json')
    token['sessiontoken']:=if(empty(s),,hb_jsondecode(memoread(s),,'UTF8'))
 endif
+
+    save screen to scr
+    set color to (_snorm)
+    clear screen
+
 if !empty(token['sessiontoken'])
    curl('Session/Status/'+token['sessiontoken','referenceNumber'],'-X GET -H sessionToken:'+token['sessiontoken','sessionToken','token'],,@ans)
    i:=at(' 200 ',memoline(ans,,1))
@@ -133,6 +136,7 @@ if empty(token['sessiontoken'])
    j:=at('{',ans)
    if j<=5
      alarm(ans)
+     restore screen from scr
      return NIL
    endif
    token['Challenge']:=j:=hb_jsondecode(substr(ans,j),,'UTF8')
@@ -142,13 +146,14 @@ if empty(token['sessiontoken'])
    OpenSSL_add_all_ciphers()
    ctx := hb_EVP_CIPHER_ctx_create()
    EVP_CIPHER_CTX_init( ctx )
-   EVP_EncryptInit( ctx, "", hb_memoread(findfile('publicKey.pem')) )
+   EVP_EncryptInit( ctx, "", hb_memoread(findfile(MEMVAR->ksef_key)) )
    EVP_CIPHER_CTX_SET_PADDING(ctx,HB_RSA_PKCS1_PADDING)
 #else   
-   s:=hb_processrun('openssl pkeyutl -encrypt -pubin -pkeyopt rsa_padding_mode:pkcs1 -inkey '+findfile('publicKey.pem'),s,@ans)
+   s:=hb_processrun('openssl pkeyutl -encrypt -pubin -pkeyopt rsa_padding_mode:pkcs1 -inkey '+findfile(MEMVAR->ksef_key),s,@ans)
 #endif   
    if s<>0
       alarm('openssl '+hb_ntoc(s,0))
+      restore screen from scr
       return NIL
    endif
    ans:=HB_BASE64ENCODE(ans)
@@ -170,6 +175,7 @@ if empty(token['sessiontoken'])
    if ' 201 '$s .or. ' 100 '$s
    else
       alarm(ans)
+      restore screen from scr
       return NIL
    endif
    j:=at('{',ans)
@@ -177,10 +183,11 @@ if empty(token['sessiontoken'])
    hb_memowrit(defa+'session.json',ans,.f.)
    token['sessiontoken']:=hb_jsondecode(ans,,'UTF8')
 endif
+restore screen from scr
 return token['sessiontoken','sessionToken','token']
 
 func ksef_sendfa(faxml,b,d)
-local a,c:=memoread(faxml),ans,i
+local a,c:=memoread(faxml),ans,i,scr
 
    b:={'invoiceHash'=>{'fileSize'=>len(c), 'hashSHA'=> {'algorithm'=> 'SHA-256', 'encoding'=> 'Base64', 'value'=> HB_BASE64ENCODE(HB_SHA256(c,.t.))}}, 'invoicePayload'=> {'type'=> 'plain', 'invoiceBody'=>HB_BASE64ENCODE(c)}}
    hb_hautoadd(b,.t.)
@@ -189,12 +196,17 @@ local a,c:=memoread(faxml),ans,i
    IF d=NIL
       RETURN NIL
    endif
+   save screen to scr
+   set color to (_snorm)
+   clear screen
+
    curl('Invoice/Send','-X PUT -H Content-Type:application/json -H sessionToken:'+d,hb_jsonencode(b,,'UTF8'),@ans)
    if empty(i:=at('{',ans)) .or.;
       empty(i:=hb_jsondecode(subs(ans,i),,'UTF8')) .or.;
       empty(i:=hb_HGetDef(i,'elementReferenceNumber',''))
       hb_memowrit('send.txt',ans,.f.)
       alarm(ans)
+      restore screen from scr
       return NIL
    endif
    a:='Invoice/Status/'+i
@@ -207,16 +219,19 @@ local a,c:=memoread(faxml),ans,i
       c:=hb_HGetDef(i,"invoiceStatus",{=>})
       if !empty(c)
          b["invoiceStatus"]:=c
+         restore screen from scr
          return c["ksefReferenceNumber"]
       endif
       c:=hb_HGetDef(i,"processingCode",400)
       if c>=400
         hb_memowrit('status.txt',ans,.f.)
         alarm(hb_jsonencode(i,.t.))
+        restore screen from scr
         return NIL
       endif
    enddo
 
+restore screen from scr
 return NIL
 
 

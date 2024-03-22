@@ -829,7 +829,7 @@ local b:=TBColumnNew(m[1],fb)
 
 return b
 ********************
-stat func sk(x,a,h,j)
+stat func sk(x,a,h)
 #define D_BLEN 512
 local p,r,k,l,n,o,eol
 #ifdef __PLATFORM__UNIX
@@ -941,10 +941,11 @@ static i,b,lth
 #else
   eol:=if(i<lth.or.subs(b,r+a[i,2]-1,2)=nl,2,0)
 #endif
-return strtran(subs(b,r+1+j,a[i,2]-j-eol),chr(9)," ")
+  o:=subs(b,r,a[i,2]-eol)
+return strtran(o,chr(9)," ")
 #undef D_BLEN
 **********************
-proc fview(f)
+proc fview(f,cdp)
 local a,h,b,c,j,txt,key,scrlflag:=0,frow:=1
 f:=findfile(f)
 h:=fopen(f,64)
@@ -952,13 +953,18 @@ if h<0
    return
 endif
 
-b:=tbrowsenew(0,0,maxrow(),maxcol())
-c:=tbcolumnnew("",{||txt})
+#ifdef __HARBOUR__
+  c:=tbcolumnnew("",if(cdp=NIL,{||subs(txt,j+1)},{||subs(hb_translate(txt,cdp,),j+1)}))
+#else
+  c:=tbcolumnnew("",{||subs(txt,j+1)})
+#endif
+
 c:width:=maxcol()+1
+b:=tbrowsenew(0,0,maxrow(),maxcol())
 b:addcolumn(c)
-b:skipblock:={|x|txt:=sk(@x,a,h,j),frow+=x,x}
-b:gotopblock:={||txt:=sk(.t.,a,h,j),frow:=1}
-b:gobottomblock:={||txt:=sk(.f.,a,h,j),frow:=0}
+b:skipblock:={|x|txt:=sk(@x,a,h),frow+=x,x}
+b:gotopblock:={||txt:=sk(.t.,a,h),frow:=1}
+b:gobottomblock:={||txt:=sk(.f.,a,h),frow:=0}
 c:=array(31)
 c[K_DOWN]     :={|b|if(b:rowpos=b:rowcount,scrlflag:=1,),b:down()}
 c[K_UP]       :={|b|if(b:rowpos=1,scrlflag:=-1,),b:up()}
@@ -973,7 +979,7 @@ c[K_HOME]     :={|b|j:=0,b:refreshall()}
 
 a:=array(3*maxrow())
 j:=0
-txt:=pad(sk(.t.,a,h,j),maxcol()+1)
+txt:=pad(sk(.t.,a,h),maxcol()+1)
 #ifdef __HARBOUR__
 if nextkey()=0 //.and. fseek(h,0,2) < 65536
   b:forcestable()
