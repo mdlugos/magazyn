@@ -573,6 +573,9 @@ procedure dok1(_f)
       dd:=da
       _flp:=0
       n_f:=nr_faktury
+#ifdef A_KSEF
+      n_ksef:=pad(left(nr_ksef,11)+left(dtos(da),6),36)
+#endif
 #ifdef A_KHSEP
       kh:=kontrahent
 #else
@@ -645,6 +648,9 @@ procedure dok1(_f)
 #endif
           endif
       ENDIF
+#ifdef A_KSEF
+      nr_ksef:=left(n_ksef,11)
+#endif
   ELSE
       DEVOUT("  POPRAWA  !","GR+*")
       if mknk=NIL
@@ -671,6 +677,9 @@ procedure dok1(_f)
       da:=DATA
       dd:=DATA_DOST
       n_f:=nr_faktury
+#ifdef A_KSEF
+      n_ksef:=nr_ksef
+#endif
 #ifdef A_DATAVAT
       dv:=data_vat
 #endif
@@ -745,9 +754,6 @@ procedure dok1(_f)
 #ifdef A_NAZWISKO
   nazwis:=nazwisko
 #endif
-#endif
-#ifdef A_KSEF
-n_ksef:=trim(nr_ksef)
 #endif
 #ifdef D_DIETA_OR_ODDO
   dflag:=.f.
@@ -875,7 +881,8 @@ _frow:=2
 #ifdef A_KSEF
     _frow+=1
     setpos(_frow,2)
-     ?? 'Data faktury:            Nr KSeF:'
+     //?? 'Data faktury:            Nr KSeF:'
+     ?? 'Nr KSeF:'
 #endif
     _frow+=2
     setpos(_frow-1,2)
@@ -887,7 +894,7 @@ _frow:=2
           ?? "Za okres od        do  "
 #endif
     otherwise
-#ifdef A_KSEF
+#ifdef A_KSEF_0
           ?? "Nr  faktury            "
 #else
           ?? "Nr  faktury   z dnia   "
@@ -1003,13 +1010,13 @@ procedure dok11(_f)
   _flp:=D_LPVAL(pozycja)
   if dok_zew#"W" .or. dok="K"
 #ifdef A_KSEF
-    @ _frow-2,16 SAY data_dost
-    @ _frow-2,36 SAY nr_ksef
-    @ _frow,2 SAY nr_faktury picture "@S24"
+    //@ _frow-2,16 SAY data_dost
+    @ _frow-2,11 SAY nr_ksef
+    //@ _frow,2 SAY nr_faktury picture "@S24"
 #else
+#endif
     @ _frow,2 SAY nr_faktury picture "@S13"
     sayl data_dost
-#endif
   ENDIF
 #ifdef A_FA
   if dok_p_r="F"
@@ -1264,30 +1271,22 @@ procedure dok2(_f,getlist)
          get:=getnew(_frow,4,{|x|if(x=NIL,ctod(n_f),n_f:=dtoc(x))},"n_f")
          get:display()
          aadd(getlist,get)
-         GETl dd
-         x:=atail(getlist)
       else
 #endif
 #endif
 #ifdef A_KSEF
-      @ _frow-2,16 GET dd
-      x:=NIL//atail(getlist)
-      @ _frow-2,36 get n_ksef picture "@KS36" SEND CARGO:=.t. VALID ksef_valid()
-      @ _frow,2 GET n_f PICTURE "@KS24"
-#else
-      @ _frow,2 GET n_f PICTURE "@KS13"
-      GETl dd
-      x:=atail(getlist)
+      @ _frow-2,11 get n_ksef picture "@K" VALID ksef_valid() WHEN NOWYDM
 #endif
+      @ _frow,2 GET n_f PICTURE "@KS13"
 #ifndef A_GOCZ
 #ifdef A_ODDO
       endif
 #endif
 #endif
 #ifdef A_DLINK
-      if x<>NIL
-         x:Postblock:={|g,v|if(dataval(v),(if(g:original=v.and.da#v,varput(getlist,'da',v),),if(g:original=v.and.dv#v,varput(getlist,'dv',v),)),)}
-      endif
+      GETl dd VALID {|g|if(dataval(dd),(if(g:original=da.and.da#dd ,(da:=dd,x:=g,aeval(getlist,{|g|if(g:name=='da',(g:display(),eval(g:postblock,x)),)})),),if(g:original=dv.and.dv#dd ,(dv:=dd,x:=g,aeval(getlist,{|g|if(g:name=='dv',(g:display(),if(g:postblock<>NIL,eval(g:postblock,x),)),)})),)),),.t.}
+#else
+      GETl dd
 #endif
 #ifdef A_VAT
       if dok_zew$"UV"

@@ -112,7 +112,7 @@ memvar wtot
 field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,ilosc_f,dost_odb,kontrahent,KONTO,;
       OPIS_KOSZT,index,nazwa,adres,uwagi,NUMER_KOL,nr_mag,;
       jm,stan,KTO_PISAL,data_przy,data_zmian,data_roz,jm_opcja,rodz_opak,gram,;
-      cennik,sub_dok,nazwisko
+      cennik,sub_dok,nazwisko,ident
 #ifdef A_LPNUM
 #define D_LP0 str(0,A_LPNUM) //'  0'
 #define D_LP1 str(1,A_LPNUM) //'  1'
@@ -2553,7 +2553,7 @@ DO CASE
                           re:=trim(subs(re,_skey+2))+', '+left(re,_skey-1)
                        endif
                        goto lastrec()+1
-                       FIRM_EDIT(numer_kol,_s,pad(txt['name'],len(nazwa)),pad(txt['name'],len(longname)),pad(re,len(adres)),pad(txt['nip'],len(firMy->ident)),h)
+                       FIRM_EDIT(numer_kol,_s,pad(txt['name'],len(nazwa)),pad(txt['name'],len(longname)),pad(re,len(adres)),pad(txt['nip'],len(ident)),h)
                        return .f.
                   endif
 #endif
@@ -2739,6 +2739,10 @@ DO CASE
             endif
 #endif
 */
+#ifdef A_KSEF
+         elseif NOWYDM
+            n_ksef:=left(strtran(ident,'-'),10)+'-'+left(dtos(max(da-10,DatY->d_z_mies1+1)),6)
+#endif
          endif
 #endif
       updated(.t.)
@@ -3344,15 +3348,15 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
 RETURN
 #ifdef A_KSEF
 FUNCTION ksef_valid()
-local d:=len(trim(n_ksef)) ,s,ans,scr,sel,_s:=array(_sLEN)
-if d<19 .or. d>=35
+local d:=len(trim(n_ksef)) ,s,ans,scr,sel,_s
+if !NOWYDM .or. d<19 .or. d>=35
    return .t.
 endif
-sel:=sel('ksef',0)
+sel:=select()
+sel('ksef',0)
 go bottom
 s:=stod(subs(field->nr_ksef,12,8))
 d:=stod(subs(n_ksef,12,8))
-altd()
 set order to tag ksef_nr
 if d>s
 SAVE SCREEN TO scr
@@ -3361,6 +3365,7 @@ CLEAR SCREEN
 ans:=ksef_initsession()
 if ans=NIL
    REST SCREEN FROM scr
+   dbselectar(sel)
    return .t.
 endif
 s:=max(d-10,s)
@@ -3373,6 +3378,7 @@ s:=hb_JsonDecode(subs(ans,at('{',ans)),,'UTF8')
 aeval(s['invoiceHeaderList'],{|x|if(dbseek(x['ksefReferenceNumber']),,(dbappend(),field->nr_ksef:=x['ksefReferenceNumber'],field->nr_faktury:=x['invoiceReferenceNumber'],field->typ:=x['invoiceType'],field->netto:=val(x['net']),field->vat:=val(x['vat']),field->nazwa:=x['subjectBy','issuedByName','fullName']))})
 endif
 seek trim(n_ksef)
+_s:=array(_sLEN)
 _sprompt:={||tran(fieldget(1),)+"|"+tran(fieldget(2),)+"|"+tran(fieldget(3),)+"|"+tran(fieldget(4),)}
 _snagkol:=0//_scol1
 d:=dbstruct()
@@ -3389,6 +3395,7 @@ if d:=szukam(_s)
       varput(getlistactive(),'da',dv)
    endif
 endif
+
 dbselectar(sel)
 return d
 #endif
