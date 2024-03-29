@@ -84,7 +84,7 @@
 #define dok_kh  (dok_zew#"W" .and. ""#dok_kon )
 #define dok_wal dok_par[MAG_POZ,r,A_WALUTA]
 
-MEMVAR n_f,nk,dd,da,d_o,kh,DOK,SCR,nim,il,gtot,chgpos,gil,;
+MEMVAR n_f,nk,dd,da,dv,d_o,kh,DOK,SCR,nim,il,gtot,chgpos,gil,;
        nz,stary_rok,MAG_BIEZ,mag_poz,r,operator,dok_rozch,;
        nowydm,magazyny,dok_par,adres_mag,lam,itot,miar_opcja,;
        is_spec,pm,changed,avat,defa,nkp,mknk,n_ksef
@@ -3160,12 +3160,6 @@ stat func getf(i,r,f,b,a,c,u,getlist,n,tp,nzw)
 return .t.
 #else
 PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
-#ifdef A_KSEF
-  #ifndef A_VAT
-    #define A_VAT
-  #endif
-#endif
-
   local c,u,s,r,ord,getlist,rp,nzw,k,tp
   field nazwa,adres,numer_kol,uwagi,ident,cennik,longname,regon,nazwisko,konto,tp_dni
 
@@ -3348,23 +3342,57 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
     enddo
     unlock
 RETURN
-#ifdef A_WL
 #ifdef A_KSEF
 FUNCTION ksef_valid()
-local d:=len(trim(n_ksef)) ,s,ans
-if d=0 .or. d>=35
+local d:=len(trim(n_ksef)) ,s,ans,scr,sel,_s:=array(_sLEN)
+if d<19 .or. d>=35
    return .t.
 endif
-
-d:=ksef_initsession()
-if d=NIL
+sel:=sel('ksef',0)
+go bottom
+s:=stod(subs(field->nr_ksef,12,8))
+d:=stod(subs(n_ksef,12,8))
+altd()
+set order to tag ksef_nr
+if d>s
+SAVE SCREEN TO scr
+SET COLOR TO _snorm
+CLEAR SCREEN
+ans:=ksef_initsession()
+if ans=NIL
+   REST SCREEN FROM scr
    return .t.
 endif
-s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject1', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(dd,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(da,'YYYY-MM-DD')+'T23:59:59'}},,'UTF8')
-curl('Query/Invoice/Sync?PageSize=100&PageOffset=0','-X POST -H Content-Type:application/json -H sessionToken:'+d,s,@ans)
-alarm(s+hb_eol()+ans)
-return .t.
+s:=max(d-10,s)
+d:=min(date(),s+10)
+s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject1', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(s,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(d,'YYYY-MM-DD')+'T23:59:59'}},,'UTF8')
+curl('Query/Invoice/Sync?PageSize=100&PageOffset=0','-X POST -H Content-Type:application/json -H sessionToken:'+ans,s,@ans)
+REST SCREEN FROM scr
+s:=hb_JsonDecode(subs(ans,at('{',ans)),,'UTF8')
+//alarm(hb_jsonencode(s,.t.))
+aeval(s['invoiceHeaderList'],{|x|if(dbseek(x['ksefReferenceNumber']),,(dbappend(),field->nr_ksef:=x['ksefReferenceNumber'],field->nr_faktury:=x['invoiceReferenceNumber'],field->typ:=x['invoiceType'],field->netto:=val(x['net']),field->vat:=val(x['vat']),field->nazwa:=x['subjectBy','issuedByName','fullName']))})
+endif
+seek trim(n_ksef)
+_sprompt:={||tran(fieldget(1),)+"|"+tran(fieldget(2),)+"|"+tran(fieldget(3),)+"|"+tran(fieldget(4),)}
+_snagkol:=0//_scol1
+d:=dbstruct()
+_snagl:=padl(d[1,1],d[1,3],'Ä')+"Â"+pad(d[2,1],d[2,3],'Ä')+"Â"+pad(d[3,1],d[3,3],'Ä')+"Â"+d[4,1]
+_sbeg:=1
+_slth:=len(trim(n_ksef))
+_spocz:=trim(n_ksef)
+if d:=szukam(_s)
+   n_ksef:=field->nr_ksef
+   dv:=stod(subs(n_ksef,12,8))
+   varput(getlistactive(),'dd',dv)
+   varput(getlistactive(),'n_f',pad(field->nr_faktury,len(n_f)))
+   if dataval(dv)
+      varput(getlistactive(),'da',dv)
+   endif
+endif
+dbselectar(sel)
+return d
 #endif
+#ifdef A_WL
 FUNCTION getwl(i,h)
 #ifdef __PLATFORM__UNIX_
    local curl

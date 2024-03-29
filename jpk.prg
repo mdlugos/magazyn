@@ -96,7 +96,7 @@ return subs(bin,HB_HEXTONUM(subs(bin,1,2))+1,HB_HEXTONUM(subs(bin,3,2)))
 
 func ksef_initsession()
 local ans,s,i,j,nip:=trim(memvar->firma_NIP)
-    local scr
+//    local scr
 
 if empty(token)
    hb_hautoadd(token,.t.)
@@ -116,9 +116,9 @@ if empty(token)
    token['sessiontoken']:=if(empty(s),,hb_jsondecode(memoread(s),,'UTF8'))
 endif
 
-    save screen to scr
-    set color to (_snorm)
-    clear screen
+//    save screen to scr
+//    set color to (_snorm)
+//    clear screen
 
 if !empty(token['sessiontoken'])
    curl('Session/Status/'+token['sessiontoken','referenceNumber'],'-X GET -H sessionToken:'+token['sessiontoken','sessionToken','token'],,@ans)
@@ -136,7 +136,7 @@ if empty(token['sessiontoken'])
    j:=at('{',ans)
    if j<=5
      alarm(ans)
-     restore screen from scr
+     //restore screen from scr
      return NIL
    endif
    token['Challenge']:=j:=hb_jsondecode(substr(ans,j),,'UTF8')
@@ -153,7 +153,7 @@ if empty(token['sessiontoken'])
 #endif   
    if s<>0
       alarm('openssl '+hb_ntoc(s,0))
-      restore screen from scr
+      //restore screen from scr
       return NIL
    endif
    ans:=HB_BASE64ENCODE(ans)
@@ -175,7 +175,7 @@ if empty(token['sessiontoken'])
    if ' 201 '$s .or. ' 100 '$s
    else
       alarm(ans)
-      restore screen from scr
+      //restore screen from scr
       return NIL
    endif
    j:=at('{',ans)
@@ -183,7 +183,7 @@ if empty(token['sessiontoken'])
    hb_memowrit(defa+'session.json',ans,.f.)
    token['sessiontoken']:=hb_jsondecode(ans,,'UTF8')
 endif
-restore screen from scr
+//restore screen from scr
 return token['sessiontoken','sessionToken','token']
 
 func ksef_sendfa(faxml,b,d)
@@ -192,13 +192,14 @@ local a,c:=memoread(faxml),ans,i,scr
    b:={'invoiceHash'=>{'fileSize'=>len(c), 'hashSHA'=> {'algorithm'=> 'SHA-256', 'encoding'=> 'Base64', 'value'=> HB_BASE64ENCODE(HB_SHA256(c,.t.))}}, 'invoicePayload'=> {'type'=> 'plain', 'invoiceBody'=>HB_BASE64ENCODE(c)}}
    hb_hautoadd(b,.t.)
 
-   DEFAULT d TO ksef_initsession()
-   IF d=NIL
-      RETURN NIL
-   endif
    save screen to scr
    set color to (_snorm)
    clear screen
+   DEFAULT d TO ksef_initsession()
+   IF d=NIL
+      restore screen from scr
+      RETURN NIL
+   endif
 
    curl('Invoice/Send','-X PUT -H Content-Type:application/json -H sessionToken:'+d,hb_jsonencode(b,,'UTF8'),@ans)
    if empty(i:=at('{',ans)) .or.;

@@ -785,60 +785,60 @@ _frow:=2
 #ifdef A_FA
   if dok_p_r="F"
     @ 5,0,9,79 BOX 'ÌÄ¹ºº ºº '
-#ifdef A_FAT
+ #ifdef A_FAT
     //if right(dok,1)="K"
     //_frow:=7
     //else
     setpos(7,1)
-#ifdef A_NAZWISKO
+  #ifdef A_NAZWISKO
     sayl "Nazwisko:"
     setpos(row(),col()+min(20,len(nazwisko))+1)
-#endif
-#ifdef A_CENSPEC
+  #endif
+  #ifdef A_CENSPEC
     sayl "Cennik:"
     setpos(row(),col()+min(18,len(nr_spec))+1)
-#else
+  #else
     sayl "Nr spec.:"
     setpos(row(),col()+len(nr_spec)+1)
-#endif
+  #endif
     sayl "Transport:"
     //setpos(row(),col()+20)
     _frow:=8
     //endif
-#else
+ #else
     _frow:=7
-#endif
-#ifdef A_FK
+ #endif
+ #ifdef A_FK
    if dok_fk
    @ _frow,2 say "Zapˆacono:"
    @ _frow,26 say "dnia:"
    @ _frow,43 say "pozostaˆo:"
    ++_frow
    endif
-#endif
-#ifdef A_ODDO
-#ifdef A_GOCZ
-#define D_ODDO "Nr zam¢wienia Data wysyˆki"
-#else
-#define D_ODDO if(dok$DOK_ZB,"Za okres od        do     ","Nr zam¢wienia Data wysyˆki")
-#endif
-#else
-#define D_ODDO "Nr zam¢wienia Data wysyˆki"
-#endif
-#ifdef A_KPR
-#define D_KPR
-#else
-#define D_KPR +"           Data    Nr Kol"
-#endif
+ #endif
+ #ifdef A_ODDO
+  #ifdef A_GOCZ
+   #define D_ODDO "Nr zam¢wienia Data wysyˆki"
+  #else
+   #define D_ODDO if(dok$DOK_ZB,"Za okres od        do     ","Nr zam¢wienia Data wysyˆki")
+  #endif
+ #else
+  #define D_ODDO "Nr zam¢wienia Data wysyˆki"
+ #endif
+ #ifdef A_KPR
+  #define D_KPR
+ #else
+  #define D_KPR +"           Data    Nr Kol"
+ #endif
     if dok_zew$"UV"
-#ifdef A_CENVAT
+ #ifdef A_CENVAT
        @ 3,2 say D_ODDO+" "+WANAZ+" w tym          " D_KPR
-#define WBR(w,v) w
-#else
+  #define WBR(w,v) w
+ #else
        @ 3,2 say D_ODDO+" "+WANAZ+"                " D_KPR
-#define WBR(w,v) (w+v)
-#endif
-#define ZAG(w,v) ROUND(WBR(w,v)-zap-zac,A_ZAOKR)
+  #define WBR(w,v) (w+v)
+ #endif
+ #define ZAG(w,v) ROUND(WBR(w,v)-zap-zac,A_ZAOKR)
        if subs(dok,2)="K"
           @ 3,2 say "Dokument poprawiany z dnia:"
        endif
@@ -846,22 +846,22 @@ _frow:=2
     else
        @ 3,2 say D_ODDO+"    "+WANAZ+"             "  D_KPR
     endif
-#ifdef A_KPR
+ #ifdef A_KPR
     if ""=dok_kpr
        devout("           Data    Nr Kol")
     else
        devout("   Data   Nr KPR   Nr Kol")
     endif
-#endif
-#undef D_ODDO
-#undef D_KPR
+ #endif
+ #undef D_ODDO
+ #undef D_KPR
     @ 5,7 say "got¢wk¥ÄÄÄÄÄÄÄprzelewemÄÄÄÄÄÄÄÄÄkart¥ÄÄÄÄÄÄÄNr kartyÄÄÄTermin pˆatno˜ci"
     @ _frow+1,0,_frow+4,79 BOX if(pozycja>D_LP1.and.!nowydm,'ÌÍ¹º¼ÄÈº ','ÌÍ¹º¼ÍÈº ')
     @ _frow+1,2 say 'LpÍÍÍÍÍÍMateriaˆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍIlo˜†ÍÍÍÍÍÍÍÍCena zbytuÍÍ'+WANAZ
 //    return
 //    *******
   else
-#ifdef A_FK
+ #ifdef A_FK
    if dok_fk
    ++_frow
    @ _frow,2 say "Termin:"
@@ -869,9 +869,14 @@ _frow:=2
    @ _frow,43 say "dnia:"
    @ _frow,59 say "pozost:"
    endif
-#endif
-#endif
+ #endif
+#endif A_FA
   if dok_zew#"W" .or. dok="K"
+#ifdef A_KSEF
+    _frow+=1
+    setpos(_frow,2)
+     ?? 'Data faktury:            Nr KSeF:'
+#endif
     _frow+=2
     setpos(_frow-1,2)
     do case
@@ -882,11 +887,12 @@ _frow:=2
           ?? "Za okres od        do  "
 #endif
     otherwise
-          ?? "Nr  faktury   z dnia   "
-    endcase
 #ifdef A_KSEF
-//       ?? "  Nr KSeF"
+          ?? "Nr  faktury            "
+#else
+          ?? "Nr  faktury   z dnia   "
 #endif
+    endcase
 #ifdef A_VAT
     if dok_zew$"UV"
 #ifdef A_PZBRUT
@@ -996,8 +1002,14 @@ procedure dok11(_f)
 #endif
   _flp:=D_LPVAL(pozycja)
   if dok_zew#"W" .or. dok="K"
-    @ 4,2 SAY nr_faktury picture "@S13"
+#ifdef A_KSEF
+    @ _frow-2,16 SAY data_dost
+    @ _frow-2,36 SAY nr_ksef
+    @ _frow,2 SAY nr_faktury picture "@S24"
+#else
+    @ _frow,2 SAY nr_faktury picture "@S13"
     sayl data_dost
+#endif
   ENDIF
 #ifdef A_FA
   if dok_p_r="F"
@@ -1252,23 +1264,30 @@ procedure dok2(_f,getlist)
          get:=getnew(_frow,4,{|x|if(x=NIL,ctod(n_f),n_f:=dtoc(x))},"n_f")
          get:display()
          aadd(getlist,get)
+         GETl dd
+         x:=atail(getlist)
       else
 #endif
 #endif
 #ifdef A_KSEF
-      @ _frow-1,2 get n_ksef picture "@KS36" SEND cargo:=.t. VALID ksef_valid()
-#endif
+      @ _frow-2,16 GET dd
+      x:=NIL//atail(getlist)
+      @ _frow-2,36 get n_ksef picture "@KS36" SEND CARGO:=.t. VALID ksef_valid()
+      @ _frow,2 GET n_f PICTURE "@KS24"
+#else
       @ _frow,2 GET n_f PICTURE "@KS13"
+      GETl dd
+      x:=atail(getlist)
+#endif
 #ifndef A_GOCZ
 #ifdef A_ODDO
       endif
 #endif
 #endif
 #ifdef A_DLINK
-//      GETl dd VALID {|g|if(dataval(dd).and.g:original=da.and.da#dd ,(da:=dd,x:=g,aeval(getlist,{|g|if(g:name=='da',(g:display(),eval(g:postblock,x)),)})),),.t.}
-      GETl dd VALID {|g|if(dataval(dd),(if(g:original=da.and.da#dd ,(da:=dd,x:=g,aeval(getlist,{|g|if(g:name=='da',(g:display(),eval(g:postblock,x)),)})),),if(g:original=dv.and.dv#dd ,(dv:=dd,x:=g,aeval(getlist,{|g|if(g:name=='dv',(g:display(),if(g:postblock<>NIL,eval(g:postblock,x),)),)})),)),),.t.}
-#else
-      GETl dd
+      if x<>NIL
+         x:Postblock:={|g,v|if(dataval(v),(if(g:original=v.and.da#v,varput(getlist,'da',v),),if(g:original=v.and.dv#v,varput(getlist,'dv',v),)),)}
+      endif
 #endif
 #ifdef A_VAT
       if dok_zew$"UV"

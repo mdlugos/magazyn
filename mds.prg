@@ -102,9 +102,10 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
 
   if _sprompt=NIL
     _sprompt:={||tran(fieldget(1),)+"|"+tran(fieldget(2),)}
+    //+"|"+tran(fieldget(3),)}
     if _snagl=NIL
       _snagkol:=0//_scol1
-      _snagl:=padl(field(1),dbstruct()[1,3])+"Â"+field(2)
+      _snagl:=padl(field(1),dbstruct()[1,3],'Ä')+"Â"+field(2)
     endif
   endif
 
