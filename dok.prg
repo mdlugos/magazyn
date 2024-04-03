@@ -574,7 +574,15 @@ procedure dok1(_f)
       _flp:=0
       n_f:=nr_faktury
 #ifdef A_KSEF
-      n_ksef:=pad(left(nr_ksef,11)+left(dtos(da),6),36)
+      x:=strtran(firmy->ident,'-')
+      if !isdigit(x)
+         if x='PL'
+           x:=subs(x,3)
+         else
+           x:=''
+         endif
+      endif
+      n_ksef:=pad(if(empty(x),'',left(x,10)+'-'+left(dtos(da),6)),len(nr_ksef))
 #endif
 #ifdef A_KHSEP
       kh:=kontrahent
@@ -618,12 +626,15 @@ procedure dok1(_f)
           endif
 *******************************/
 
-         if KEY_DOK=KEY_PAR .and. pozycja=D_LP0 D_WAR D_LAN
+          if pozycja=D_LP0 D_WAR D_LAN
       nr_dowodu:=nk //  str(nk,5)
       _fpopkey:=.t.
       nowydm:=.f.
       data:=da
       data_dost:=dd
+#ifdef A_KSEF
+      nr_ksef:=n_ksef
+#endif
       wtoT:=0
 #ifdef A_SUBDOK
       sub_dok:=subs(dok,3)
@@ -648,9 +659,6 @@ procedure dok1(_f)
 #endif
           endif
       ENDIF
-#ifdef A_KSEF
-      nr_ksef:=left(n_ksef,11)
-#endif
   ELSE
       DEVOUT("  POPRAWA  !","GR+*")
       if mknk=NIL
@@ -1275,7 +1283,7 @@ procedure dok2(_f,getlist)
 #endif
 #endif
 #ifdef A_KSEF
-      @ _frow-2,11 get n_ksef picture "@K" VALID ksef_valid() WHEN NOWYDM
+      @ _frow-2,11 get n_ksef picture "@K" VALID ksef_valid() // WHEN NOWYDM .or. pozycja=D_LP0
 #endif
       @ _frow,2 GET n_f PICTURE "@KS13"
 #ifndef A_GOCZ

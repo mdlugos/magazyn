@@ -249,7 +249,7 @@ static func uwagi2odb(uwagi)
      uwagi:=alltrim(uwagi)
      if lower(uwagi)='odbiorca' 
           uwagi:=ltrim(substr(uwagi,10))
-          uwagi:=strtran(uwagi,';',hb_eol())
+          uwagi:=strtran(uwagi,';',HB_EOL())
           l:=mlcount(uwagi,254,,.f.)     
           for i:=1 to l
                s:=trim(memoline(uwagi,254,i,,.f.))
@@ -339,8 +339,8 @@ local element, node, s
      jpk := mxmlNewElement( tree, 'Faktura' )
 
      mxmlElementSetAttr( jpk, "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
-     mxmlElementSetAttr( jpk, hb_eol()+chr(9)+"xmlns:xsd", "http://www.w3.org/2001/XMLSchema")
-     mxmlElementSetAttr( jpk, hb_eol()+chr(9)+"xmlns", "http://crd.gov.pl/wzor/2023/06/29/12648/")
+     mxmlElementSetAttr( jpk, HB_EOL()+chr(9)+"xmlns:xsd", "http://www.w3.org/2001/XMLSchema")
+     mxmlElementSetAttr( jpk, HB_EOL()+chr(9)+"xmlns", "http://crd.gov.pl/wzor/2023/06/29/12648/")
 
      element   := mxmlNewElement( jpk, 'Naglowek' )
 
@@ -429,7 +429,7 @@ local element,node
     //set date format to "YYYY-MM-DD"
     jpk := mxmlNewElement( tree, 'JPK' )
         mxmlElementSetAttr( jpk,'xmlns:etd',"http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2016/01/25/eD/DefinicjeTypy/")
-        mxmlElementSetAttr( jpk,hb_eol()+chr(9)+'xmlns',"http://jpk.mf.gov.pl/wzor/2016/03/09/03091/")
+        mxmlElementSetAttr( jpk,HB_EOL()+chr(9)+'xmlns',"http://jpk.mf.gov.pl/wzor/2016/03/09/03091/")
 
 
     element   := mxmlNewElement( jpk, 'Naglowek')
@@ -756,7 +756,7 @@ if dekl
 
 
     mxmlElementSetAttr( jpk, "xmlns:etd", if(ver=2,"http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2021/06/08/eD/DefinicjeTypy/","http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2020/03/11/eD/DefinicjeTypy/"))
-    mxmlElementSetAttr( jpk, hb_eol()+chr(9)+"xmlns", DD_NAMESPACE)
+    mxmlElementSetAttr( jpk, HB_EOL()+chr(9)+"xmlns", DD_NAMESPACE)
     element   := mxmlNewElement( jpk, 'Naglowek' )
 
      node := mxmlNewElement( element, "KodFormularza")
@@ -800,7 +800,7 @@ if dekl
 
 else
     mxmlElementSetAttr( jpk, "xmlns:etd", "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2016/01/25/eD/DefinicjeTypy/")
-    mxmlElementSetAttr( jpk, hb_eol()+chr(9)+"xmlns", D_NAMESPACE)
+    mxmlElementSetAttr( jpk, HB_EOL()+chr(9)+"xmlns", D_NAMESPACE)
     element   := mxmlNewElement( jpk, 'Naglowek' )
 
      node := mxmlNewElement( element, "KodFormularza")
@@ -1432,7 +1432,7 @@ DEFAULT waluta TO 'PLN'
     jpk := mxmlNewElement( tree, 'JPK' )
 
     mxmlElementSetAttr( jpk, "xmlns:etd", D_FASCHEMA)
-    mxmlElementSetAttr( jpk, hb_eol()+chr(9)+"xmlns", D_FANAMESPACE)
+    mxmlElementSetAttr( jpk, HB_EOL()+chr(9)+"xmlns", D_FANAMESPACE)
     element   := mxmlNewElement( jpk, 'Naglowek' )
 
      node := mxmlNewElement( element, "KodFormularza")
@@ -1647,7 +1647,7 @@ local a,b,c,d,element,node
     jpk := mxmlNewElement( tree, 'JPK' )
 
     mxmlElementSetAttr( jpk, "xmlns:etd", "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2016/01/25/eD/DefinicjeTypy/")
-    mxmlElementSetAttr( jpk, hb_eol()+chr(9)+"xmlns", D_MAGNAMESPACE)
+    mxmlElementSetAttr( jpk, HB_EOL()+chr(9)+"xmlns", D_MAGNAMESPACE)
     element   := mxmlNewElement( jpk, 'Naglowek' )
 
      node := mxmlNewElement( element, "KodFormularza")
@@ -2110,11 +2110,11 @@ stat FUNC wscb( node, where )
    IF Left( name, 4 ) == "?xml"
 
    ELSEIF where == MXML_WS_BEFORE_OPEN
-      RETURN if(waslf,'',hb_eol())+Replicate( chr(9), nLevel )
+      RETURN if(waslf,'',HB_EOL())+Replicate( chr(9), nLevel )
 
    ELSEIF where == MXML_WS_AFTER_CLOSE
       waslf:=.t.
-      RETURN hb_eol()
+      RETURN HB_EOL()
 
    elseif where == MXML_WS_BEFORE_CLOSE .and. waslf
       RETURN Replicate( chr(9), nLevel )
