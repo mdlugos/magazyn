@@ -3378,12 +3378,12 @@ if ans=NIL
 endif
 s:=max(d-10,s)
 d:=min(date(),s+10)
-s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject1', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(s,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(d,'YYYY-MM-DD')+'T23:59:59'}},,'UTF8')
+s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject2', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(s,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(d,'YYYY-MM-DD')+'T23:59:59'}},,'UTF8')
 curl('Query/Invoice/Sync?PageSize=100&PageOffset=0','-X POST -H Content-Type:application/json -H sessionToken:'+ans,s,@ans)
 REST SCREEN FROM scr
 s:=hb_JsonDecode(subs(ans,at('{',ans)),,'UTF8')
 d:=hb_hgetdef(s,'invoiceHeaderList',{})
-if empty(d)
+if len(d)=0
   alarm('Brak faktur w podanym zakresie:'+HB_EOL()+hb_jsonencode(s,.t.))
 else
   aeval(d,{|x|if(dbseek(x['ksefReferenceNumber']),,(dbappend(),field->nr_ksef:=x['ksefReferenceNumber'],field->nr_faktury:=x['invoiceReferenceNumber'],field->typ:=x['invoiceType'],field->netto:=val(x['net']),field->vat:=val(x['vat']),field->nazwa:=x['subjectBy','issuedByName','fullName']))})
@@ -3391,8 +3391,11 @@ endif
 endif
 _s:=array(_sLEN)
 _spocz:=trim(n_ksef)
-if !dbseek(_spocz)
-   _spocz:=''
+if !dbseek(_spocz,,.t.)
+   _spocz:=left(_spocz,10)
+   if !dbseek(_spocz,,.t.)
+     _spocz:=''
+   endif
 endif
 _sprompt:={|d,_s,t|tran(fieldget(1),if(empty(t),,"##########|########|################"))+"|"+tran(fieldget(2),)+"|"+tran(fieldget(3),)+"|"+tran(fieldget(4),)}
 _snagkol:=0//_scol1

@@ -182,6 +182,7 @@ if empty(token['sessiontoken'])
    ans:=subs(ans,j)
    hb_memowrit(defa+'session.json',ans,.f.)
    token['sessiontoken']:=hb_jsondecode(ans,,'UTF8')
+   HB_IDLESLEEP(1) // jak za szybko to bˆ¥d
 endif
 //restore screen from scr
 return token['sessiontoken','sessionToken','token']
