@@ -3356,7 +3356,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
 RETURN
 #ifdef A_KSEF
 FUNCTION ksef_valid()
-local d:=len(trim(n_ksef)) ,s,ans,scr,sel,_s
+local d:=len(trim(n_ksef)) ,s,ans,scr,sel,_s,token
 if !(NOWYDM .or. pozycja = D_LP0) .or. d<19 .or. d>=35
    return .t.
 endif
@@ -3370,16 +3370,16 @@ if d>s
 SAVE SCREEN TO scr
 SET COLOR TO _snorm
 CLEAR SCREEN
-ans:=ksef_initsession()
-if ans=NIL
+token:=ksef_initsession()
+if token=NIL
    REST SCREEN FROM scr
    dbselectar(sel)
    return .t.
 endif
 s:=max(d-10,s)
 d:=min(date(),s+10)
-s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject2', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(s,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(d,'YYYY-MM-DD')+'T23:59:59'}},,'UTF8')
-curl('Query/Invoice/Sync?PageSize=100&PageOffset=0','-X POST -H Content-Type:application/json -H sessionToken:'+ans,s,@ans)
+s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject1', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(s,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(d,'YYYY-MM-DD')+'T23:59:59'}},,'UTF8')
+curl('Query/Invoice/Sync?PageSize=100&PageOffset=0','-X POST -H Content-Type:application/json -H sessionToken:'+token,s,@ans)
 REST SCREEN FROM scr
 s:=hb_JsonDecode(subs(ans,at('{',ans)),,'UTF8')
 d:=hb_hgetdef(s,'invoiceHeaderList',{})
@@ -3411,6 +3411,9 @@ if d:=szukam(_s)
    if dataval(dv)
       varput(getlistactive(),'da',dv)
    endif
+   asize(_f,max(len(_f),_fLEN+1))
+   s:=ksef_getfa(trim(n_ksef),@token,@xml_ksef)
+   alarm(s)
 endif
 
 dbselectar(sel)

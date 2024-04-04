@@ -92,17 +92,17 @@ MEMVAR r,mag_biez,mag_poz,magazyny,adres_mag,is_spec,operator,dok_par,dokumenty,
        przegl,dok,zamowienie,stanowis,stary_rok,nowydm,da,dd,hlink,;
        d_o,n_f,nk,changed,nim,nz,il,gil,lam,itot,gtot,posproc,canopen,miar_opcja,;
        ce,ck,wa,chg_cen,dok_w1,nowystan,dflag,darr,dpos,dpush,kk,sk,kont_kos,;
-       DZIALY,dzial,mater,kont,kos,zap,zac,nrc,uw,cz,tp,wz,rodz_sprzed,n_ksef,;
+       DZIALY,dzial,mater,kont,kos,zap,zac,nrc,uw,cz,tp,wz,rodz_sprzed,;
        sp,st,pv,vat,npr,pm,zaplac,dazapl,ppos,ppush,parr,pflag,avat,stawki,;
        stawkizby,chgpos,DOK_ZB,STANO,dok_di,kh,nazwis,posilki,diety,path_zb,defa,;
-       dv,nkp,mknk
+       dv,nkp,mknk,n_ksef,xml_ksef
 field  data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,numer_kol,;
        DATA_PRZY,data_dost,dost_odb,kontrahent,nr_faktury,nr_mag,kto_pisal,jm,nazwa,stan,;
        data_zmian,opis_koszt,uwagi,data_roz,gram,rodz_opak,nr_rys,konto,;
        jm_opcja,wartosc,cena_przy,wart_vat,ilosc_f,proc_vat,dieta,info,;
        skladnik,konto_kosz,stano_kosz,cena,przelewem,czekiem,nr_czeku,cena_zak,;
        termin_p,nr_spec,transport,nr_kpr,longname,sub_dok,zaplacono,data_zap,;
-       nr_ksef,nazwisko,data_vat
+       ksef,nr_ksef,nazwisko,data_vat
 #ifdef A_LPNUM
 #define D_LP0 str(0,A_LPNUM) //'  0'
 #define D_LP1 str(1,A_LPNUM) //'  1'
@@ -228,7 +228,7 @@ private gtot:=0
 private npr
 #endif
 #ifdef A_KSEF
-private n_ksef
+private n_ksef,xml_ksef
 #endif
 #ifdef A_MM
   if empty(mag_biez)
@@ -574,6 +574,7 @@ procedure dok1(_f)
       _flp:=0
       n_f:=nr_faktury
 #ifdef A_KSEF
+      xml_ksef:=NIL
       x:=strtran(firmy->ident,'-')
       if !isdigit(x)
          if x='PL'
@@ -634,6 +635,7 @@ procedure dok1(_f)
       data_dost:=dd
 #ifdef A_KSEF
       nr_ksef:=n_ksef
+      ksef:=xml_ksef
 #endif
       wtoT:=0
 #ifdef A_SUBDOK
@@ -687,6 +689,7 @@ procedure dok1(_f)
       n_f:=nr_faktury
 #ifdef A_KSEF
       n_ksef:=nr_ksef
+      xml_ksef:=ksef
 #endif
 #ifdef A_DATAVAT
       dv:=data_vat
@@ -1481,6 +1484,7 @@ memvar exp_od,exp_do
     nr_faktury := n_f
 #ifdef A_KSEF
     nr_ksef := n_ksef
+    ksef := xml_ksef
 #endif
 #ifdef A_OLZA
     konto_kosz:=kk

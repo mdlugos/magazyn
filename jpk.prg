@@ -187,6 +187,30 @@ endif
 //restore screen from scr
 return token['sessiontoken','sessionToken','token']
 
+//{'method': 'get', 'url': '/online/Invoice/Get/5480008032-20240304-41DFD1115B22-3F', 'headers': {'Accept': 'application/octet-stream'}}
+func ksef_getfa(b,d,ans)
+local scr,i
+   save screen to scr
+   set color to (_snorm)
+   clear screen
+   DEFAULT d TO ksef_initsession()
+   IF d=NIL
+      restore screen from scr
+      RETURN NIL
+   endif
+
+   curl('Invoice/Get/'+b,'-X GET -H sessionToken:'+d,,@ans)
+   restore screen from scr
+
+   if empty(i:=at('<?xml',ans))
+      hb_memowrit('get.txt',ans,.f.)
+      alarm(ans)
+      return NIL
+   endif
+
+   ans:=subs(ans,i)
+return hb_translate(subs(ans,i),'UTF8',)
+
 func ksef_sendfa(faxml,b,d)
 local a,c:=memoread(faxml),ans,i,scr
 
@@ -414,9 +438,6 @@ DEFAULT i TO 1
   end switch
 
 return node
-
-
-
 
 func jpk_krnagl(od,do,waluta)
 local element,node
