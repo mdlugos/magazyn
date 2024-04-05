@@ -441,32 +441,45 @@ return node
 
 
 static func getnode(node)
-local n,a:=NIL,h:={=>}
+local n,a:=NIL,h:={=>},c,d
 hb_hautoadd(h,.t.)
 
-if !EMPTY(node)
    a:=mxmlgetText(node)
    if empty(a)
-      if !empty(node := mxmlGetFirstChild( node ))
-         do while !empty(node := mxmlGetNextSibling( node ))
-            DO WHILE !empty(n:=mxmlGetElement(node))
+      node := mxmlGetFirstChild( node )
+      if empty(node)
+         return NIL
+      endif
+      node := mxmlGetNextSibling( node )
+      do while !empty(node)
+               n:=mxmlGetElement(node)
                a:={getnode(node)}
-               do while !empty( node :=mxmlGetNextSibling( node ) ) .and. n==mxmlGetElement(node)
-                  aadd(a,getnode(node))
+               do while .t.
+                  node :=mxmlGetNextSibling( node )
+                  if empty(node)
+                     exit
+                  endif
+                  c:=mxmlGetElement(node)
+                  if c==n
+                      aadd(a,getnode(node))
+                  elseif !empty(c)
+                      exit
+                  endif
                enddo
                if len(a)<2
-                 a:=a[1]
+                  a:=a[1]
                endif
                h[n]:=a
-            enddo
+      enddo
+   else
+      if !empty(node:=mxmlGetFirstChild( node ))
+         do while !empty( node :=mxmlGetNextSibling( node ) )
+            a+=' '+mxmlGetText(node)
          enddo
       endif
-   else
       return a
    endif
    return h
-endif
-return NIL
 
 func xml2json(xmlfile,h)
 local a
@@ -476,6 +489,7 @@ local a
       return NIL
    endif
    a:=mxmlfindelement(a, a, h,,,1 )
+   altd()
    h:=getnode(a)
    mxmlDelete(a)
 return h

@@ -3412,9 +3412,11 @@ if d:=szukam(_s)
       varput(getlistactive(),'da',dv)
    endif
    s:=ksef_getfa(trim(n_ksef),@token,@xml_ksef)
-   hb_memowrit('xml.xml',xml_ksef,.f.)
-   altd()
-   alarm(hb_jsonencode(xml2json('xml.xml','Faktura'),.t.))
+   hb_memowrit('fra.xml',xml_ksef,.f.)
+   xml_ksef:=hb_jsonencode(xml2json('fra.xml','Faktura'),.t.)
+   hb_memowrit('fra.json',xml_ksef,.f.)
+   fview('fra.json')
+   REST SCREEN FROM scr
 endif
 
 dbselectar(sel)
