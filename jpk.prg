@@ -439,6 +439,48 @@ DEFAULT i TO 1
 
 return node
 
+
+static func getnode(node)
+local n,a:=NIL,h:={=>}
+hb_hautoadd(h,.t.)
+
+if !EMPTY(node)
+   a:=mxmlgetText(node)
+   if empty(a)
+      if !empty(node := mxmlGetFirstChild( node ))
+         do while !empty(node := mxmlGetNextSibling( node ))
+            DO WHILE !empty(n:=mxmlGetElement(node))
+               a:={getnode(node)}
+               do while !empty( node :=mxmlGetNextSibling( node ) ) .and. n==mxmlGetElement(node)
+                  aadd(a,getnode(node))
+               enddo
+               if len(a)<2
+                 a:=a[1]
+               endif
+               h[n]:=a
+            enddo
+         enddo
+      endif
+   else
+      return a
+   endif
+   return h
+endif
+return NIL
+
+func xml2json(xmlfile,h)
+local a
+
+   a:=mxmlLoadFile(mxmlNewXML(),xmlfile)
+   if empty(a)
+      return NIL
+   endif
+   a:=mxmlfindelement(a, a, h,,,1 )
+   h:=getnode(a)
+   mxmlDelete(a)
+return h
+
+
 func jpk_krnagl(od,do,waluta)
 local element,node
 

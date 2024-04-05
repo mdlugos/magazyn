@@ -87,7 +87,7 @@
 MEMVAR n_f,nk,dd,da,dv,d_o,kh,DOK,SCR,nim,il,gtot,chgpos,gil,;
        nz,stary_rok,MAG_BIEZ,mag_poz,r,operator,dok_rozch,;
        nowydm,magazyny,dok_par,adres_mag,lam,itot,miar_opcja,;
-       is_spec,pm,changed,avat,defa,nkp,mknk,n_ksef
+       is_spec,pm,changed,avat,defa,nkp,mknk,n_ksef,xml_ksef
 #ifdef A_WA
 MEMVAR wa,ce,ck,chg_cen
 field wartosc,cena_przy
@@ -3411,9 +3411,10 @@ if d:=szukam(_s)
    if dataval(dv)
       varput(getlistactive(),'da',dv)
    endif
-   asize(_f,max(len(_f),_fLEN+1))
    s:=ksef_getfa(trim(n_ksef),@token,@xml_ksef)
-   alarm(s)
+   hb_memowrit('xml.xml',xml_ksef,.f.)
+   altd()
+   alarm(hb_jsonencode(xml2json('xml.xml','Faktura'),.t.))
 endif
 
 dbselectar(sel)
