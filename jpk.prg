@@ -492,9 +492,9 @@ local n,a:=NIL,c,d
    endif
    return h
 
-func xml2json(xmlfile,e,h)
+func xml2json(xml,e,h)
 local a
-   a:=mxmlLoadFile(mxmlNewXML(),xmlfile)
+   a:=mxmlLoadString(mxmlNewXML(),xml)
    if empty(a)
       return h
    endif

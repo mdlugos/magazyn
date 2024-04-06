@@ -893,7 +893,7 @@ _frow:=2
     _frow+=1
     setpos(_frow,2)
      //?? 'Data faktury:            Nr KSeF:'
-     ?? 'Nr KSeF:'
+     ?? 'Nr KSeF:                                     eF:'
 #endif
     _frow+=2
     setpos(_frow-1,2)
@@ -1024,6 +1024,7 @@ procedure dok11(_f)
     //@ _frow-2,16 SAY data_dost
     @ _frow-2,11 SAY nr_ksef
     //@ _frow,2 SAY nr_faktury picture "@S24"
+    @ _frow-2,50 SAY hb_translate(ksef,'UTF8',) picture "@S28"
 #else
 #endif
     @ _frow,2 SAY nr_faktury picture "@S13"
@@ -1287,6 +1288,7 @@ procedure dok2(_f,getlist)
 #endif
 #ifdef A_KSEF
       @ _frow-2,11 get n_ksef picture "@K" VALID ksef_valid() // WHEN NOWYDM .or. pozycja=D_LP0
+      @ _frow-2,50 GET xml_ksef SEND block:={||hb_translate(xml_ksef,'UTF8',)} PICTURE "@S28"
 #endif
       @ _frow,2 GET n_f PICTURE "@KS13"
 #ifndef A_GOCZ

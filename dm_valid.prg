@@ -3416,7 +3416,7 @@ if d:=szukam(_s)
    DEFAULT scr TO SaveScreen( 0, 0, Maxrow(), Maxcol() )
    fview('fra.xml')
    REST SCREEN FROM scr
-   hb_memowrit('fra.json',hb_jsonencode(xml2json('fra.xml','Faktura'),.t.),.f.)
+   hb_memowrit('fra.json',hb_jsonencode(xml2json(xml_ksef,'Faktura'),.t.),.f.)
 endif
 
 dbselectar(sel)

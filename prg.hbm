@@ -7,7 +7,7 @@
 #-lhbcurl hbcurl.hbc
 #sddmy.hbc
 main
-cppl852m.c io error help io_2 clp_brow mds mds_spec frmrun
+mlcfunc.c cppl852m.c io error help io_2 clp_brow mds mds_spec frmrun
 getsys
 #tgetlist
 #getlist

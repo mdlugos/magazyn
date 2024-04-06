@@ -1002,6 +1002,10 @@ a:=array(3*maxrow())
 j:=0
 txt:=pad(sk(.t.,a,h),maxcol()+1)
 #ifdef __HARBOUR__
+if cdp<>'UTF8' .and. 'utf-8'$lower(txt)
+  cdp:='UTF8'
+  txt:=HB_TRANSLATE(txt,cdp,)
+endif
 if nextkey()=0 //.and. fseek(h,0,2) < 65536
   b:forcestable()
   @ maxrow(),maxcol()-31 SAY 'ALT+B - kopiuj CAO— do schowka' COLOR _sramka

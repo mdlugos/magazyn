@@ -1264,9 +1264,9 @@ static proc getchr(get,expandable)
      txt:=get:untransform()
      prevlen:=len(txt)
   endif
-  k:=mlcount(txt,maxcol()-2,8,.t.)
+  k:=mlcount(txt,maxcol()-2,2,.t.)
   for n:=1 to k
-    m:=max(m,len(TRIM(memoline(txt,maxcol()-2,n,8,.t.))))
+    m:=max(m,len(TRIM(memoline(txt,maxcol()-2,n,2,.t.))))
   next
 
   k:=MAX(k,6)
@@ -1338,7 +1338,7 @@ osk:=HB_SETKEYSAVE()
 
   do while .t.
     //txt=MEMOEDIT(txt,r1+1,c1+1,r2-1,c2-1,.T.,"gufunc",c2-c1-3,8,l,c,cl,cc)
-    txt=MEMOEDIT(txt,r1+1,c1+1,r2-1,c2-1,.T.,"gufunc",ll,8,l,c,cl,cc)
+    txt=MEMOEDIT(txt,r1+1,c1+1,r2-1,c2-1,.T.,"gufunc",ll,2,l,c,cl,cc)
     k:=lastkey()
     if k=K_CTRL_K
        m:=message("PODAJ  (B,M,K,E,R,W);ROZKAZ:;... ")
@@ -1359,7 +1359,7 @@ osk:=HB_SETKEYSAVE()
          endif
        elseif k$"BX"
         bp:=3-bp
-        b[bp]:=mlctopos(txt,ll,l,c,8,ww)
+        b[bp]:=mlctopos(txt,ll,l,c,2,ww)
         if ch
            ch:=.f.
            b[3-bp]:=b[bp]
@@ -1373,7 +1373,7 @@ osk:=HB_SETKEYSAVE()
 #ifdef __HARBOUR__
         bl:= hb_gtInfo( HB_GTI_CLIPBOARDDATA )
 #endif
-        txt:=stuff(txt,k:=mlctopos(txt,ll,l,c,8,ww),0,bl)
+        txt:=stuff(txt,k:=mlctopos(txt,ll,l,c,2,ww),0,bl)
         n:=len(bl)
         if b[1]>k
            b[1]+=n
@@ -1397,7 +1397,7 @@ osk:=HB_SETKEYSAVE()
 #ifdef __HARBOUR__
            hb_gtInfo( HB_GTI_CLIPBOARDDATA, bl )
 #endif
-           txt:=stuff(txt,k:=mlctopos(txt,ll,l,c,8,ww),0,bl)
+           txt:=stuff(txt,k:=mlctopos(txt,ll,l,c,2,ww),0,bl)
            n:=len(bl)
            if b[1]>k
               b[1]+=n
