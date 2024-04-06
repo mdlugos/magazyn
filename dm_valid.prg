@@ -3413,10 +3413,10 @@ if d:=szukam(_s)
    endif
    s:=ksef_getfa(trim(n_ksef),@token,@xml_ksef)
    hb_memowrit('fra.xml',xml_ksef,.f.)
-   xml_ksef:=hb_jsonencode(xml2json('fra.xml','Faktura'),.t.)
-   hb_memowrit('fra.json',xml_ksef,.f.)
-   fview('fra.json')
+   DEFAULT scr TO SaveScreen( 0, 0, Maxrow(), Maxcol() )
+   fview('fra.xml')
    REST SCREEN FROM scr
+   hb_memowrit('fra.json',hb_jsonencode(xml2json('fra.xml','Faktura'),.t.),.f.)
 endif
 
 dbselectar(sel)

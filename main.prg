@@ -97,11 +97,12 @@ public defa,oprn
 #ifdef PLWIN
    hb_gtInfo( HB_GTI_WINTITLE , "Magazyn" )
 #endif
+
 if parametr='MAGDEF='
    defa:=subs(parametr,8)
    parametr:=mag_biez
    mag_biez:=operator
-   operator:=NIL
+   operator:=''
 else
    defa:=getenv("MAGDEF")
 endif
@@ -156,7 +157,14 @@ else
 endif
 
 #ifdef A_DIETA
-a:=getenv('DIETADEF')
+if parametr='DIETADEF='
+   a:=subs(parametr,10)
+   parametr:=mag_biez
+   mag_biez:=operator
+   operator:=''
+else
+   a:=getenv("DIETADEF")
+endif
   if empty(a)
     i:=rat(HB_ps(),left(defa,len(defa)-1))
     a:=if(i=0,defa+'..'+HB_ps(),left(defa,i))+'dieta'+HB_ps()

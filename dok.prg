@@ -574,7 +574,7 @@ procedure dok1(_f)
       _flp:=0
       n_f:=nr_faktury
 #ifdef A_KSEF
-      xml_ksef:=NIL
+      xml_ksef:=''
       x:=strtran(firmy->ident,'-')
       if !isdigit(x)
          if x='PL'

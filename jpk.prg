@@ -440,15 +440,16 @@ DEFAULT i TO 1
 return node
 
 
-static func getnode(node)
-local n,a:=NIL,h:={=>},c,d
-hb_hautoadd(h,.t.)
+static func getnode(node,h)
+local n,a:=NIL,c,d
+   DEFAULT H TO {=>}
+   hb_hautoadd(h,.t.)
 
    a:=mxmlgetText(node)
    if empty(a)
       node := mxmlGetFirstChild( node )
       if empty(node)
-         return NIL
+         return h
       endif
       node := mxmlGetNextSibling( node )
       do while !empty(node)
@@ -472,25 +473,37 @@ hb_hautoadd(h,.t.)
                h[n]:=a
       enddo
    else
+      n:=1
       if !empty(node:=mxmlGetFirstChild( node ))
          do while !empty( node :=mxmlGetNextSibling( node ) )
+            ++n
             a+=' '+mxmlGetText(node)
          enddo
+      endif
+      if n>1
+      elseif !empty(c:=hb_ctot(a,"YYYY-MM-DDThh:mm:ss.fffZ")) .and. hb_TtoN(c)%1<>0
+         a:=c
+      elseif !empty(c:=hb_ctod(a,"YYYY-MM-DD"))
+         a:=c
+      elseif tran(c:=val(a),)==a .and. ('.'$a .or. len(a)<9)
+         a:=c
       endif
       return a
    endif
    return h
 
-func xml2json(xmlfile,h)
+func xml2json(xmlfile,e,h)
 local a
-
    a:=mxmlLoadFile(mxmlNewXML(),xmlfile)
    if empty(a)
-      return NIL
+      return h
    endif
-   a:=mxmlfindelement(a, a, h,,,1 )
-   altd()
-   h:=getnode(a)
+   a:=mxmlfindelement(a, a, e,,,1 )
+   if !empty(a)
+      DEFAULT H TO {=>}
+      hb_hautoadd(h,.t.)
+      h:=getnode(a,@h)
+   endif
    mxmlDelete(a)
 return h
 

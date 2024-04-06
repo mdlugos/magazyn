@@ -832,11 +832,11 @@ return b
 stat func sk(x,a,h)
 #define D_BLEN 512
 local p,r,k,l,n,o,eol
-#ifdef __PLATFORM__UNIX
- #define nl chr(10)
-#else
- #define nl chr(13)+chr(10)
-#endif
+//#ifdef __PLATFORM__UNIX
+// #define nl chr(10)
+//#else
+// #define nl chr(13)+chr(10)
+//#endif
 static i,b,lth
   if x=NIL
      i:=b:=x
@@ -860,9 +860,12 @@ static i,b,lth
      r:=0
      if k>0
         do while n>lth
-           l:=at(nl,subs(b,r+1,k-r))
+           l:=at(chr(10),subs(b,r+1,k-r))
            if l=0 .and. r#0
               exit
+           endif
+           if subs(b,r+l,1)=chr(13)
+              --l
            endif
            if len(a)>lth
               ++lth
@@ -877,7 +880,7 @@ static i,b,lth
               exit
            endif
 #ifndef __PLATFORM__UNIX
-           ++l
+//           ++l
 #endif
            a[lth,2]:=l
            r+=l
@@ -900,18 +903,29 @@ static i,b,lth
        p:=fseek(h,-min(k,D_BLEN),1)
        l:=r:=k-p
        xfr(h,@b,r)
-#ifdef __PLATFORM__UNIX
-       eol:=if(subs(b,r,1)=nl,1,0)
-#else
-       eol:=if(subs(b,r-1,2)=nl,2,0)
-#endif
+//#ifdef __PLATFORM__UNIX
+       if subs(b,r,1)=chr(10)
+         eol:=1
+         if subs(b,r-eol,1)=chr(13)
+            ++eol
+         endif
+       else
+         eol:=0
+       endif
+//       eol:=if(subs(b,r,1)=chr(10),1,0)
+//#else
+//       eol:=if(subs(b,r-1,2)=nl,2,0)
+//#endif
        do while n<1 .and. l#0
-          l:=rat(nl,left(b,r-eol))
+          l:=rat(chr(10),left(b,r-eol))
           if l#0
-#ifndef __PLATFORM__UNIX
-             ++l
-#endif
-             eol:=len(nl)
+//#ifndef __PLATFORM__UNIX
+//             ++l
+//#endif
+             eol:=1
+             if subs(b,l-eol)=chr(13)
+                ++eol
+             endif
           elseif r#k-p
              exit
           endif
@@ -936,11 +950,18 @@ static i,b,lth
     xfr(h,@b,a[i,2])
     r:=0
   endif
-#ifdef __PLATFORM__UNIX
-  eol:=if(i<lth.or.subs(b,r+a[i,2],1)=nl,1,0)
-#else
-  eol:=if(i<lth.or.subs(b,r+a[i,2]-1,2)=nl,2,0)
-#endif
+  eol:=0
+  if i<lth.or.subs(b,r+a[i,2],1)=chr(10)
+     eol:=1
+     if subs(b,r+a[i,2]-eol,1)=chr(13)
+        ++eol
+     endif
+  endif
+//#ifdef __PLATFORM__UNIX
+//  eol:=if(i<lth.or.subs(b,r+a[i,2],1)=nl,1,0)
+//#else
+//  eol:=if(i<lth.or.subs(b,r+a[i,2]-1,2)=nl,2,0)
+//#endif
   o:=subs(b,r,a[i,2]-eol)
 return strtran(o,chr(9)," ")
 #undef D_BLEN
