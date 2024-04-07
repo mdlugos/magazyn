@@ -1288,7 +1288,8 @@ procedure dok2(_f,getlist)
 #endif
 #ifdef A_KSEF
       @ _frow-2,11 get n_ksef picture "@K" VALID ksef_valid() // WHEN NOWYDM .or. pozycja=D_LP0
-      @ _frow-2,50 GET xml_ksef SEND block:={||hb_translate(xml_ksef,'UTF8',)} PICTURE "@S28"
+//      @ _frow-2,50 GET xml_ksef SEND block:={||hb_jsonencode(xml2json(HB_TRANSLATE(xml_ksef,'UTF8',),'Faktura'),.t.)} PICTURE "@S28"
+      @ _frow-2,50 GET xml_ksef SEND block:={||HB_TRANSLATE(xml_ksef,'UTF8',)} PICTURE "@S28"
 #endif
       @ _frow,2 GET n_f PICTURE "@KS13"
 #ifndef A_GOCZ

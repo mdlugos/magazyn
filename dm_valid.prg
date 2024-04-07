@@ -3367,12 +3367,12 @@ s:=stod(subs(nr_ksef,12,8))
 d:=stod(subs(n_ksef,12,8))
 set order to tag ksef_nr
 if d>s
-SAVE SCREEN TO scr
-SET COLOR TO _snorm
-CLEAR SCREEN
+//SAVE SCREEN TO scr
+//SET COLOR TO _snorm
+//CLEAR SCREEN
 token:=ksef_initsession()
 if token=NIL
-   REST SCREEN FROM scr
+   //REST SCREEN FROM scr
    dbselectar(sel)
    return .t.
 endif
@@ -3380,7 +3380,7 @@ s:=max(d-10,s)
 d:=min(date(),s+10)
 s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject1', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(s,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(d,'YYYY-MM-DD')+'T23:59:59'}},,'UTF8')
 curl('Query/Invoice/Sync?PageSize=100&PageOffset=0','-X POST -H Content-Type:application/json -H sessionToken:'+token,s,@ans)
-REST SCREEN FROM scr
+//REST SCREEN FROM scr
 s:=hb_JsonDecode(subs(ans,at('{',ans)),,'UTF8')
 d:=hb_hgetdef(s,'invoiceHeaderList',{})
 if len(d)=0
@@ -3412,11 +3412,11 @@ if d:=szukam(_s)
       varput(getlistactive(),'da',dv)
    endif
    s:=ksef_getfa(trim(n_ksef),@token,@xml_ksef)
-   hb_memowrit('fra.xml',xml_ksef,.f.)
-   DEFAULT scr TO SaveScreen( 0, 0, Maxrow(), Maxcol() )
-   fview('fra.xml')
-   REST SCREEN FROM scr
-   hb_memowrit('fra.json',hb_jsonencode(xml2json(xml_ksef,'Faktura'),.t.),.f.)
+   //hb_memowrit('fra.xml',xml_ksef,.f.)
+   //DEFAULT scr TO SaveScreen( 0, 0, Maxrow(), Maxcol() )
+   //fview('fra.xml')
+   //REST SCREEN FROM scr
+   //hb_memowrit('fra.json',hb_jsonencode(xml2json(xml_ksef,'Faktura'),.t.),.f.)
 endif
 
 dbselectar(sel)
@@ -3436,7 +3436,7 @@ FUNCTION getwl(i,h)
       curl_global_cleanup()
 #else
    local ans
-   if 0=hb_processrun('curl https://wl-api.mf.gov.pl/api/search/nip/'+trim(strtran(i,'-'))+'?date='+hb_dtoc(date(),'YYYY-MM-DD'),,@ans)
+   if 0=hb_processrun('curl -s https://wl-api.mf.gov.pl/api/search/nip/'+trim(strtran(i,'-'))+'?date='+hb_dtoc(date(),'YYYY-MM-DD'),,@ans)
       h:=hb_jsondecode(ans,,'UTF8')
 #endif
       h:=hb_hgetdef(h,"result",{=>})

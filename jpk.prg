@@ -84,7 +84,7 @@ func curl(res,line,post,ans)
     if !empty(post)
       line+=' --data-binary @-'
     endif
-    hb_processrun('curl '+line+' '+ D_KSEF_API + 'api/online/' + res,post,@ans)
+    hb_processrun('curl -s '+line+' '+ D_KSEF_API + 'api/online/' + res,post,@ans)
 #endif
 return ans
 
@@ -190,17 +190,17 @@ return token['sessiontoken','sessionToken','token']
 //{'method': 'get', 'url': '/online/Invoice/Get/5480008032-20240304-41DFD1115B22-3F', 'headers': {'Accept': 'application/octet-stream'}}
 func ksef_getfa(b,d,ans)
 local scr,i
-   save screen to scr
-   set color to (_snorm)
-   clear screen
+   //save screen to scr
+   //set color to (_snorm)
+   //clear screen
    DEFAULT d TO ksef_initsession()
    IF d=NIL
-      restore screen from scr
+      //restore screen from scr
       RETURN NIL
    endif
 
    curl('Invoice/Get/'+b,'-X GET -H sessionToken:'+d,,@ans)
-   restore screen from scr
+   //restore screen from scr
 
    if empty(i:=at('<?xml',ans))
       hb_memowrit('get.txt',ans,.f.)
@@ -209,7 +209,7 @@ local scr,i
    endif
 
    ans:=subs(ans,i)
-return hb_translate(subs(ans,i),'UTF8',)
+return ans //hb_translate(ans,'UTF8',)
 
 func ksef_sendfa(faxml,b,d)
 local a,c:=memoread(faxml),ans,i,scr
@@ -217,12 +217,12 @@ local a,c:=memoread(faxml),ans,i,scr
    b:={'invoiceHash'=>{'fileSize'=>len(c), 'hashSHA'=> {'algorithm'=> 'SHA-256', 'encoding'=> 'Base64', 'value'=> HB_BASE64ENCODE(HB_SHA256(c,.t.))}}, 'invoicePayload'=> {'type'=> 'plain', 'invoiceBody'=>HB_BASE64ENCODE(c)}}
    hb_hautoadd(b,.t.)
 
-   save screen to scr
-   set color to (_snorm)
-   clear screen
+   //save screen to scr
+   //set color to (_snorm)
+   //clear screen
    DEFAULT d TO ksef_initsession()
    IF d=NIL
-      restore screen from scr
+      //restore screen from scr
       RETURN NIL
    endif
 
@@ -232,7 +232,7 @@ local a,c:=memoread(faxml),ans,i,scr
       empty(i:=hb_HGetDef(i,'elementReferenceNumber',''))
       hb_memowrit('send.txt',ans,.f.)
       alarm(ans)
-      restore screen from scr
+      //restore screen from scr
       return NIL
    endif
    a:='Invoice/Status/'+i
@@ -245,19 +245,19 @@ local a,c:=memoread(faxml),ans,i,scr
       c:=hb_HGetDef(i,"invoiceStatus",{=>})
       if !empty(c)
          b["invoiceStatus"]:=c
-         restore screen from scr
+         //restore screen from scr
          return c["ksefReferenceNumber"]
       endif
       c:=hb_HGetDef(i,"processingCode",400)
       if c>=400
         hb_memowrit('status.txt',ans,.f.)
         alarm(hb_jsonencode(i,.t.))
-        restore screen from scr
+        //restore screen from scr
         return NIL
       endif
    enddo
 
-restore screen from scr
+//restore screen from scr
 return NIL
 
 
