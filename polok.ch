@@ -3,13 +3,14 @@
     #define A_WIN_PRN eval(memvar->do_getoprn)
     #define A_ZEBRA
     #define A_EXT hb_hextonum, hb_numtohex, curdir
-    #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usˆug Informatycznych Marek Dˆugosz, 43-400 Cieszyn, ul. R¢wna 16'
+    #define A_WIN_PRN .f.
   #endif
+#define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usˆug Informatycznych Marek Dˆugosz, 43-400 Cieszyn, ul. R¢wna 16'
 #define A_BACKUP MEMVAR->backup
 //#define A_VIEWCZAK
 #define A_VIEWVAT
 #define UpP(x) UPPER(x)
-#define PC852
+#define PC852 "PL852M"
 #include "lan.ch"
 //#define A_NOREFRESH
 #define A_JMALTTOT(il,nz,lam,x) ((il)*(lam)->przel)
@@ -37,6 +38,7 @@
 #define DTOV(dat) tran(subs(dtos(dat),5),"@R ##.##")
 #define DatE() MEMVAR->dzisiaj
 #define A_FK 12
+#define A_KSEF
 #define A_F9
 #define A_A
 #define A_WA

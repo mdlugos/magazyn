@@ -575,15 +575,7 @@ procedure dok1(_f)
       n_f:=nr_faktury
 #ifdef A_KSEF
       xml_ksef:=''
-      x:=strtran(firmy->ident,'-')
-      if !isdigit(x)
-         if x='PL'
-           x:=subs(x,3)
-         else
-           x:=''
-         endif
-      endif
-      n_ksef:=pad(if(empty(x),'',left(x,10)+'-'+left(dtos(da),6)),len(nr_ksef))
+      n_ksef:=''
 #endif
 #ifdef A_KHSEP
       kh:=kontrahent
@@ -602,6 +594,19 @@ procedure dok1(_f)
 #else
          d_o:=PAD(firMy->nazwa,LEN(DOST_ODB))
 #endif
+#endif
+#ifdef A_KSEF
+         if dok_p_r="P"
+      x:=strtran(firmy->ident,'-')
+      if !isdigit(x)
+         if x='PL'
+           x:=subs(x,3)
+         else
+           x:=''
+         endif
+      endif
+      n_ksef:=pad(if(empty(x),'',left(x,10)+'-'+left(dtos(da),6)),len(nr_ksef))
+         endif
 #endif
       else
          d_o:=dost_odb
@@ -788,8 +793,16 @@ procedure dok1(_f)
 return
 **********************************************
 PROCEDURE DOK10(_f)
+
+  _flp:=MIN(_flp,D_LPVAL(DM->pozycja))
+  IF !empty(nkp)
+    _fi:=max(1,D_LPVAL(nkp))
+    _fl:=min(_flp,_fi+5)
+    nkp:=NIL
+  endif
+
   set color to (_sbkgr)
-  @ 1,0,5,79 BOX 'ÉÍ»ºº ºº '
+  @ 1,0,6,79 BOX 'ÉÍ»ºº ºº '
   if dok_kh
     @ 1,2 SAY if(pm=-1,"Odbiorca:","Dostawca:")
     @ 1,12 SAY trim(dok_naz)
@@ -801,12 +814,21 @@ _frow:=2
 
 #ifdef A_FA
   if dok_p_r="F"
-    @ 5,0,9,79 BOX 'ÌÄ¹ºº ºº '
+    @ 5,0,11,79 BOX 'ÌÄ¹ºº ºº '
+    _frow:=7
+ #ifdef A_FK
+   if dok_fk
+   @ _frow,2 say "Zapˆacono:"
+   @ _frow,26 say "dnia:"
+   @ _frow,43 say "pozostaˆo:"
+   ++_frow
+   endif
+ #endif
  #ifdef A_FAT
     //if right(dok,1)="K"
     //_frow:=7
     //else
-    setpos(7,1)
+    setpos(_frow,1)
   #ifdef A_NAZWISKO
     sayl "Nazwisko:"
     setpos(row(),col()+min(20,len(nazwisko))+1)
@@ -819,20 +841,13 @@ _frow:=2
     setpos(row(),col()+len(nr_spec)+1)
   #endif
     sayl "Transport:"
-    //setpos(row(),col()+20)
-    _frow:=8
-    //endif
- #else
-    _frow:=7
+    ++_frow
  #endif
- #ifdef A_FK
-   if dok_fk
-   @ _frow,2 say "Zapˆacono:"
-   @ _frow,26 say "dnia:"
-   @ _frow,43 say "pozostaˆo:"
-   ++_frow
-   endif
- #endif
+#ifdef A_KSEF
+    setpos(_frow,2)
+     ?? 'Nr KSeF:                                     eF:'
+    ++_frow
+#endif
  #ifdef A_ODDO
   #ifdef A_GOCZ
    #define D_ODDO "Nr zam¢wienia Data wysyˆki"
@@ -875,9 +890,9 @@ _frow:=2
     @ 5,7 say "got¢wk¥ÄÄÄÄÄÄÄprzelewemÄÄÄÄÄÄÄÄÄkart¥ÄÄÄÄÄÄÄNr kartyÄÄÄTermin pˆatno˜ci"
     @ _frow+1,0,_frow+4,79 BOX if(pozycja>D_LP1.and.!nowydm,'ÌÍ¹º¼ÄÈº ','ÌÍ¹º¼ÍÈº ')
     @ _frow+1,2 say 'LpÍÍÍÍÍÍMateriaˆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍIlo˜†ÍÍÍÍÍÍÍÍCena zbytuÍÍ'+WANAZ
-//    return
-//    *******
-  else
+    return
+    *******
+  endif
  #ifdef A_FK
    if dok_fk
    ++_frow
@@ -889,12 +904,13 @@ _frow:=2
  #endif
 #endif A_FA
   if dok_zew#"W" .or. dok="K"
+     if dok_p_r='P'
 #ifdef A_KSEF
-    _frow+=1
+    ++_frow
     setpos(_frow,2)
-     //?? 'Data faktury:            Nr KSeF:'
      ?? 'Nr KSeF:                                     eF:'
 #endif
+     endif
     _frow+=2
     setpos(_frow-1,2)
     do case
@@ -958,15 +974,6 @@ endif
 #else
   @ _frow+1,25 SAY if(dok_p_r="S",'Stan bie¾.',if(""=dok_kon,'',if(dok_zew="W","Zlecenie","Rodzaj")))
 #endif
-#ifdef A_FA
-endif
-#endif
-  _flp:=MIN(_flp,D_LPVAL(DM->pozycja))
-  IF !empty(nkp)
-    _fi:=max(1,D_LPVAL(nkp))
-    _fl:=min(_flp,_fi+5)
-    nkp:=NIL
-  endif
 return
 ********************
 procedure dok11(_f)
@@ -1019,20 +1026,10 @@ procedure dok11(_f)
 #endif
 #endif
   _flp:=D_LPVAL(pozycja)
-  if dok_zew#"W" .or. dok="K"
-#ifdef A_KSEF
-    //@ _frow-2,16 SAY data_dost
-    @ _frow-2,11 SAY nr_ksef
-    //@ _frow,2 SAY nr_faktury picture "@S24"
-    @ _frow-2,50 SAY hb_translate(ksef,'UTF8',) picture "@S28"
-#else
-#endif
-    @ _frow,2 SAY nr_faktury picture "@S13"
-    sayl data_dost
-  ENDIF
 #ifdef A_FA
   if dok_p_r="F"
-//    @ 4,26 say wartosc  picture WAPIC
+    @ 4,2 SAY nr_faktury picture "@S13"
+    @ 4,16 SAY data_dost
 #ifdef A_KPR
     if ""=dok_kpr
 #endif
@@ -1050,21 +1047,25 @@ procedure dok11(_f)
     @ 6,4  say ZAG(wartosc,wart_vat) picture WAPIC
     @ 6,51 say nr_czeku
     @ 6,65 say termin_p
-#ifdef A_FAT
-    if _frow>7
     setpos(7,1)
+#ifdef A_FK
+    if dok_fk
+    @ row(),13 say zaplac:=zaplacono picture WAPIC
+    @ row(),32 say data_zap
+    setpos(8,1)
+    endif
+#endif
+#ifdef A_FAT
 #ifdef A_NAZWISKO
     @ row(),11+col() say nazwisko picture "@S20K"
 #endif
     @ row(),9+col() say nr_spec picture "@S18K"
     @ row(),12+col() say transport picture "@KS"+ltrim(str(_fco2-col()-3))
-    endif
+    setpos(row()+1,1)
 #endif
-#ifdef A_FK
-    if dok_fk
-    @ _frow-1,13 say zaplac:=zaplacono picture WAPIC
-    @ _frow-1,32 say data_zap
-    endif
+#ifdef A_KSEF
+    @ _frow-1,11 SAY nr_ksef
+    @ _frow-1,50 SAY hb_translate(ksef,'UTF8',) picture "@S28"
 #endif
     @ _frow,2 say pad(uwagi,76)
     return
@@ -1080,6 +1081,17 @@ procedure dok11(_f)
        @ 2,54 say stano_kosz
     endif
 #endif
+  if dok_zew#"W" .or. dok="K"
+    @ _frow,2 SAY nr_faktury picture "@S13"
+    sayl data_dost
+  ENDIF
+#ifdef A_FK
+    if dok_fk
+    @ 3,9 say termin_p
+    @ 3,30 say zaplac:=zaplacono picture WAPIC
+    @ 3,48 say data_zap
+    endif
+#endif
 #ifdef A_KPR
     if ""=dok_kpr
 #endif
@@ -1090,12 +1102,9 @@ procedure dok11(_f)
     @  _frow,66 say nr_kpr
     endif
 #endif
-#ifdef A_FK
-    if dok_fk
-    @ 3,9 say termin_p
-    @ 3,30 say zaplac:=zaplacono picture WAPIC
-    @ 3,48 say data_zap
-    endif
+#ifdef A_KSEF
+    @ _frow-2,11 SAY nr_ksef
+    @ _frow-2,50 SAY hb_translate(ksef,'UTF8',) picture "@S28"
 #endif
     @  _frow,73 say nk  PICTURE "XXXXX"
 
@@ -1248,6 +1257,14 @@ procedure dok2(_f,getlist)
     aadd(getlist,get)
     @ 6,51 get nrc PICTURE "@KS13"
     @ 6,65 get tp  valid tp>=da .OR. (TP:=DA,.t.)
+    setpos(7,1)
+#ifdef A_FK
+   if dok_fk
+   @ row(),13 get zaplac picture WAPIC valid {|g|setpos(g:row(),54),devout(tran(WBR(dm->wartoSC,dm->wart_vat)-zaplac,WAPIC),_sbkgr),if(empty(dazapl).and.g:changed,(dazapl:=tp,getlist[ascan(getlist,{|x|x:name="dazapl"})]:display()),),.t.}
+   @ row(),32 get dazapl
+    setpos(row()+1,1)
+   endif
+#endif
 #ifdef A_FAT
     if _frow>7
     setpos(7,1)
@@ -1259,11 +1276,9 @@ procedure dok2(_f,getlist)
       atail(getlist):cargo:=.t.
     endif
 #endif
-#ifdef A_FK
-   if dok_fk
-   @ _frow-1,13 get zaplac picture WAPIC valid {|g|setpos(g:row(),54),devout(tran(WBR(dm->wartoSC,dm->wart_vat)-zaplac,WAPIC),_sbkgr),if(empty(dazapl).and.g:changed,(dazapl:=tp,getlist[ascan(getlist,{|x|x:name="dazapl"})]:display()),),.t.}
-   @ _frow-1,32 get dazapl
-   endif
+#ifdef A_KSEF
+    @ _frow-1,11 GET n_ksef SEND block:={||n_ksef}
+    @ _frow-1,50 GET xml_ksef SEND block:={||xml_ksef} PICTURE "@S28"
 #endif
     @ _frow,2 GET uw picture "@KS76" send cargo:=.t.
     return
@@ -1288,7 +1303,6 @@ procedure dok2(_f,getlist)
 #endif
 #ifdef A_KSEF
       @ _frow-2,11 get n_ksef picture "@K" VALID ksef_valid() // WHEN NOWYDM .or. pozycja=D_LP0
-//      @ _frow-2,50 GET xml_ksef SEND block:={||hb_jsonencode(xml2json(HB_TRANSLATE(xml_ksef,'UTF8',),'Faktura'),.t.)} PICTURE "@S28"
       @ _frow-2,50 GET xml_ksef SEND block:={||HB_TRANSLATE(xml_ksef,'UTF8',)} PICTURE "@S28"
 #endif
       @ _frow,2 GET n_f PICTURE "@KS13"
