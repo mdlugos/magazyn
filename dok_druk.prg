@@ -163,9 +163,6 @@ private ilj
 #ifdef A_GRAM
 private gt
 #endif
-#ifdef A_LPTN
-  lpt:=dok_def[A_LPTN]
-#endif
 
   IF dok_kop=NIL
     dok_kop=1
@@ -210,6 +207,9 @@ private gt
     private r:=MAX(1,ascan(dokumenty[MAG_POZ],smb_dow D_SUBDOK))
     private dok_def:=dok_par[mag_poz,r]
     private dok_naz:=dokumenty[mag_poz,r]
+#ifdef A_LPTN
+    lpt:=dok_def[A_LPTN]
+#endif
 
         SELECT firmy
        set order to "FIRM_NUM"

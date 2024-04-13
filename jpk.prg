@@ -95,7 +95,7 @@ endif
 return subs(bin,HB_HEXTONUM(subs(bin,1,2))+1,HB_HEXTONUM(subs(bin,3,2)))
 
 func ksef_initsession()
-local ans,s,i,j,nip:=trim(memvar->firma_NIP)
+local ans,s,i,j,nip:=trim(strtran(memvar->firma_NIP,'-'))
 //    local scr
 
 if empty(token)

@@ -2930,7 +2930,7 @@ PROCEDURE FIRM_EDIT(n,_s)
       getf(@i,@r,@f,@b,@a,@c,@u,,,@tp,@nzw)
       s:=window(10,77,_SBKGR)
       @ s[1],s[2]+3 SAY 'Poprawianie dopisywanie kasowanie firmy'
-      @ s[1]+2,s[2]+3 SAY 'NIP:' GET i picture "@K" valid {|g|!g:changed.or.i=' '.or.nipval(i,n).and.getf(@i,@r,@f,@b,@a,@c,@u,@getlist,@n,@tp,@nzw),.t.}
+      @ s[1]+2,s[2]+3 SAY 'NIP:' GET i picture "@KS13" valid {|g|!g:changed.or.i=' '.or.nipval(i,n).and.getf(@i,@r,@f,@b,@a,@c,@u,@getlist,@n,@tp,@nzw),.t.}
 #ifdef A_REGON
       SAYl 'REGON:' GET r picture "@K"
 #endif
@@ -3202,7 +3202,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
       nzw:=nazwisko
 #endif
 #ifdef A_TPD
-      tp:=tp_dni
+      tp:=if(fieldpos('tp_dni')<>0,tp_dni,0)
 #endif
 #ifdef A_KHKONTO
       k:=konto
@@ -3225,34 +3225,45 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
 #ifdef A_FFULL
       getlist[2]:postblock:={||if(empty(b),(b:=pad(f,len(b)),getlist[3]:display()),),.t.}
       @ 11,_scol1+A_NRLTH+2 SAY 'Nazwa skr¢cona firmy:'
-      @ 13,_scol1+1 SAY 'Nazwa peˆna firmy:'
-      @ 14,_scol1 GET b PICTURE '@KS'+ltrim(str(_scoln))
-      @ 15,_scol1+1 SAY 'Adres:'
-      @ 16,_scol1 GET a PICTURE '@KS'+ltrim(str(_scoln))
+      @ 12,_scol2-20 SAY 'Nazwa peˆna firmy:'
+      @ 13,_scol1 GET b PICTURE '@KS'+ltrim(str(_scol2-col()))
+      @ 14,_scol1+1 SAY 'Adres:'
+      GETL a PICTURE '@KS'+ltrim(str(_scol2-col()))
+      setpos(15,_scol1)
 #else
       @ 11,_scol1+A_NRLTH+2 SAY 'Nazwa firmy'
       @ 14,_scol1+1 SAY 'Kod,Miasto' GET a PICTURE '@K !'+replicate("X",_scoln-12)
       @ 16,_scol1+1 SAY 'ulica i nr' GET b PICTURE '@KS'+ltrim(str(_scoln-12))
 #endif
-      @ 17,_scol1+1 SAY 'Uwagi'
+#ifdef A_TPD
+      SAYL "T.p. dni:" GET tp PICTURE "@K###"
+#endif
 #ifdef A_CENSPEC
-      SAYl 'Ceny:' GET c picture "@KS20"
+      SAYl 'Ceny:' GET c picture "@K"
 #endif
 #ifdef A_VAT
       SAYl 'NIP:' GET i picture "@K"
-#ifdef A_REGON
-      SAYl 'REGON:' GET r picture "@K"
 #endif
-#endif
-#ifdef A_KHKONTO
-      SAYL "Konto:" GET k picture "@KS"+ltrim(str(_scol2-col(),2))
-#endif
-      @ 18,_scol1 GET u PICTURE '@KS'+ltrim(str(_scoln)) send cargo:=.t.
+      setpos(row()+1,_scol1)
 #ifdef A_NAZWISKO
-      @ 19,_scol1 SAY 'Nazwisko:' GET nzw picture "@K"
-      SAYL "T.p. dni" GET tp PICTURE "@K"
+      SAYL 'Nazwisko:' GET nzw picture "@K"
 #endif
+#ifdef A_REGON
+      SAYl 'REGON:' GET r picture "@KS"+ltrim(str(_scol2-col(),2))
+#endif
+     setpos(row()+1,_scol1)
+     SAYL 'Uwagi'
+#ifdef A_KHKONTO
+      SAYL "Konto:" GET k picture "@KS"+ltrim(str(_scol2-col()-8,2))
+#endif
+      @ row()+1,_scol1 GET u PICTURE '@KS'+ltrim(str(_scoln)) send cargo:=.t.
 #ifdef A_WL
+      if row()>=19
+        atail(getlist):picture:= '@KS'+ltrim(str(_scoln-10))
+        setpos(row(),_scol2-10)
+      else
+        setpos(row()+1,_scol1)
+      endif
       DEFAULT h TO 'n/n'
       SAYL "BL" GET h PICTURE "@KS"+ltrim(str(_scol2-col(),2)) VALID {||if(empty(h),(h:=getwl(i,),if(h='n/n',,kibord(chr(10))),.f.),.t.)}
 #endif      
@@ -3327,7 +3338,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
          nazwisko:=nzw
 #endif
 #ifdef A_TPD
-         tp_dni:=tp
+         if(fieldpos('tp_dni')<>0,tp_dni:=tp,)
 #endif
 #ifdef A_KHKONTO
          konto:=k
@@ -3360,11 +3371,16 @@ local d:=len(trim(n_ksef)) ,s,ans,scr,sel,_s,token
 if !(NOWYDM .or. pozycja = D_LP0) .or. d<19 .or. d>=35
    return .t.
 endif
+altd()
 sel:=select()
 sel('ksef',0)
 go bottom
-s:=stod(subs(nr_ksef,12,8))
 d:=stod(subs(n_ksef,12,8))
+if eof()
+s:=max(DatY->d_z_mies1+1,d-31)
+else
+s:=max(max(DatY->d_z_mies1+1,stod(subs(nr_ksef,12,8))),d-31)
+endif
 set order to tag ksef_nr
 if d>s
 //SAVE SCREEN TO scr
@@ -3378,7 +3394,7 @@ if token=NIL
 endif
 s:=max(d-10,s)
 d:=min(date(),s+10)
-s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject1', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(s,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(d,'YYYY-MM-DD')+'T23:59:59'}},,'UTF8')
+s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject2', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(s,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(d,'YYYY-MM-DD')+'T23:59:59'}},,'UTF8')
 curl('Query/Invoice/Sync?PageSize=100&PageOffset=0','-X POST -H Content-Type:application/json -H sessionToken:'+token,s,@ans)
 //REST SCREEN FROM scr
 s:=hb_JsonDecode(subs(ans,at('{',ans)),,'UTF8')

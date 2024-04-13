@@ -4,11 +4,13 @@
     #define A_ZEBRA
     #define A_EXT hb_hextonum, hb_numtohex, curdir
     #define A_WIN_PRN .f.
+    #define A_LPTN
   #endif
 #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usˆug Informatycznych Marek Dˆugosz, 43-400 Cieszyn, ul. R¢wna 16'
 #define A_BACKUP MEMVAR->backup
-//#define A_VIEWCZAK
-#define A_VIEWVAT
+#define A_VIEWCZAK
+//#define A_VIEWVAT
+#define A_WL
 #define UpP(x) UPPER(x)
 #define PC852 "PL852M"
 #include "lan.ch"
@@ -30,6 +32,7 @@
 #define A_PCL
 #define A_STYLUS
 #define A_DRUKCOMP
+#define A_LPTN 15
 #define A_DOKCOMP 14
 #define A_DLINK
 #define A_ZATW
@@ -93,6 +96,8 @@
 #define A_FFULL
 #define A_FDO
 #define A_ANKER
+#define A_REGON
+#define A_TPD
 #define A_KODY "Kod"
 #define A_ENAZ
 #define A_MINUS
