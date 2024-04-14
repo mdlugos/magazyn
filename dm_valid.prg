@@ -3371,7 +3371,6 @@ local d:=len(trim(n_ksef)) ,s,ans,scr,sel,_s,token
 if !(NOWYDM .or. pozycja = D_LP0) .or. d<19 .or. d>=35
    return .t.
 endif
-altd()
 sel:=select()
 sel('ksef',0)
 go bottom

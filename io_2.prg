@@ -775,11 +775,11 @@ func oprn(x)
 #endif
 *******************
 static func getnum(x,i,c)
-local y:=''
+local y:='',wasdot:=.f.
 DEFAULT i TO 1
 for i:=i to len(x)
    c:=subs(x,i,1)
-   if isdigit(c)
+   if !wasdot .and. (wasdot:=(c='.')) .or. isdigit(c)
       y+=c
    else
       exit
@@ -792,7 +792,6 @@ static fw:=NIL,fw4:=NIL,fs4:=NIL,fsu:=NIL
 local cons,i,j,k,c,d,z
   local b:={|y,b,k,m|z:=y$x,if(z.or.(k:=(m:=left(y,3))+lower(subs(y,4)))$x,(x:=if(z,strtran(x,y),strtran(x,k,m)),.t.),.f.)}
 //local b:={|y,b,k,m|i:=at(y,x),if((z:=(i>0)).or.(i:=at(k:=(m:=left(y,3))+lower(subs(y,4)),x))>0,(i+=3,c:=getnum(x,@i),x:=if(z,strtran(x,y),strtran(x,k,m)),.t.),.f.)}
-
 #ifdef D_HWPRN
 while valtype(oprn)='O' .and. ""<>x
 
@@ -832,7 +831,9 @@ while valtype(oprn)='O' .and. ""<>x
         loop
       endif
    endif
-   if eval(b,p_4xon) //.and. fs4=NIL
+
+
+   if eval(b,p_4xon) .and. fs4=NIL
       fw4:=oprn:FontWidth
       fs4:=oprn:FontPointSize
       oprn:SetFont(,fs4*2,if(empty(fw4[1]),,{fw4[1]*2,fw4[2]}))
@@ -859,7 +860,7 @@ while valtype(oprn)='O' .and. ""<>x
         loop
       endif
    endif
-   if eval(b,p_pon) //.and. fw=NIL
+   if eval(b,p_pon) .and. fw=NIL
       fw:=oprn:FontWidth
 #ifdef A_WIN_PRN
       oprn:SetFont('Arial',,{0,0},,,,255)
@@ -878,6 +879,40 @@ while valtype(oprn)='O' .and. ""<>x
       fw:=NIL
       if !z
         loop
+      endif
+   endif
+
+   i:=at(chr(27)+'(s',x)
+   if i>0
+      j:=i+3
+      c:=val(getnum(x,@j,@k))
+      k:=lower(k)
+      if k$'vh'
+        altd()
+        if k='v'
+          if fw=NIL //fixedwidth
+             k:=oprn:FontWidth
+          else
+             k:=NIL //proporcjonalna
+          endif
+          oprn:SetFont(,c,k,,,,255)
+        elseif k='h'
+          if c=16.67
+             k:={3,-50}
+          elseif c=8
+             k:={3,-25}
+          else
+             k:=-c
+          endif
+          oprn:SetFont(,,k,,,,255)
+          fw:=NIL
+        endif
+        if isupper(subs(x,j,1))
+           x:=stuff(x,i,j-i+1,'')
+        else
+           x:=stuff(x,i+3,j-i-2,'')
+           loop
+        endif
       endif
    endif
 
@@ -919,6 +954,15 @@ while valtype(oprn)='O' .and. ""<>x
          endif
          oprn:LineHeight:=Int(oprn:PixelsPerInchY/c)
          oprn:SetFont(,74/c)
+        if isupper(subs(x,j,1))
+           x:=stuff(x,i,j-i+1,'')
+        else
+           x:=stuff(x,i+3,j-i-2,'')
+           loop
+        endif
+      elseif k='h' //paper source
+        //if !oprn:Printing
+        oprn:BinNumber:=c
         if isupper(subs(x,j,1))
            x:=stuff(x,i,j-i+1,'')
         else
