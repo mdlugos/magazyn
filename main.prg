@@ -97,7 +97,6 @@ public defa,oprn
 #ifdef PLWIN
    hb_gtInfo( HB_GTI_WINTITLE , "Magazyn" )
 #endif
-
 if parametr='MAGDEF='
    defa:=subs(parametr,8)
    parametr:=mag_biez
