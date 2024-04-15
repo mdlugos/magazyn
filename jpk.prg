@@ -2244,7 +2244,9 @@ HB_FUNC( URLENCODE )
                      ( cElem >= 'a' && cElem <= 'z' ) ||
                      ( cElem >= '0' && cElem <= '9' ) ||
                      cElem == '.' || cElem == ',' || cElem == '&' ||
-                     cElem == '/' || cElem == ';' || cElem == '_' )
+                     cElem == ';' || cElem == '_' )
+//                     cElem == '/' || cElem == ';' || cElem == '_' )
+
             {
                pszRet[ nPosRet ] = cElem;
             }
