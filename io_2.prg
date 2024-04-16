@@ -852,7 +852,7 @@ while valtype(oprn)='O' .and. ""<>x
       if !z
         loop
       endif
-   elseif eval(b,p_supoff) .and. fsu<>NIL
+   elseif fsu<>NIL .and. eval(b,p_supoff)
       oprn:SetFont(,fsu)
       fsu:=NIL
       if !z
@@ -893,7 +893,7 @@ while valtype(oprn)='O' .and. ""<>x
           if fw=NIL //fixedwidth
              k:=oprn:FontWidth
           else
-             k:=NIL //proporcjonalna
+             k:={0,0} //proporcjonalna
           endif
           oprn:SetFont(,c,k,,,,255)
         elseif k='h'
@@ -1053,8 +1053,8 @@ public  p_rown,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COLN,P_BON,P_BOFF,P_UON,P_UOFF,;
       P_INIT  := {|x|if(x,"(17U&"+"l26a"+if(landscape,'1','0')+"O&"+"a0L",'')+"(s1q0s0b10h12V"}
 //      P_PUSH  := '&'+'f0S'
 //      P_POP   := '&'+'f1S'
-      P_4XON  := '(s24v5H'
-      P_4XOFF := '(s12v10H'
+      P_4XON  := '(s24.0v5.0H'
+      P_4XOFF := '(s12.0v10.0H'
       P_COLN  := 78
       P_BON   := "(s3B"
       P_BOFF  := "(s0B"
@@ -1073,8 +1073,8 @@ public  p_rown,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COLN,P_BON,P_BOFF,P_UON,P_UOFF,;
       P_7LPI  := '&'+'l7C'
       P_8LPI  := '&'+'l6C'
 */
-      P_SUPON := '(s7V'
-      P_SUPOFF:= '(s12V'
+      P_SUPON := '(s7.0V'
+      P_SUPOFF:= '(s12.0V'
       p_margin:= {|x|'&'+'a'+ltrim(str(x,3))+'L'}
       p_col   := {|x|'&'+'a'+ltrim(str(x,3))+'C'}
 
@@ -1677,7 +1677,7 @@ qout()
 wqq(...)
 return
 proc wqq(...)
-  aeval(hb_aparams(),{|x|if(valtype(x)='B',x:=eval(x),),x:=if(valtype(x)$'CDLMN',Tran(x,),''),if(''=x,,qqout(x))})
+  aeval(hb_aparams(),{|x|if(valtype(x)='B',x:=eval(x),),x:=if(valtype(x)$'CDLMNT',Tran(x,),''),if(''=x,,qqout(x))})
 return
 proc wwout(...)
   local a:=HB_aparams()
