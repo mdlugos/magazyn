@@ -239,7 +239,7 @@ local a,c:=memoread(faxml),ans,i,scr
       i:=hb_jsondecode(subs(ans,i),,'UTF8')
       //"invoiceStatus":{"invoiceNumber":"FA6","ksefReferenceNumber"
       c:=hb_HGetDef(i,"invoiceStatus",{=>})
-      if !empty(c)
+      if !empty(c) .and. hb_HHasKey(c,"ksefReferenceNumber")
          b["invoiceStatus"]:=c
          //restore screen from scr
          return c["ksefReferenceNumber"]
