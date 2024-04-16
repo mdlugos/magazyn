@@ -23,7 +23,7 @@ memvar oprn
 memvar  p_rown,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COLN,P_BON,P_BOFF,P_UON,P_UOFF,;
         P_36LPI,P_12LPI,P_8LPI,P_7LPI,P_6LPI,P_SUPON,P_SUPOFF,p_margin,P_PON,;
         P_LPI,P_POFF,P_HALFPAGE,landscape,p_port,p_land,p_eject,p_rownl,p_rownp,;
-        p_init,p_colnl
+        p_init,p_colnl,p_col
 #endif
 *******************************
 func openorcreate(a,s,k,ar)
@@ -779,7 +779,7 @@ local y:='',wasdot:=.f.
 DEFAULT i TO 1
 for i:=i to len(x)
    c:=subs(x,i,1)
-   if !wasdot .and. (wasdot:=(c='.')) .or. isdigit(c)
+   if isdigit(c) .or. (!wasdot .and. (wasdot:=(c='.'))).or.(''=y .and. c='-')
       y+=c
    else
       exit
@@ -860,8 +860,10 @@ while valtype(oprn)='O' .and. ""<>x
         loop
       endif
    endif
-   if eval(b,p_pon) .and. fw=NIL
-      fw:=oprn:FontWidth
+   if eval(b,p_pon)
+      if fw=NIL
+        fw:=oprn:FontWidth
+      endif
 #ifdef A_WIN_PRN
       oprn:SetFont('Arial',,{0,0},,,,255)
 #else
@@ -870,7 +872,7 @@ while valtype(oprn)='O' .and. ""<>x
       if !z
         loop
       endif
-   elseif eval(b,p_poff) .and. fw<>NIL
+   elseif eval(b,p_poff) // .and. fw<>NIL
 #ifdef A_WIN_PRN
       oprn:SetFont('Courier New',,fw,,,,255)
 #else
@@ -1038,7 +1040,7 @@ local txt
 public  p_rown,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COLN,P_BON,P_BOFF,P_UON,P_UOFF,;
         P_36LPI,P_12LPI,P_8LPI,P_7LPI,P_6LPI,P_SUPON,P_SUPOFF,p_margin,P_PON,;
         P_LPI,P_POFF,P_HALFPAGE,landscape,p_port,p_land,p_eject,p_rownl,p_rownp,;
-        p_init,p_colnl
+        p_init,p_colnl,p_col
 //        ,p_push,p_pop
 
    landscape:=!empty(landscape)
@@ -1072,6 +1074,7 @@ public  p_rown,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COLN,P_BON,P_BOFF,P_UON,P_UOFF,;
       P_SUPON := '(s7V'
       P_SUPOFF:= '(s12V'
       p_margin:= {|x|'&'+'a'+ltrim(str(x,3))+'L'}
+      p_col   := {|x|'&'+'a'+ltrim(str(x,3))+'C'}
 
       P_PON   := "(s1P"
       P_POFF  := "(s0P"
@@ -1099,6 +1102,7 @@ public  p_rown,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COLN,P_BON,P_BOFF,P_UON,P_UOFF,;
       P_SUPON := 'S1'
       P_SUPOFF:= 'T'
       p_margin:= {|x|'l'+chr(x)}
+      p_col   := {|x|'$'+i2bin(60*x/ccpi())}
       P_PON   := "p1"
       P_POFF  := "p0"
       P_HALFPAGE:= {|x|"C"+chr(x)}
