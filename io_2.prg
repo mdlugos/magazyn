@@ -779,7 +779,7 @@ local y:='',wasdot:=.f.
 DEFAULT i TO 1
 for i:=i to len(x)
    c:=subs(x,i,1)
-   if isdigit(c) .or. (!wasdot .and. (wasdot:=(c='.'))).or.(''=y .and. c='-')
+   if isdigit(c) .or. (!wasdot .and. (wasdot:=(c='.'))).or.(''=y .and. c$'+-')
       y+=c
    else
       exit
@@ -791,7 +791,6 @@ func spec(x)
 static fw:=NIL,fw4:=NIL,fs4:=NIL,fsu:=NIL
 local cons,i,j,k,c,d,z
   local b:={|y,b,k,m|z:=y$x,if(z.or.(k:=(m:=left(y,3))+lower(subs(y,4)))$x,(x:=if(z,strtran(x,y),strtran(x,k,m)),.t.),.f.)}
-//local b:={|y,b,k,m|i:=at(y,x),if((z:=(i>0)).or.(i:=at(k:=(m:=left(y,3))+lower(subs(y,4)),x))>0,(i+=3,c:=getnum(x,@i),x:=if(z,strtran(x,y),strtran(x,k,m)),.t.),.f.)}
 #ifdef D_HWPRN
 while valtype(oprn)='O' .and. ""<>x
 
@@ -887,7 +886,7 @@ while valtype(oprn)='O' .and. ""<>x
    i:=at(chr(27)+'(s',x)
    if i>0
       j:=i+3
-      c:=val(getnum(x,@j,@k))
+      c:=val(d:=getnum(x,@j,@k))
       k:=lower(k)
       if k$'vh'
         if k='v'
@@ -920,7 +919,7 @@ while valtype(oprn)='O' .and. ""<>x
    i:=at(chr(27)+'&'+'a',x)
    if i>0
       j:=i+3
-      c:=val(getnum(x,@j,@k))
+      c:=val(d:=getnum(x,@j,@k))
       k:=lower(k)
       if k='l'
         k:=oprn:PosX-oprn:Leftmargin
@@ -933,7 +932,11 @@ while valtype(oprn)='O' .and. ""<>x
            loop
         endif
       elseif k='c'
-        oprn:PosX:=oprn:CharWidth*c
+        if d<'.' // plus minus relatywnie
+           oprn:PosX+=oprn:CharWidth*c
+        else
+           oprn:PosX:=oprn:CharWidth*c
+        endif
         if isupper(subs(x,j,1))
            x:=stuff(x,i,j-i+1,'')
         else
@@ -941,13 +944,12 @@ while valtype(oprn)='O' .and. ""<>x
            loop
         endif
       endif
-
    endif
 
    i:=at(chr(27)+'&'+'l',x)
    if i>0
       j:=i+3
-      c:=val(getnum(x,@j,@k))
+      c:=val(d:=getnum(x,@j,@k))
       k:=lower(k)
       if k$'cd'
          if k='c'
