@@ -888,7 +888,6 @@ while valtype(oprn)='O' .and. ""<>x
       c:=val(getnum(x,@j,@k))
       k:=lower(k)
       if k$'vh'
-        altd()
         if k='v'
           if fw=NIL //fixedwidth
              k:=oprn:FontWidth

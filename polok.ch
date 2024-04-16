@@ -14,6 +14,7 @@
 #define UpP(x) UPPER(x)
 #define PC852 "PL852M"
 #include "lan.ch"
+#define A_DDBF
 //#define A_NOREFRESH
 #define A_JMALTTOT(il,nz,lam,x) ((il)*(lam)->przel)
 #define A_ALTCEN

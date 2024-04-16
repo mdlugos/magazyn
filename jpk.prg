@@ -1,9 +1,5 @@
 #include "error.ch"
 
-#ifndef A_DDBF
-#define DatY MEMVAR
-#endif
-
 #require "hbmxml"
 
 #ifdef __PLATFORM__UNIX_
@@ -243,7 +239,7 @@ local a,c:=memoread(faxml),ans,i,scr
       i:=hb_jsondecode(subs(ans,i),,'UTF8')
       //"invoiceStatus":{"invoiceNumber":"FA6","ksefReferenceNumber"
       c:=hb_HGetDef(i,"invoiceStatus",{=>})
-      if !empty(c)
+      if !empty(c) .and. hb_HHasKey(c,"ksefReferenceNumber")
          b["invoiceStatus"]:=c
          //restore screen from scr
          return c["ksefReferenceNumber"]
@@ -326,7 +322,7 @@ return hb_hash('Naglowek',hb_hash("KodFormularza","FA","WariantFormularza",D_KSE
           "DataWytworzeniaFa",hb_dtoc(date(),'YYYY-MM-DD')+'T'+time()+'Z',;
           "SystemInfo",A_STOPKA),;
           'Podmiot1',hb_hash("PrefiksPodatnika",,"NrEORI",,;
-               "DaneIdentyfikacyjne",{"NIP"=>Trim(memvar->firma_NIP),"Nazwa"=>Trim(memvar->firma_pelnaz)},;
+               "DaneIdentyfikacyjne",{"NIP"=>trim(strtran(memvar->firma_NIP,'-')),"Nazwa"=>Trim(memvar->firma_pelnaz)},;
                "Adres",hb_hash("KodKraju","PL","AdresL1",trim(memvar->firma_Ul)+" "+trim(memvar->firma_Dom),"AdresL2",trim(memvar->firma_poczta),"GLN",),;
                "AdresKoresp",,"DaneKontaktowe",{hb_hash('Email',memvar->firma_email)},"StatusInfoPodatnika",),;
           'Podmiot2',hb_hash("NrEORI",,"DaneIdentyfikacyjne",{"NIP"=>Trim(strtran(firmy->ident,'-','')),"Nazwa"=>Trim(firmy->longname)},;
@@ -350,8 +346,8 @@ return hb_hash('Naglowek',hb_hash("KodFormularza","FA","WariantFormularza",D_KSE
 func ksef_fa(fa, dok, filen)
 local element, node, s
 
-     DEFAULT dok TO strtran(trim(DM->smb_dow+DM->nr_dowodu),' ','0')
-     DEFAULT filen TO str(year(DatY->d_z_rok+1)%100,2)+dok+".xml"
+     DEFAULT dok TO strtran(trim(FIELD->smb_dow+FIELD->nr_dowodu),' ','0')
+     DEFAULT filen TO str(year(FIELD->Data)%100,2)+dok+".xml"
 
      if tree<>NIL
           alarm("Poprzedna faktura nie zakoäczona")
@@ -2248,7 +2244,9 @@ HB_FUNC( URLENCODE )
                      ( cElem >= 'a' && cElem <= 'z' ) ||
                      ( cElem >= '0' && cElem <= '9' ) ||
                      cElem == '.' || cElem == ',' || cElem == '&' ||
-                     cElem == '/' || cElem == ';' || cElem == '_' )
+                     cElem == ';' || cElem == '_' )
+//                     cElem == '/' || cElem == ';' || cElem == '_' )
+
             {
                pszRet[ nPosRet ] = cElem;
             }
