@@ -3374,14 +3374,19 @@ endif
 sel:=select()
 sel('ksef',0)
 go bottom
-d:=stod(subs(n_ksef,12,8))
+altd()
+d:=max(DatY->d_z_mies1+1,stod(subs(n_ksef,12,8)))
+da:=dd:=dv:=d
+varput(getlistactive(),'dv',dv)
+varput(getlistactive(),'dd',dv)
+varput(getlistactive(),'da',dv)
 if eof()
 s:=max(DatY->d_z_mies1+1,d-31)
 else
 s:=max(max(DatY->d_z_mies1+1,stod(subs(nr_ksef,12,8))),d-31)
 endif
 set order to tag ksef_nr
-if d>s
+if d>=s
 //SAVE SCREEN TO scr
 //SET COLOR TO _snorm
 //CLEAR SCREEN
@@ -3389,6 +3394,7 @@ token:=ksef_initsession()
 if token=NIL
    //REST SCREEN FROM scr
    dbselectar(sel)
+   n_ksef:=stuff(n_ksef,19,17,space(17))
    return .t.
 endif
 s:=max(d-10,s)
@@ -3406,6 +3412,7 @@ endif
 endif
 _s:=array(_sLEN)
 _spocz:=trim(n_ksef)
+n_ksef:=stuff(n_ksef,19,17,space(17)) //skracam poni¾ej progu ¾eby ponownie nie wchodzi† 
 if !dbseek(_spocz,,.t.)
    _spocz:=left(_spocz,10)
    if !dbseek(_spocz,,.t.)
@@ -3418,7 +3425,7 @@ d:=dbstruct()
 _snagl:=padl(d[1,1],d[1,3],'Ä')+"Â"+pad(d[2,1],d[2,3],'Ä')+"Â"+pad(d[3,1],d[3,3],'Ä')+"Â"+d[4,1]
 _sbeg:=1
 _slth:=len(_spocz)
-if d:=szukam(_s)
+if szukam(_s) .and. !eof()
    n_ksef:=field->nr_ksef
    dv:=stod(subs(n_ksef,12,8))
    varput(getlistactive(),'dd',dv)
@@ -3435,7 +3442,7 @@ if d:=szukam(_s)
 endif
 
 dbselectar(sel)
-return d
+return .t.
 #endif
 #ifdef A_WL
 FUNCTION getwl(i,h)

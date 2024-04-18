@@ -22,7 +22,7 @@
 #command INIT PRINTER => specout(eval(memvar->p_init,wasbad))
 #define A_WL
 #define A_KSEF
-//#define A_DLINK
+#define A_DLINK
 #define A_XPRN
 #define A_PCL
 #define isPrinter() .t.
