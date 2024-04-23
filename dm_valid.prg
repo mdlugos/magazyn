@@ -3398,7 +3398,7 @@ if token=NIL
 endif
 s:=max(d-10,s)
 d:=min(date(),s+10)
-s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject2', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(s,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(d,'YYYY-MM-DD')+'T23:59:59'}},,'UTF8')
+s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject1', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(s,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(d,'YYYY-MM-DD')+'T23:59:59'}},,'UTF8')
 curl('Query/Invoice/Sync?PageSize=100&PageOffset=0','-X POST -H Content-Type:application/json -H sessionToken:'+token,s,@ans)
 //REST SCREEN FROM scr
 s:=hb_JsonDecode(subs(ans,at('{',ans)),,'UTF8')
@@ -3432,7 +3432,9 @@ if szukam(_s) .and. !eof()
    if dataval(dv)
       varput(getlistactive(),'da',dv)
    endif
-   s:=ksef_getfa(trim(n_ksef),@token,@xml_ksef)
+   ksef_getfa(trim(n_ksef),@token,@xml_ksef)
+   //s:=xml2json(xml_ksef,'Faktura')
+   //altd()
    //hb_memowrit('fra.xml',xml_ksef,.f.)
    //DEFAULT scr TO SaveScreen( 0, 0, Maxrow(), Maxcol() )
    //fview('fra.xml')

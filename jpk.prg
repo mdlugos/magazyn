@@ -391,6 +391,7 @@ local element, node, s
 
 return memvar->defa+filen
 
+//json2xml
 static function addtree(node,subtree,i)
 local j,e,t:=valtype(subtree),k,v
 DEFAULT i TO 1
@@ -441,7 +442,9 @@ local n,a:=NIL,c,d
    DEFAULT H TO {=>}
    hb_hautoadd(h,.t.)
 
-   a:=mxmlgetText(node)
+   a:=mxmlGetOpaque( node )
+   //a:=mxmlgetText(node)
+
    if empty(a)
       node := mxmlGetFirstChild( node )
       if empty(node)
@@ -469,15 +472,7 @@ local n,a:=NIL,c,d
                h[n]:=a
       enddo
    else
-      n:=1
-      if !empty(node:=mxmlGetFirstChild( node ))
-         do while !empty( node :=mxmlGetNextSibling( node ) )
-            ++n
-            a+=' '+mxmlGetText(node)
-         enddo
-      endif
-      if n>1
-      elseif !empty(c:=hb_ctot(a,"YYYY-MM-DDThh:mm:ss.fffZ")) .and. hb_TtoN(c)%1<>0
+      if !empty(c:=hb_ctot(a,"YYYY-MM-DDThh:mm:ss.fffZ")) .and. hb_TtoN(c)%1<>0
          a:=c
       elseif !empty(c:=hb_ctod(a,"YYYY-MM-DD"))
          a:=c
@@ -490,11 +485,11 @@ local n,a:=NIL,c,d
 
 func xml2json(xml,e,h)
 local a
-   a:=mxmlLoadString(mxmlNewXML(),xml)
+   a:=mxmlLoadString(mxmlNewXML(),xml,MXML_OPAQUE_CALLBACK)
    if empty(a)
       return h
    endif
-   a:=mxmlfindelement(a, a, e,,,1 )
+   a:=mxmlfindelement(a,a,e,,,MXML_DESCEND)
    if !empty(a)
       DEFAULT H TO {=>}
       hb_hautoadd(h,.t.)
