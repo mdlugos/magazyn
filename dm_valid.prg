@@ -3374,7 +3374,6 @@ endif
 sel:=select()
 sel('ksef',0)
 go bottom
-altd()
 d:=max(DatY->d_z_mies1+1,stod(subs(n_ksef,12,8)))
 da:=dd:=dv:=d
 varput(getlistactive(),'dv',dv)
