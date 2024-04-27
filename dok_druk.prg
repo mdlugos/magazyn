@@ -112,11 +112,11 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,wart_vat,;
 #define dok_ew  dok_def[8]
 #define dok_df  dok_def[A_DF]
 #define dok_wal dok_def[A_WALUTA]
-#ifdef A_LPTN
+//#ifdef A_LPTN
 #define D_LPT ,lpt
-#else
-#define D_LPT
-#endif
+//#else
+//#define D_LPT
+//#endif
 
 
 static socket, ipactive

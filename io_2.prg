@@ -455,19 +455,19 @@ endif
      oprn:=D_HWPRN
   endif
 #endif
-#ifdef A_LPTN
+//#ifdef A_LPTN
   if lpt=NIL
-#endif
+//#endif
 #ifdef A_GETLPT
     lpt:=A_GETLPT
 #else
     lpt:=getenv("MDSLPT")
 #endif
-#ifdef A_LPTN
+//#ifdef A_LPTN
   else
     lpt:=trim(lpt)
   endif
-#endif
+//#endif
 #ifdef D_HWPRN
   if !empty(oprn)
 #ifdef A_HPDF
