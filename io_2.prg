@@ -965,7 +965,10 @@ while valtype(oprn)='O' .and. ""<>x
         endif
       elseif k='h' //paper source
         //if !oprn:Printing
+        oprn:Destroy()
         oprn:BinNumber:=c
+        oprn:Create()
+        oprn:StartDoc()
         if isupper(subs(x,j,1))
            x:=stuff(x,i,j-i+1,'')
         else
