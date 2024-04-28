@@ -1336,6 +1336,9 @@ osk:=HB_SETKEYSAVE()
   //RESET KEY K_ALT_E
   RESET KEY GE_WRITE
 
+  if "utf-8"$lower(left(txt,80))
+      txt:=hb_translate(txt,'UTF8',)
+  endif
   do while .t.
     //txt=MEMOEDIT(txt,r1+1,c1+1,r2-1,c2-1,.T.,"gufunc",c2-c1-3,8,l,c,cl,cc)
     txt=MEMOEDIT(txt,r1+1,c1+1,r2-1,c2-1,.T.,"gufunc",ll,2,l,c,cl,cc)
@@ -1354,8 +1357,15 @@ osk:=HB_SETKEYSAVE()
            n:=defa+n
           endif
           txt:=memoread(n)
+          if "utf-8"$lower(left(txt,80))
+            txt:=hb_translate(txt,'UTF8',)
+          endif
          else
-          HB_MEMOWRIT(n,strtran(txt,chr(141)+chr(10)),.f.)
+          k:=strtran(txt,chr(141)+chr(10))
+          if "utf-8"$lower(left(k,80))
+            k:=hb_translate(k,,'UTF8')
+          endif
+          HB_MEMOWRIT(n,k,.f.)
          endif
        elseif k$"BX"
         bp:=3-bp
@@ -1439,15 +1449,18 @@ osk:=HB_SETKEYSAVE()
   aeval(osk,{|x|setkey(x[1],x[2])})
 #endif
   if k=GE_WRITE
-        txt:=strtran(txt,chr(141)+chr(10))
+        k:=strtran(txt,chr(141)+chr(10))
+        if "utf-8"$lower(left(txt,80))
+          k:=hb_translate(k,,'UTF8')
+        endif
         if expandable
-           txt:=trim(txt)
+           k:=trim(k)
            m:=val(subs(get:picture,1+at("S",get:picture)))
-           if len(txt)<m
-              txt:=padr(txt,m)
+           if len(k)<m
+              k:=padr(k,m)
            endif
         endif
-        fixbuff(get,txt)
+        fixbuff(get,k)
   endif
 
     RESTSCREEN(r1,c1,r2,c2,sc)

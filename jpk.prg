@@ -409,11 +409,11 @@ DEFAULT i TO 1
     case 'H'
         while i<=len(subtree)
             v:=hb_HValueAt(subtree,i)
-            k:=trim(hb_HKeyAt(subtree,i))
-            if v=NIL
+            if empty(v) .and. valtype(v)<>'N'
                hb_hDelAt(subtree,i)
                loop
             endif
+            k:=trim(hb_HKeyAt(subtree,i))
             if valtype(v)='A'
                j:=1
                while j<=len(v)
