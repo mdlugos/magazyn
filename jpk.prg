@@ -207,8 +207,12 @@ local scr,i
    ans:=subs(ans,i)
 return ans //hb_translate(ans,'UTF8',)
 
-func ksef_sendfa(faxml,b,d)
-local a,c:=memoread(faxml),ans,i,scr
+func ksef_sendfa(c,b,d)
+local a,ans,i,scr
+
+   if len(c)<1024
+      c:=memoread(c)
+   endif
 
    b:={'invoiceHash'=>{'fileSize'=>len(c), 'hashSHA'=> {'algorithm'=> 'SHA-256', 'encoding'=> 'Base64', 'value'=> HB_BASE64ENCODE(HB_SHA256(c,.t.))}}, 'invoicePayload'=> {'type'=> 'plain', 'invoiceBody'=>HB_BASE64ENCODE(c)}}
    hb_hautoadd(b,.t.)
@@ -343,11 +347,10 @@ return hb_hash('Naglowek',hb_hash("KodFormularza","FA","WariantFormularza",D_KSE
           "FaWiersz",{},"Rozliczenie",,"Platnosc",,"WarunkiTransakcji",,"Zamowienie",),;
      "Stopka",)
 
-func ksef_fa(fa, dok, filen)
+func ksef_fa(fa, filen)
 local element, node, s
 
-     DEFAULT dok TO strtran(trim(FIELD->smb_dow+FIELD->nr_dowodu),' ','0')
-     DEFAULT filen TO str(year(FIELD->Data)%100,2)+dok+".xml"
+     DEFAULT filen TO str(year(FIELD->Data)%100,2)+strtran(trim(FIELD->smb_dow+FIELD->nr_dowodu),' ','0')+".xml"
 
      if tree<>NIL
           alarm("Poprzedna faktura nie zakoäczona")
@@ -384,12 +387,19 @@ local element, node, s
      addtree(jpk,fa,hb_HPos(fa,'Podmiot1'))
 
      mxmlsetwrapmargin(250)
-     mxmlSaveFile( tree, memvar->defa+filen , @wscb() )
+     if len(filen) < 1024
+        s:=memvar->defa+filen
+        mxmlSaveFile( tree, s , @wscb() )
+     else
+        mxmlSaveString( tree, @filen , @wscb() )
+        s:=filen
+     endif
+     
      mxmlDelete(tree)
      tree:=NIL
      //SET DATE A_SET_DAT
 
-return memvar->defa+filen
+return s
 
 //json2xml
 static function addtree(node,subtree,i)

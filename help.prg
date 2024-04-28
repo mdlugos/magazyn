@@ -135,7 +135,7 @@ osk:=HB_SETKEYSAVE()
     txt=MEMOEDIT(txt,r1+2,c1+3,r2-2,c2-3,.T.,"hufunc",ll,8,l,c,cl,cc)
     k:=lastkey()
     if k=K_CTRL_W .or. k=K_F10 .or. k=K_CTRL_L
-          MEMOWRIT(HTEXT,strtran(txt,chr(141)+chr(10)))
+          HB_MEMOWRIT(HTEXT,strtran(txt,chr(141)+chr(10)),.f.)
     elseif k=K_CTRL_P .and. 1=alarm("Czy drukowa†",{"Tak","Nie"},2)
           set console off
           k:=getlines(hardcr(txt))
@@ -179,7 +179,7 @@ osk:=HB_SETKEYSAVE()
        endif
        txt:=memoread(n)
        else
-        MEMOWRIT(n,strtran(txt,chr(141)+chr(10)))
+        MEMOWRIT(n,strtran(txt,chr(141)+chr(10)),.f.)
      endif
      message(m)
      loop

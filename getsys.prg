@@ -1355,7 +1355,7 @@ osk:=HB_SETKEYSAVE()
           endif
           txt:=memoread(n)
          else
-          MEMOWRIT(n,strtran(txt,chr(141)+chr(10)))
+          HB_MEMOWRIT(n,strtran(txt,chr(141)+chr(10)),.f.)
          endif
        elseif k$"BX"
         bp:=3-bp
