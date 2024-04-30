@@ -106,14 +106,14 @@ else
    defa:=getenv("MAGDEF")
 endif
 
-IF ""#defa .and. right(defa,1)<>HB_ps()
-   defa+=HB_ps()
-endif
+defa:=getlines(defa,HB_OsPathListSeparator())
+
+aeval(defa,{|x,i|if(right(x,1)<>HB_ps(),defa[i]+=HB_ps(),)})
 
 #ifdef A_NETIO
    public netio:=''
 #ifdef A_TERMINAL
-   netio_MTServer( 2941,,defa, /* RPC */ .T., )
+   netio_MTServer( 2941,,atail(defa), /* RPC */ .T., )
 /*   
  *       netio_MTServer( [<nPort>], [<cIfAddr>], [<cRootDir>], [<xRPC>],
  *                       [<cPasswd>], [<nCompressionLevel>], [<nStrategy>],
@@ -123,7 +123,7 @@ endif
    HB_IDLESLEEP(.1)
 #endif
    if netio_connect( A_NETIO, '2941' )
-      netio:=defa
+      netio:=atail(defa)
    endif
 #endif
   a:=DiskName()+HB_OsDriveSeparator()+HB_ps()+curdir(DiskName())+HB_ps()
@@ -134,26 +134,22 @@ if curdir()=HB_ps()
 endif
 #endif
 
-if defa='.'+HB_ps()
-   defa:=a+subs(defa,3)
-elseif defa='..'+HB_ps()
-   i:=rat(HB_ps(),left(a,len(a)-1))
-   if i>0
-     defa:=left(a,i)+subs(defa,4)
-   endif
-endif
+aeval(defa,{|x,j,i|defa[j]:=if(x='.'+HB_ps(),a+subs(x,3),if(x='..'+HB_ps().and.(i:=rat(HB_ps(),left(a,len(a)-1)))>0,left(a,i)+subs(x,4),x))})
 
-if lower(a)=lower(defa)
-  i:=len(defa)
-  if i=0 
-     defa:=a
-  else
-     defa:=left(a,i)
-  endif
-  SET PATH TO (defa)
+menu:=.f.
+aeval(defa,{|x,j,i|if(lower(a)=lower(x),(menu:=.t.,defa[j]:=if((i:=len(x))=0,a,left(a,i))),)})
+
+if menu
+  a:=defa[1]
+  i:=2
 else
-  SET PATH TO (a+HB_OsPathListSeparator()+defa)
-endif
+  i:=1
+end if
+
+aeval(defa,{|x|a+=HB_OsPathListSeparator()+x},i)
+SET PATH TO (a)
+
+defa:=atail(defa)
 
 #ifdef A_DIETA
 if parametr='DIETADEF='
