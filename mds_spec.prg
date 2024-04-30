@@ -342,7 +342,7 @@ stat func _srap(txt,_s)
   memvar defa,oprn
      a:=DIRECTORY(linpath(TXT))
      IF EMPTY(A)
-     a:=DIRECTORY(linpath(DEFA+TXT))
+     a:=DIRECTORY(defa+linpath(TXT))
      p:=defa
      ENDIF
      _sdir:=array(len(a))

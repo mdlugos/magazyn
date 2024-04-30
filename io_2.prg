@@ -372,7 +372,7 @@ local a,l,i,y:=""
             exit
           endif
 #ifdef __PLATFORM__UNIX
-          y:=Lower(strtran(y,'\','/'))
+          y:=strtran(a[i]+Lower(x),'\','/')
           if file(y)
              exit
           endif
@@ -1839,7 +1839,7 @@ function KCR_U(mode,l,c)
        m:=message("PODAJ  (R, W);ROZKAZ:;... ")
        k:=upper(chr(inkey(0)))
        @ m[1]+1,m[2]+8 say "NAZW¨: "
-       n:=pad(MAMVAR->defa,64)
+       n:=pad(MEMVAR->defa,64)
        getlist:={}
        @ m[1]+2,m[2]+2 get n picture "@KS14"
        read
