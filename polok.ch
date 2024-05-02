@@ -1,6 +1,6 @@
   #ifdef __PLATFORM__WINDOWS
     #define PLWIN
-    #define A_WIN_PRN eval(memvar->do_getoprn)
+//    #define A_WIN_PRN eval(memvar->do_getoprn)
     #define A_ZEBRA
     #define A_EXT hb_hextonum, hb_numtohex, curdir
     #define A_WIN_PRN .f.

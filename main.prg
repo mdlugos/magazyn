@@ -73,7 +73,8 @@ memvar netio
 #endif
 
 MEMVAR  oprn,year2bckp,mag_biez,mag_poz,magazyny,adres_mag,mag_link,_sbkgr,_sbnorm,;
-        dok_par,dokumenty,firma_n,DOK_ROZCH,dok_zewn,dok_zby,dok_fak,dok_ewid,dok_vat,r
+        dok_par,dokumenty,firma_n,DOK_ROZCH,dok_zewn,dok_zby,dok_fak,dok_ewid,dok_vat,;
+        dok_zapl,r
 
 MEMVAR  stary_rok,operator,is_spec,jmiar,stanowis,zamowienie,level1,defa,_snorm
 memvar rodz_sprzed
@@ -97,6 +98,7 @@ public defa,oprn
 #ifdef PLWIN
    hb_gtInfo( HB_GTI_WINTITLE , "Magazyn" )
 #endif
+altd()
 if parametr='MAGDEF='
    defa:=subs(parametr,8)
    parametr:=mag_biez
@@ -108,6 +110,9 @@ endif
 
 defa:=getlines(defa,HB_OsPathListSeparator())
 
+if empty(defa)
+   defa:={'.'}
+endif
 aeval(defa,{|x,i|if(right(x,1)<>HB_ps(),defa[i]+=HB_ps(),)})
 
 #ifdef A_NETIO
@@ -586,6 +591,9 @@ public dok_zby:="",;
        dok_fak:="",;
        dok_vat:="",;
        dok_ewid:=""
+#ifdef A_FK
+public dok_zapl:=""
+#endif
 #else
 #ifdef A_IZ
 public dok_ewid:=""
@@ -737,6 +745,9 @@ local i,j,txt
          dok_fak  :=strtran(dok_fak , mag_biez+SMB_DOK D_SUBDOK+",",'')
          dok_zby  :=strtran(dok_zby , mag_biez+SMB_DOK D_SUBDOK+",",'')
          dok_ewid :=strtran(dok_ewid, mag_biez+SMB_DOK D_SUBDOK+",",'')
+#ifdef A_FK
+         dok_zapl :=strtran(dok_zapl , mag_biez+SMB_DOK D_SUBDOK+",",'')
+#endif
 #else
 #ifdef A_IZ
          dok_ewid :=strtran(dok_ewid, mag_biez+SMB_DOK D_SUBDOK+",",'')
@@ -823,6 +834,11 @@ local i,j,txt
           if ewidencja#"Z"
              dok_ewid+=left(magazyny[mag_poz],2)+SMB_DOK D_SUBDOK+","
           endif
+#ifdef A_FK
+          if rozlicz
+             dok_zapl+=left(magazyny[mag_poz],2)+SMB_DOK D_SUBDOK+","
+          endif
+#endif
 #else
 #ifdef A_IZ
           if ewidencja#"Z"

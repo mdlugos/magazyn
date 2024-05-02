@@ -130,12 +130,12 @@ endif
 if empty(token['sessiontoken'])
    curl('Session/AuthorisationChallenge','-X POST -H Content-Type:application/json',hb_jsonencode({"contextIdentifier"=>{"type"=>"onip","identifier"=>nip}},,'UTF8'),@ans)
    j:=at('{',ans)
-   if j<=5
-     alarm(ans)
+   if j<=5 .or. empty(j:=hb_jsondecode(substr(ans,j),,'UTF8')) .or. !hb_hhaskey(j,"timestamp")
+     alarm(hb_translate(ans,'UTF8',))
      //restore screen from scr
      return NIL
    endif
-   token['Challenge']:=j:=hb_jsondecode(substr(ans,j),,'UTF8')
+   token['Challenge']:=j
    s:=token['token']+"|"+hb_ntoc(hb_ttomsec(hb_ctot(j["timestamp"],"yyyy-mm-dd","HH:MM:SS.FFF"))-hb_ttomsec(0d19700101),0)
 #ifdef __PLATFORM__UNIX_
    SSL_init()
@@ -170,7 +170,7 @@ if empty(token['sessiontoken'])
    s:=memoline(ans,,1)
    if ' 201 '$s .or. ' 100 '$s
    else
-      alarm(ans)
+      alarm(HB_TRANSLATE(ans,'UTF8',))
       //restore screen from scr
       return NIL
    endif
@@ -189,6 +189,10 @@ local scr,i
    //save screen to scr
    //set color to (_snorm)
    //clear screen
+   b:=trim(b)
+   if len(b)<35
+     return NIL
+   endif
    DEFAULT d TO ksef_initsession()
    IF d=NIL
       //restore screen from scr
@@ -199,8 +203,8 @@ local scr,i
    //restore screen from scr
 
    if empty(i:=at('<?xml',ans))
-      hb_memowrit('get.txt',ans,.f.)
-      alarm(ans)
+      //hb_memowrit('get.txt',ans,.f.)
+      alarm(HB_TRANSLATE(ans,'UTF8',))
       return NIL
    endif
 
@@ -231,7 +235,7 @@ local a,ans,i,scr
       empty(i:=hb_jsondecode(subs(ans,i),,'UTF8')) .or.;
       empty(i:=hb_HGetDef(i,'elementReferenceNumber',''))
       hb_memowrit('send.txt',ans,.f.)
-      alarm(ans)
+      alarm(HB_TRANSLATE(ans,'UTF8',))
       //restore screen from scr
       return NIL
    endif
@@ -251,7 +255,7 @@ local a,ans,i,scr
       c:=hb_HGetDef(i,"processingCode",400)
       if c>=400
         hb_memowrit('status.txt',ans,.f.)
-        alarm(hb_jsonencode(i,.t.))
+        alarm(HB_TRANSLATE(ans,'UTF8',))
         //restore screen from scr
         return NIL
       endif

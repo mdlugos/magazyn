@@ -218,7 +218,13 @@ func DefError(e)
 local i, cMessage:="", aOptions:={}, nChoice,r,t,n,bk,h,f,a,b,c,d
 field nazwa,baza,klucz,path,plik,for,unique,descend
 static s:=0,ee:=NIL
-
+#ifdef __HARBOUR__
+    #ifdef PC852
+     HB_CDPSELECT(PC852)
+    #else
+     HB_CDPSELECT('PLWIN')
+    #endif
+#endif
 // put messages to STDERR
   if e:severity=NIL
      e:severity:=ES_ERROR

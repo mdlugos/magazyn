@@ -828,7 +828,7 @@ local b:=TBColumnNew(m[1],fb)
     endif
 
 return b
-********************
+***************************
 stat func sk(x,a,h)
 #define D_BLEN 512
 local p,r,k,l,n,o,eol
@@ -957,31 +957,41 @@ static i,b,lth
         ++eol
      endif
   endif
-//#ifdef __PLATFORM__UNIX
-//  eol:=if(i<lth.or.subs(b,r+a[i,2],1)=nl,1,0)
-//#else
-//  eol:=if(i<lth.or.subs(b,r+a[i,2]-1,2)=nl,2,0)
-//#endif
   o:=subs(b,r,a[i,2]-eol)
 return strtran(o,chr(9)," ")
 #undef D_BLEN
-**********************
+*********************
 proc fview(f,cdp)
-local a,h,b,c,j,txt,key,scrlflag:=0,frow:=1
+local a,h,b,c,j,txt,key,scrlflag:=0,frow:=1,oldp
 f:=findfile(f)
 h:=fopen(f,64)
 if h<0
    return
 endif
-
+altd()
+  a:=array(3*maxrow())
+  j:=0
+  txt:=sk(.t.,a,h)
 #ifdef __HARBOUR__
-  c:=tbcolumnnew("",if(cdp=NIL,{||subs(txt,j+1)},{||subs(hb_translate(txt,cdp,),j+1)}))
-#else
-  c:=tbcolumnnew("",{||subs(txt,j+1)})
+if !HB_CDPISUTF8(cdp) .and. 'utf-8'$lower(txt)
+  cdp:='UTF8'
+endif
+if !empty(cdp)
+  //txt:=HB_TRANSLATE(txt,cdp,)
+  oldp:=hb_cdpSelect(cdp)
+  if HB_CDPISUTF8(cdp)
+     b:=TUTF8Browse():New(0,0,maxrow(),maxcol())
+     c:=tbcolumnnew("",{||HB_UTF8SUBSTR(txt,j+1)})
+  endif
+endif
 #endif
-
+if empty(b)
+  b:=tbrowseNew(0,0,maxrow(),maxcol())
+endif
+if empty(c)
+  c:=tbcolumnNew("",{||subs(txt,j+1)})
+endif
 c:width:=maxcol()+1
-b:=tbrowsenew(0,0,maxrow(),maxcol())
 b:addcolumn(c)
 b:skipblock:={|x|txt:=sk(@x,a,h),frow+=x,x}
 b:gotopblock:={||txt:=sk(.t.,a,h),frow:=1}
@@ -998,17 +1008,10 @@ c[K_CTRL_PGUP]:={|b|b:gotop()}
 c[K_CTRL_PGDN]:={|b|b:gobottom()}
 c[K_HOME]     :={|b|j:=0,b:refreshall()}
 
-a:=array(3*maxrow())
-j:=0
-txt:=pad(sk(.t.,a,h),maxcol()+1)
 #ifdef __HARBOUR__
-if cdp<>'UTF8' .and. 'utf-8'$lower(txt)
-  cdp:='UTF8'
-  txt:=HB_TRANSLATE(txt,cdp,)
-endif
 if nextkey()=0 //.and. fseek(h,0,2) < 65536
   b:forcestable()
-  @ maxrow(),maxcol()-31 SAY 'ALT+B - kopiuj CAO— do schowka' COLOR _sramka
+  @ maxrow(),maxcol()-31 SAY HB_TRANSLATE('ALT+B - kopiuj CAO— do schowka',oldp,) COLOR _sramka
 endif
 #endif
 do while .t.
@@ -1026,7 +1029,7 @@ do while .t.
       exit
 #ifdef __HARBOUR__
    elseif key=K_ALT_B //.and. fseek(h,0,2) < 65536
-      hb_gtInfo( HB_GTI_CLIPBOARDDATA , strtran(strtran(memoread(f),'³','|'),"|",chr(9)) )
+      hb_gtInfo( HB_GTI_CLIPBOARDDATA , memoread(f) )
 #endif
    elseif key>0 .and. key<32 .and. c[key]#NIL
       eval(c[key],b)
@@ -1060,5 +1063,8 @@ do while .t.
 enddo
 sk() //kasuj buf
 fclose(h)
+if !empty(oldp)
+  hb_cdpSelect(oldp)
+endif
 return
 ***********

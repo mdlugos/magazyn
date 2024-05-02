@@ -968,7 +968,10 @@ while valtype(oprn)='O' .and. ""<>x
         oprn:Destroy()
         oprn:BinNumber:=c
         oprn:Create()
+        oprn:BottomMargin:=oprn:PageHeight - 3 * oprn:LineHeight + 1
+        oprn:TopMargin:=oprn:LineHeight
         oprn:StartDoc()
+        setprc(oprn:PRow(),oprn:PCol())
         if isupper(subs(x,j,1))
            x:=stuff(x,i,j-i+1,'')
         else

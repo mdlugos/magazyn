@@ -1278,7 +1278,7 @@ procedure dok2(_f,getlist)
 #endif
 #ifdef A_KSEF
     @ _frow-1,11 GET n_ksef SEND block:={||n_ksef}
-    @ _frow-1,50 GET xml_ksef SEND block:={||xml_ksef} PICTURE "@S28"
+    @ _frow-1,50 GET xml_ksef PICTURE "@KS28" SEND block:={|x|if(x=NIL.or.!empty(x).or.ksef_getfa(n_ksef,,@x)=NIL.and.alarm('Bˆ¥d:'+HB_EOL()+hb_translate(x,'UTF8',))<>NIL,xml_ksef,xml_ksef:=x)}
 #endif
     @ _frow,2 GET uw picture "@KS76" send cargo:=.t.
     return

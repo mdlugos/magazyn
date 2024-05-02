@@ -68,9 +68,9 @@
 #ifdef A_FK
 field transport
 #ifdef A_ZAGRODA
-#define DOLAR if(ROUND(BRUTTO-zaplacono,A_ZAOKR)=0 .or. przelewem=0,'³','$')
+#define DOLAR if(!KEY_DOK$dok_zapl .or. ROUND(BRUTTO-zaplacono,A_ZAOKR)=0 .or. przelewem=0,'³','$')
 #else
-#define DOLAR if(ROUND(BRUTTO-val(transport)-zaplacono,A_ZAOKR)=0,'³','$')
+#define DOLAR if(!KEY_DOK$dok_zapl .or. ROUND(BRUTTO-val(transport)-zaplacono,A_ZAOKR)=0,'³','$')
 #endif
 #else
 #define DOLAR '³'
@@ -84,9 +84,15 @@ field transport
 
 #endif
 
+#ifdef A_KSEF
+field nr_ksef
+#define D_EF if(len(trim(nr_ksef))<35,'³','õ')
+#else
+#define D_EF '³'
+#endif
 MEMVAR n_f,dd,da,lp,d_o,DOK,SCR,R,nk1,i,nim,il,wa,ce,changed,dok_zewn,;
       nz,MAG_BIEZ,mag_poz,doc_opcja,operator,miar_opcja,is_spec,dok_rozch,;
-      dok_fak,doc_brut,dok_zby,dokumenty
+      dok_fak,doc_brut,dok_zby,dok_zapl,dokumenty
 
 field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,dost_odb,rodz_opak,gram,;
       data_dost,nr_faktury,index,nazwa,adres,uwagi,NUMER_KOL,nr_mag,jm,stan,;
@@ -271,26 +277,26 @@ if doc_opcja
   #ifdef A_FA
    #ifdef A_KPR
            _snagl+="NrKPRÂNr fakturyÄÄÄÂWarto˜†ÄÄÄÂ"
-           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+'³'+nr_kpr+'³'+pad(nr_faktury,13)+KWOTA+D_KH1}
+           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+'³'+nr_kpr+D_EF+pad(nr_faktury,13)+KWOTA+D_KH1}
    #else
            _snagl+="Nr fakturyÄÄÄÂWarto˜†ÄÄÄÂ"
-           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+'³'+pad(nr_faktury,13)+KWOTA+D_KH1}
+           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+KWOTA+D_KH1}
    #endif
   #else
 #ifdef A_F9
            _snagl+="Nr fakturyÄÄÄÂ"
-           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+'³'+pad(nr_faktury,13)+'³'+D_KH1}
+           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+'³'+D_KH1}
 #else
     #ifdef A_VAT
            _snagl+="Nr fakturyÄÄÄÂÄÄÄVATÄÄÄÄÂ"
-           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+'³'+pad(nr_faktury,13)+"³"+tran(warT_vaT,WAPICT)+'³'+D_KH1}
+           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+"³"+tran(warT_vaT,WAPICT)+'³'+D_KH1}
     #else
       #ifdef A_WE
            _snagl+="Nr fakturyÄÄÄÂWarto˜†ÄÄÄÂ"
-           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+'³'+pad(nr_faktury,13)+'³'+tran(warT_ewiD*if(KEY_DOK$dok_rozch,-1,1),WAPICT)+'³'+D_KH1}
+           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+'³'+tran(warT_ewiD*if(KEY_DOK$dok_rozch,-1,1),WAPICT)+'³'+D_KH1}
       #else
            _snagl+="Nr fakturyÄÄÄÂ"
-           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+'³'+pad(nr_faktury,13)+'³'+D_KH1}
+           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+'³'+D_KH1}
       #endif
     #endif
 #endif
