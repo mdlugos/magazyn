@@ -684,7 +684,7 @@ function window(rown,coln,color)
    endif
    lc := SETCOLOR(color)
    colorselect(3)
-   @ r1,c1,r2,c2 BOX 'ÚÄ¿³ÙÄÀ³ '
+   @ r1,c1,r2,c2 BOX HB_TRANSLATE('ÚÄ¿³ÙÄÀ³ ',PC852,)
    colorselect(0)
    return({r1,c1,r2,c2,sc,rs,cs,cu,lc})
  elseif sc="A"
@@ -1276,7 +1276,7 @@ local j,x
 return
 *************
 FUNCTION ARREDIT(a,n,p,v,w,r,t,tb)
-local i,win,b,j,k,c,x,fr:=1
+local saved_a:=_a,i,win,b,j,k,c,x,fr:=1,utf8:=HB_CDPISUTF8(HB_CDPSELECT())
 j:=len(a[1])
 
 if j=0
@@ -1303,21 +1303,29 @@ else
   n:=array(j)
 endif
 _a:=a[1]
+if utf8
+aeval(_a,{|x,y|if(x=NIL,x:=_a[y]:=space(5),),j+=max(if(n[y]=NIL,0,hb_utf8len(n[y])),hb_utf8len(Tran(x,p[y])))})
+else
 aeval(_a,{|x,y|if(x=NIL,x:=_a[y]:=space(5),),j+=max(if(n[y]=NIL,0,len(n[y])),len(Tran(x,p[y])))})
+endif
 
 win:=window(i,j)
 
        i:=1
-       b:=tbrowsenew(win[1]+1,win[2]+1,win[3]-1,win[4]-1)
-       b:colsep:='³'
+       if utf8
+         b:=tutf8browse():new(win[1]+1,win[2]+1,win[3]-1,win[4]-1)
+       else
+         b:=tbrowsenew(win[1]+1,win[2]+1,win[3]-1,win[4]-1)
+       endif
+       b:colsep:=HB_TRANSLATE('³',PC852,)
        if valtype(n)='A'
-          b:headsep:='ÂÄ'
+          b:headsep:=HB_TRANSLATE('ÂÄ',PC852,)
        endif
        b:gotopblock:={||i:=1,_a:=a[i],i}
        b:gobottomblock:={||i:=len(a),_a:=a[i],i}
        b:skipblock:={|n,l|l:=i,i+=n,i:=max(1,min(i,len(a))),_a:=a[i],i-l}
        if t<>NIL
-          b:footsep:='ÁÄ'
+          b:footsep:=HB_TRANSLATE('ÁÄ',PC852,)
        endif
 
        c:=tbcolumnnew(,{||i})
@@ -1332,7 +1340,11 @@ win:=window(i,j)
            c:heading:=n[j]
          endif
          c:picture:=p[j]
+         if utf8
+         c:width:=max(if(n[j]=NIL,0,hb_utf8len(n[j])),hb_utf8len(Tran(a[1,j],p[j])))
+         else
          c:width:=max(if(n[j]=NIL,0,len(n[j])),len(Tran(a[1,j],p[j])))
+         endif
          if t<>NIL
             c:Footing:=Space(c:width)
          endif
@@ -1457,6 +1469,7 @@ win:=window(i,j)
 
 window(win)
 
+_a:=saved_a
 RETURN k<>K_ESC
 #endif
 *******************
