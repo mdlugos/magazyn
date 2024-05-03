@@ -2,7 +2,7 @@
 #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usˆug Informatycznych Marek Dˆugosz, 43-400 Cieszyn, ul. R¢wna 16'
 #define A_MULTIDI 'PS'
 #define A_MAGDI '10'
-#define PC852
+#define PC852 'PL852M'
 #define PLWIN
 #define UpP(x) UPPER(x)
 #define A_CDX DBFCDX

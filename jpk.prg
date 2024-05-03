@@ -327,7 +327,7 @@ func ksef_fah()
      endif
 
 return hb_hash('Naglowek',hb_hash("KodFormularza","FA","WariantFormularza",D_KSEF_VARIANT,;
-          "DataWytworzeniaFa",hb_dtoc(date(),'YYYY-MM-DD')+'T'+time()+'Z',;
+          "DataWytworzeniaFa",stuff(HB_TSTOSTR(HB_TSTOUTC(hb_DateTime())),11,1,'T')+'Z',;
           "SystemInfo",A_STOPKA),;
           'Podmiot1',hb_hash("PrefiksPodatnika",,"NrEORI",,;
                "DaneIdentyfikacyjne",{"NIP"=>trim(strtran(memvar->firma_NIP,'-')),"Nazwa"=>Trim(memvar->firma_pelnaz)},;
@@ -542,7 +542,7 @@ local element,node
       mxmlNewText( node,, "1")
 
      node := mxmlNewElement( element, "DataWytworzeniaJPK")
-      mxmlNewText( node,, hb_dtoc(date(),'YYYY-MM-DD')+'T'+time())
+      mxmlNewText( node,, stuff(HB_TSTOSTR(HB_TSTOUTC(hb_DateTime())),11,1,'T')+'Z')
 
      node := mxmlNewElement( element, "DataOd")
       mxmlNewText( node,, hb_dtoc(od,'YYYY-MM-DD') )
@@ -866,7 +866,7 @@ if dekl
       mxmlNewText( node,, STR(DD_WARIANT,1))
 
      node := mxmlNewElement( element, "DataWytworzeniaJPK")
-      mxmlNewText( node,, hb_dtoc(date(),'YYYY-MM-DD')+'T'+time())
+      mxmlNewText( node,, stuff(HB_TSTOSTR(HB_TSTOUTC(hb_DateTime())),11,1,'T')+'Z')
 
 #ifdef A_STOPKA
      node := mxmlNewElement( element, "NazwaSystemu")   
@@ -915,7 +915,7 @@ else
 #endif
 
      node := mxmlNewElement( element, "DataWytworzeniaJPK")
-      mxmlNewText( node,, hb_dtoc(date(),'YYYY-MM-DD')+'T'+time())
+      mxmlNewText( node,, stuff(HB_TSTOSTR(HB_TSTOUTC(hb_DateTime())),11,1,'T')+'Z')
 
      node := mxmlNewElement( element, "DataOd")
       mxmlNewText( node,, hb_dtoc(od,'YYYY-MM-DD') )
@@ -1545,7 +1545,7 @@ DEFAULT waluta TO 'PLN'
      //d:=set(_SET_DATEFORMAT,'YYYY-MM-DD')
 
      node := mxmlNewElement( element, "DataWytworzeniaJPK")
-      mxmlNewText( node,, hb_dtoc(date(),'YYYY-MM-DD')+'T'+time())
+      mxmlNewText( node,, stuff(HB_TSTOSTR(HB_TSTOUTC(hb_DateTime())),11,1,'T')+'Z')
 
      node := mxmlNewElement( element, "DataOd")
       mxmlNewText( node,, hb_dtoc(od,'YYYY-MM-DD') )
@@ -1760,7 +1760,7 @@ local a,b,c,d,element,node
      //d:=set(_SET_DATEFORMAT,'YYYY-MM-DD')
 
      node := mxmlNewElement( element, "DataWytworzeniaJPK")
-      mxmlNewText( node,, hb_dtoc(date(),'YYYY-MM-DD')+'T'+time())
+      mxmlNewText( node,, stuff(HB_TSTOSTR(HB_TSTOUTC(hb_DateTime())),11,1,'T')+'Z')
 
      node := mxmlNewElement( element, "DataOd")
       mxmlNewText( node,, hb_dtoc(od,'YYYY-MM-DD') )
