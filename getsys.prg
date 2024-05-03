@@ -1294,11 +1294,11 @@ static proc getchr(get,expandable)
 
     sc = SAVESCREEN(r1,c1,r2,c2)
     if iscolor()
-       @ r1,c1,r2,c2 BOX '矬興椔應 ' color "BG+/BG"
+       @ r1,c1,r2,c2 BOXB '矬興椔應 ' color "BG+/BG"
        lc = SETCOLOR("W+/B")
     else
         lc = SETCOLOR("I")
-        @ r1,c1,r2,c2 BOX '矬興椔應 '
+        @ r1,c1,r2,c2 BOXB '矬興椔應 '
     endif
         SET COLOR TO I
         @ r1,c1+3  say 'WPIS WIELOWIERSZOWY'

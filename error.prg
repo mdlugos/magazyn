@@ -47,8 +47,8 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
   HB_LANGSELECT('PL')
 
   REQUEST HB_CODEPAGE_PL852M
+  REQUEST HB_CODEPAGE_PLMAZ //ramki
   #ifdef PLWIN
-   REQUEST HB_CODEPAGE_PLWIN
    request hb_translate
    hb_gtInfo( HB_GTI_FONTNAME , "Lucida Console" )
    hb_gtInfo( HB_GTI_FONTWIDTH, 10  )
@@ -62,6 +62,7 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
     #ifdef PC852
      HB_CDPSELECT(PC852)
     #else
+     REQUEST HB_CODEPAGE_PLWIN
      HB_CDPSELECT('PLWIN')
     #endif
   #else

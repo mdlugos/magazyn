@@ -3213,7 +3213,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
       u+=" "
       s:=SAVESCREEN(9,_scol1-1, 20, _scol2)
       set color to (_SRAMKA)
-      @  9,_scol1-1, 20, _scol2 BOX '赏缓纪群 '
+      @  9,_scol1-1, 20, _scol2 BOXB '赏缓纪群 '
       @  9,_scol1+1 SAY 'Poprawianie dopisywanie kasowanie firmy'
       @ 11,_scol1+1 SAY 'Nr'
 #ifdef A_KHFILLZERO
@@ -3398,7 +3398,7 @@ if token=NIL
 endif
 s:=max(d-10,s)
 d:=min(date(),s+10)
-s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject1', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(s,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(d,'YYYY-MM-DD')+'T23:59:59'}},,'UTF8')
+s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject2', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(s,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(d,'YYYY-MM-DD')+'T23:59:59'}},,'UTF8')
 curl('Query/Invoice/Sync?PageSize=100&PageOffset=0','-X POST -H Content-Type:application/json -H sessionToken:'+token,s,@ans)
 //REST SCREEN FROM scr
 s:=hb_JsonDecode(subs(ans,at('{',ans)),,'UTF8')

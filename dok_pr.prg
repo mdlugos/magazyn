@@ -1030,7 +1030,7 @@ DO CASE
         ENDIF
         endif
 #ifdef A_JMO
-   case _skey=-7 .and. !doc_opcja //F8
+   case _skey=K_F8 .and. !doc_opcja //F8
       miar_opcja=!miar_opcja
       aeval(_srec,{|x,i|dbgoto(x),setpos(_srow1+i-1,_scol1),dispout(padr(eval(_sprompt,0,_s),_scol2-COL()))},1,_si)
       SAVE LINE _sm+_srow1-1

@@ -94,7 +94,7 @@ MEMVAR r,mag_biez,mag_poz,magazyny,adres_mag,is_spec,operator,dok_par,dokumenty,
        ce,ck,wa,chg_cen,dok_w1,nowystan,dflag,darr,dpos,dpush,kk,sk,kont_kos,;
        DZIALY,dzial,mater,kont,kos,zap,zac,nrc,uw,cz,tp,wz,rodz_sprzed,;
        sp,st,pv,vat,npr,pm,zaplac,dazapl,ppos,ppush,parr,pflag,avat,stawki,;
-       stawkizby,chgpos,DOK_ZB,STANO,dok_di,kh,nazwis,posilki,diety,path_zb,defa,;
+       stawkizby,chgpos,DOK_ZB,STANO,dok_di,dok_ksef,kh,nazwis,posilki,diety,path_zb,defa,;
        dv,nkp,mknk,n_ksef,xml_ksef
 field  data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,numer_kol,;
        DATA_PRZY,data_dost,dost_odb,kontrahent,nr_faktury,nr_mag,kto_pisal,jm,nazwa,stan,;
@@ -185,12 +185,8 @@ private dok_w1
 #ifdef A_KASA
  #define A_ODDO
 #endif
-#ifdef A_ODDO
+#if defined(A_ODDO) .OR. defined(A_DIETA) .OR. defined(A_KSEF)
  #define D_DIETA_OR_ODDO
-#else
-#ifdef A_DIETA
- #define D_DIETA_OR_ODDO
-#endif
 #endif
 #ifdef A_F9
   private parr,ppos,ppush:=.f.,pflag
@@ -802,7 +798,7 @@ PROCEDURE DOK10(_f)
   endif
 
   set color to (_sbkgr)
-  @ 1,0,6,79 BOX 'ษอปบบ บบ '
+  @ 1,0,6,79 BOXB 'ษอปบบ บบ '
   if dok_kh
     @ 1,2 SAY if(pm=-1,"Odbiorca:","Dostawca:")
     @ 1,12 SAY trim(dok_naz)
@@ -814,7 +810,7 @@ _frow:=2
 
 #ifdef A_FA
   if dok_p_r="F"
-    @ 5,0,11,79 BOX 'ฬฤนบบ บบ '
+    @ 5,0,11,79 BOXB 'วฤถบบ บบ '
     _frow:=7
  #ifdef A_FK
    if dok_fk
@@ -888,7 +884,7 @@ _frow:=2
  #undef D_ODDO
  #undef D_KPR
     @ 5,7 say "gotขwkฅฤฤฤฤฤฤฤprzelewemฤฤฤฤฤฤฤฤฤkartฅฤฤฤฤฤฤฤNr kartyฤฤฤTermin patnoci"
-    @ _frow+1,0,_frow+4,79 BOX if(pozycja>D_LP1.and.!nowydm,'ฬอนบผฤศบ ','ฬอนบผอศบ ')
+    @ _frow+1,0,_frow+4,79 BOXB if(pozycja>D_LP1.and.!nowydm,'ฬอนบฝฤำบ ','ฬอนบผอศบ ')
     @ _frow+1,2 say 'LpออออออMateriaอออออออออออออออออออออออIloออออออออCena zbytuออ'+WANAZ
     return
     *******
@@ -963,7 +959,7 @@ endif
        devout("    Data   Nr KPR Nr Kol")
     endif
 #endif
-  @ _frow+1,0,_frow+4,79 BOX if(pozycja>D_LP1.and.!nowydm,'ฬอนบผฤศบ ','ฬอนบผอศบ ')
+  @ _frow+1,0,_frow+4,79 BOXB if(pozycja>D_LP1.and.!nowydm,'ฬอนบฝฤำบ ','ฬอนบผอศบ ')
   @ _frow+1,2 say   'LpออKod materiauออออออออออออออออออออออIloออออออออCenaออออออออ'+WANAZ
 #ifdef A_SB
   @ _frow+1,10 SAY if(dok_p_r="S",'Stan bieพ.',if(""=dok_kon,'','ออ'+if(dok_zew="W","Zlecenie","Rodzaj")))
@@ -1277,7 +1273,7 @@ procedure dok2(_f,getlist)
     endif
 #endif
 #ifdef A_KSEF
-    @ _frow-1,11 GET n_ksef SEND block:={||n_ksef}
+    @ _frow-1,11 GET n_ksef SEND block:={||n_ksef}   //tylko odczyt
     @ _frow-1,50 GET xml_ksef PICTURE "@KS28" SEND block:={|x|if(x=NIL.or.!empty(x).or.ksef_getfa(n_ksef,,@x)=NIL.and.alarm('Bฅd:'+HB_EOL()+hb_translate(x,'UTF8',))<>NIL,xml_ksef,xml_ksef:=x)}
 #endif
     @ _frow,2 GET uw picture "@KS76" send cargo:=.t.
@@ -1303,7 +1299,7 @@ procedure dok2(_f,getlist)
 #endif
 #ifdef A_KSEF
       @ _frow-2,11 get n_ksef picture "@K" VALID ksef_valid() // WHEN NOWYDM .or. pozycja=D_LP0
-      @ _frow-2,50 GET xml_ksef SEND block:={||HB_TRANSLATE(xml_ksef,'UTF8',)} PICTURE "@S28"
+      @ _frow-2,50 GET xml_ksef PICTURE "@S28" SEND block:={||xml_ksef}
 #endif
       @ _frow,2 GET n_f PICTURE "@KS13"
 #ifndef A_GOCZ
@@ -1651,6 +1647,16 @@ memvar exp_od,exp_do
  if dok_zew="W" .and. ""#dok_kon
     NZ:=subs(SK,4,1)+IF(SK="50","00",if(sk="52","11","  "))+RIGHT(SK,2)+"0000"
  ENDIF
+#endif
+#ifdef A_KSEF
+  if dok$DOK_KSEF .AND. empty(darr)
+    altd()
+    darr:=getlines(hb_jsonencode(xml2json(xml_ksef,'FaWiersz'),.t.))
+    if (dpos:=min(_flp+1,len(darr)))=1
+        @ _frow+4,1 say 'Pozycje z KSeF pod [F8]' color _sbkgr
+    endif
+    dflag:=dm->pozycja=D_LP0 .and. dpos>0
+  endif
 #endif
 #ifdef A_ODDO
     if dok$DOK_ZB .AND. empty(darr)
@@ -2669,7 +2675,7 @@ IF p='DOK4'
       endif
    else
       ++_fl
-      @ (_fl-_fj)*_fskip+_frow,_fco1,(_fl-_fj+1)*_fskip+_frow,_fco2 BOX 'บ บบผอศบ ' color _sbkgr
+      @ (_fl-_fj)*_fskip+_frow,_fco1,(_fl-_fj+1)*_fskip+_frow,_fco2 BOXB 'บ บบผอศบ ' color _sbkgr
       @ (_fl-_fj)*_fskip+_frow,_fco1+1 SAY str(_fl,3)+'.' color _sbkgr
    endif
    g:killfocus()
@@ -2942,7 +2948,13 @@ static proc azapchoice(g,_f,getlist)
 local pos:=dpos,txt,p,x
        setpos(row(),45)
 
+#ifdef A_KSEF
+       HB_CDPSELECT('UTF8')
+       if (dflag:=aczojs(darr,@nim,@pos,,HB_TRANSLATE("Zbiorขwka "+str(len(darr),3)+" pozycji",PC852,)))
+          HB_CDPSELECT(PC852)
+#else
        if (dflag:=aczojs(darr,@nim,@pos,,"Zbiorขwka "+str(len(darr),3)+" pozycji"))
+#endif
           dpos:=pos
           nim:=darr[dpos]
 #ifdef A_ODDO
@@ -2995,6 +3007,9 @@ endif
 #endif
        ++dpos
        endif
+#ifdef A_KSEF
+       HB_CDPSELECT(PC852)
+#endif
 return
 #endif
 ***********************
@@ -3700,7 +3715,7 @@ if _flp>D_LPVAL(dm->pozycja) .or. if(_flp=0, dm->pozycja >D_LP0,_fi#D_LPVAL(pozy
    _fj:=0
    _fl:=_fi:=1
    RESTSCREEN(_frow+2,_fco1,maxrow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(_frow+2)+1))
-   @ _frow+2,_fco1,_frow+4,_fco2 BOX if(pozycja>D_LP1,'บ บบผฤศบ ','บ บบผอศบ ') color _SBKGR
+   @ _frow+2,_fco1,_frow+4,_fco2 BOXB if(pozycja>D_LP1,'บ บบฝฤำบ ','บ บบผอศบ ') color _SBKGR
    _fpopkey:=.f.
    dok11(_f)
    _fkey:=K_ESC

@@ -1,7 +1,8 @@
-
 #ifdef __HARBOUR__
         #define mkdir(x) makedir(x)
         #command SET RDD DEFAULT [TO] <x> => REQUEST <x>;rddsetdefault(<"x">)
+        #command @ <top>, <left>, <bottom>, <right> BOXB <string> [COLOR <color>] => @ <top>, <left>, <bottom>, <right> BOX HB_UTF8TOSTRBOX(HB_TRANSLATE(<string>,'PLMAZ','UTF8')) [COLOR <color>]
+        #command @ <row>, <col> SAYB <xpr> [COLOR <color>] [CODEPAGE <cdp>] => pushCDP([<cdp>]); @ <row>, <col> SAY <xpr> [COLOR <color>] ; popCDP()
 #else
 #define MSHOW() sysint(51,1)
 #define MHIDE() sysint(51,2)
@@ -56,11 +57,13 @@
         #command @ <row>, <col> => Scroll( <row>, <col>, <row> ) ; SetPos( <row>, <col> )
         #command @ <top>, <left> CLEAR => Scroll( <top>, <left> ) ; SetPos( <top>, <left> )
         #command @ <top>, <left> CLEAR TO <bottom>, <right> => Scroll( <top>, <left>, <bottom>, <right> ) ; SetPos( <top>, <left> )
-        #command @ <top>, <left>, <bottom>, <right> BOX <string> [COLOR <color>] => DispBox( <top>, <left>, <bottom>, <right>, <string> [, <color> ] )
+        #command @ <top>, <left>, <bottom>, <right> BOX <string> [COLOR <color>];
+         => DispBox( <top>, <left>, <bottom>, <right>, <string> [, <color> ] )
         #command @ <top>, <left> TO <bottom>, <right> [DOUBLE] [COLOR <color>] => DispBox( <top>, <left>, <bottom>, <right>, 2 [, <color> ] )
         #command @ <top>, <left> TO <bottom>, <right> [COLOR <color>] => DispBox( <top>, <left>, <bottom>, <right>, 1 [, <color> ] )
         #command @ <row>, <col> SAY <xpr> [PICTURE <pic>] [COLOR <color>] => SetPos( <row>, <col> ) ; DevOutPict(<xpr>, <pic> [, <color>] )
         #command @ <row>, <col> SAY <xpr> [COLOR <color>] => SetPos( <row>, <col> ) ; DevOut( <xpr> [, <color>] )
+        #command @ <row>, <col> SAYB <xpr> [COLOR <color>] => SetPos( <row>, <col> ) ; DevOut( <xpr> [, <color>] )
         #command SET BELL <x:ON,OFF,&> => Set( _SET_BELL, <(x)> )
         #command SET BELL (<x>) => Set( _SET_BELL, <x> )
         #command SET CONFIRM <x:ON,OFF,&> => Set( _SET_CONFIRM, <(x)> )

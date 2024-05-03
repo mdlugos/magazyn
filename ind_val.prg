@@ -281,7 +281,7 @@ endif
     set cursor off
   scr= savescreen(9,1,22,78)
   stos:={}
-  @ 9,1,22,78 BOX '赏缓纪群' color 'RG+/BG'
+  @ 9,1,22,78 BOXB '赏缓纪群' color 'RG+/BG'
   @ 9,3 SAY 'Wpisywanie nowej, poprawianie lub kasowanie starej Karty Materia坲' color 'RG+/BG'
   SET COLOR TO BG+/B
   SCROLL(10,2,21,77,0)

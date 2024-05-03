@@ -498,18 +498,33 @@ local n,a:=NIL,c,d
    return h
 
 func xml2json(xml,e,h)
-local a
-   a:=mxmlLoadString(mxmlNewXML(),xml,MXML_OPAQUE_CALLBACK)
+local a,t,c
+   a:=mxmlLoadString(t:=mxmlNewXML(),xml,MXML_OPAQUE_CALLBACK)
    if empty(a)
-      return h
+      mxmlDelete(t)
+      return NIL
    endif
    a:=mxmlfindelement(a,a,e,,,MXML_DESCEND)
    if !empty(a)
-      DEFAULT H TO {=>}
-      hb_hautoadd(h,.t.)
-      h:=getnode(a,@h)
+      //a := mxmlGetNextSibling(a)
+      h :={getnode(a)}
+      do while .t.
+         a:=mxmlGetNextSibling(a)
+         if empty(a)
+            exit
+         endif
+         c:=mxmlGetElement(a)
+         if c==e
+            aadd(h,getnode(a))
+         elseif !empty(c)
+            exit
+         endif
+      enddo
+      if len(h)<2
+         h:=h[1]
+      endif
    endif
-   mxmlDelete(a)
+   mxmlDelete(t)
 return h
 
 

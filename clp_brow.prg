@@ -50,7 +50,7 @@ else
    go top
 ENDIF
   // frame window
-  @ nTop, nLeft, nBottom, nRight box "ÚÍ¿³ÙÍÀ³"
+  @ nTop, nLeft, nBottom, nRight boxb "ÕÍ¸³¾ÍÔ³"
 
   // clear status row
   @ nTop + 1, nLeft + 1 say Space(nRight - nLeft - 1)
@@ -66,17 +66,17 @@ ENDIF
   oB:nright:= nRight - 1
 #ifdef PLWIN
 #ifdef PC852
-  @ nTop + 3, nLeft say "Ã"
-  @ nTop + 3, nRight say "´"
-  oB:headSep := " Í"
+  @ nTop + 3, nLeft sayb "Æ"
+  @ nTop + 3, nRight sayb "µ"
+  oB:headSep := HB_UTF8TOSTRBOX(HB_TRANSLATE(" Í",'PLMAZ','UTF8'))
 #else
   oB:ColSep  := "|"
   ob:HeadSep := "|—"
 #endif
 #else
-  @ nTop + 3, nLeft say "Ã"
-  @ nTop + 3, nRight say "´"
-  oB:headSep := " Í"
+  @ nTop + 3, nLeft sayb "Æ"
+  @ nTop + 3, nRight sayb "µ"
+  oB:headSep := HB_UTF8TOSTRBOX(HB_TRANSLATE(" Í",'PLMAZ','UTF8'))
 #endif
   oB:skipBlock := {|x| Skipped(x, lAppend)}
 
@@ -259,7 +259,7 @@ ENDIF
       txt=IndexkeY(i)
       scr_buf = SAVESCREEN(8, 1, 19, 78)
       scroll(8, 1, 19, 78, 0)
-      @ 9,3,18,76 BOX "ÚÍ¿³ÙÍÀ³" COLOR "W+"
+      @ 9,3,18,76 BOXB "ÕÍ¸³¾ÍÔ³" COLOR "W+"
       @ 11,5 say "Podaj  numer  klucza  indeksowego  (Esc - bez indeksowania)"
       do while .not. empty(txt)
           @ 11+i,5 prompt str(i,1)+" - " + LEFT(txt, 66)
@@ -327,7 +327,7 @@ ENDIF
 
       scroll(8, 1, 19, 78, 0)
       set color to W+
-      @ 9,3,18,76 BOX "ÚÍ¿³ÙÍÀ³"
+      @ 9,3,18,76 BOXB "ÕÍ¸³¾ÍÔ³"
       set color to W
       @ 11,5 say "Podaj  wyra¾enie filtra            (Esc - rezygnacja)"
       @ 13,5 say 'Dost©pne relacje: =,#,$,<,>,<=,>= '
@@ -968,7 +968,7 @@ h:=fopen(f,64)
 if h<0
    return
 endif
-altd()
+
   a:=array(3*maxrow())
   j:=0
   txt:=sk(.t.,a,h)

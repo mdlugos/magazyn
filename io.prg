@@ -20,6 +20,7 @@ request errorsys
 
 ANNOUNCE RDDSYS
 
+static cdpstack:={},cdpptr:=0
 static _a:={}
 *******************************
 #ifdef mkdir
@@ -684,7 +685,7 @@ function window(rown,coln,color)
    endif
    lc := SETCOLOR(color)
    colorselect(3)
-   @ r1,c1,r2,c2 BOX HB_TRANSLATE('ÚÄ¿³ÙÄÀ³ ',PC852,)
+   @ r1,c1,r2,c2 BOXB 'ÚÄ¿³ÙÄÀ³ '
    colorselect(0)
    return({r1,c1,r2,c2,sc,rs,cs,cu,lc})
  elseif sc="A"
@@ -791,7 +792,7 @@ RETURN(l)
 ****************************************************************************
 FUNCTION ACZOJS(ARRAY,var,_e,alog,tyt) // sciagawka w valid
 
-local _a,_b,_c,_d,_s,_get,_l,_COLOR,_cur,r,c,sl,sx,sp,i
+local utf8:=HB_CDPISUTF8(HB_CDPSELECT()), _a,_b,_c,_d,_s,_get,_l,_COLOR,_cur,r,c,sl,sx,sp,i
 
 if empty(array)
    _e:=0
@@ -806,10 +807,7 @@ endif
 SX:=SL:=_l:=LEN(var) // dˆugo˜† var
 
 IF !EMPTY(VAR)
-if (sl:=at(" ",var))=1 //puste na pocz (kod od spacji)
-   do while subs(var,++sl,1)=" ";enddo
-   do while " "#subs(var,sl,1);++sl;enddo  //sl - dlugosc do nast spacji
-endif
+   sl:=hb_at(" ",var,sl-len(ltrim(var)))
 if sl=0 // peˆne pole
    sl:=_l // sl - dlugosc kodu z okienka
 //   sx:=_l // sx - dlugosc kodu z array (gdy mniejsze od okienka - *)
@@ -891,10 +889,10 @@ IF _c
    _s=SAVESCREEN(_a,_b,_c,_d)
    r:=row()
    c:=col()
-   IF LEN(ARRAY)<maxcol()
-      @ _a,_b,_c,_d BOX 'ÉÍ»º¼ÍÈº' COLOR "GR+/GR"
+   IF LEN(ARRAY)<maxrow()
+      @ _a,_b,_c,_d BOXB 'ÉÍ»º¼ÍÈº' COLOR "GR+/GR"
     ELSE
-      @ _a,_b,_c,_d BOX 'ÉÄ»º¼ÄÈº' COLOR "GR+/GR"
+      @ _a,_b,_c,_d BOXB 'ÖÄ·º½ÄÓº' COLOR "GR+/GR"
    ENDIF
    if tyt#NIL
       @ _a,_b+1 SAY left(tyt,_d-_b) COLOR "GR+/GR"
@@ -947,6 +945,22 @@ ENDIF
 RETURN r   // teraz ok
 **************
 #ifdef __HARBOUR__
+*********************
+
+proc pushcdp(cdp)
+  DEFAULT cdp TO 'PLMAZ'
+  ++cdpptr
+  if len(cdpstack)<cdpptr
+     asize(cdpstack,cdpptr)
+  endif
+  cdpstack[cdpptr]:=hb_cdpselect(cdp)
+return
+proc popcdp()
+   if cdpptr>0
+     hb_cdpselect(cdpstack[cdpptr--])
+   endif
+return
+*********************
 #include "hbclass.ch"
 
 #include "memoedit.ch"
@@ -1606,7 +1620,7 @@ return p
 ***************
 func ACHOICE(r1,c1,r2,c2,a1,a2,ub,p)
 
-local key,b,x,y,ckey,fpass:=.t.,o,c,ld:=1,bkey
+local key,b,x,y,ckey,fpass:=.t.,o,c,ld:=1,bkey,utf8:=HB_CDPISUTF8(HB_CDPSELECT())
 
 c:=tbcolumnnew("",{||a1[p]})
 c:width:=c2-c1+1
@@ -1620,7 +1634,11 @@ else
    a2:=.t.
 endif
 
-o:=tbrowsenew(r1,c1,r2,c2)
+       if utf8
+         o:=tutf8browse():new(r1,c1,r2,c2)
+       else
+         o:=tbrowsenew(r1,c1,r2,c2)
+       endif
 o:gobottomblock:={||p:=len(a1)}
 o:gotopblock:={||p:=1}
 o:skipblock:={|s,old|old:=p,p:=min(max(1,p+s),len(a1)),p-old}
