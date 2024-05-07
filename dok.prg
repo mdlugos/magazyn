@@ -2945,11 +2945,23 @@ return
 
 #ifdef D_DIETA_OR_ODDO
 static proc azapchoice(g,_f,getlist)
-local pos:=dpos,txt,p,x
+  local pos:=dpos,txt,p,x
        setpos(row(),45)
 
 #ifdef A_KSEF
        HB_CDPSELECT('UTF8')
+/*
+&:__mvPrivate("_bv,_bp,_bva,_bvi,_ap,_sb0,_sb1,_sb")
+&:_bv:={|g,a|a:=eval(g:block),g:=g:subscript,a:=a[g[1]],a[6]:=round(a[5]*a[4],2),a[8]:=round(a[6]*(a[7]+100)/100,2),.t.}
+&:_bp:={|x|x[1]:=if(Empty(x[1]),'      ',x[1]),x[2]:=if(Empty(x[2]),'    ',x[2]),x[4]:=if(empty(x[4]),0,val(strtran(x[4],',','.'))),x[5]:=if(empty(x[5]),0,val(strtran(x[5],',','.'))),x[7]:=if(empty(x[7]),0,val(x[7])),x[6]:=round(x[5]*x[4],2),x[8]:=round(x[6]*(x[7]+100)/100,2),indx_mat->(dbseek(mag_biez+left(x[2],4),.f.)),x[9]:=left(indx_mat->nazwa,30)}
+&:_bva:={|g,a,r,x|a:=eval(g:block),r:=g:subscript,a:=a[r[1]],a[2]:=indx_mat->index,a[9]:=left(indx_mat->nazwa,16),a[7]:=val(indx_mat->proc_vat),a[3]:=indx_mat->jm,a[5]:=indx_mat->cena_zak,eval(_bv,g)}
+&:_bvi:={|g,v,r,a,s|if(empty(subs(v,9)),(s:=push_stat(),a:=array(11),a[10]:=UPPER(Trim(v)),a[11]:=.t.,r:=katalog(a,g),if(r,eval(_bva,g),),pop_stat(s),r),.t.)}
+&:_ap:={'@K',,,'@KZ ######.###','@EKZ ####.##','@EZ #####.##','@KZ ##','@EZ ######.##'}
+&:_sb0:={|y,z|_txt:=_txt+AllTrim(Tran(y,_ap[z]))+';'}
+&:_sb1:={|x|aeval(x,_sb0),_txt:=_txt+chr(13)+chr(10)}
+&:_sb:={|g,a|_txt:='',aeval(a,_sb1),g:varput(Left(_txt,Len(_txt)-3))}
+{|a,g,r,k|a:=make_subar(getlines(g:varget()),9),aeval(a,_bp),k:=setkey(-41,NIL),r:=arredit(a,{'Pakiet','Surowce','J.M.','Ilo˜†','Cena','Warto˜†','%V','Brutto'},_ap,{,_bvi,,_bv,_bv},{,,.f.,,,.f.,.f.,.f.,.f.},2,8,{|s,a,i|_p:=Trim(a[i,1]),_s:=0,aeval(a,{|x|if(Trim(x[1])==_p,_s+=x[8],)}),_s}),setkey(-41,k),if(r,eval(_sb,g,a),)
+*/
        if (dflag:=aczojs(darr,@nim,@pos,,HB_TRANSLATE("Zbior¢wka "+str(len(darr),3)+" pozycji",PC852,)))
           HB_CDPSELECT(PC852)
 #else
