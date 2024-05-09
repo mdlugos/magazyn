@@ -1651,11 +1651,17 @@ memvar exp_od,exp_do
 #ifdef A_KSEF
   if dok$DOK_KSEF .AND. empty(darr)
     altd()
-    darr:=getlines(hb_jsonencode(xml2json(xml_ksef,'FaWiersz'),.t.))
-    if (dpos:=min(_flp+1,len(darr)))=1
-        @ _frow+4,1 say 'Pozycje z KSeF pod [F8]' color _sbkgr
+    if xml_ksef="<?xml"
+       a:=xml2json(xml_ksef,'Email') //'FaWiersz')
+    else
+       a:=hb_jsondecode(xml_ksef)
     endif
-    dflag:=dm->pozycja=D_LP0 .and. dpos>0
+    a:=a['Faktura','Fa','FaWiersz']
+    darr:=getlines(hb_jsonencode(a,.t.))
+       if (dpos:=min(_flp+1,len(darr)))=1
+          @ _frow+4,1 say 'Pozycje z KSeF pod [F8]' color _sbkgr
+       endif
+       dflag:=dm->pozycja=D_LP0 .and. dpos>0
   endif
 #endif
 #ifdef A_ODDO

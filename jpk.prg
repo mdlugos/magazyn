@@ -451,83 +451,83 @@ DEFAULT i TO 1
 return node
 
 
-static func getnode(node,h)
-local n,a:=NIL,c,d
-   DEFAULT H TO {=>}
-   hb_hautoadd(h,.t.)
-
-   a:=mxmlGetOpaque( node )
-   //a:=mxmlgetText(node)
-
-   if empty(a)
-      node := mxmlGetFirstChild( node )
-      if empty(node)
-         return h
-      endif
-      node := mxmlGetNextSibling( node )
-      do while !empty(node)
-               n:=mxmlGetElement(node)
-               a:={getnode(node)}
-               do while .t.
-                  node :=mxmlGetNextSibling( node )
-                  if empty(node)
-                     exit
-                  endif
-                  c:=mxmlGetElement(node)
-                  if c==n
-                      aadd(a,getnode(node))
-                  elseif !empty(c)
-                      exit
-                  endif
-               enddo
-               if len(a)<2
-                  a:=a[1]
-               endif
-               h[n]:=a
-      enddo
-   else
-      if !empty(c:=hb_ctot(a,"YYYY-MM-DDThh:mm:ss.fffZ")) .and. hb_TtoN(c)%1<>0
-         a:=c
-      elseif !empty(c:=hb_ctod(a,"YYYY-MM-DD"))
-         a:=c
-      elseif tran(c:=val(a),)==a .and. ('.'$a .or. len(a)<9)
-         a:=c
-      endif
-      return a
+static func getnode(node,f)
+local c,d,a,b,n,h
+   if empty(node)
+      return h
    endif
-   return h
+   n := mxmlGetElement(node)
 
-func xml2json(xml,e,h)
-local a,t,c
-   a:=mxmlLoadString(t:=mxmlNewXML(),xml,MXML_OPAQUE_CALLBACK)
+   DEFAULT F TO ''
+
+   if !f==n
+      h:={=>}
+      hb_hautoadd(h,.t.)
+   endif
+
+   do while !empty(n)
+      a:={}
+      do while !empty(node)
+         c:=mxmlGetElement(node)
+         if c==n
+            d:=mxmlGetOpaque( node )
+            if empty(d)
+               b :=mxmlGetFirstChild( node )
+               b :=mxmlGetNextSibling( b )
+               d :=getnode( b )
+            else
+               if !empty(b:=hb_ctot(d,"YYYY-MM-DDThh:mm:ss.fffZ")) .and. hb_TtoN(b)%1<>0
+                  d:=b
+               elseif !empty(b:=hb_ctod(d,"YYYY-MM-DD"))
+                  d:=b
+               elseif tran(b:=val(d),)==d .and. ('.'$d .or. len(d)<9)
+                  d:=b
+               endif
+            endif
+            if !empty(d)
+               aadd(a,d)
+            endif
+         elseif !empty(c)
+            exit
+         endif
+         node:=mxmlGetNextSibling( node )
+         c:=''
+      enddo
+      if len(a)>0
+         if len(a)<2
+            a:=a[1]
+         endif
+      endif
+      if c<>f .and. f==n
+         return a
+      endif
+      h[n]:=a
+      n:=c
+   enddo
+
+return h
+
+func xml2json(xml,e)
+local a,t:=mxmlNewXML()
+   a:=mxmlLoadString(t,xml,MXML_OPAQUE_CALLBACK)
    if empty(a)
       mxmlDelete(t)
       return NIL
    endif
-   a:=mxmlfindelement(a,a,e,,,MXML_DESCEND)
+   if empty(e)
+      e:=''
+      a :=mxmlGetFirstChild( a )
+      a :=mxmlGetNextSibling( a )
+      a :=mxmlGetNextSibling( a )
+   else
+      a:=mxmlfindelement(a,a,e,,,MXML_DESCEND)
+   endif
    if !empty(a)
-      //a := mxmlGetNextSibling(a)
-      h :={getnode(a)}
-      do while .t.
-         a:=mxmlGetNextSibling(a)
-         if empty(a)
-            exit
-         endif
-         c:=mxmlGetElement(a)
-         if c==e
-            aadd(h,getnode(a))
-         elseif !empty(c)
-            exit
-         endif
-      enddo
-      if len(h)<2
-         h:=h[1]
-      endif
+      a:=getnode(a,e)
    endif
    mxmlDelete(t)
-return h
-
-
+return a
+   
 func jpk_krnagl(od,do,waluta)
 local element,node
 
