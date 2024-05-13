@@ -49,13 +49,13 @@ DatY->(dbgoto(1))
 m=menupom
 SET COLOR TO GR+/GR
 
-@ 7,maxcol()/2+15,16,maxcol()/2+33 BOXB 'ÉÍ»º¼ÍÈº'
+@ 7,maxcol()/2+15,16,maxcol()/2+33 BOX 'ÉÍ»º¼ÍÈº'
 
 if !iscolor()
    set color to W
 endif
 
-@ 18,maxcol()/2-39,20,maxcol()/2+39 BOXB 'ÉÍ»º¼ÍÈº '
+@ 18,maxcol()/2-39,20,maxcol()/2+39 BOX 'ÉÍ»º¼ÍÈº '
 
 if iscolor()
    SET COLOR TO W+/GR
@@ -302,7 +302,7 @@ local i:=3
         if iscolor()
            SET COLOR TO BG+/B
         endif
-        @ 20,maxcol()/2-20,23,maxcol()/2+20 BOXB 'ÉÍ»º¼ÍÈº '
+        @ 20,maxcol()/2-20,23,maxcol()/2+20 BOX 'ÉÍ»º¼ÍÈº '
         @ 20,maxcol()/2-15 SAY "Wybierz jedn¥ z podanych dat:"
         SET MESSAGE TO 22 CENTER
         @ 21,maxcol()/2-18 PROMPT dtoc(DatY->d_z_mies1) MESSAGE "        Tylko ostatnie ruchy.       "

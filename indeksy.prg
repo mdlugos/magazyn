@@ -235,7 +235,7 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
  #else
   #define LARTXT left(nazwA,44)+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
  #endif
-  RET:=IF(ALIAS(sel:=I_LAM(STANY->(if(il=NIL.and.da>data_zmian.and.stan#0,data_zmian,da))))="IND_LAM","|","³")
+  RET:=IF(ALIAS(sel:=I_LAM(STANY->(if(il=NIL.and.da>data_zmian.and.stan#0,data_zmian,da))))="IND_LAM","Å","³")
   if _sbeg=1
   else
     //sel:=select("INDX_MAT")
@@ -247,7 +247,7 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
  #else
   #define LARTXT nazwA
  #endif
-  RET:=IF(ALIAS(sel:=I_LAM(if(il=NIL.and.da>STANY->data_zmian.and.STANY->stan#0,STANY->data_zmian,da)))="IND_LAM","|","³")
+  RET:=IF(ALIAS(sel:=I_LAM(if(il=NIL.and.da>STANY->data_zmian.and.STANY->stan#0,STANY->data_zmian,da)))="IND_LAM","Å","³")
 #endif
 
 #ifdef A_TRWALOSC
@@ -835,7 +835,7 @@ DO CASE
 
 #ifdef A_SZYM
    case _skey=43 .and. il#NIL .and. dok="ZL"
-   //.and. firmy->(if(il=NIL,szukam({1,14,maxrow(),,1,0,'FIRMY',{||numer_kol+if(""=uwagi,"|","*")+nazwa},{|_skey,_s|_sret:=_skey=13,_skey=13 .or. _skey=27},""}),eof()))
+   //.and. firmy->(if(il=NIL,szukam({1,14,maxrow(),,1,0,'FIRMY',{||numer_kol+if(""=uwagi,"³","*")+nazwa},{|_skey,_s|_sret:=_skey=13,_skey=13 .or. _skey=27},""}),eof()))
       if _si=0
          _srec[1]:=recno()
          _sm:=1

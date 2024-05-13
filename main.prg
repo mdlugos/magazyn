@@ -388,11 +388,11 @@ endif
           @ 4,maxcol()/2-29 TO 7,maxcol()/2+30
 #else
 */
-          @ 4,maxcol()/2-29,7,maxcol()/2+30 BOXB "赏缓纪群 "
+          @ 4,maxcol()/2-29,7,maxcol()/2+30 BOX "赏缓纪群 "
           @ 4,maxcol()/2-4 SAY " M E N U " COLOR if(iscolor(),_sbkgr,"W+")
 //#endif
 
-          @ maxrow()-2,0,maxrow(),maxcol() BOXB "赏缓纪群 "
+          @ maxrow()-2,0,maxrow(),maxcol() BOX "赏缓纪群 "
 
           @ maxrow()-1,1 SAY "                     -wyb opcji    -                  -wyj榗ie" color if(iscolor(),_sbnorm,"W+")
 

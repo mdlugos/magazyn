@@ -100,7 +100,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
        _fl:=_fi:=_fj+1
        _fpos:=_fkey:=0
        while _fi<=_flp .and. _frow+_fskip*(_fi-_fj+1)<=maxrow()
-         @ _fskip*(_fi-_fj)+_frow,_fco1,_fskip*(_fi-_fj+1)+_frow,_fco2 BOXB IF( _flp<=_fi,'º ºº¼ÍÈº ','º ºº½ÄÓº ') COLOR _sbkgr
+         @ _fskip*(_fi-_fj)+_frow,_fco1,_fskip*(_fi-_fj+1)+_frow,_fco2 BOX IF( _flp<=_fi,'º ºº¼ÍÈº ','º ºº½ÄÓº ') CODEPAGE 'PLMAZ' COLOR _sbkgr
          _fl:=_fi
          _fk:=_frow+_fskip*(_fi-_fj)
          job:=right(ltrim(str(_fi,6,0)),4)
@@ -170,7 +170,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
       if stat
          _fpos:=0
          job:=right(ltrim(str(_fi,6,0)),4)
-         @ _fk,_fco1 SAYB 'º   .' color _sbkgr
+         @ _fk,_fco1 SAY 'º   .' color _sbkgr
          @ _fk,_fco1+max(0,4-len(job)) say job color _sbkgr
          //@ _fk,_fco1+1 say str(_fi,3)+'.' color _sbkgr
          eval(_fmainget,_f,getlist)
@@ -243,17 +243,17 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
               if _fskip*(_fl-_fj+1)+_frow>maxrow()
                  --_fl
                  if _fl=_flp-1
-                     @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAYB 'Ó'+replicate('Ä',_fco2-_fco1-1)+'½'
+                     @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAY 'Ó'+replicate('Ä',_fco2-_fco1-1)+'½' CODEPAGE 'PLMAZ' 
                  endif
               else
-                 @ (_fl-_fj)*_fskip+_frow,_fco1,(_fl-_fj+1)*_fskip+_frow,_fco2 BOXB 'º ºº¼ÍÈº'
+                 @ (_fl-_fj)*_fskip+_frow,_fco1,(_fl-_fj+1)*_fskip+_frow,_fco2 BOX 'º ºº¼ÍÈº' CODEPAGE 'PLMAZ' 
               endif
               scroll(_fskip+_frow,_fco1,_frow+_fskip*(_fl-_fj+1)-1,_fco2,-_fskip)
               if _fskip<2
-                @  _fskip+_frow,_fco1 SAYB 'º'
-                @  _fskip+_frow,_fco2 SAYB 'º'
+                @  _fskip+_frow,_fco1 SAY 'º'
+                @  _fskip+_frow,_fco2 SAY 'º'
               else
-                @  _fskip+_frow,_fco1,2*_fskip+_frow-1,_fco2 BOXB 'º ººº ºº'
+                @  _fskip+_frow,_fco1,2*_fskip+_frow-1,_fco2 BOX 'º ººº ºº'
               endif
               Skip -job
               loop
@@ -267,19 +267,19 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                 ++_fl
                 scroll(_frow+_fskip,_fco1,_frow+_fskip*(_fi-_fj+1)-1,_fco2,_fskip)
                 if _fskip<2
-                  @  _fskip*(_fi-_fj)+_frow,_fco1 SAYB 'º'
-                  @  _fskip*(_fi-_fj)+_frow,_fco2 SAYB 'º'
+                  @  _fskip*(_fi-_fj)+_frow,_fco1 SAY 'º'
+                  @  _fskip*(_fi-_fj)+_frow,_fco2 SAY 'º'
                 else
-                  @  _frow+_fskip*(_fi-_fj),_fco1,_frow+_fskip*(_fi-_fj+1)-1,_fco2 BOXB 'º ººº ºº'
+                  @  _frow+_fskip*(_fi-_fj),_fco1,_frow+_fskip*(_fi-_fj+1)-1,_fco2 BOX 'º ººº ºº'
                 endif
               endif
               if _fi>_fl
                 stat:=.t.
-                 @ _fskip*(_fi-_fj)+_frow,_fco1,_fskip*(_fi-_fj+1)+_frow,_fco2 BOXB 'º ºº½ÄÓº '
+                 @ _fskip*(_fi-_fj)+_frow,_fco1,_fskip*(_fi-_fj+1)+_frow,_fco2 BOX 'º ºº½ÄÓº ' CODEPAGE 'PLMAZ' 
                  ++_fl
               endif
               IF _flp<=_fi
-                 @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAYB 'È'+replicate('Í',_fco2-_fco1-1)+'¼'
+                 @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAY 'È'+replicate('Í',_fco2-_fco1-1)+'¼'
               ENDIF
               loop
            else
@@ -308,7 +308,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                        _fkey:=_fi
                        do while _fk<=_frow+_fskip*(_fl-_fj)
                           job:=right(ltrim(str(_fkey++,6,0)),4)
-                          @ _fk,_fco1 SAYB 'º   .' color _sbkgr
+                          @ _fk,_fco1 SAY 'º   .' color _sbkgr
                           @ _fk,_fco1+max(0,4-len(job)) say job color _sbkgr
                           //@ _fk,_fco1+1 say str(_fkey++,3)+'.' color _sbkgr
                           _fk+=_fskip
@@ -324,15 +324,15 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                       stat:=.t.
                    else
                       RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,maxrow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow)+1))
-                      @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAYB 'È'+replicate('Í',_fco2-_fco1-1)+'¼'
+                      @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAY 'È'+replicate('Í',_fco2-_fco1-1)+'¼'
                    endif
                 else
                    skip
                    //scroll(_fk,_fco1,_fk+_fskip-1,_fco2,0)
                    if _fskip<2
-                     @ _frow+_fskip*(_fi-_fj), _fco1 SAYB 'º'+space(_fco2-_fco1-2)+'º'
+                     @ _frow+_fskip*(_fi-_fj), _fco1 SAY 'º'+space(_fco2-_fco1-2)+'º'
                    else
-                     @  _fk,_fco1,_fk+_fskip-1,_fco2 BOXB 'º ººº ºº '
+                     @  _fk,_fco1,_fk+_fskip-1,_fco2 BOX 'º ººº ºº '
                    endif
                    exit
                 endif
@@ -351,17 +351,17 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                     if _fskip*(_fl-_fj+1)+_frow>maxrow()
                          --_fl
                         if _fl=_flp-1
-                          @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAYB 'Ó'+replicate('Ä',_fco2-_fco1-1)+'½'
+                          @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAY 'Ó'+replicate('Ä',_fco2-_fco1-1)+'½' CODEPAGE 'PLMAZ' 
                         endif
                     else
-                        @ (_fl-_fj)*_fskip+_frow,_fco1,(_fl-_fj+1)*_fskip+_frow,_fco2 BOXB 'º ºº¼ÍÈº'
+                        @ (_fl-_fj)*_fskip+_frow,_fco1,(_fl-_fj+1)*_fskip+_frow,_fco2 BOX 'º ºº¼ÍÈº'
                     endif
                     scroll(_fskip+_frow,_fco1,_frow+_fskip*(_fl-_fj+1)-1,_fco2,-_fskip)
                     if _fskip<2
-                      @  _fskip+_frow,_fco1 SAYB "º"
-                      @  _fskip+_frow,_fco2 SAYB "º"
+                      @  _fskip+_frow,_fco1 SAY "º"
+                      @  _fskip+_frow,_fco2 SAY "º"
                     else
-                      @  _fskip+_frow,_fco1,2*_fskip+_frow-1,_fco2 BOXB 'º ººº ºº'
+                      @  _fskip+_frow,_fco1,2*_fskip+_frow-1,_fco2 BOX 'º ººº ºº'
                     endif
                  ENDIF
                  Skip -1
@@ -381,19 +381,19 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
             ++_fl
             scroll(_frow+_fskip, _fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2, _fskip)
             if _fskip<2
-              @ _frow+_fskip*(_fi-_fj), _fco1 SAYB 'º'
-              @ _frow+_fskip*(_fi-_fj), _fco2 SAYB 'º'
+              @ _frow+_fskip*(_fi-_fj), _fco1 SAY 'º'
+              @ _frow+_fskip*(_fi-_fj), _fco2 SAY 'º'
             else
-              @  _frow+_fskip*(_fi-_fj), _fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2 BOXB 'º ººº ºº'
+              @  _frow+_fskip*(_fi-_fj), _fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2 BOX 'º ººº ºº'
             endif
           endif
           if _fi>_fl
             stat:=.t.
-            @ _fskip*(_fi-_fj)+_frow,_fco1,_fskip*(_fi-_fj+1)+_frow,_fco2 BOXB 'º ºº½ÄÓº '
+            @ _fskip*(_fi-_fj)+_frow,_fco1,_fskip*(_fi-_fj+1)+_frow,_fco2 BOX 'º ºº½ÄÓº ' CODEPAGE 'PLMAZ' 
             ++_fl
           endif
           IF _flp<=_fi
-            @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAYB 'È'+replicate('Í',_fco2-_fco1-1)+'¼'
+            @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAY 'È'+replicate('Í',_fco2-_fco1-1)+'¼'
           ENDIF
             ENDCASE
          ENDDO

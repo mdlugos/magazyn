@@ -180,10 +180,10 @@ DO WHILE .T.
      set order to 1
 #ifdef A_FK
     znalaz:= szukam({1,40,maxrow(),,1,0,"Przegl¥d "+dok,;
-        {||nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+if(data>DatY->d_z_mies1 .and. kto_pisal="ÿ","³","|")+D_KH+"³"+DTOV(data)+"³"+D_KH1},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
+        {||nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+if(data>DatY->d_z_mies1 .and. kto_pisal="ÿ","³","Å")+D_KH+"³"+DTOV(data)+"³"+D_KH1},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
 #else
     znalaz:= szukam({1,40,maxrow(),,1,0,"Przegl¥d "+dok,;
-        {||nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+if(data>DatY->d_z_mies1 .and. kto_pisal="ÿ","³","|")+DTOV(data)+"³"+dost_odb},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
+        {||nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+if(data>DatY->d_z_mies1 .and. kto_pisal="ÿ","³","Å")+DTOV(data)+"³"+dost_odb},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
 #endif
      firMy->(dbgoto(rf))
     if znalaz
@@ -305,9 +305,9 @@ do case
     elseif _skey=3
        _spocz:=""
 #ifdef A_NRLTH3
-       _spform:={|p,l|TranR(right(p,l),"XXX|##.##")}
+       _spform:={|p,l|TranR(right(p,l),"XXX³##.##")}
 #else
-       _spform:={|p,l|TranR(right(p,l),"XXXXX|##.##")}
+       _spform:={|p,l|TranR(right(p,l),"XXXXX³##.##")}
 #endif
 #endif
        _sbeg:=10
@@ -2512,12 +2512,12 @@ DO CASE
       SET ORDER TO TAG FIRM_NUM
       sel('KH','KH')
       SET RELATION TO str(N1,A_NRLTH) INTO FIRMY
-      _sprompt:={||str(n1,A_NRLTH)+if(""=uwagi,"|","*")+n15+"³"+longname}
+      _sprompt:={||str(n1,A_NRLTH)+if(""=uwagi,"³","*")+n15+"³"+longname}
 #else
 #ifdef A_FFULL
-      _sprompt:={||numer_kol+if(""=uwagi,"|","*")+nazwa+"³"+longname}
+      _sprompt:={||numer_kol+if(""=uwagi,"³","*")+nazwa+"³"+longname}
 #else
-      _sprompt:={||numer_kol+if(""=uwagi,"|","*")+nazwa}
+      _sprompt:={||numer_kol+if(""=uwagi,"³","*")+nazwa}
 #endif
 #endif
       _spocz:=UpP(_spocz)
@@ -2685,14 +2685,14 @@ DO CASE
                      _slth:=0
                      _sfilt:='['+txt+']$UPPER(longname)'
                      _sfilb:={||txt$UPPER(longname)}
-                     _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"|","*")+nazwa+"³"+longname,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+                     _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"³","*")+nazwa+"³"+longname,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
                   endif
 #else
                   _spocz:=''
                   _slth:=0
                   _sfilt:='['+txt+']$UPPER(naZwa)'
                   _sfilb:={||txt$UPPER(naZwa)}
-                  _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"|","*")+nazwa,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+                  _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"³","*")+nazwa,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
 #endif
                endif
       ENDCASE
@@ -3213,7 +3213,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
       u+=" "
       s:=SAVESCREEN(9,_scol1-1, 20, _scol2)
       set color to (_SRAMKA)
-      @  9,_scol1-1, 20, _scol2 BOXB 'ÉÍ»º¼ÍÈº '
+      @  9,_scol1-1, 20, _scol2 BOX 'ÉÍ»º¼ÍÈº '
       @  9,_scol1+1 SAY 'Poprawianie dopisywanie kasowanie firmy'
       @ 11,_scol1+1 SAY 'Nr'
 #ifdef A_KHFILLZERO
@@ -3418,7 +3418,7 @@ if !dbseek(_spocz,,.t.)
      _spocz:=''
    endif
 endif
-_sprompt:={|d,_s,t|tran(fieldget(1),if(empty(t),,"##########|########|################"))+"|"+tran(fieldget(2),)+"|"+tran(fieldget(3),)+"|"+tran(fieldget(4),)}
+_sprompt:={|d,_s,t|tran(fieldget(1),if(empty(t),,"##########³########³################"))+"³"+tran(fieldget(2),)+"³"+tran(fieldget(3),)+"³"+tran(fieldget(4),)}
 _snagkol:=0//_scol1
 d:=dbstruct()
 _snagl:=padl(d[1,1],d[1,3],'Ä')+"Â"+pad(d[2,1],d[2,3],'Ä')+"Â"+pad(d[3,1],d[3,3],'Ä')+"Â"+d[4,1]
