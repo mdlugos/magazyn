@@ -281,7 +281,7 @@ endif
     set cursor off
   scr= savescreen(9,1,22,78)
   stos:={}
-  @ 9,1,22,78 BOXB 'ÉÍ»º¼ÍÈº' color 'RG+/BG'
+  @ 9,1,22,78 BOX 'ÉÍ»º¼ÍÈº' color 'RG+/BG'
   @ 9,3 SAY 'Wpisywanie nowej, poprawianie lub kasowanie starej Karty Materiaˆu' color 'RG+/BG'
   SET COLOR TO BG+/B
   SCROLL(10,2,21,77,0)
@@ -765,7 +765,7 @@ endif
     a:=select()
     sel('SUROWCE','SUR_KOD')
     SAYl 'Dieta:'
-    GETl id picture "@K! "+replicate("X",len(surowce->skladnik)) VALID {|g|!g:changed .or. SUROWCE->(szukam({,,,,1,len(trim(id)),'Surowce z Diety',{||field->skladnik+"|"+nazwa+"|"+field->jmag+' ='+str(field->przel)+' '+field->jedn},{|_skey,_s D_MYSZ|surinfo(_skey,_s,@id,ni D_MYSZ)} ,UpP(Trim(id))}).and.(setpos(g:row,g:col+len(field->skladnik)+1),dispout(left(nazwa,78-col())),.t.) )}
+    GETl id picture "@K! "+replicate("X",len(surowce->skladnik)) VALID {|g|!g:changed .or. SUROWCE->(szukam({,,,,1,len(trim(id)),'Surowce z Diety',{||field->skladnik+"³"+nazwa+"³"+field->jmag+' ='+str(field->przel)+' '+field->jedn},{|_skey,_s D_MYSZ|surinfo(_skey,_s,@id,ni D_MYSZ)} ,UpP(Trim(id))}).and.(setpos(g:row,g:col+len(field->skladnik)+1),dispout(left(nazwa,78-col())),.t.) )}
     if dbseek(left(id,len(field->skladnik)))
        sayl left(nazwa,78-col())
     endif
@@ -1561,26 +1561,26 @@ ENDCASE
 #endif
 
 #ifdef A_OLZA
-RETURN(DTOV(data)+if(data>DatY->d_z_mies1,"³","|")+smb_dow+nr_dowodu+"/"+D_LPSTR1+"³"+nr_zlec+"³";
+RETURN(DTOV(data)+if(data>DatY->d_z_mies1,"³","Å")+smb_dow+nr_dowodu+"/"+D_LPSTR1+"³"+nr_zlec+"³";
   +if(NR_MAG+smb_dow$dok_rozch,"         ³"+smiaR(-ilosc,9)+"³",smiaR(ilosc,9)+"³         ³");
-  +str(wartosC,10,CEOKR)+if(INDX_MAT->data_POPR>DATA,"|","³")+smiaR(s,10)+"³"+str(w,10,CEOKR))
+  +str(wartosC,10,CEOKR)+if(INDX_MAT->data_POPR>DATA,"Å","³")+smiaR(s,10)+"³"+str(w,10,CEOKR))
 #else
 #ifdef A_ANKER
 #ifdef A_ZAGRODA
-dispout(DTOV(data)+if(data>DatY->d_z_mies1,"³","|")+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+"³"+nr_zleC+"³";
+dispout(DTOV(data)+if(data>DatY->d_z_mies1,"³","Å")+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+"³"+nr_zleC+"³";
   +if(NR_MAG+smb_dow$dok_rozch,"         ³"+smiaR(-ilosc,9)+"³",smiaR(ilosc,9)+"³         ³");
-  +str(wartosC,10,CEOKR)+if(INDX_MAT->data_POPR>DATA,"|","³")+smiaR(s,10)+"³"+str(w,10,CEOKR),if(year(data)<year(DatY->d_z_rok+1),'GR+/N',if(smb_dow='PA' .and. ilosc<>0,'W/R','W/N')))
+  +str(wartosC,10,CEOKR)+if(INDX_MAT->data_POPR>DATA,"Å","³")+smiaR(s,10)+"³"+str(w,10,CEOKR),if(year(data)<year(DatY->d_z_rok+1),'GR+/N',if(smb_dow='PA' .and. ilosc<>0,'W/R','W/N')))
 RETURN('')
 #else
-dispout(DTOV(data)+if(data>DatY->d_z_mies1,"³","|")+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+"³"+nr_zleC+"³";
+dispout(DTOV(data)+if(data>DatY->d_z_mies1,"³","Å")+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+"³"+nr_zleC+"³";
   +if(NR_MAG+smb_dow$dok_rozch,"         ³"+smiaR(-ilosc,9)+"³",smiaR(ilosc,9)+"³         ³");
-  +str(wartosC,10,CEOKR)+if(INDX_MAT->data_POPR>DATA,"|","³")+smiaR(s,10)+"³"+str(w,10,CEOKR),if(year(data)<year(DatY->d_z_rok+1),'GR+/N',{'W/N','W/N','W/N','W/N','W/N','W/N','W/R'}[dow(data)]))
+  +str(wartosC,10,CEOKR)+if(INDX_MAT->data_POPR>DATA,"Å","³")+smiaR(s,10)+"³"+str(w,10,CEOKR),if(year(data)<year(DatY->d_z_rok+1),'GR+/N',{'W/N','W/N','W/N','W/N','W/N','W/N','W/R'}[dow(data)]))
 RETURN('')
 #endif
 #else
-RETURN(DTOV(data)+if(data>DatY->d_z_mies1,"³","|")+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+"³"+nr_zleC+"³";
+RETURN(DTOV(data)+if(data>DatY->d_z_mies1,"³","Å")+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+"³"+nr_zleC+"³";
   +if(NR_MAG+smb_dow$dok_rozch,"         ³"+smiaR(-ilosc,9)+"³",smiaR(ilosc,9)+"³         ³");
-  +str(wartosC,10,CEOKR)+if(INDX_MAT->data_POPR>DATA,"|","³")+smiaR(s,10)+"³"+str(w,10,CEOKR))
+  +str(wartosC,10,CEOKR)+if(INDX_MAT->data_POPR>DATA,"Å","³")+smiaR(s,10)+"³"+str(w,10,CEOKR))
 #endif
 #endif
 #undef smiaR

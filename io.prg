@@ -685,7 +685,7 @@ function window(rown,coln,color)
    endif
    lc := SETCOLOR(color)
    colorselect(3)
-   @ r1,c1,r2,c2 BOXB 'ÚÄ¿³ÙÄÀ³ '
+   @ r1,c1,r2,c2 BOX 'ÚÄ¿³ÙÄÀ³ '
    colorselect(0)
    return({r1,c1,r2,c2,sc,rs,cs,cu,lc})
  elseif sc="A"
@@ -890,9 +890,9 @@ IF _c
    r:=row()
    c:=col()
    IF LEN(ARRAY)<maxrow()
-      @ _a,_b,_c,_d BOXB 'ÉÍ»º¼ÍÈº' COLOR "GR+/GR"
+      @ _a,_b,_c,_d BOX 'ÉÍ»º¼ÍÈº' COLOR "GR+/GR"
     ELSE
-      @ _a,_b,_c,_d BOXB 'ÖÄ·º½ÄÓº' COLOR "GR+/GR"
+      @ _a,_b,_c,_d BOX 'ÖÄ·º½ÄÓº' CODEPAGE 'PLMAZ' COLOR "GR+/GR"
    ENDIF
    if tyt#NIL
       @ _a,_b+1 SAY left(tyt,_d-_b) COLOR "GR+/GR"

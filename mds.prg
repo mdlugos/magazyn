@@ -2,8 +2,8 @@
 #include "dm_form.ch"
 #define R1TO4(x) _stopka(x,'Ä','Á')
 #define R1TO3(x) _stopka(x,'Í','Ï')
-#define R1TO2(x) STRTRAN(STRTRAN(HB_TRANSLATE(x,PC852,'PLMAZ'),'Â','Ñ'),'Ä','Í')
-#define R1TO1(x) HB_TRANSLATE(x,PC852,'PLMAZ')
+#define R1TO2(x) STRTRAN(STRTRAN(R1TO1(x),'Â','Ñ'),'Ä','Í')
+#define R1TO1(x) HB_TRANSLATE(x,PC852,) //wykonywane gdy strona kodowa juz ustawiona na PLMAZ
 *******
 request tranr
 
@@ -11,7 +11,7 @@ static function _stopka(s,m,t)
 local x:='',i,j:=0
 
 do while (i:=hb_at('Â',s,j+1))>0
-   x+=padl(t,i-j,m)
+   x+=replicate(m,i-j-1)+t //padl(t,i-j,m)
    j:=i 
 enddo
 
@@ -566,8 +566,8 @@ FUNCTION _SDOL(_s,_skey)
         enddo
       ENDDO
       if _sef
-        @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
-        @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
+        @ _srow2,_scol1-1 SAY 'Ô'+REPLICATE('Í',_scoln)+'¾' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
       ENDIF
       _sm:=if(_si>0,_si,1)
     ENDIF
@@ -597,8 +597,8 @@ FUNCTION _sgora(_s,_skey)
         enddo
       ENDDO
       if _sbf
-        @ _srow1-1,_scol1-1 SAYB 'Õ'+REPLICATE('Í',_scoln)+'¸' COLOR _SRAMKA
-        @ _srow1-1,_scol1+_snagkol SAYB R1TO2(_snagl) COLOR _SRAMKA
+        @ _srow1-1,_scol1-1 SAY 'Õ'+REPLICATE('Í',_scoln)+'¸' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+        @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
       ENDIF
     ENDIF
     SAVE LINE _sm+_srow1-1
@@ -621,8 +621,8 @@ FUNCTION _sPgDn(_s,_skey)
         enddo
       ENDDO
       IF  _sef
-        @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
-        @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
+        @ _srow2,_scol1-1 SAY 'Ô'+REPLICATE('Í',_scoln)+'¾' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
       ENDIF
     ENDIF
     _sm:=if(_si>0,_si,1)
@@ -646,8 +646,8 @@ FUNCTION _sPgUp(_s,_skey)
         enddo
       ENDDO
       IF _sbf
-        @ _srow1-1,_scol1-1 SAYB 'Õ'+REPLICATE('Í',_scoln)+'¸' COLOR _SRAMKA
-        @ _srow1-1,_scol1+_snagkol SAYB R1TO2(_snagl) COLOR _SRAMKA
+        @ _srow1-1,_scol1-1 SAY 'Õ'+REPLICATE('Í',_scoln)+'¸' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+        @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
       ENDIF
     ENDIF
     _sm=1
@@ -659,8 +659,8 @@ FUNCTION _stop(_s)
     local _stxt,_skey
     IF ! _sbf
       RESTSCREEN(_srow1,_scol1-1,_srow2,_scol2,SUBSTR(_scr,1+(_srow1-_srowb)*(_scoln+2)*D_REST))
-      @ _srow1-1,_scol1-1 SAYB 'Õ'+REPLICATE('Í',_scoln)+'¸' COLOR _SRAMKA
-      @ _srow1-1,_scol1+_snagkol SAYB R1TO2(_snagl) COLOR _SRAMKA
+      @ _srow1-1,_scol1-1 SAY 'Õ'+REPLICATE('Í',_scoln)+'¸' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+      @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
       _sbf=.T.
       _sef=.F.
       _sm=1
@@ -684,8 +684,8 @@ FUNCTION _stop(_s)
         ENDDO
       ENDIF
       IF   _sef
-        @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
-        @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
+        @ _srow2,_scol1-1 SAY 'Ô'+REPLICATE('Í',_scoln)+'¾' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
       ENDIF
 #ifdef D_LAN
       go _srec[_sm]
@@ -705,8 +705,8 @@ FUNCTION _sbot(_s)
     local _skey,_stxt
     IF ! _sef
       RESTSCREEN(_srow1-1,_scol1-1,_srow2-1,_scol2,SUBSTR(_scr,1+(_srow1-1-_srowb)*(_scoln+2)*D_REST))
-      @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
-      @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
+      @ _srow2,_scol1-1 SAY 'Ô'+REPLICATE('Í',_scoln)+'¾' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+      @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
       _sef=.T.
       _sbf=.F.
       _srow1=_srow2
@@ -750,8 +750,8 @@ FUNCTION _sbot(_s)
         ENDDO
       ENDIF
       IF   _sbf
-        @ _srow1-1,_scol1-1 SAYB 'Õ'+REPLICATE('Í',_scoln)+'¸' COLOR _SRAMKA
-        @ _srow1-1,_scol1+_snagkol SAYB R1TO2(_snagl) COLOR _SRAMKA
+        @ _srow1-1,_scol1-1 SAY 'Õ'+REPLICATE('Í',_scoln)+'¸' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+        @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
       ENDIF
       _sm:=if(_si>0,_si,1)
 #ifdef D_LAN
@@ -823,8 +823,8 @@ FUNCTION _sznak(_s,_skey)
           _srow2:=_srow1+_si
           RESTSCREEN(_srow2+1,_scol1-1,_srowe,_scol2,SUBSTR(_scr,1+(_srow2+1-_srowb)*(_scoln+2)*D_REST))
           RESTSCREEN(_srowb,_scol1-1,_srow1-1,_scol2,_scr)
-          @ _srow1-1,_scol1-1 SAYB 'Õ'+REPLICATE('Í',_scoln)+'¸' COLOR _SRAMKA
-          @ _srow1-1,_scol1+_snagkol SAYB R1TO2(_snagl) COLOR _SRAMKA
+          @ _srow1-1,_scol1-1 SAY 'Õ'+REPLICATE('Í',_scoln)+'¸' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+          @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
         else
           _srow1+=l
           scroll(_srow1,_scol1,_srow2-1,_scol2-1,-min(_sm-l,_si-_sm))
@@ -834,14 +834,14 @@ FUNCTION _sznak(_s,_skey)
           RESTSCREEN(_srowb,_scol1-1,_srow1-1,_scol2,_scr)
           RESTSCREEN(_srow2,_scol1-1,_srowe,_scol2,SUBSTR(_scr,1+(_srow2-_srowb)*(_scoln+2)*D_REST))
           IF _sbf
-             @ _srow1-1,_scol1-1 SAYB 'Õ'+REPLICATE('Í',_scoln)+'¸' COLOR _SRAMKA
-             @ _srow1-1,_scol1+_snagkol SAYB R1TO2(_snagl) COLOR _SRAMKA
+             @ _srow1-1,_scol1-1 SAY 'Õ'+REPLICATE('Í',_scoln)+'¸' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+             @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
           ELSE
-             @ _srow1-1,_scol1-1 SAYB 'Ú'+REPLICATE('Ä',_scoln)+'¿' COLOR _SRAMKA
-             @ _srow1-1,_scol1+_snagkol SAYB R1TO1(_snagl) COLOR _SRAMKA
+             @ _srow1-1,_scol1-1 SAY 'Ú'+REPLICATE('Ä',_scoln)+'¿' COLOR _SRAMKA
+             @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
           ENDIF
-          @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
-          @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
+          @ _srow2,_scol1-1 SAY 'Ô'+REPLICATE('Í',_scoln)+'¾' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+          @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
           _sef:=.t.
         endif
         FOR l=l TO 1 STEP -1
@@ -990,13 +990,13 @@ IF _si<_srown
     --_srow1
     SCROLL(_srow1-1,_scol1-1,_srow2-1,_scol2,1)
   ENDIF
-  @ _srow2-1,_scol1-1,_srow2,_scol2 BOXB '³ ³³ÙÄÀ³' COLOR _SRAMKA
-  @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
+  @ _srow2-1,_scol1-1,_srow2,_scol2 BOX '³ ³³ÙÄÀ³' COLOR _SRAMKA
+  @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
   ++_si
  ELSE
   IF _sbf
-    @ _srow1-1,_scol1-1 SAYB 'Ú'+REPLICATE('Ä',_scoln)+'¿' COLOR _SRAMKA
-    @ _srow1-1,_scol1+_snagkol SAYB R1TO1(_snagl) COLOR _SRAMKA
+    @ _srow1-1,_scol1-1 SAY 'Ú'+REPLICATE('Ä',_scoln)+'¿' COLOR _SRAMKA
+    @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
     _sbf=.F.
   ENDIF
   ADEL(_srec,1)
@@ -1018,13 +1018,13 @@ IF _si<_srown
    ELSE
     --_srow1
   ENDIF
-  @ _srow1-1,_scol1-1,_srow1,_scol2 BOXB 'ÚÄ¿³³ ³³' COLOR _SRAMKA
-  @ _srow1-1,_scol1+_snagkol SAYB R1TO1(_snagl) COLOR _SRAMKA
+  @ _srow1-1,_scol1-1,_srow1,_scol2 BOX 'ÚÄ¿³³ ³³' COLOR _SRAMKA
+  @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
   ++_si
  ELSE
   IF _sef
-    @ _srow2,_scol1-1 SAYB 'À'+REPLICATE('Ä',_scoln)+'Ù' COLOR _SRAMKA
-    @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
+    @ _srow2,_scol1-1 SAY 'À'+REPLICATE('Ä',_scoln)+'Ù' COLOR _SRAMKA
+    @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
     _sef=.F.
   ENDIF
   SCROLL(_srow1,_scol1,_srow2-1,_scol2-1,-1)
@@ -1066,18 +1066,18 @@ endif
       do while .t.
       _srec[1]:=RECNO()
         IF obf:=_sbf
-          @ _srow1-1,_scol1-1 SAYB 'Õ'+REPLICATE('Í',_scoln)+'¸' COLOR _SRAMKA
-          @ _srow1-1,_scol1+_snagkol SAYB R1TO2(_snagl) COLOR _SRAMKA
+          @ _srow1-1,_scol1-1 SAY 'Õ'+REPLICATE('Í',_scoln)+'¸' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+          @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
         ELSE
-          @ _srow1-1,_scol1-1 SAYB 'Ú'+REPLICATE('Ä',_scoln)+'¿' COLOR _SRAMKA
-          @ _srow1-1,_scol1+_snagkol SAYB R1TO1(_snagl) COLOR _SRAMKA
+          @ _srow1-1,_scol1-1 SAY 'Ú'+REPLICATE('Ä',_scoln)+'¿' COLOR _SRAMKA
+          @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
         ENDIF
         IF oef:=_sef
-          @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
-          @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
+          @ _srow2,_scol1-1 SAY 'Ô'+REPLICATE('Í',_scoln)+'¾' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+          @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
         ELSE
-          @ _srow2,_scol1-1 SAYB 'À'+REPLICATE('Ä',_scoln)+'Ù' COLOR _SRAMKA
-          @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
+          @ _srow2,_scol1-1 SAY 'À'+REPLICATE('Ä',_scoln)+'Ù' COLOR _SRAMKA
+          @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
         ENDIF
       IF crsr=1
          exit
@@ -1105,12 +1105,12 @@ endif
             endif
 
             if _sef .and. _sef#oef
-               @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
-               @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
+               @ _srow2,_scol1-1 SAY 'Ô'+REPLICATE('Í',_scoln)+'¾' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+               @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
             endif
             if _sbf .and. _sbf#obf
-               @ _srow1-1,_scol1-1 SAYB 'Õ'+REPLICATE('Í',_scoln)+'¸' COLOR _SRAMKA
-               @ _srow1-1,_scol1+_snagkol SAYB R1TO2(_snagl) COLOR _SRAMKA
+               @ _srow1-1,_scol1-1 SAY 'Õ'+REPLICATE('Í',_scoln)+'¸' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+               @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
             endif
             _sm:=1
             return .f.
@@ -1124,23 +1124,23 @@ endif
 
       if _srowe>_srow2 .and. !_sef
         ++_srow2
-        @ _srow2-1,_scol1-1,_srow2,_scol2 BOXB '³ ³³ÙÄÀ³' COLOR _SRAMKA
-        @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
+        @ _srow2-1,_scol1-1,_srow2,_scol2 BOX '³ ³³ÙÄÀ³' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
         oef:=.f.
       elseif _srowb<_srow1-1 .and. !_sbf
         --_srow1
-        @ _srow1-1,_scol1-1,_srow1,_scol2 BOXB 'ÚÄ¿³³ ³³' COLOR _SRAMKA
-        @ _srow1-1,_scol1+_snagkol SAYB R1TO1(_snagl) COLOR _SRAMKA
+        @ _srow1-1,_scol1-1,_srow1,_scol2 BOX 'ÚÄ¿³³ ³³' COLOR _SRAMKA
+        @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
         obf:=.f.
       elseif _srowe>_srow2
         ++_srow2
-        @ _srow2-1,_scol1-1,_srow2,_scol2 BOXB '³ ³³¾ÍÔ³' COLOR _SRAMKA
-        @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
+        @ _srow2-1,_scol1-1,_srow2,_scol2 BOX '³ ³³¾ÍÔ³' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
         oef:=.t.
       else
         --_srow1
-        @ _srow1-1,_scol1-1,_srow1,_scol2 BOXB 'ÕÍ¸³³ ³³' COLOR _SRAMKA
-        @ _srow1-1,_scol1+_snagkol SAYB R1TO2(_snagl) COLOR _SRAMKA
+        @ _srow1-1,_scol1-1,_srow1,_scol2 BOX 'ÕÍ¸³³ ³³' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+        @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
         obf:=.t.
       endif
       _si:=1
@@ -1161,8 +1161,8 @@ endif
         ++_srow2
         ++_si
         _srec[_si]=RECNO()
-        @ _srow2-1,_scol1-1,_srow2,_scol2 BOXB '³ ³³ÙÄÀ³' COLOR _SRAMKA
-        @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
+        @ _srow2-1,_scol1-1,_srow2,_scol2 BOX '³ ³³ÙÄÀ³' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
         @ _srow2-1,_scol1 say padr(EVAL(_sprompt,1,_s),_scol2-COL())
         oef:=.f.
       ENDDO
@@ -1172,8 +1172,8 @@ endif
       DO WHILE _srow1>_srowb+1 .AND. D_MYSZE .AND. _skip(-1,0,_s)
         ++_sm
         --_srow1
-        @ _srow1-1,_scol1-1,_srow1,_scol2 BOXB 'ÚÄ¿³³ ³³' COLOR _SRAMKA
-        @ _srow1-1,_scol1+_snagkol SAYB R1TO1(_snagl) COLOR _SRAMKA
+        @ _srow1-1,_scol1-1,_srow1,_scol2 BOX 'ÚÄ¿³³ ³³' COLOR _SRAMKA
+        @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
         obf:=.f.
         AINS(_srec,1)
         _srec[1]=RECNO()
@@ -1189,8 +1189,8 @@ endif
             ++_sm
             ++_srow2
             SCROLL(_srow1,_scol1-1,_srow2,_scol2,-1)
-            @ _srow1-1,_scol1-1,_srow1,_scol2 BOXB 'ÚÄ¿³³ ³³' COLOR _SRAMKA
-            @ _srow1-1,_scol1+_snagkol SAYB R1TO1(_snagl) COLOR _SRAMKA
+            @ _srow1-1,_scol1-1,_srow1,_scol2 BOX 'ÚÄ¿³³ ³³' COLOR _SRAMKA
+            @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
             obf:=.f.
             AINS(_srec,1)
             _srec[1]=RECNO()
@@ -1205,8 +1205,8 @@ endif
           ++_si
           _srec[_si]=RECNO()
           SCROLL(_srow1-1,_scol1-1,_srow2-1,_scol2,1)
-          @ _srow2-1,_scol1-1,_srow2,_scol2 BOXB '³ ³³ÙÄÀ³' COLOR _SRAMKA
-          @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
+          @ _srow2-1,_scol1-1,_srow2,_scol2 BOX '³ ³³ÙÄÀ³' COLOR _SRAMKA
+          @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
           @ _srow2-1,_scol1 say padr(EVAL(_sprompt,1,_s),_scol2-COL())
           oef:=.f.
         ENDDO
@@ -1214,20 +1214,20 @@ endif
     ENDIF
     IF _sbf#obf
     IF _sbf
-        @ _srow1-1,_scol1-1 SAYB 'Õ'+REPLICATE('Í',_scoln)+'¸' COLOR _SRAMKA
-        @ _srow1-1,_scol1+_snagkol SAYB R1TO2(_snagl) COLOR _SRAMKA
+        @ _srow1-1,_scol1-1 SAY 'Õ'+REPLICATE('Í',_scoln)+'¸' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+        @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
     ELSE
-        @ _srow1-1,_scol1-1 SAYB 'Ú'+REPLICATE('Ä',_scoln)+'¿' COLOR _SRAMKA
-        @ _srow1-1,_scol1+_snagkol SAYB R1TO1(_snagl) COLOR _SRAMKA
+        @ _srow1-1,_scol1-1 SAY 'Ú'+REPLICATE('Ä',_scoln)+'¿' COLOR _SRAMKA
+        @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
     ENDIF
     ENDIF
     IF _sef#oef
        IF _sef
-        @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
-        @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
+        @ _srow2,_scol1-1 SAY 'Ô'+REPLICATE('Í',_scoln)+'¾' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
        ELSE
-        @ _srow2,_scol1-1 SAYB 'À'+REPLICATE('Ä',_scoln)+'Ù' COLOR _SRAMKA
-        @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
+        @ _srow2,_scol1-1 SAY 'À'+REPLICATE('Ä',_scoln)+'Ù' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
        ENDIF
     ENDIF
   _sm:=max(1,min(_si,_sm))
@@ -1261,9 +1261,9 @@ else
   endif
   _srow2:=_srow1+x
   _si:=x
-  @ _srow1-1,_scol1-1,_srow2,_scol2 BOXB 'ÚÄ¿³ÙÄÀ³' COLOR _SRAMKA
-  @ _srow1-1,_scol1+_snagkol SAYB R1TO1(_snagl) COLOR _SRAMKA
-  @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
+  @ _srow1-1,_scol1-1,_srow2,_scol2 BOX 'ÚÄ¿³ÙÄÀ³' COLOR _SRAMKA
+  @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
+  @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
   _sef=.F.
   _sbf=.F.
 endif
@@ -1303,11 +1303,11 @@ function CUT(_s,zmiana,key)
       NEXT
       RESTSCREEN(_srowb,_scol1-1,_srow1-1,_scol2,_scr)
       IF _sbf
-        @ _srow1-1,_scol1-1 SAYB 'Õ'+REPLICATE('Í',_scoln)+'¸' COLOR _SRAMKA
-        @ _srow1-1,_scol1+_snagkol SAYB R1TO2(_snagl) COLOR _SRAMKA
+        @ _srow1-1,_scol1-1 SAY 'Õ'+REPLICATE('Í',_scoln)+'¸' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+        @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
       ELSE
-        @ _srow1-1,_scol1-1 SAYB 'Ú'+REPLICATE('Ä',_scoln)+'¿' COLOR _SRAMKA
-        @ _srow1-1,_scol1+_snagkol SAYB R1TO1(_snagl) COLOR _SRAMKA
+        @ _srow1-1,_scol1-1 SAY 'Ú'+REPLICATE('Ä',_scoln)+'¿' COLOR _SRAMKA
+        @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
       ENDIF
     else
       _sbf:=obf
@@ -1348,11 +1348,11 @@ end sequence
       _srow2=_srow1+_si
       RESTSCREEN(_srow2+1,_scol1-1,_srowe,_scol2,SUBSTR(_scr,1+(_srow2+1-_srowb)*(_scoln+2)*D_REST))
       IF _sef
-        @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
-        @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
+        @ _srow2,_scol1-1 SAY 'Ô'+REPLICATE('Í',_scoln)+'¾' CODEPAGE 'PLMAZ' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) CODEPAGE 'PLMAZ' COLOR _SRAMKA
       ELSE
-        @ _srow2,_scol1-1 SAYB 'À'+REPLICATE('Ä',_scoln)+'Ù' COLOR _SRAMKA
-        @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
+        @ _srow2,_scol1-1 SAY 'À'+REPLICATE('Ä',_scoln)+'Ù' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
       ENDIF
     else
       _sef:=oef

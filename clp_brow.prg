@@ -50,7 +50,7 @@ else
    go top
 ENDIF
   // frame window
-  @ nTop, nLeft, nBottom, nRight boxb "’Õ∏≥æÕ‘≥"
+  @ nTop, nLeft, nBottom, nRight box "’Õ∏≥æÕ‘≥" codepage 'PLMAZ'
 
   // clear status row
   @ nTop + 1, nLeft + 1 say Space(nRight - nLeft - 1)
@@ -66,17 +66,19 @@ ENDIF
   oB:nright:= nRight - 1
 #ifdef PLWIN
 #ifdef PC852
-  @ nTop + 3, nLeft sayb "∆"
-  @ nTop + 3, nRight sayb "µ"
-  oB:headSep := HB_UTF8TOSTRBOX(HB_TRANSLATE(" Õ",'PLMAZ','UTF8'))
+  @ nTop + 3, nLeft say "∆" codepage 'PLMAZ' 
+  @ nTop + 3, nRight say "µ"  codepage 'PLMAZ'
+  oB:headSep := HB_UTF8TOSTRBOX(HB_TRANSLATE("—Õ",'PLMAZ','UTF8'))
+  oB:ColSep  := "≥"
 #else
   oB:ColSep  := "|"
   ob:HeadSep := "|ó"
 #endif
 #else
-  @ nTop + 3, nLeft sayb "∆"
-  @ nTop + 3, nRight sayb "µ"
-  oB:headSep := HB_UTF8TOSTRBOX(HB_TRANSLATE(" Õ",'PLMAZ','UTF8'))
+  @ nTop + 3, nLeft say "∆" codepage 'PLMAZ'
+  @ nTop + 3, nRight say "µ" codepage 'PLMAZ' 
+  oB:headSep := HB_UTF8TOSTRBOX(HB_TRANSLATE("—Õ",'PLMAZ','UTF8'))
+  oB:ColSep  := "≥"
 #endif
   oB:skipBlock := {|x| Skipped(x, lAppend)}
 
@@ -259,7 +261,7 @@ ENDIF
       txt=IndexkeY(i)
       scr_buf = SAVESCREEN(8, 1, 19, 78)
       scroll(8, 1, 19, 78, 0)
-      @ 9,3,18,76 BOXB "’Õ∏≥æÕ‘≥" COLOR "W+"
+      @ 9,3,18,76 BOX "’Õ∏≥æÕ‘≥" codepage 'PLMAZ' COLOR "W+"
       @ 11,5 say "Podaj  numer  klucza  indeksowego  (Esc - bez indeksowania)"
       do while .not. empty(txt)
           @ 11+i,5 prompt str(i,1)+" - " + LEFT(txt, 66)
@@ -327,7 +329,7 @@ ENDIF
 
       scroll(8, 1, 19, 78, 0)
       set color to W+
-      @ 9,3,18,76 BOXB "’Õ∏≥æÕ‘≥"
+      @ 9,3,18,76 BOX "’Õ∏≥æÕ‘≥" codepage 'PLMAZ'
       set color to W
       @ 11,5 say "Podaj  wyraæenie filtra            (Esc - rezygnacja)"
       @ 13,5 say 'Dost©pne relacje: =,#,$,<,>,<=,>= '
