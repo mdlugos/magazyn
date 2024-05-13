@@ -1,9 +1,22 @@
 #include "inkey.ch"
 #include "dm_form.ch"
+#define R1TO4(x) _stopka(x,'Ä','Á')
+#define R1TO3(x) _stopka(x,'Í','Ï')
 #define R1TO2(x) STRTRAN(STRTRAN(HB_TRANSLATE(x,PC852,'PLMAZ'),'Â','Ñ'),'Ä','Í')
 #define R1TO1(x) HB_TRANSLATE(x,PC852,'PLMAZ')
 *******
 request tranr
+
+static function _stopka(s,m,t)
+local x:='',i,j:=0
+
+do while (i:=hb_at('Â',s,j+1))>0
+   x+=padl(t,i-j,m)
+   j:=i 
+enddo
+
+return x
+
 FUNCTION szukam(_s)
 
 local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
@@ -554,6 +567,7 @@ FUNCTION _SDOL(_s,_skey)
       ENDDO
       if _sef
         @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
       ENDIF
       _sm:=if(_si>0,_si,1)
     ENDIF
@@ -608,6 +622,7 @@ FUNCTION _sPgDn(_s,_skey)
       ENDDO
       IF  _sef
         @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
       ENDIF
     ENDIF
     _sm:=if(_si>0,_si,1)
@@ -670,6 +685,7 @@ FUNCTION _stop(_s)
       ENDIF
       IF   _sef
         @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
       ENDIF
 #ifdef D_LAN
       go _srec[_sm]
@@ -690,6 +706,7 @@ FUNCTION _sbot(_s)
     IF ! _sef
       RESTSCREEN(_srow1-1,_scol1-1,_srow2-1,_scol2,SUBSTR(_scr,1+(_srow1-1-_srowb)*(_scoln+2)*D_REST))
       @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
+      @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
       _sef=.T.
       _sbf=.F.
       _srow1=_srow2
@@ -824,6 +841,7 @@ FUNCTION _sznak(_s,_skey)
              @ _srow1-1,_scol1+_snagkol SAYB R1TO1(_snagl) COLOR _SRAMKA
           ENDIF
           @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
+          @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
           _sef:=.t.
         endif
         FOR l=l TO 1 STEP -1
@@ -973,6 +991,7 @@ IF _si<_srown
     SCROLL(_srow1-1,_scol1-1,_srow2-1,_scol2,1)
   ENDIF
   @ _srow2-1,_scol1-1,_srow2,_scol2 BOXB '³ ³³ÙÄÀ³' COLOR _SRAMKA
+  @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
   ++_si
  ELSE
   IF _sbf
@@ -1005,6 +1024,7 @@ IF _si<_srown
  ELSE
   IF _sef
     @ _srow2,_scol1-1 SAYB 'À'+REPLICATE('Ä',_scoln)+'Ù' COLOR _SRAMKA
+    @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
     _sef=.F.
   ENDIF
   SCROLL(_srow1,_scol1,_srow2-1,_scol2-1,-1)
@@ -1052,7 +1072,13 @@ endif
           @ _srow1-1,_scol1-1 SAYB 'Ú'+REPLICATE('Ä',_scoln)+'¿' COLOR _SRAMKA
           @ _srow1-1,_scol1+_snagkol SAYB R1TO1(_snagl) COLOR _SRAMKA
         ENDIF
-        @ _srow2,_scol1-1 SAYB if(oef:=_sef,'Ô'+REPLICATE('Í',_scoln)+'¾','À'+REPLICATE('Ä',_scoln)+'Ù') COLOR _SRAMKA
+        IF oef:=_sef
+          @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
+          @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
+        ELSE
+          @ _srow2,_scol1-1 SAYB 'À'+REPLICATE('Ä',_scoln)+'Ù' COLOR _SRAMKA
+          @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
+        ENDIF
       IF crsr=1
          exit
       endif
@@ -1080,6 +1106,7 @@ endif
 
             if _sef .and. _sef#oef
                @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
+               @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
             endif
             if _sbf .and. _sbf#obf
                @ _srow1-1,_scol1-1 SAYB 'Õ'+REPLICATE('Í',_scoln)+'¸' COLOR _SRAMKA
@@ -1098,6 +1125,7 @@ endif
       if _srowe>_srow2 .and. !_sef
         ++_srow2
         @ _srow2-1,_scol1-1,_srow2,_scol2 BOXB '³ ³³ÙÄÀ³' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
         oef:=.f.
       elseif _srowb<_srow1-1 .and. !_sbf
         --_srow1
@@ -1107,6 +1135,7 @@ endif
       elseif _srowe>_srow2
         ++_srow2
         @ _srow2-1,_scol1-1,_srow2,_scol2 BOXB '³ ³³¾ÍÔ³' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
         oef:=.t.
       else
         --_srow1
@@ -1133,6 +1162,7 @@ endif
         ++_si
         _srec[_si]=RECNO()
         @ _srow2-1,_scol1-1,_srow2,_scol2 BOXB '³ ³³ÙÄÀ³' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
         @ _srow2-1,_scol1 say padr(EVAL(_sprompt,1,_s),_scol2-COL())
         oef:=.f.
       ENDDO
@@ -1176,6 +1206,7 @@ endif
           _srec[_si]=RECNO()
           SCROLL(_srow1-1,_scol1-1,_srow2-1,_scol2,1)
           @ _srow2-1,_scol1-1,_srow2,_scol2 BOXB '³ ³³ÙÄÀ³' COLOR _SRAMKA
+          @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
           @ _srow2-1,_scol1 say padr(EVAL(_sprompt,1,_s),_scol2-COL())
           oef:=.f.
         ENDDO
@@ -1191,7 +1222,13 @@ endif
     ENDIF
     ENDIF
     IF _sef#oef
-        @ _srow2,_scol1-1 SAYB if(_sef,'Ô'+REPLICATE('Í',_scoln)+'¾','À'+REPLICATE('Ä',_scoln)+'Ù') COLOR _SRAMKA
+       IF _sef
+        @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
+       ELSE
+        @ _srow2,_scol1-1 SAYB 'À'+REPLICATE('Ä',_scoln)+'Ù' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
+       ENDIF
     ENDIF
   _sm:=max(1,min(_si,_sm))
 #ifdef D_LAN
@@ -1226,6 +1263,7 @@ else
   _si:=x
   @ _srow1-1,_scol1-1,_srow2,_scol2 BOXB 'ÚÄ¿³ÙÄÀ³' COLOR _SRAMKA
   @ _srow1-1,_scol1+_snagkol SAYB R1TO1(_snagl) COLOR _SRAMKA
+  @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
   _sef=.F.
   _sbf=.F.
 endif
@@ -1311,8 +1349,10 @@ end sequence
       RESTSCREEN(_srow2+1,_scol1-1,_srowe,_scol2,SUBSTR(_scr,1+(_srow2+1-_srowb)*(_scoln+2)*D_REST))
       IF _sef
         @ _srow2,_scol1-1 SAYB 'Ô'+REPLICATE('Í',_scoln)+'¾' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAYB R1TO3(_snagl) COLOR _SRAMKA
       ELSE
         @ _srow2,_scol1-1 SAYB 'À'+REPLICATE('Ä',_scoln)+'Ù' COLOR _SRAMKA
+        @ _srow2,_scol1+_snagkol SAYB R1TO4(_snagl) COLOR _SRAMKA
       ENDIF
     else
       _sef:=oef
