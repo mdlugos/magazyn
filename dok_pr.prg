@@ -68,27 +68,27 @@
 #ifdef A_FK
 field transport
 #ifdef A_ZAGRODA
-#define DOLAR if(!KEY_DOK$dok_zapl .or. ROUND(BRUTTO-zaplacono,A_ZAOKR)=0 .or. przelewem=0,'³','$')
+#define DOLAR if(!KEY_DOK$dok_zapl .or. ROUND(BRUTTO-zaplacono,A_ZAOKR)=0 .or. przelewem=0,'â”‚','$')
 #else
-#define DOLAR if(!KEY_DOK$dok_zapl .or. ROUND(BRUTTO-val(transport)-zaplacono,A_ZAOKR)=0,'³','$')
+#define DOLAR if(!KEY_DOK$dok_zapl .or. ROUND(BRUTTO-val(transport)-zaplacono,A_ZAOKR)=0,'â”‚','$')
 #endif
 #else
-#define DOLAR '³'
+#define DOLAR 'â”‚'
 #endif
 
 #ifdef A_WE
-#define KWOTA DOLAR+tran(if(KEY_DOK$dok_zby,if(doc_brut,BRUTTO,NETTO),warT_ewiD*if(KEY_DOK$dok_rozch,-1,1)) ,WAPICT)+if(przelewem#0,'P',if(czekiem#0,"K",'³'))
+#define KWOTA DOLAR+tran(if(KEY_DOK$dok_zby,if(doc_brut,BRUTTO,NETTO),warT_ewiD*if(KEY_DOK$dok_rozch,-1,1)) ,WAPICT)+if(przelewem#0,'P',if(czekiem#0,"K",'â”‚'))
 #else
-#define KWOTA DOLAR+tran(if(doc_brut,BRUTTO,NETTO),WAPICT)+if(przelewem#0,'P',if(czekiem#0,"K",'³'))
+#define KWOTA DOLAR+tran(if(doc_brut,BRUTTO,NETTO),WAPICT)+if(przelewem#0,'P',if(czekiem#0,"K",'â”‚'))
 #endif
 
 #endif
 
 #ifdef A_KSEF
 field nr_ksef
-#define D_EF if(len(trim(nr_ksef))<35,'³','õ')
+#define D_EF if(len(trim(nr_ksef))<35,'â”‚','Â§')
 #else
-#define D_EF '³'
+#define D_EF 'â”‚'
 #endif
 MEMVAR n_f,dd,da,lp,d_o,DOK,SCR,R,nk1,i,nim,il,wa,ce,changed,dok_zewn,;
       nz,MAG_BIEZ,mag_poz,doc_opcja,operator,miar_opcja,is_spec,dok_rozch,;
@@ -124,27 +124,27 @@ field przelewem,czekiem
 
 #ifdef A_SUBDOK
   #ifdef A_KHNUM
-    #define STDTOP2 "Nr/LpÂÄÄÂ"+PADC("Firma",A_NRLTH,"Ä")+"ÂÄDataÂ"
+    #define STDTOP2 "Nr/Lpâ”¬â”€â”€â”¬"+PADC("Firma",A_NRLTH,"â”€")+"â”¬â”€Dataâ”¬"
     #define DBEG 16+A_NRLTH
   #else
-    #define STDTOP2 "Nr/LpÂÄÄÂÄDataÂ"
+    #define STDTOP2 "Nr/Lpâ”¬â”€â”€â”¬â”€Dataâ”¬"
     #define DBEG 15
   #endif
 #else
   #ifdef A_KHNUM
    #ifdef A_KTM
 #define DBEG 12+A_NRLTH
-#define STDTOP2 "Nr/LÂ"+PADC("Firma",A_NRLTH,"Ä")+"ÂÄDataÂ"
+#define STDTOP2 "Nr/Lâ”¬"+PADC("Firma",A_NRLTH,"â”€")+"â”¬â”€Dataâ”¬"
    #else
-#define STDTOP2 "Nr/LpÂ"+PADC("Firma",A_NRLTH,"Ä")+"ÂÄDataÂ"
+#define STDTOP2 "Nr/Lpâ”¬"+PADC("Firma",A_NRLTH,"â”€")+"â”¬â”€Dataâ”¬"
 #define DBEG 13+A_NRLTH
    #endif
   #else
    #ifdef A_KTM
-#define STDTOP2 "Nr/pÂÄDataÂ"
+#define STDTOP2 "Nr/pâ”¬â”€Dataâ”¬"
 #define DBEG 11
    #else
-#define STDTOP2 "Nr/LpÂÄDataÂ"
+#define STDTOP2 "Nr/Lpâ”¬â”€Dataâ”¬"
 #define DBEG 12
    #endif
   #endif
@@ -160,9 +160,9 @@ field przelewem,czekiem
               #undef STDZLE
               #define STDZLE pad(nr_zlec,11)
               #define STDBG 44
-              #define STDTOP "Nr/LpÂÄDataÂÄÄIlo˜†ÄÂJednÂÄInf. dod.ÄÂMGÂÄKodÂMateriaˆ:"
+              #define STDTOP "Nr/Lpâ”¬â”€Dataâ”¬â”€â”€IloÅ›Ä‡â”€â”¬Jednâ”¬â”€Inf. dod.â”€â”¬MGâ”¬â”€Kodâ”¬MateriaÅ‚:"
            #else
-   #define STDTOP "Nr/LpÂÄDataÂÄÄIlo˜†ÄÂJednÂKontoÄÂMGÂÄKodÂMateriaˆ:"
+   #define STDTOP "Nr/Lpâ”¬â”€Dataâ”¬â”€â”€IloÅ›Ä‡â”€â”¬Jednâ”¬Kontoâ”€â”¬MGâ”¬â”€Kodâ”¬MateriaÅ‚:"
    #define STDBG 39
            #endif
    #else
@@ -171,14 +171,14 @@ field przelewem,czekiem
      #ifdef A_OBR
        #define STDPOZ2 smb_dow+nr_dowodu+if(data<=DatY->d_z_mies1 .or. kto_pisal=operator .or. kto_pisal#chr(255).and.!is_spec,"/","*")+D_LPSTR1(pozycja)
        #define ILPIC 8,ILDEC
-       #define STDTOP "Nr/pÂÄDataÂÄÄIlo˜†ÄÂJednÂÄÄÄKosztyÄÄÄÄÄÄÄÂMGÂÄKod materiaˆuÄÄÂMateriaˆ:"
+       #define STDTOP "Nr/pâ”¬â”€Dataâ”¬â”€â”€IloÅ›Ä‡â”€â”¬Jednâ”¬â”€â”€â”€Kosztyâ”€â”€â”€â”€â”€â”€â”€â”¬MGâ”¬â”€Kod materiaÅ‚uâ”€â”€â”¬MateriaÅ‚:"
        #define STDZLE tran(nr_zlec,"@R XXX/XXX/XX/XXXXX")
        #define ZLBEG 31
        #define STDBG 48
      #else
        #define STDPOZ2 STDPOZ1
        #define ILPIC 9,ILDEC
-       #define STDTOP "Nr/pÂÄDataÂÄÄÄIlo˜†ÄÂJednÂKontoÄÂMGÂÄKod materiaˆuÄÄÂMateriaˆ:"
+       #define STDTOP "Nr/pâ”¬â”€Dataâ”¬â”€â”€â”€IloÅ›Ä‡â”€â”¬Jednâ”¬Kontoâ”€â”¬MGâ”¬â”€Kod materiaÅ‚uâ”€â”€â”¬MateriaÅ‚:"
        #define STDZLE nr_zlec
        #define ZLBEG 32
        #define STDBG 39
@@ -187,9 +187,9 @@ field przelewem,czekiem
      #define STDZLE nr_zlec
      #define ZLBEG 32
      #ifdef A_OLZA
-        #define STDTOP "Nr/pÂÄDataÂÄÄÄIlo˜†ÄÂJednÂZlecenieÄÂMGÂÄKod materiaˆuÂMateriaˆ:"
+        #define STDTOP "Nr/pâ”¬â”€Dataâ”¬â”€â”€â”€IloÅ›Ä‡â”€â”¬Jednâ”¬Zlecenieâ”€â”¬MGâ”¬â”€Kod materiaÅ‚uâ”¬MateriaÅ‚:"
         #undef STDTOP2
-        #define STDTOP2 "Nr/pÂÄDataÂKo.koÂÄSt.KoÂWarto˜†ÄÄÄÂ"
+        #define STDTOP2 "Nr/pâ”¬â”€Dataâ”¬Ko.koâ”¬â”€St.Koâ”¬WartoÅ›Ä‡â”€â”€â”€â”¬"
         #define STDPOZ1 smb_dow+nr_dowodu+'/'+D_LPSTR1(pozycja)
         #define STDPOZ2 STDPOZ1
         #define STDBG 42
@@ -207,20 +207,20 @@ field przelewem,czekiem
               #undef STDZLE
               #define STDZLE pad(nr_zlec,11)
               #define STDBG 44
-              #define STDTOP "Nr/LpÂÄDataÂÄÄIlo˜†ÄÂJednÂÄInf. dod.ÄÂMGÂSymbolÂMateriaˆ:"
+              #define STDTOP "Nr/Lpâ”¬â”€Dataâ”¬â”€â”€IloÅ›Ä‡â”€â”¬Jednâ”¬â”€Inf. dod.â”€â”¬MGâ”¬Symbolâ”¬MateriaÅ‚:"
            #else
               #define STDBG 39
-              #define STDTOP "Nr/LpÂÄDataÂÄÄIlo˜†ÄÂJednÂKontoÄÂMGÂSymbolÂMateriaˆ:"
+              #define STDTOP "Nr/Lpâ”¬â”€Dataâ”¬â”€â”€IloÅ›Ä‡â”€â”¬Jednâ”¬Kontoâ”€â”¬MGâ”¬Symbolâ”¬MateriaÅ‚:"
            #endif
         #else
            #ifdef A_ZLEC11
               #undef STDZLE
               #define STDZLE pad(nr_zlec,11)
               #define STDBG 44
-              #define STDTOP "Nr/LpÂÄDataÂÄÄIlo˜†ÄÂJednÂÄInf. dod.ÄÂMGÂÄKod mater.ÄÂMateriaˆ:"
+              #define STDTOP "Nr/Lpâ”¬â”€Dataâ”¬â”€â”€IloÅ›Ä‡â”€â”¬Jednâ”¬â”€Inf. dod.â”€â”¬MGâ”¬â”€Kod mater.â”€â”¬MateriaÅ‚:"
            #else
               #define STDBG 39
-              #define STDTOP "Nr/LpÂÄDataÂÄÄIlo˜†ÄÂJednÂKontoÄÂMGÂÄKod mater.ÄÂMateriaˆ:"
+              #define STDTOP "Nr/Lpâ”¬â”€Dataâ”¬â”€â”€IloÅ›Ä‡â”€â”¬Jednâ”¬Kontoâ”€â”¬MGâ”¬â”€Kod mater.â”€â”¬MateriaÅ‚:"
            #endif
         #endif
      #endif
@@ -228,7 +228,7 @@ field przelewem,czekiem
 #endif
            #ifdef A_SUBDOK
              #undef STDPOZ2
-             #define STDPOZ2 smb_dow+nr_dowodu+'/'+str(D_LPVAL(pozycja),2)+"³"+sub_dok
+             #define STDPOZ2 smb_dow+nr_dowodu+'/'+str(D_LPVAL(pozycja),2)+"â”‚"+sub_dok
            #endif
 
 STATIC proc set_all(_s,doc_opcja,_skey,stat_ord,init,chgbase)
@@ -261,42 +261,42 @@ if doc_opcja
 #define D_KH1 if(val(dost_odb)=0,dost_odb,subs(dost_odb,A_NRLTH+2))
 #endif
 #ifdef A_KHNUM
-#define D_KH2 D_KH+'³'
+#define D_KH2 D_KH+'â”‚'
 #else
 #define D_KH2
 #endif
 
 #ifdef A_OLZA
   #ifdef A_VAT
-           _snagl+="ÄÄÄVATÄÄÄÄÂ"
-           _sprompt:={||STDPOZ2+'³'+DTOV(data)+'³'+konto_kosz+"³"+stano_kosz+'³'+tran(warT_ewiD*if(KEY_DOK$dok_rozch,-1,1),WAPICT)+"³"+tran(warT_vaT,WAPICT)+"³"+D_KH1}
+           _snagl+="â”€â”€â”€VATâ”€â”€â”€â”€â”¬"
+           _sprompt:={||STDPOZ2+'â”‚'+DTOV(data)+'â”‚'+konto_kosz+"â”‚"+stano_kosz+'â”‚'+tran(warT_ewiD*if(KEY_DOK$dok_rozch,-1,1),WAPICT)+"â”‚"+tran(warT_vaT,WAPICT)+"â”‚"+D_KH1}
   #else
-           _sprompt:={||STDPOZ2+'³'+DTOV(data)+'³'+konto_kosz+"³"+stano_kosz+'³'+tran(warT_ewiD*if(KEY_DOK$dok_rozch,-1,1),WAPICT)+"³"+D_KH1}
+           _sprompt:={||STDPOZ2+'â”‚'+DTOV(data)+'â”‚'+konto_kosz+"â”‚"+stano_kosz+'â”‚'+tran(warT_ewiD*if(KEY_DOK$dok_rozch,-1,1),WAPICT)+"â”‚"+D_KH1}
   #endif
 #else
   #ifdef A_FA
    #ifdef A_KPR
-           _snagl+="NrKPRÂNr fakturyÄÄÄÂWarto˜†ÄÄÄÂ"
-           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+'³'+nr_kpr+D_EF+pad(nr_faktury,13)+KWOTA+D_KH1}
+           _snagl+="NrKPRâ”¬Nr fakturyâ”€â”€â”€â”¬WartoÅ›Ä‡â”€â”€â”€â”¬"
+           _sprompt:={||STDPOZ2+'â”‚'+D_KH2+DTOV(data)+'â”‚'+nr_kpr+D_EF+pad(nr_faktury,13)+KWOTA+D_KH1}
    #else
-           _snagl+="Nr fakturyÄÄÄÂWarto˜†ÄÄÄÂ"
-           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+KWOTA+D_KH1}
+           _snagl+="Nr fakturyâ”€â”€â”€â”¬WartoÅ›Ä‡â”€â”€â”€â”¬"
+           _sprompt:={||STDPOZ2+'â”‚'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+KWOTA+D_KH1}
    #endif
   #else
 #ifdef A_F9
-           _snagl+="Nr fakturyÄÄÄÂ"
-           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+'³'+D_KH1}
+           _snagl+="Nr fakturyâ”€â”€â”€â”¬"
+           _sprompt:={||STDPOZ2+'â”‚'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+'â”‚'+D_KH1}
 #else
     #ifdef A_VAT
-           _snagl+="Nr fakturyÄÄÄÂÄÄÄVATÄÄÄÄÂ"
-           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+"³"+tran(warT_vaT,WAPICT)+'³'+D_KH1}
+           _snagl+="Nr fakturyâ”€â”€â”€â”¬â”€â”€â”€VATâ”€â”€â”€â”€â”¬"
+           _sprompt:={||STDPOZ2+'â”‚'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+"â”‚"+tran(warT_vaT,WAPICT)+'â”‚'+D_KH1}
     #else
       #ifdef A_WE
-           _snagl+="Nr fakturyÄÄÄÂWarto˜†ÄÄÄÂ"
-           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+'³'+tran(warT_ewiD*if(KEY_DOK$dok_rozch,-1,1),WAPICT)+'³'+D_KH1}
+           _snagl+="Nr fakturyâ”€â”€â”€â”¬WartoÅ›Ä‡â”€â”€â”€â”¬"
+           _sprompt:={||STDPOZ2+'â”‚'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+'â”‚'+tran(warT_ewiD*if(KEY_DOK$dok_rozch,-1,1),WAPICT)+'â”‚'+D_KH1}
       #else
-           _snagl+="Nr fakturyÄÄÄÂ"
-           _sprompt:={||STDPOZ2+'³'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+'³'+D_KH1}
+           _snagl+="Nr fakturyâ”€â”€â”€â”¬"
+           _sprompt:={||STDPOZ2+'â”‚'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+'â”‚'+D_KH1}
       #endif
     #endif
 #endif
@@ -328,10 +328,10 @@ else
 #define imiaR(x,y) x
 #endif
 
-         _sprompt:={|lam,il|lam:=i_lam(data),STDPOZ1+'³'+;
-      DTOV(data)+'³'+smiaR(ilosc*if(KEY_DOK$dok_rozch,-1,1),ILPIC)+'³'+;
-      imiaR((lam)->jm,(lam)->jm_opcja)+'³'+STDZLE+'³'+nr_mag+'³'+tran(index,"@R "+ INDEXPIC )+;
-      if(alias(lam)#"INDX_MAT",'|','³')+(lam)->nazwA}
+         _sprompt:={|lam,il|lam:=i_lam(data),STDPOZ1+'â”‚'+;
+      DTOV(data)+'â”‚'+smiaR(ilosc*if(KEY_DOK$dok_rozch,-1,1),ILPIC)+'â”‚'+;
+      imiaR((lam)->jm,(lam)->jm_opcja)+'â”‚'+STDZLE+'â”‚'+nr_mag+'â”‚'+tran(index,"@R "+ INDEXPIC )+;
+      if(alias(lam)#"INDX_MAT",'|','â”‚')+(lam)->nazwA}
 
 #undef imiaR
 #undef smiaR
@@ -389,7 +389,7 @@ endif
               _sbeg:=DBEG+6+6
 #else
               _sbeg:=DBEG+6
-#endif	      
+#endif      
               _spocz:=if(UPPER(IndexkeY(_skey))='NR_MAG',nr_mag,'')
 #endif
 #endif

@@ -57,25 +57,25 @@ memvar P_12LPI,P_6LPI,P_SUPON,P_SUPOFF,P_UON,P_UOFF,p_rown,p_coln,p_rownl,p_coln
 #ifdef A_PCL
 #undef P_ROWN
 #undef P_COLN
-#define P_MARGIN {|x,y|'&'+'a'+ltrim(str(x,3))+'L'}
-#define P_LAND {|x|if((landscape:=x),'',"&"+"l"+IF(x,"1","0")+"O")}
+#define P_MARGIN {|x,y|chr(0x1B)+'&'+'a'+ltrim(str(x,3))+'L'}
+#define P_LAND {|x|if((landscape:=x),'',chr(0x1B)+"&"+"l"+IF(x,"1","0")+"O")}
 #define P_ROWN if(landscape,42,58)
 #define P_COLN if(landscape,113,78)
-#define P_12LPI '&l12D'
-#define P_6LPI  '&l6D'
-#define P_SUPON '(s8V'
-#define P_SUPOFF '(s12V'
-#define P_UON   '&d0D'
-#define P_UOFF   '&d@'
+#define P_12LPI chr(0x1B)+'&l12D'
+#define P_6LPI  chr(0x1B)+'&l6D'
+#define P_SUPON chr(0x1B)+'(s8V'
+#define P_SUPOFF chr(0x1B)+'(s12V'
+#define P_UON   chr(0x1B)+'&d0D'
+#define P_UOFF   chr(0x1B)+'&d@'
 #else
 #define P_ROWN  60
 #define P_COLN  80
-#define P_12LPI '3'
-#define P_6LPI  '2'
-#define P_SUPON 'S'
-#define P_SUPOFF 'T'
-#define P_UON   '-'
-#define P_UOFF   '-0'
+#define P_12LPI chr(0x1B)+'3'+chr(0x12)
+#define P_6LPI  chr(0x1B)+'2'
+#define P_SUPON chr(0x1B)+'S1'
+#define P_SUPOFF chr(0x1B)+'T'
+#define P_UON   chr(0x1B)+'-1'
+#define P_UOFF   chr(0x1B)+'-0'
 #endif
 #endif
 
@@ -96,7 +96,7 @@ memvar P_12LPI,P_6LPI,P_SUPON,P_SUPOFF,P_UON,P_UOFF,p_rown,p_coln,p_rownl,p_coln
 #ifdef A_OLZBY
 #define WANAZ "WAGA kg"
 #else
-#define WANAZ "Warto��"
+#define WANAZ "Wartość"
 #endif
 #ifdef A_SZTUKI
 #define ILDEC 0
@@ -172,22 +172,22 @@ local a:={},r,f2,f3,f4,f5,f6,x
       SETKEY(4,{||KIBORD(CHR(27)+CHR(24)+CHR(13))})
       SETKEY(19,{||KIBORD(CHR(27)+CHR(5)+CHR(13))})
 #ifndef A_NOMZ
-          a:={'R ZESTAWIENIE ROZCHOD�W WED�UG KONT',;
-              'P ZESTAWIENIE PRZYCHOD�W WED�UG KONT'}
+          a:={'R ZESTAWIENIE ROZCHODÓW WEDŁUG KONT',;
+              'P ZESTAWIENIE PRZYCHODÓW WEDŁUG KONT'}
 #endif
-       aadd(a,'K KARTOTEKA MATERIA�OWA')
-       aadd(a,'O DOKUMENTY OBROTU MATERIA�OWEGO')
-       aadd(a,'D DOKUMENTY WED�UG KODU MATERIA�U')
+       aadd(a,'K KARTOTEKA MATERIAŁOWA')
+       aadd(a,'O DOKUMENTY OBROTU MATERIAŁOWEGO')
+       aadd(a,'D DOKUMENTY WEDŁUG KODU MATERIAŁU')
 #ifdef A_FA
-       aadd(a,'S REJESTR SPRZEDA�Y')
-       aadd(a,'Z REJESTR ZAKUP�W')
+       aadd(a,'S REJESTR SPRZEDAŻY')
+       aadd(a,'Z REJESTR ZAKUPÓW')
 #endif
 #ifdef A_KPR
-       aadd(a,'KSI�GA PRZYCHOD�W I ROZCHOD�W')
+       aadd(a,'KSIĘGA PRZYCHODÓW I ROZCHODÓW')
 #endif
 #ifdef A_OLZA
-       aadd(a,'KK DOKUMENTY WED�UG KONTA KOSZT�W')
-       aadd(a,'SK DOKUMENTY WED�UG STANOWISKA KOSZT�W')
+       aadd(a,'KK DOKUMENTY WEDŁUG KONTA KOSZTÓW')
+       aadd(a,'SK DOKUMENTY WEDŁUG STANOWISKA KOSZTÓW')
 #endif
 #ifdef A_DRUKCOMP
        aadd(a,'ZESTAWIENIA DODATKOWE')
@@ -208,7 +208,7 @@ BEGIN SEQUENCE
 SETPRC(99,0)
 private strona:=0
 
-@ 7,0 SAY 'Aby zablokowa� wysuw ostatniej kartki naci�nij klawisz [Delete] podczas wydruku'
+@ 7,0 SAY 'Aby zablokować wysuw ostatniej kartki naciśnij klawisz [Delete] podczas wydruku'
 @ 18,0 CLEAR
 
 #ifdef A_LAN
@@ -256,7 +256,7 @@ SELECT MAIN
 #endif
   f5:=setkey(-4,{|k|k:=setkey(-4,),aczojs(zamowienie[mag_poz],"",0),setkey(-4,k)})
 #ifdef A_OBR
-  f6:=setkey(-5,{|k,s|k:=setkey(-2,),s:=push_stat(),dbselectar("stanowis"),ordsetfocus("kont_naz"),szukam({0,10,maxrow(),,8,0,"",{||konto+"�"+opis_koszt},{|_skey|_skey=K_ESC},""}),pop_stat(s),setkey(-5,k)})
+  f6:=setkey(-5,{|k,s|k:=setkey(-2,),s:=push_stat(),dbselectar("stanowis"),ordsetfocus("kont_naz"),szukam({0,10,maxrow(),,8,0,"",{||konto+"│"+opis_koszt},{|_skey|_skey=K_ESC},""}),pop_stat(s),setkey(-5,k)})
 #else
   f6:=setkey(-5,{|k|k:=setkey(-5,),aczojs(stanowis[mag_poz],"",0),setkey(-5,k)})
 #endif
@@ -325,16 +325,16 @@ IF STRONA>0
 #ifdef A_WADO
 ? ccpi(4)
 ? A_WADO
-//'Sporz�dzi�:                                             Zatwierdzi�:'
+//'Sporządził:                                             Zatwierdził:'
 #endif
    ?? speC(chr(13)+chr(12))
 #ifdef A_PCL
 /**********
 if landscape
-   ?? speC(eval(P_LAND,.f.)) //'&l0O')
+   ?? speC(eval(P_LAND,.f.)) //chr(0x1B)+'&l0O')
 endif
 ********/
-//   ?? speC("E")
+//   ?? speC("E")
 
 //   landscape:=.f.
 #endif
@@ -408,9 +408,9 @@ local od,do,i_od,i_do,bkey,bpic,i_gr,a
 OD := DatY->DATA_GRAN+1
 DO := IF(DatY->DATA_GRAN>DatY->D_Z_MIES2,DatE(),DatY->D_Z_MIES1)
 #ifdef A_FA
-@ 13,10 SAY "ZESTAWIENIE DOKUMENT�W SPRZEDA�Y DLA POSZCZEG�LNTCH FIRM"
+@ 13,10 SAY "ZESTAWIENIE DOKUMENTÓW SPRZEDAŻY DLA POSZCZEGÓLNTCH FIRM"
 #else
-@ 13,10 SAY "ZESTAWIENIE DOKUMENT�W ROZCHODU DLA POSZCZEG�LNTCH KONT"
+@ 13,10 SAY "ZESTAWIENIE DOKUMENTÓW ROZCHODU DLA POSZCZEGÓLNTCH KONT"
 #endif
 
 @ 15,20 say "PODAJ ZAKRES DANYCH DLA WYDRUKU"
@@ -450,7 +450,7 @@ pm:=-1
   @ 20,5 SAY 'KONTO-MAGAZYN-INDEKS do :' GET I_DO PICTURE "@KR! "+bpic valid {||if(i_do<i_od,(i_do:=i_od)=NIL,.t.)}
 #endif
   @ 22,10 SAY 'Grupowanie wedlug pierwszych' GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=len(i_od)
-  devout(" znak�w klucza")
+  devout(" znaków klucza")
 READ
 if readkey()=27
   break
@@ -461,14 +461,14 @@ I_DO=UpP(TRIM(I_DO))
 a:=len(&(INDEXKEY()))-10-len(index)
 #ifdef A_OBR
 stanowis->(ordsetfocus("kont_num"))
-return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,"ZESTAWIENIE ROZCHOD�W W/G KONT",{||NIL},{|x,y|;
+return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,"ZESTAWIENIE ROZCHODÓW W/G KONT",{||NIL},{|x,y|;
   if(i_gr>=a.and.stanowis->(dbseek(left(main->nr_zlec,a))),QQOUT(stanowis->opis_koszt),)}})
 #else
 #ifdef A_FA
-return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,"ZESTAWIENIE SPRZEDA�Y W/G KONTRAHENT�W",{||NIL},{||;
+return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,"ZESTAWIENIE SPRZEDAŻY W/G KONTRAHENTÓW",{||NIL},{||;
   FIRMY->(IF(i_gr>=a.and.DBSEEK(subs(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),if(i_gr>=a+2,QOUT(subs(magazyny[ascan(magazyny,nr_mag)],4)),)}})
 #else
-return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,"ZESTAWIENIE ROZCHOD�W W/G KONT",{||NIL},{|x,y,z|z:='',;
+return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,"ZESTAWIENIE ROZCHODÓW W/G KONT",{||NIL},{|x,y,z|z:='',;
   if(i_gr>=a+2.and.(x:=ascan(magazyny,nr_mag),y:=if(x=0,x,ascan(stanowis[x],{|x|nr_zlec=strtran(trim(left(x,a)),'*')})),y#0),z:=subs(stanowis[x,y],8),),;
   FIRMY->(IF(i_gr>=a.and.DBSEEK(subs(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),z}})
 #endif
@@ -480,7 +480,7 @@ local od,do,i_od,i_do,bkey,bpic,i_gr,a
 OD := DatY->data_gran+1
 DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
 
-@ 13,10 SAY "ZESTAWIENIE PRZYCHOD�W W/G SYMBOLI KONT"
+@ 13,10 SAY "ZESTAWIENIE PRZYCHODÓW W/G SYMBOLI KONT"
 
 @ 15,20 say "PODAJ ZAKRES DANYCH DLA WYDRUKU"
 
@@ -514,8 +514,8 @@ DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
      i_gr-=2
   endif
 #endif
-  @ 22,10 SAY 'Grupowanie wed�ug pierwszych' GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=len(i_od)
-  devout(" znak�w klucza")
+  @ 22,10 SAY 'Grupowanie według pierwszych' GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=len(i_od)
+  devout(" znaków klucza")
 READ
 if readkey()=27
   break
@@ -524,7 +524,7 @@ I_OD=UpP(TRIM(I_OD))
 I_DO=UpP(TRIM(I_DO))
 a:=len(&(INDEXKEY()))-10-len(index)
 
-return({od,do,i_od,i_do,i_gr,bkey,bpic,1,"ZESTAWIENIE PRZYCHOD�W W/G KONT",{||NIL},{||;
+return({od,do,i_od,i_do,i_gr,bkey,bpic,1,"ZESTAWIENIE PRZYCHODÓW W/G KONT",{||NIL},{||;
   FIRMY->(IF(i_gr>=a.and.DBSEEK(subs(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),chr(13)+replicate('_',78)}})
 #endif
 ****************
@@ -558,7 +558,7 @@ static dok_sp,d
 OD := DatY->data_gran+1
 DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
 
-@ 12,10 SAY "ZESTAWIENIE DOKUMENT�W W/G SYMBOLU MATERIA�U"
+@ 12,10 SAY "ZESTAWIENIE DOKUMENTÓW W/G SYMBOLU MATERIAŁU"
 
 @ 14,20 say "PODAJ ZAKRES DANYCH DLA WYDRUKU"
 
@@ -574,19 +574,19 @@ DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
 SELECT STANY
   bkey:={||nr_mag+index}
   bpic:="XX/"+ INDEXPIC
-  SEEK MAG_BIEZ+"�"
+  SEEK MAG_BIEZ+"■"
   SKIP -1
   I_DO:=MAG_BIEZ+INDEX
   SEEK MAG_BIEZ
   I_OD:=MAG_BIEZ+INDEX
-  @ 16,10 SAY 'DLA DOKUMENT�W:' GET dok_sp PICTURE "@K!"
+  @ 16,10 SAY 'DLA DOKUMENTÓW:' GET dok_sp PICTURE "@K!"
   @ 18,20 say "DATA od   :" get od valid {||od:=max(od,DatY->d_z_rok+1),do:=max(od,do),.t.}
   @ 18,50 say "DATA do   :" get do valid {||do:=max(od,do),.t.}
   @ 20,05 SAY 'MAT. "od" :' GET I_OD PICTURE "@KR! "+bpic valid {||if(i_do<i_od,(i_do:=i_od),),.t.}
   @ 20,45 SAY 'MAT. "do" :' GET I_DO PICTURE "@KR! "+bpic valid {||if(i_do<i_od,(i_do:=i_od)=NIL,.t.)}
   i_gr:=2
   @ 22,10 SAY 'grupowanie wedlug pierwszych' GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=len(index)
-  devout(" znak�w klucza")
+  devout(" znaków klucza")
   READ
   if readkey()=27
     break
@@ -604,7 +604,7 @@ SELECT STANY
   SET FILTER TO smb_dow$dok_sp
   seek i_od
 
-return {od,do,i_od,i_do,i_gr,bkey,bpic,if(D_MM+left(dok_sp,2)$dok_rozch,-1,1),"ZESTAWIENIE W/G SYMBOLU MATERIA�U",{||QOUT("Dokumenty: "+d)},{||NIL}}
+return {od,do,i_od,i_do,i_gr,bkey,bpic,if(D_MM+left(dok_sp,2)$dok_rozch,-1,1),"ZESTAWIENIE W/G SYMBOLU MATERIAŁU",{||QOUT("Dokumenty: "+d)},{||NIL}}
 ***********
 proc druk(i)
 
@@ -813,7 +813,7 @@ DO WHILE eval(bkey)<=I_DO .AND. !EOF()
   IF prow()+3>P_ROWN
 #endif
     IF STRONA>0
-       specout(ccpi(4)+chr(13)+"")
+       specout(ccpi(4)+chr(0x0D)+chr(0x0C))
        setprc(0,0)
     else
        print()
@@ -823,9 +823,9 @@ DO WHILE eval(bkey)<=I_DO .AND. !EOF()
     ? "SYNTETYCZNE ",_dnazwa," OD DNIA ",od," DO ",do,"."
 /*
     if DatY->d_z_mies1>=do
-        ? "PO ZAMKNI�CIU MIESI�CA"
+        ? "PO ZAMKNIĘCIU MIESIĄCA"
     ELSE
-        ? "PRZED ZAMKNI�CIEM MIESI�CA"
+        ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
     ENDIF
 */
     ?
@@ -1050,7 +1050,7 @@ endif
 ********
 ELSE
 ********
-DFLAG:=TAK("CZY ROZBIJA� NA POJEDYNCZE DOKUMENTY",23,,.F.,.F.)
+DFLAG:=TAK("CZY ROZBIJAĆ NA POJEDYNCZE DOKUMENTY",23,,.F.,.F.)
 #ifdef A_JMO
 jm_o:=TAK("CZY W ALTERNATYWNEJ JEDNOSTCE MIARY",,,miar_opcja,.F.)
 #define D_ILOUT(x,p) if(jm_o,if(x%p=0,str(x/p,6)+"    ",stuff(str(int(x/p)+x%p/1000,10,3),7,1,"r")),str(x,10,ILDEC))
@@ -1090,7 +1090,7 @@ DO WHILE eval(bkey)<=I_DO .AND. !EOF()
   IF prow()+5>P_ROWN
 #endif
       IF STRONA>0
-         specout(ccpi(4)+chr(13)+"")
+         specout(ccpi(4)+chr(0x0D)+chr(0x0C))
          setprc(0,0)
       else
          print()
@@ -1100,9 +1100,9 @@ DO WHILE eval(bkey)<=I_DO .AND. !EOF()
     ? _dnazwa," OD DNIA ",od," DO ",do,"."
 /*
     if DatY->d_z_mies1>=do
-      ? "PO ZAMKNI�CIU MIESI�CA"
+      ? "PO ZAMKNIĘCIU MIESIĄCA"
     ELSE
-      ? "PRZED ZAMKNI�CIEM MIESI�CA"
+      ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
     ENDIF
 */
     ?
@@ -1122,14 +1122,14 @@ DO WHILE eval(bkey)<=I_DO .AND. !EOF()
     eval(_dhead)
     ?
 #ifdef D_GRAM
-#define HEADER_1 "DOKUMENT   | cena  |"+if(pm=1,"        PRZYCH�D          ","        ROZCH�D           ")+"|  WAGA    |  KOD i NAZWA MATERIA�U"
-#define HEADER_2 "  ile |   �r. cena |  ILO��   |JEDN| "+WANAZ+"  |   kg     |"
+#define HEADER_1 "DOKUMENT   | cena  |"+if(pm=1,"        PRZYCHÓD          ","        ROZCHÓD           ")+"|  WAGA    |  KOD i NAZWA MATERIAŁU"
+#define HEADER_2 "  ile |   śr. cena |  ILOŚĆ   |JEDN| "+WANAZ+"  |   kg     |"
 #else
-#define HEADER_1 "DOKUMENT   | cena  |"+if(pm=1,"        PRZYCH�D          ","        ROZCH�D           ")+"|  KOD i NAZWA MATERIA�U"
-#define HEADER_2 "  ile |   �r. cena |  ILO��   |JEDN| "+WANAZ+"  |"
+#define HEADER_1 "DOKUMENT   | cena  |"+if(pm=1,"        PRZYCHÓD          ","        ROZCHÓD           ")+"|  KOD i NAZWA MATERIAŁU"
+#define HEADER_2 "  ile |   śr. cena |  ILOŚĆ   |JEDN| "+WANAZ+"  |"
 #endif
-#define HEADER_10 "DOKUMENT        |"+if(pm=1,"    PRZYCH�D   ","    ROZCH�D    ")+"|  KOD i NAZWA MATERIA�U"
-#define HEADER_20 "            ile |  ILO��   |JEDN|"
+#define HEADER_10 "DOKUMENT        |"+if(pm=1,"    PRZYCHÓD   ","    ROZCHÓD    ")+"|  KOD i NAZWA MATERIAŁU"
+#define HEADER_20 "            ile |  ILOŚĆ   |JEDN|"
 if wa_flag
     ? ccpi(5)
     ? padr(HEADER_1,96)
@@ -1198,16 +1198,16 @@ if wa_flag
         endif
 #endif
 endif
-        specout(ccpi(4)+chr(13)+"")
+        specout(ccpi(4)+chr(0x0D)+chr(0x0C))
         setprc(0,0)
         ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
         ?
     ? _dnazwa," OD DNIA ",od," DO ",do,"."
 /*
     if DatY->d_z_mies1>=do
-      ? "PO ZAMKNI�CIU MIESI�CA"
+      ? "PO ZAMKNIĘCIU MIESIĄCA"
     ELSE
-      ? "PRZED ZAMKNI�CIEM MIESI�CA"
+      ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
     ENDIF
 */
     ?
@@ -1547,11 +1547,11 @@ DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
 #endif
   dok_sp+=space(40)
 
-@ 12,20 SAY "REJESTR SPRZEDA�Y"
+@ 12,20 SAY "REJESTR SPRZEDAŻY"
 
 @ 14,20 say "PODAJ ZAKRES DANYCH DLA WYDRUKU"
 
-  @ 16,10 SAY 'DLA DOKUMENT�W:' GET dok_sp PICTURE "@K!S60"
+  @ 16,10 SAY 'DLA DOKUMENTÓW:' GET dok_sp PICTURE "@K!S60"
   @ 18,20 say "DATA od   :" get od valid {||od:=max(od,DatY->d_z_rok+1),do:=max(od,do),.t.}
   @ 18,50 say "DATA do   :" get do valid {||do:=max(od,do),.t.}
 READ
@@ -1605,7 +1605,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
        j:=errornew()
        j:severity:=2
        j:candefault:=.t.
-       j:description:='Nieprawid�owy numer magazynu'
+       j:description:='Nieprawidłowy numer magazynu'
        j:filename:='DM.DBF'
        j:operation:='RECNO'
        j:args:={recno()}
@@ -1622,7 +1622,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
        EXIT
 #else
        if mag_biez=D_MM
-          seek D_MM+"�"
+          seek D_MM+"■"
        endif
        if eof()
           EXIT
@@ -1650,14 +1650,14 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
 
     IF prow()+12>P_ROWN
       IF STRONA>0
-         ?? speC(chr(13)+"")
+         ?? speC(chr(0x0D)+chr(0x0C))
          setprc(0,0)
       else
          print()
       ENDIF
       ?? padr(firma_n,P_COLN-16)+" dnia "+dtoc(DatE())
       ?
-      ? "ZESTAWIENIE SYNTETYCZNE SPRZEDA�Y ZA OKRES OD ",OD," DO ",DO,"."
+      ? "ZESTAWIENIE SYNTETYCZNE SPRZEDAŻY ZA OKRES OD ",OD," DO ",DO,"."
       ?
       ? "Strona"+str(++strona,3)
     ENDIF
@@ -1697,7 +1697,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
          j:=ascan(was,{|x|x[1]=proc_vat})
          if j=0
            if ascan(stawkizby,proc_vat)=0
-              ? "B��D STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"
+              ? "BŁĄD STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
               ?
            endif
            aadd(was,{proc_vat,w,0})
@@ -1770,7 +1770,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
                 unlock
 #else
 #ifndef A_PLUDRY
-                ? "B��D WARTO�CI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"
+                ? "BŁĄD WARTOŚCI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
                 ?
 #endif
 #endif
@@ -1781,7 +1781,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
                 wart_vat:=v
                 unlock
 #else
-                ? "B��D WARTO�CI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"
+                ? "BŁĄD WARTOŚCI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
                 ?
 #endif
       endif
@@ -1795,7 +1795,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
     ?  "SPOSOB ZAPLATY:"
       j:=0
       if wd-wp-wc#0
-      ?  "                  got�wk� "+TrAN(wd-wp-wc,"@E ",A_ZAOKR,15)
+      ?  "                  gotówką "+TrAN(wd-wp-wc,"@E ",A_ZAOKR,15)
       ++j
       endif
       if wp#0
@@ -1803,7 +1803,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
       ++j
       endif
       if wc#0
-      ?  "             +      kart� "+TrAN(wc,"@E ",A_ZAOKR,15)
+      ?  "             +      kartą "+TrAN(wc,"@E ",A_ZAOKR,15)
       ++j
       endif
       if j>1
@@ -1838,21 +1838,21 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
   ENDDO
     IF STRONA>0
       IF prow()+12>P_ROWN
-      ?? speC(chr(13)+"")
+      ?? speC(chr(0x0D)+chr(0x0C))
       setprc(0,0)
       ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
       ?
-      ? "ZESTAWIENIE SYNTETYCZNE DOKUMENT�W SPRZEDA�Y ZA OKRES OD ",OD," DO ",DO,"."
+      ? "ZESTAWIENIE SYNTETYCZNE DOKUMENTÓW SPRZEDAŻY ZA OKRES OD ",OD," DO ",DO,"."
       ?
       ? "Strona"+str(++strona,3)
       ENDIF
       ?
       ?
       ? "ZESTAWIENIE RAZEM: "+ltrim(TrAN(Wdt,"@E ",A_ZAOKR,15))
-      ?  "SPOS�B ZAP�ATY:"
+      ?  "SPOSÓB ZAPŁATY:"
       j:=0
       if wdt-wpt-wct#0
-      ?  "                  got�wk� "+TrAN(wdt-wpt-wct,"@E ",A_ZAOKR,15)
+      ?  "                  gotówką "+TrAN(wdt-wpt-wct,"@E ",A_ZAOKR,15)
       ++j
       endif
       if wpt#0
@@ -1860,7 +1860,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
       ++j
       endif
       if wct#0
-      ?  "             +      kart� "+TrAN(wct,"@E ",A_ZAOKR,15)
+      ?  "             +      kartą "+TrAN(wct,"@E ",A_ZAOKR,15)
       ++j
       endif
       if j>1
@@ -1929,7 +1929,7 @@ ELSE
        j:=errornew()
        j:severity:=2
        j:candefault:=.t.
-       j:description:='Nieprawid�owy numer magazynu'
+       j:description:='Nieprawidłowy numer magazynu'
        j:filename:='DM.DBF'
        j:operation:='RECNO'
        j:args:={recno()}
@@ -1947,7 +1947,7 @@ ELSE
        EXIT
 #else
        if mag_biez=D_MM
-          seek mag_biez+"�"
+          seek mag_biez+"■"
        endif
        if eof()
           EXIT
@@ -1978,7 +1978,7 @@ ELSE
     DO WHILE !eof().and.eval(ok)<=txt + dtos(DO)
       if prow()+10>P_ROWN
         IF STRONA>0
-         ?? speC(chr(13)+"")
+         ?? speC(chr(0x0D)+chr(0x0C))
          setprc(0,0)
         else
 #ifdef D_HWPRN
@@ -1996,12 +1996,12 @@ ELSE
         ?? padr(firma_n,D_COLN-16)," dnia ",dtoc(DatE())
 #endif
         ?
-        ? "REJESTR SPRZEDA�Y ZA OKRES OD ",OD," DO ",DO,"."
+        ? "REJESTR SPRZEDAŻY ZA OKRES OD ",OD," DO ",DO,"."
 /*
         if DatY->d_z_mies1>=do
-          ? "PO ZAMKNI�CIU MIESI�CA"
+          ? "PO ZAMKNIĘCIU MIESIĄCA"
         ELSE
-          ? "PRZED ZAMKNI�CIEM MIESI�CA"
+          ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
         ENDIF
 */
         ?
@@ -2134,7 +2134,7 @@ ELSE
              j:=ascan(was,{|x|x[1]=proc_vat})
              if j=0
                if ascan(stawkizby,proc_vat)=0
-                ? "B��D STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"
+                ? "BŁĄD STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
                 ?
                endif
                aadd(was,{proc_vat,w,0})
@@ -2213,7 +2213,7 @@ ELSE
                 unlock
 #else
 #ifndef A_PLUDRY
-                ? "B��D WARTO�CI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"
+                ? "BŁĄD WARTOŚCI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
                 ?
 #endif
 #endif
@@ -2224,7 +2224,7 @@ ELSE
                 wart_vat:=v
                 unlock
 #else
-                ? "B��D WARTO�CI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"
+                ? "BŁĄD WARTOŚCI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
                 ?
 #endif
       endif
@@ -2396,11 +2396,11 @@ local ok
 
 OD := DatY->data_gran+1
 DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
-@ 12,20 SAY "REJESTR ZAKUP�W"
+@ 12,20 SAY "REJESTR ZAKUPÓW"
 
 @ 14,20 say "PODAJ ZAKRES DANYCH DLA WYDRUKU"
 
-  @ 16,10 SAY 'DLA DOKUMENT�W:' GET dok_zak PICTURE "@KS60!"
+  @ 16,10 SAY 'DLA DOKUMENTÓW:' GET dok_zak PICTURE "@KS60!"
   @ 18,20 say "DATA od   :" get od valid {||od:=max(od,DatY->d_z_rok+1),do:=max(od,do),.t.}
   @ 18,50 say "DATA do   :" get do valid {||do:=max(od,do),.t.}
 READ
@@ -2444,7 +2444,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
        j:=errornew()
        j:severity:=2
        j:candefault:=.t.
-       j:description:='Nieprawid�owy numer magazynu'
+       j:description:='Nieprawidłowy numer magazynu'
        j:filename:='DM.DBF'
        j:operation:='RECNO'
        j:args:={recno()}
@@ -2463,7 +2463,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
        EXIT
 #else
        if mag_biez=nr_mag
-          seek mag_biez+"�"
+          seek mag_biez+"■"
        endif
        if eof()
           EXIT
@@ -2491,19 +2491,19 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
 
     IF prow()+12>P_ROWN
        IF STRONA>0
-         ?? speC(chr(13)+"")
+         ?? speC(chr(13)+chr(12))
          setprc(0,0)
       else
          print()
       ENDIF
       ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
       ?
-      ? "ZESTAWIENIE SYNTETYCZNE ZAKUP�W ZA OKRES OD ",OD," DO ",DO,"."
+      ? "ZESTAWIENIE SYNTETYCZNE ZAKUPÓW ZA OKRES OD ",OD," DO ",DO,"."
 /*
       if DatY->d_z_mies1>=do
-        ? "PO ZAMKNI�CIU MIESI�CA"
+        ? "PO ZAMKNIĘCIU MIESIĄCA"
       ELSE
-        ? "PRZED ZAMKNI�CIEM MIESI�CA"
+        ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
       ENDIF
 */
       //? trim(subs(magazyny[mag_poz],4)),adres_mag[mag_poz]
@@ -2538,7 +2538,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
          j:=ascan(was,{|x|x[1]=proc_vat})
          if j=0
            if ascan(stawki,proc_vat)=0 //.and. val(proc_vat)#0
-              ? "B��D STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"
+              ? "BŁĄD STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
               ?
            endif
            aadd(was,{proc_vat,cena,0})
@@ -2568,7 +2568,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
                 unlock
 #else
 #ifndef A_PLUDRY
-                ? "B��D WARTO�CI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"
+                ? "BŁĄD WARTOŚCI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
                 ?
 #endif
 #endif
@@ -2579,7 +2579,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
                 wart_vat:=v
                 unlock
 #else
-                ? "B��D WARTO�CI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"
+                ? "BŁĄD WARTOŚCI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
                 ?
 #endif
       endif
@@ -2613,16 +2613,16 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
   ENDDO
     IF STRONA>0
       IF prow()+12>P_ROWN
-         ?? speC(chr(13)+"")
+         ?? speC(chr(13)+chr(12))
       setprc(0,0)
       ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
       ?
-      ? "ZESTAWIENIE SYNTETYCZNE ZAKUP�W ZA OKRES OD ",OD," DO ",DO,"."
+      ? "ZESTAWIENIE SYNTETYCZNE ZAKUPÓW ZA OKRES OD ",OD," DO ",DO,"."
 /*
       if DatY->d_z_mies1>=do
-        ? "PO ZAMKNI�CIU MIESI�CA"
+        ? "PO ZAMKNIĘCIU MIESIĄCA"
       ELSE
-        ? "PRZED ZAMKNI�CIEM MIESI�CA"
+        ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
       ENDIF
 */
       //? trim(subs(magazyny[mag_poz],4)),adres_mag[mag_poz]
@@ -2678,7 +2678,7 @@ ELSE
        j:=errornew()
        j:severity:=2
        j:candefault:=.t.
-       j:description:='Nieprawid�owy numer magazynu'
+       j:description:='Nieprawidłowy numer magazynu'
        j:filename:='DM.DBF'
        j:operation:='RECNO'
        j:args:={recno()}
@@ -2697,7 +2697,7 @@ ELSE
      EXIT
 #else
        if mag_biez=nr_mag
-          seek mag_biez+"�"
+          seek mag_biez+"■"
        endif
        if eof()
           EXIT
@@ -2728,7 +2728,7 @@ ELSE
     do while !eof().and.eval(ok)<=txt + dtos(DO)
       if prow()+10>P_ROWN
         IF STRONA>0
-         ?? speC(chr(13)+"")
+         ?? speC(chr(13)+chr(12))
         setprc(0,0)
       else
 #ifdef D_HWPRN
@@ -2746,12 +2746,12 @@ ELSE
         ?? padr(firma_n,D_COLN-16)," dnia ",dtoc(DatE())
 #endif
         ?
-        ? "REJESTR ZAKUP�W ZA OKRES OD ",OD," DO ",DO,"."
+        ? "REJESTR ZAKUPÓW ZA OKRES OD ",OD," DO ",DO,"."
 /*
         if DatY->d_z_mies1>=do
-          ? "PO ZAMKNI�CIU MIESI�CA"
+          ? "PO ZAMKNIĘCIU MIESIĄCA"
         ELSE
-          ? "PRZED ZAMKNI�CIEM MIESI�CA"
+          ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
         ENDIF
 */
         ?
@@ -2907,7 +2907,7 @@ ELSE
              j:=ascan(was,{|x|x[1]=proc_vat})
              if j=0
                if ascan(stawki,proc_vat)=0 //.and. val(proc_vat)#0
-                ? "B��D STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"
+                ? "BŁĄD STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
                 ?
                endif
                aadd(was,{proc_vat,cena,0})
@@ -2944,7 +2944,7 @@ ELSE
                 unlock
 #else
 #ifndef A_PLUDRY
-                ? "B��D WARTO�CI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"
+                ? "BŁĄD WARTOŚCI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
                 ?
 #endif
 #endif
@@ -2955,7 +2955,7 @@ ELSE
                 wart_vat:=v
                 unlock
 #else
-                ? "B��D WARTO�CI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"
+                ? "BŁĄD WARTOŚCI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
                 ?
 #endif
       endif
@@ -3147,7 +3147,7 @@ endif
 
 DEFAULT OD TO DatY->data_gran+1
 DEFAULT DO TO IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
-@ 13,10 SAY "ZESTAWIENIE PRZYCHOD�W I ROZCHOD�W DLA POSZCZEG�LNTCH MATERIA��W"
+@ 13,10 SAY "ZESTAWIENIE PRZYCHODÓW I ROZCHODÓW DLA POSZCZEGÓLNTCH MATERIAŁÓW"
 
 if pcount()<2
 
@@ -3177,10 +3177,10 @@ SELECT STANY
 if pcount()<5
 
 #ifndef A_STSIMPLE
-IF tak("CZY KOJEJNO�� W/G NAZW",20,,.F.,.F.)
+IF tak("CZY KOJEJNOŚĆ W/G NAZW",20,,.F.,.F.)
    set order to 1
    bkey:=&('{||'+IndexkeY(0)+'}')
-   SEEK MAG_BIEZ+"�"
+   SEEK MAG_BIEZ+"■"
    SKIP -1
    I_DO:=MAG_BIEZ+subs(eval(bkey),3)
    SEEK MAG_BIEZ
@@ -3190,7 +3190,7 @@ IF tak("CZY KOJEJNO�� W/G NAZW",20,,.F.,.F.)
 ELSE
 #endif
    bkey:=&('{||'+IndexkeY(0)+'}')
-    SEEK MAG_BIEZ+"�"
+    SEEK MAG_BIEZ+"■"
     SKIP -1
     I_DO:=MAG_BIEZ+subs(eval(bkey),3)
     SEEK MAG_BIEZ
@@ -3230,8 +3230,8 @@ IF i_gr=NIL
 
 i_gr:=2
 
-@ 22,10 SAY 'grupowanie wed�ug pierwszych' GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=len(eval(bkey))
-  devout(" znak�w klucza")
+@ 22,10 SAY 'grupowanie według pierwszych' GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=len(eval(bkey))
+  devout(" znaków klucza")
 read
 
 if readkey()=27
@@ -3245,7 +3245,7 @@ if t_gr=NIL
 endif
 #ifdef D_GRAM
 if kg_flag=NIL
-   kg_flag:=TAK("CZY ILO�CI W KILOGRAMACH ZAMIAST WARTO�CI",,,.F.,.F.)
+   kg_flag:=TAK("CZY ILOŚCI W KILOGRAMACH ZAMIAST WARTOŚCI",,,.F.,.F.)
 endif
 #endif
 #ifdef A_JMO
@@ -3313,10 +3313,10 @@ DO WHILE EVAL(BKEY)<=I_DO .AND. !EOF()
    #endif
 #endif
 #ifdef D_GRAM
-  #define HEADER_3 if(kg_flag,"  ILO��   |  WAGA kg  |   ILO��  |  WAGA kg  |   ILO��  |  WAGA kg  |  ILO��   |  WAGA kg  |    |",;
-                              "  ILO��   |  "+WANAZ+"  |   ILO��  |  "+WANAZ+"  |   ILO��  |  "+WANAZ+"  |  ILO��   |  "+WANAZ+"  |    |")
+  #define HEADER_3 if(kg_flag,"  ILOŚĆ   |  WAGA kg  |   ILOŚĆ  |  WAGA kg  |   ILOŚĆ  |  WAGA kg  |  ILOŚĆ   |  WAGA kg  |    |",;
+                              "  ILOŚĆ   |  "+WANAZ+"  |   ILOŚĆ  |  "+WANAZ+"  |   ILOŚĆ  |  "+WANAZ+"  |  ILOŚĆ   |  "+WANAZ+"  |    |")
 #else
-  #define HEADER_3 "  ILO��   |  "+WANAZ+"  |   ILO��  |  "+WANAZ+"  |   ILO��  |  "+WANAZ+"  |  ILO��   |  "+WANAZ+"  |    |"
+  #define HEADER_3 "  ILOŚĆ   |  "+WANAZ+"  |   ILOŚĆ  |  "+WANAZ+"  |   ILOŚĆ  |  "+WANAZ+"  |  ILOŚĆ   |  "+WANAZ+"  |    |"
 #endif
 #ifdef A_WA
 #ifdef A_JMALTTOT
@@ -3449,7 +3449,7 @@ endif
           mag_poz:=max(1,ascan(magazyny,mag_biez))
           SPTOT:=PTOT:=RTOT:=SKTOT:=0
        endif
-       ?? speC(chr(13)+"")
+       ?? speC(chr(13)+chr(12))
        setprc(0,0)
     else
          print()
@@ -3461,12 +3461,12 @@ endif
     ?? ccpi(4)
     ?? padr(firma_n,P_COLN-16),"dnia",dtoc(DatE())
     ?
-    ?? "STAN POCZ�TKOWY I KO�COWY ORAZ RUCHY ZA OKRES OD ",OD," DO ",DO,"."
+    ?? "STAN POCZĄTKOWY I KOŃCOWY ORAZ RUCHY ZA OKRES OD ",OD," DO ",DO,"."
 /*
   if DatY->d_z_mies1>=do
-    ? "PO ZAMKNI�CIU MIESI�CA"
+    ? "PO ZAMKNIĘCIU MIESIĄCA"
   ELSE
-    ? "PRZED ZAMKNI�CIEM MIESI�CA"
+    ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
   ENDIF
 */
   ? trim(subs(magazyny[mag_poz],4))+' '+adres_mag[mag_poz]
@@ -3474,7 +3474,7 @@ endif
   ? "Strona"+str(++strona,3)
   if wa_flag
   ? ccpi(7)
-  ? HEADER_1+"    STAN POCZ�TKOWY   |   PRZYCH�D           |    ROZCH�D           |    STAN KO�COWY      |JEDN|NAZWA"
+  ? HEADER_1+"    STAN POCZĄTKOWY   |   PRZYCHÓD           |    ROZCHÓD           |    STAN KOŃCOWY      |JEDN|NAZWA"
   ?? speC(P_UON)
   IF t_GR .AND. STRONA=1
   ? padr(Tran(STANY->INDEX,"@R "+ INDEXPIC )+"|"+HEADER_3,136)
@@ -3486,7 +3486,7 @@ endif
   ENDIF
   else
   ? spec(ccpi(5)+P_UON)
-  ? HEADER_1+"STAN POCZ.| PRZYCH�D |  ROZCH�D |STAN KO�C.|JEDN|NAZWA"
+  ? HEADER_1+"STAN POCZ.| PRZYCHÓD |  ROZCHÓD |STAN KOŃC.|JEDN|NAZWA"
   endif
   ?? speC(P_UOFF)
   SPTOT+=W // i z powrotem ...
@@ -3712,7 +3712,7 @@ endif
 ************
 ELSE
 ************
-flag:=od>do.or.tak("CZY DRUKOWA� STANY MATERIA��W BEZ RUCHU",22)
+flag:=od>do.or.tak("CZY DRUKOWAĆ STANY MATERIAŁÓW BEZ RUCHU",22)
 #ifdef A_JMO
 jm_o:=TAK("CZY W ALTERNATYWNEJ JEDNOSTCE MIARY",22,,miar_opcja,.F.)
 #else
@@ -3722,7 +3722,7 @@ jm_o:=TAK("CZY W ALTERNATYWNEJ JEDNOSTCE MIARY",,,miar_opcja,.F.)
 #endif
 cedat:=od
 #ifndef A_WA
-if od>do.and.tak("CZY STAN KO�COWY Z DNIA "+dtoc(do),22)
+if od>do.and.tak("CZY STAN KOŃCOWY Z DNIA "+dtoc(do),22)
    cedat:=do
 endif
 #endif
@@ -3743,7 +3743,7 @@ ENDCASE
 
 DO WHILE EVAL(BKEY)<=I_DO .AND. !EOF()
 
-   TXT:=NR_MAG+INDEX+DTOS(d_g)+"�"
+   TXT:=NR_MAG+INDEX+DTOS(d_g)+"■"
 #ifdef A_WA
 #ifdef A_JMALTTOT
    if jm_o
@@ -3859,7 +3859,7 @@ DO WHILE EVAL(BKEY)<=I_DO .AND. !EOF()
           ? " Do przeniesienia....                                |"+TraN(i_gr,"@Z ## ### ### ### ###"+ILPIC)+" "+TrAN(sktot,"@E ",A_ZAOKR,16)
 #endif
       ENDIF
-        specout(ccpi(4)+chr(13)+"")
+        specout(ccpi(4)+chr(13)+chr(12))
         setprc(0,0)
       else
          print()
@@ -3868,22 +3868,22 @@ DO WHILE EVAL(BKEY)<=I_DO .AND. !EOF()
       ?
       if od>do
       #ifdef A_WA
-      ? "STAN POCZ�TKOWY MAGAZYNU DNIA ",OD,"."
+      ? "STAN POCZĄTKOWY MAGAZYNU DNIA ",OD,"."
       #else
       if cedat=od
-      ? "STAN POCZ�TKOWY MAGAZYNU DNIA ",OD,"."
+      ? "STAN POCZĄTKOWY MAGAZYNU DNIA ",OD,"."
       else
-      ? "STAN KO�COWY MAGAZYNU DNIA ",DO,"."
+      ? "STAN KOŃCOWY MAGAZYNU DNIA ",DO,"."
       endif
       #endif
       else
-      ? "KARTOTEKA MATERIA�OWA OD DNIA ",OD," DO ",DO,"."
+      ? "KARTOTEKA MATERIAŁOWA OD DNIA ",OD," DO ",DO,"."
       endif
 /*
       if DatY->d_z_mies1>=do
-        ? "PO ZAMKNI�CIU MIESI�CA"
+        ? "PO ZAMKNIĘCIU MIESIĄCA"
       ELSE
-        ? "PRZED ZAMKNI�CIEM MIESI�CA"
+        ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
       ENDIF
 */
       ?
@@ -3892,17 +3892,17 @@ DO WHILE EVAL(BKEY)<=I_DO .AND. !EOF()
       ? "Strona"+str(++strona,3)
       if od<=do
       ? ccpi(7)
-        ? "DOKUMENT   |DATA |KOSZTY|   CENA   |  PRZYCH�D            |   ROZCH�D            |        STAN                     |"
+        ? "DOKUMENT   |DATA |KOSZTY|   CENA   |  PRZYCHÓD            |   ROZCHÓD            |        STAN                     |"
         ?? speC(P_UON)
-        ? "           |     |      |          |  ILO��   |  "+WANAZ+"  |  ILO��   |  "+WANAZ+"  |   ILO��  |   CENA   |  "+WANAZ+"  |"
+        ? "           |     |      |          |  ILOŚĆ   |  "+WANAZ+"  |  ILOŚĆ   |  "+WANAZ+"  |   ILOŚĆ  |   CENA   |  "+WANAZ+"  |"
         ?? speC(P_UOFF)
       else
       ? CCPI(5)
 #ifdef D_GRAM
-        ? speC(P_UON)+" KOD I NAZWA MATERIA�U                   | WAGA [kg] | CENA EWID.|   STAN   MIARA|  "+WANAZ+"   "
+        ? speC(P_UON)+" KOD I NAZWA MATERIAŁU                   | WAGA [kg] | CENA EWID.|   STAN   MIARA|  "+WANAZ+"   "
         ?? speC(P_UOFF)
 #else
-        ? speC(P_UON)+" KOD I NAZWA MATERIA�U                               | CENA EWID.|   STAN   MIARA|  "+WANAZ+"   "
+        ? speC(P_UON)+" KOD I NAZWA MATERIAŁU                               | CENA EWID.|   STAN   MIARA|  "+WANAZ+"   "
         ?? speC(P_UOFF)
 #endif
       if sktot#0
@@ -3987,16 +3987,16 @@ DO WHILE EVAL(BKEY)<=I_DO .AND. !EOF()
         ?? speC(CHR(13)+P_UON+SPACE(94+22))
         ?? spec(P_UOFF)
         ? " DO PRZENIESIENIA .....            |"+izreS(Sp,(sel)->przel)+"|"+TrAN(wP,"@E ",A_ZAOKR,11)+"|"+izreS(Sr,(sel)->przel)+"|"+TrAN(wR,"@E ",A_ZAOKR,11)+"|"+izreS(s,(sel)->przel)+"|"+TrAN(if(round(s,ILDEC)=0,0,w/s),"@E ",A_ZAOKR,10)+"|"+TrAN(w,"@E ",A_ZAOKR,11)+"|"
-        specout(ccpi(4)+chr(13)+"")
+        specout(ccpi(4)+chr(13)+chr(12))
         setprc(0,0)
         ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
         ?
-        ? "KARTOTEKA MATERIA�OWA OD DNIA ",OD," DO ",DO,"."
+        ? "KARTOTEKA MATERIAŁOWA OD DNIA ",OD," DO ",DO,"."
 /*
         if DatY->d_z_mies1>=do
-          ? "PO ZAMKNI�CIU MIESI�CA"
+          ? "PO ZAMKNIĘCIU MIESIĄCA"
         ELSE
-          ? "PRZED ZAMKNI�CIEM MIESI�CA"
+          ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
         ENDIF
 */
         ?
@@ -4004,9 +4004,9 @@ DO WHILE EVAL(BKEY)<=I_DO .AND. !EOF()
         ?
         ? "Strona"+str(++strona,3)
         ? ccpi(7)
-        ? "DOKUMENT   |DATA |KOSZTY|   CENA   |  PRZYCH�D            |   ROZCH�D            |        STAN                     |"
+        ? "DOKUMENT   |DATA |KOSZTY|   CENA   |  PRZYCHÓD            |   ROZCHÓD            |        STAN                     |"
         ?? speC(P_UON)
-        ? "           |     |      |          |  ILO��   |  "+WANAZ+"  |  ILO��   |  "+WANAZ+"  |   ILO��  |   CENA   |  "+WANAZ+"  |"
+        ? "           |     |      |          |  ILOŚĆ   |  "+WANAZ+"  |  ILOŚĆ   |  "+WANAZ+"  |   ILOŚĆ  |   CENA   |  "+WANAZ+"  |"
         ? " ... KONTYNUACJA "+Tran((SEL)->INDEX,"@R "+ INDEXPIC )+" "+(SEL)->NAZWA
         ?? speC(chr(13)+P_UON+space(77)),(SEL)->jM+"|"+izreS(S,(sel)->przel)+"|"+TrAN(if(round(s,ILDEC)=0,0,w/s),"@E ",A_ZAOKR,10)+"|"+TrAN(w,"@E ",A_ZAOKR,11)+"|"
         ?? speC(P_UOFF)
@@ -4090,13 +4090,13 @@ DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
   i:=0
   rodz_dok:=rodz_dok+space(40)
 
-@ 13,20 SAY "DOKUMENTY OBROTU MATERIA�OWEGO "
+@ 13,20 SAY "DOKUMENTY OBROTU MATERIAŁOWEGO "
 
 @ 15,20 say "PODAJ ZAKRES DANYCH DLA WYDRUKU"
 
   @ 18,20 say "DATA od   :" get od valid {||od:=max(od,DatY->d_z_rok+1),do:=max(od,do),.t.}
   @ 18,50 say "DATA do   :" get do valid {||do:=max(od,do),.t.}
-@ 20,20 SAY 'DLA DOKUMENT�W:' GET RODZ_DOK PICTURE "@KS40!"
+@ 20,20 SAY 'DLA DOKUMENTÓW:' GET RODZ_DOK PICTURE "@KS40!"
 READ
 if readkey()=27
   break
@@ -4171,19 +4171,19 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.F.,.F.)
 
     IF prow()+1>P_ROWN
        IF STRONA>0
-         ?? speC(chr(13)+"")
+         ?? speC(chr(13)+chr(12))
          setprc(0,0)
       else
          print()
       ENDIF
       ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
       ?
-      ? "ZESTAWIENIE SYNTETYCZNE DOKUMENT�W OBROTU ZA OKRES OD ",OD," DO ",DO,"."
+      ? "ZESTAWIENIE SYNTETYCZNE DOKUMENTÓW OBROTU ZA OKRES OD ",OD," DO ",DO,"."
 /*
       if DatY->d_z_mies1>=do
-        ? "PO ZAMKNI�CIU MIESI�CA"
+        ? "PO ZAMKNIĘCIU MIESIĄCA"
       ELSE
-        ? "PRZED ZAMKNI�CIEM MIESI�CA"
+        ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
       ENDIF
 */
       ?
@@ -4201,7 +4201,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.F.,.F.)
       ?
 #ifdef A_FA
       if dok_f
-         ? "      got�wk�        przelewem            kart�"
+         ? "      gotówką        przelewem            kartą"
       endif
 #endif
     ENDIF
@@ -4310,7 +4310,7 @@ endif
 ******
 ELSE
 *****
-  main_flag:=tak("CZY ROZBIJA� DOKUMENTY NA POZYCJE",,,.f.,.f.)
+  main_flag:=tak("CZY ROZBIJAĆ DOKUMENTY NA POZYCJE",,,.f.,.f.)
 #ifdef A_JMO
   if main_flag
      jm_o:=TAK("CZY W ALTERNATYWNEJ JEDNOSTCE MIARY",,,miar_opcja,.F.)
@@ -4359,7 +4359,7 @@ ELSE
     DO WHILE TXT=KEY_DOK
       if prow()+if(main_flag,D_LPVAL(pozycja)+3,3)>P_ROWN .and. prow()>15
         IF STRONA>0
-         ?? speC(chr(13)+"")
+         ?? speC(chr(13)+chr(12))
          setprc(0,0)
         else
          print()
@@ -4370,12 +4370,12 @@ ELSE
         ENDIF
         ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
         ?
-        ? "DOKUMENTY OBROTU MATERIA�OWEGO ZA OKRES OD ",OD," DO ",DO,"."
+        ? "DOKUMENTY OBROTU MATERIAŁOWEGO ZA OKRES OD ",OD," DO ",DO,"."
 /*
         if DatY->d_z_mies1>=do
-          ? "PO ZAMKNI�CIU MIESI�CA"
+          ? "PO ZAMKNIĘCIU MIESIĄCA"
         ELSE
-          ? "PRZED ZAMKNI�CIEM MIESI�CA"
+          ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
         ENDIF
 */
         ?
@@ -4416,35 +4416,35 @@ ELSE
       if main_flag
 #ifdef A_FA
         if dok_f .and. w#0
-         ? "      got�wk�        przelewem            kart�"
+         ? "      gotówką        przelewem            kartą"
          ? TrAN(WG,"@E ",A_ZAOKR,16),' ',TrAN(Wp,"@E ",A_ZAOKR,15),' ',TrAN(Wc,"@E ",A_ZAOKR,15)
         endif
 #endif
         ? speC(ccpi(7)+P_UON)
 #ifdef A_MM
-#define D_MM1 left("MG|Kod materia�u",3+len( INDEXPIC ))
+#define D_MM1 left("MG|Kod materiału",3+len( INDEXPIC ))
 #define D_MM2 "|"+nr_mag+"|"+Tran(index,"@R "+ INDEXPIC )+"|"
 #else
-#define D_MM1 left("Kod materia�u",len( INDEXPIC ))
+#define D_MM1 left("Kod materiału",len( INDEXPIC ))
 #define D_MM2 "|"+Tran(index,"@R "+ INDEXPIC )+"|"
 #endif
 #ifdef A_SHORTIND
-        ? " Dokument |Data |"+if(dok_k,"Konto |","")+"Pe�ne okre�lenie materia�u             |"+D_MM1+"|Cena jedn|   Ilo��  |Jedn|"+WANAZ+"   |"
+        ? " Dokument |Data |"+if(dok_k,"Konto |","")+"Pełne określenie materiału             |"+D_MM1+"|Cena jedn|   Ilość  |Jedn|"+WANAZ+"   |"
 #else
    #ifdef A_KTM
       #ifdef A_OBR
-        ? " Dokument |Data |"+if(dok_k,"    Konto    |","")+"Pe�ne okre�lenie materia�u             |"+D_MM1+"|Cena jedn|   Ilo��  |Jedn|"+WANAZ+"   |"
+        ? " Dokument |Data |"+if(dok_k,"    Konto    |","")+"Pełne określenie materiału             |"+D_MM1+"|Cena jedn|   Ilość  |Jedn|"+WANAZ+"   |"
       #else
-        ? " Dokument |Data |"+if(dok_k,"Konto |","")+"Pe�ne okre�lenie materia�u             |"+D_MM1+"|Cena jedn|   Ilo��  |Jedn|"+WANAZ+"   |"
+        ? " Dokument |Data |"+if(dok_k,"Konto |","")+"Pełne określenie materiału             |"+D_MM1+"|Cena jedn|   Ilość  |Jedn|"+WANAZ+"   |"
       #endif
    #else
       #ifdef A_OLZA
-        ? " Dokument|Data |"+if(dok_k,if(dok_w,"ko.ko| st.ko|","")+"Zlecenie |","")+"Pe�ne okre�lenie materia�u             |"+D_MM1+"|Cena jedn|   Ilo��  |Jedn|"+WANAZ+"   |"
+        ? " Dokument|Data |"+if(dok_k,if(dok_w,"ko.ko| st.ko|","")+"Zlecenie |","")+"Pełne określenie materiału             |"+D_MM1+"|Cena jedn|   Ilość  |Jedn|"+WANAZ+"   |"
       #else
       #ifdef A_SWW
-        ? " Dokument |Data |"+if(dok_k,"Konto |","")+"    Nazwa wyrobu                       |"+D_MM1+"|Cena jedn|   Ilo��  |Jedn|"+WANAZ+"   |"
+        ? " Dokument |Data |"+if(dok_k,"Konto |","")+"    Nazwa wyrobu                       |"+D_MM1+"|Cena jedn|   Ilość  |Jedn|"+WANAZ+"   |"
       #else
-        ? " Dokument |Data |"+if(dok_k,"Konto |","")+"Pe�ne okre�lenie materia�u             |"+D_MM1+"|Cena jedn|   Ilo��  |Jedn|"+WANAZ+"   |"
+        ? " Dokument |Data |"+if(dok_k,"Konto |","")+"Pełne określenie materiału             |"+D_MM1+"|Cena jedn|   Ilość  |Jedn|"+WANAZ+"   |"
       #endif
       #endif
    #endif
@@ -4462,7 +4462,7 @@ ELSE
 #else
 #ifdef A_FA
         if dok_f
-          ? ccpi(7)+" Dokument |Data | Got�wk�     |Przelewem   |Kart�       |"
+          ? ccpi(7)+" Dokument |Data | Gotówką     |Przelewem   |Kartą       |"
         else
 #endif
           ? " Dokument |Data |Na podstawie |"
@@ -4548,7 +4548,7 @@ ELSE
             WV+=warT_vaT
 #ifdef A_FA
             if ROUND(wd-wartosC,A_ZAOKR)#0// .or. ROUND(warT_vaT-vd,A_ZAOKR)#0
-               ? "NIE ZGADZA SI� SUMA WSZYSTKICH POZYCJI !!!"
+               ? "NIE ZGADZA SIĘ SUMA WSZYSTKICH POZYCJI !!!"+replicate(chr(7),4)
             endif
             wd:=wartoSC
 #endif
@@ -4558,7 +4558,7 @@ ELSE
           if dok_f
 #ifndef A_DF
             if ROUND(wd-wartosC,A_ZAOKR)#0// .or. ROUND(warT_vaT-vd,A_ZAOKR)#0
-               ? "NIE ZGADZA SI� SUMA WSZYSTKICH POZYCJI !!!"
+               ? "NIE ZGADZA SIĘ SUMA WSZYSTKICH POZYCJI !!!"+replicate(chr(7),4)
             endif
 #endif
             wd:=wartoSC
@@ -4571,7 +4571,7 @@ ELSE
           if !zby_flag
 #endif
             if ROUND(pm*wd-warT_ewiD,A_ZAOKR)#0
-               ? "NIE ZGADZA SI� SUMA WSZYSTKICH POZYCJI !!!"
+               ? "NIE ZGADZA SIĘ SUMA WSZYSTKICH POZYCJI !!!"+replicate(chr(7),4)
                ?? 'DOKONANO KOREKTY Z',pm*warT_ewiD,'NA',wd
                //wd:=pm*warT_ewiD
                LOCK
@@ -4708,7 +4708,7 @@ ELSE
 #endif
 #ifdef A_FA
         if dok_f
-         ? "      got�wk�        przelewem            kart�"
+         ? "      gotówką        przelewem            kartą"
          ? TrAN(WG,"@E ",A_ZAOKR,16),' ',TrAN(Wp,"@E ",A_ZAOKR,15),' ',TrAN(Wc,"@E ",A_ZAOKR,15)
         ENDIF
 #endif
@@ -4734,7 +4734,7 @@ ELSE
 #endif
 #ifdef A_FA
     if dok_f
-         ? "      got�wk�        przelewem            kart�"
+         ? "      gotówką        przelewem            kartą"
          ? TrAN(WG,"@E ",A_ZAOKR,16),' ',TrAN(Wp,"@E ",A_ZAOKR,15),' ',TrAN(Wc,"@E ",A_ZAOKR,15)
     ENDIF
 #endif
@@ -4751,7 +4751,7 @@ static procedure w_kpr()
 local od,do,dm,coltot[20],strontot[20],i,mag_poz,r,wb,lp,nr,x,y,z,v
 OD := DatY->data_gran+1
 DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
-@ 13,10 SAY "WYDRUK PODATKOWEJ KSI�GI PRZYCHOD�W I ROZCHOD�W"
+@ 13,10 SAY "WYDRUK PODATKOWEJ KSIĘGI PRZYCHODÓW I ROZCHODÓW"
 
 @ 15,20 say "PODAJ ZAKRES DANYCH DLA WYDRUKU"
 
@@ -4795,13 +4795,13 @@ IF i
       STRONA:=1
 #ifdef A_PCL
       memvar->landscape:=.f.
-      ?? speC(eval(P_LAND,.t.)+eval(P_MARGIN,10)) //specout('&l1O&a10L')
+      ?? speC(eval(P_LAND,.t.)+eval(P_MARGIN,10))
 #endif
       ?? firma_n,' ',year(data)," r."
       ?? padl(left(firma_a,1+at(", ",firma_a))+dtoc(DatE()),80-pcol())
       ?
       afill(coltot,0)
-      ? "PODATKOWA KSI�GA PRZYCHOD�W I ROZCHOD�W - ZESTAWIENIE ZBIORCZE"
+      ? "PODATKOWA KSIĘGA PRZYCHODÓW I ROZCHODÓW - ZESTAWIENIE ZBIORCZE"
 #ifdef A_PCL
       ? ccpi(7)
 #else
@@ -4809,15 +4809,15 @@ IF i
 #endif
 IF dtos(od)>'2006'
 ?? speC(P_12LPI)
-? "���������������������������������������������������������������������������������������������������������������������������������������������������������������Ŀ"
-? "                               Przych�d                 Zakup       Koszty             Wydatki (koszty)"
-? "�               �����������������������������������Ĵ           �           �����������������������������������������������Ĵ           �           �           �"
-? "                 "+speC(P_SUPON)+"  Warto��  "+speC(P_SUPOFF)+"  pozosta�e      razem    towar�w      uboczne   "+speC(P_SUPON)+" wynagrodz."+speC(P_SUPOFF)+"  pozosta�e    razem"
-? "�               �"+speC(P_SUPON)+"sprzedanych"+speC(P_SUPOFF)+"�           �           �           �           �"+speC(P_SUPON)+" w got�wce "+speC(P_SUPOFF)+"�           �           �           �           �           �           �"
-? "                 "+speC(P_SUPON)+"  towar�w  "+speC(P_SUPOFF)+"  przychody    przych�d  handlowych     zakupu   "+speC(P_SUPON)+"i w naturze"+speC(P_SUPOFF)+"   wydatki    wydatki"
-? "���������������������������������������������������������������������������������������������������������������������������������������������������������������Ĵ"
+? "┌───────────────┬───────────────────────────────────┬───────────┬───────────┬───────────────────────────────────────────────┬───────────┬───────────┬───────────┐"
+? "                               Przychód                 Zakup       Koszty             Wydatki (koszty)"
+? "│               ├───────────┬───────────┬───────────┤           │           ├───────────┬───────────┬───────────┬───────────┤           │           │           │"
+? "                 "+speC(P_SUPON)+"  Wartość  "+speC(P_SUPOFF)+"  pozostałe      razem    towarów      uboczne   "+speC(P_SUPON)+" wynagrodz."+speC(P_SUPOFF)+"  pozostałe    razem"
+? "│               │"+speC(P_SUPON)+"sprzedanych"+speC(P_SUPOFF)+"│           │           │           │           │"+speC(P_SUPON)+" w gotówce "+speC(P_SUPOFF)+"│           │           │           │           │           │           │"
+? "                 "+speC(P_SUPON)+"  towarów  "+speC(P_SUPOFF)+"  przychody    przychód  handlowych     zakupu   "+speC(P_SUPON)+"i w naturze"+speC(P_SUPOFF)+"   wydatki    wydatki"
+? "├───────────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┤"
 ? "                      7           8           9          10          11          12          13          14          15          16          17          18"
-? "���������������������������������������������������������������������������������������������������������������������������������������������������������������Ĵ"
+? "├───────────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┤"
 ?? speC(P_6LPI)
       do while data<=do .and. mag_biez=D_MM
       AFILL(STRONTOT,0)
@@ -4841,7 +4841,7 @@ IF dtos(od)>'2006'
       next
       ?? "|"
       ENDDO
-? "���������������������������������������������������������������������������������������������������������������������������������������������������������������Ĵ"
+? "├───────────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┤"
       ? '|'+PADC("RAZEM",15)
       for i:=7 to 18
          if i<>12
@@ -4849,18 +4849,18 @@ IF dtos(od)>'2006'
          endif
       next
       ?? "|"
-? "�����������������������������������������������������������������������������������������������������������������������������������������������������������������"
+? "└───────────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┘"
 ELSE
-? "���������������������������������������������������������������������������������������������������������������������������������������������������������������Ŀ"
+? "┌───────────────┬───────────────────────────────────┬───────────┬───────────┬───────────────────────────────────────────────┬───────────┬───────────┬───────────┐"
 ?? speC(P_12LPI)
-? "                               Przych�d                 Zakup       Koszty             Wydatki (koszty)"
-? "�               �����������������������������������Ĵ           �           �����������������������������������������������Ĵ           �           �           �"
-? "                 "+speC(P_SUPON)+"  Warto��  "+speC(P_SUPOFF)+"  pozosta�e      razem    towar�w      uboczne   "+speC(P_SUPON)+"  koszty     wynagrodz."+speC(P_SUPOFF)+"  pozosta�e    razem"
-? "�               �"+speC(P_SUPON)+"sprzedanych"+speC(P_SUPOFF)+"�           �           �           �           �"+speC(P_SUPON)+"  reklamy  "+speC(P_SUPOFF)+"�"+speC(P_SUPON)+" w got�wce "+speC(P_SUPOFF)+"�           �           �           �           �           �"
-? "                 "+speC(P_SUPON)+"  towar�w  "+speC(P_SUPOFF)+"  przychody    przych�d  handlowych     zakupu   "+speC(P_SUPON)+"limitowane  i w naturze"+speC(P_SUPOFF)+"   wydatki    wydatki"
-? "���������������������������������������������������������������������������������������������������������������������������������������������������������������Ĵ"
+? "                               Przychód                 Zakup       Koszty             Wydatki (koszty)"
+? "│               ├───────────┬───────────┬───────────┤           │           ├───────────┬───────────┬───────────┬───────────┤           │           │           │"
+? "                 "+speC(P_SUPON)+"  Wartość  "+speC(P_SUPOFF)+"  pozostałe      razem    towarów      uboczne   "+speC(P_SUPON)+"  koszty     wynagrodz."+speC(P_SUPOFF)+"  pozostałe    razem"
+? "│               │"+speC(P_SUPON)+"sprzedanych"+speC(P_SUPOFF)+"│           │           │           │           │"+speC(P_SUPON)+"  reklamy  "+speC(P_SUPOFF)+"│"+speC(P_SUPON)+" w gotówce "+speC(P_SUPOFF)+"│           │           │           │           │           │"
+? "                 "+speC(P_SUPON)+"  towarów  "+speC(P_SUPOFF)+"  przychody    przychód  handlowych     zakupu   "+speC(P_SUPON)+"limitowane  i w naturze"+speC(P_SUPOFF)+"   wydatki    wydatki"
+? "├───────────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┤"
 ? "                      7           8           9          10          11          12          13          14          15          16          17          18"
-? "���������������������������������������������������������������������������������������������������������������������������������������������������������������Ĵ"
+? "├───────────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┤"
 ?? speC(P_6LPI)
       do while data<=do .and. mag_biez=D_MM
       AFILL(STRONTOT,0)
@@ -4881,13 +4881,13 @@ ELSE
       next
       ?? "|"
       ENDDO
-? "���������������������������������������������������������������������������������������������������������������������������������������������������������������Ĵ"
+? "├───────────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┤"
       ? '|'+PADC("RAZEM",15)
       for i:=7 to 18
          ?? "|"+strpic(coltot[i],11,A_ZAOKR,"@EZ ")
       next
       ?? "|"
-? "�����������������������������������������������������������������������������������������������������������������������������������������������������������������"
+? "└───────────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┘"
 ENDIF
    endif
 ELSE
@@ -4918,20 +4918,20 @@ ELSE
   @ 8,0 CLEAR
 #ifdef A_PCL
   memvar->landscape:=.f.
-  ?? speC(eval(P_LAND,.t.)) //+"&l1O")
+  ?? speC(eval(P_LAND,.t.))
 #endif
   afill(coltot,0)
   DO WHILE data<=do .and. mag_biez=D_MM
       IF STRONA>0
 #ifdef A_PCL
-      ? CPAD("| RAZEM - DO PRZENIESIENIA NA NAST�PN� STRON�",120,20,1)
+      ? CPAD("| RAZEM - DO PRZENIESIENIA NA NASTĘPNĄ STRONĘ",120,20,1)
       for i:=7 to 27-v
          if i=12 .and. dtos(od)>'2006'
             loop
          endif
          ?? "|"+strpic(coltot[i],v-1,A_ZAOKR,"@EZ ")
 #else
-      ? CPAD("| RAZEM - DO PRZENIESIENIA NA NAST�PN� STRON�",139,20,1)
+      ? CPAD("| RAZEM - DO PRZENIESIENIA NA NASTĘPNĄ STRONĘ",139,20,1)
       for i:=7 to 16
          if i=12 .and. dtos(od)>'2006'
             loop
@@ -4941,11 +4941,11 @@ ELSE
       next
       ?? "|"
 #ifdef A_PCL
-      ? "������������������������������������������������������������������������������������������������������������������������"+repl(padr("�",v,"�"),20-v)+"�"
+      ? "└───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────"+repl(padr("┴",v,"─"),20-v)+"┘"
 #else
-      ? "��������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������"
+      ? "└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┘"
 #endif
-      speCout(ccpi(4)+chr(13)+"")
+      speCout(ccpi(4)+chr(13)+chr(12))
       setprc(0,0)
       endif
       if data>dm
@@ -4959,61 +4959,61 @@ ELSE
       ?? padl(left(firma_a,1+at(", ",firma_a))+dtoc(DatE()),D_COLN-pcol())
       ?
       afill(strontot,0)
-      ? "PODATKOWA KSI�GA PRZYCHOD�W I ROZCHOD�W"
+      ? "PODATKOWA KSIĘGA PRZYCHODÓW I ROZCHODÓW"
       ? ccpi(8) //272 -12
 
 IF dtos(od)>'2006'
 #ifdef A_PCL
 v:=10
-? "���������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������Ŀ"
+? "┌─────┬─────┬──────────┬───────────────────────────────────────────────────────────────────────────┬────────────────────┬─────────────────────────────┬─────────┬─────────┬───────────────────────────────────────┬─────────┐"
 ?? speC(P_12LPI)
-? "       Dzie�    Numer                               Kontrahent                                                                     Przych�d              Zakup    Koszty          Wydatki (koszty)"
-? "�     �     �          ���������������������������������������������������������������������������Ĵ   Opis zdarzenia   �����������������������������Ĵ         �         ���������������������������������������Ĵ         �"
-? "  Lp.  zdarz.  dowodu            imi� i nazwisko                                                                         "+speC(P_SUPON)+" Warto�� "+speC(P_SUPOFF)+" pozosta�e  razem    towar�w   uboczne   "+speC(P_SUPON)+"wynagrodz."+speC(P_SUPOFF)+"pozosta�e   razem               Uwagi"
-? "�     �     �          �                                       �                    adres          �   gospodarczego    �"+speC(P_SUPON)+" sprzed. "+speC(P_SUPOFF)+"�         �         �         �         �"+speC(P_SUPON)+"w got�wce"+speC(P_SUPOFF)+"�         �         �         �         �"
-? "       gosp. ksi�gowego              (firma)                                                                             "+speC(P_SUPON)+" towar�w "+speC(P_SUPOFF)+" przychody przych�d  handlowych zakupu   "+speC(P_SUPON)+"w naturze"+speC(P_SUPOFF)+"  wydatki   wydatki"
-? "���������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������Ĵ"
+? "       Dzień    Numer                               Kontrahent                                                                     Przychód              Zakup    Koszty          Wydatki (koszty)"
+? "│     │     │          ├───────────────────────────────────────┬───────────────────────────────────┤   Opis zdarzenia   ├─────────┬─────────┬─────────┤         │         ├─────────┬─────────┬─────────┬─────────┤         │"
+? "  Lp.  zdarz.  dowodu            imię i nazwisko                                                                         "+speC(P_SUPON)+" Wartość "+speC(P_SUPOFF)+" pozostałe  razem    towarów   uboczne   "+speC(P_SUPON)+"wynagrodz."+speC(P_SUPOFF)+"pozostałe   razem               Uwagi"
+? "│     │     │          │                                       │                    adres          │   gospodarczego    │"+speC(P_SUPON)+" sprzed. "+speC(P_SUPOFF)+"│         │         │         │         │"+speC(P_SUPON)+"w gotówce"+speC(P_SUPOFF)+"│         │         │         │         │"
+? "       gosp. księgowego              (firma)                                                                             "+speC(P_SUPON)+" towarów "+speC(P_SUPOFF)+" przychody przychód  handlowych zakupu   "+speC(P_SUPON)+"w naturze"+speC(P_SUPOFF)+"  wydatki   wydatki"
+? "├─────┼─────┼──────────┼───────────────────────────────────────┼───────────────────────────────────┼────────────────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┤"
 ? "   1     2        3                   4                                        5                             6               7         8         9        10        11        12        13        14        15        16"
-? "���������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������Ĵ"
+? "├─────┼─────┼──────────┼───────────────────────────────────────┼───────────────────────────────────┼────────────────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┤"
 ?? speC(P_6LPI)
 #else
-? "������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������Ŀ"
+? "┌─────┬─────┬────────────┬─────────────────────────────────────────────────────────────────────────────────────────┬───────────────────────┬───────────────────────────────────┬───────────┬───────────┬───────────────────────────────────────────────┬───────────┐"
 ?? speC(P_12LPI)
-? "                Numer                        Kontrahent                                                                                                   Przych�d                 Zakup       Koszty             Wydatki (koszty)"
-? "�     �Dzie�            �����������������������������������������������������������������������������������������Ĵ    Opis zdarzenia     �����������������������������������Ĵ           �           �����������������������������������������������Ĵ           �"
-? "  Lp.          dowodu                        imi� i nazwisko                                                                                "+speC(P_SUPON)+"  Warto��  "+speC(P_SUPOFF)+"  pozosta�e      razem    towar�w      uboczne   "+speC(P_SUPON)+" wynagrodz."+speC(P_SUPOFF)+"  pozosta�e    razem"
-? "�     �mies.�            �                                            �              adres                         �    gospodarczego      �"+speC(P_SUPON)+"sprzedanych"+speC(P_SUPOFF)+"�           �           �           �           �"+speC(P_SUPON)+" w got�wce "+speC(P_SUPOFF)+"�           �           �           �           �"
-? "              ksi�gowego                         (firma)                                                                                    "+speC(P_SUPON)+"  towar�w  "+speC(P_SUPOFF)+"  przychody    przych�d  handlowych     zakupu   "+speC(P_SUPON)+"i w naturze"+speC(P_SUPOFF)+"   wydatki    wydatki"
-? "������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������Ĵ"
+? "                Numer                        Kontrahent                                                                                                   Przychód                 Zakup       Koszty             Wydatki (koszty)"
+? "│     │Dzień│            ├────────────────────────────────────────────┬────────────────────────────────────────────┤    Opis zdarzenia     ├───────────┬───────────┬───────────┤           │           ├───────────┬───────────┬───────────┬───────────┤           │"
+? "  Lp.          dowodu                        imię i nazwisko                                                                                "+speC(P_SUPON)+"  Wartość  "+speC(P_SUPOFF)+"  pozostałe      razem    towarów      uboczne   "+speC(P_SUPON)+" wynagrodz."+speC(P_SUPOFF)+"  pozostałe    razem"
+? "│     │mies.│            │                                            │              adres                         │    gospodarczego      │"+speC(P_SUPON)+"sprzedanych"+speC(P_SUPOFF)+"│           │           │           │           │"+speC(P_SUPON)+" w gotówce "+speC(P_SUPOFF)+"│           │           │           │           │"
+? "              księgowego                         (firma)                                                                                    "+speC(P_SUPON)+"  towarów  "+speC(P_SUPOFF)+"  przychody    przychód  handlowych     zakupu   "+speC(P_SUPON)+"i w naturze"+speC(P_SUPOFF)+"   wydatki    wydatki"
+? "├─────┼─────┼────────────┼────────────────────────────────────────────┼────────────────────────────────────────────┼───────────────────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┤"
 ? "   1     2        3                           4                                         5                                       6                7           8           9          10          11          12          13          14          15          16"
-? "������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������Ĵ"
+? "├─────┼─────┼────────────┼────────────────────────────────────────────┼────────────────────────────────────────────┼───────────────────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┤"
 ?? speC(P_6LPI)
 #endif
 ELSE
 #ifdef A_PCL
 v:=11
-? "��������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������Ŀ"
+? "┌─────┬─────┬──────────┬───────────────────────────────────────────────────────────────────────────┬────────────────────┬────────────────────────────────┬──────────┬──────────┬───────────────────────────────────────────┐"
 ?? speC(P_12LPI)
-? "                Numer                               Kontrahent                                                                       Przych�d               Zakup      Koszty          Wydatki (koszty)"
-? "�     �Dzie�          ���������������������������������������������������������������������������Ĵ   Opis zdarzenia   ��������������������������������Ĵ          �          �������������������������������������������Ĵ"
-? "  Lp.          dowodu            imi� i nazwisko                                                                         "+speC(P_SUPON)+" Warto��  "+speC(P_SUPOFF)+"  pozosta�e   razem     towar�w    uboczne   "+speC(P_SUPON)+" koszty    wynagrodz."+speC(P_SUPOFF)+"  pozosta�e    razem"
-? "�     �mies.�          �                                       �                    adres          �   gospodarczego    �"+speC(P_SUPON)+" sprzed.  "+speC(P_SUPOFF)+"�          �          �          �          �"+speC(P_SUPON)+"  reklamy "+speC(P_SUPOFF)+"�"+speC(P_SUPON)+"w got�wce "+speC(P_SUPOFF)+"�          �          �"
-? "             ksi�gowego              (firma)                                                                             "+speC(P_SUPON)+" towar�w  "+speC(P_SUPOFF)+"  przychody  przych�d  handlowych   zakupu   "+speC(P_SUPON)+"limitowane  w naturze"+speC(P_SUPOFF)+"   wydatki    wydatki"
-? "��������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������Ĵ"+speC(P_6LPI)
+? "                Numer                               Kontrahent                                                                       Przychód               Zakup      Koszty          Wydatki (koszty)"
+? "│     │Dzień│          ├───────────────────────────────────────┬───────────────────────────────────┤   Opis zdarzenia   ├──────────┬──────────┬──────────┤          │          ├──────────┬──────────┬──────────┬──────────┤"
+? "  Lp.          dowodu            imię i nazwisko                                                                         "+speC(P_SUPON)+" Wartość  "+speC(P_SUPOFF)+"  pozostałe   razem     towarów    uboczne   "+speC(P_SUPON)+" koszty    wynagrodz."+speC(P_SUPOFF)+"  pozostałe    razem"
+? "│     │mies.│          │                                       │                    adres          │   gospodarczego    │"+speC(P_SUPON)+" sprzed.  "+speC(P_SUPOFF)+"│          │          │          │          │"+speC(P_SUPON)+"  reklamy "+speC(P_SUPOFF)+"│"+speC(P_SUPON)+"w gotówce "+speC(P_SUPOFF)+"│          │          │"
+? "             księgowego              (firma)                                                                             "+speC(P_SUPON)+" towarów  "+speC(P_SUPOFF)+"  przychody  przychód  handlowych   zakupu   "+speC(P_SUPON)+"limitowane  w naturze"+speC(P_SUPOFF)+"   wydatki    wydatki"
+? "├─────┼─────┼──────────┼───────────────────────────────────────┼───────────────────────────────────┼────────────────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤"+speC(P_6LPI)
 ? "   1     2        3                   4                                        5                             6                7          8          9         10         11         12         13         14         15"
-? "��������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������Ĵ"
+? "├─────┼─────┼──────────┼───────────────────────────────────────┼───────────────────────────────────┼────────────────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤"
 ?? speC(P_6LPI)
 #else
-? "������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������Ŀ"
+? "┌─────┬─────┬────────────┬─────────────────────────────────────────────────────────────────────────────────────────┬───────────────────────┬───────────────────────────────────┬───────────┬───────────┬───────────────────────────────────────────────┬───────────┐"
 ?? speC(P_12LPI)
-? "                Numer                        Kontrahent                                                                                                   Przych�d                 Zakup       Koszty             Wydatki (koszty)"
-? "�     �Dzie�            �����������������������������������������������������������������������������������������Ĵ    Opis zdarzenia     �����������������������������������Ĵ           �           �����������������������������������������������Ĵ           �"
-? "  Lp.          dowodu                        imi� i nazwisko                                                                                "+speC(P_SUPON)+"  Warto��  "+speC(P_SUPOFF)+"  pozosta�e      razem    towar�w      uboczne   "+speC(P_SUPON)+"  koszty     wynagrodz."+speC(P_SUPOFF)+"  pozosta�e    razem"
-? "�     �mies.�            �                                            �              adres                         �    gospodarczego      �"+speC(P_SUPON)+"sprzedanych"+speC(P_SUPOFF)+"�           �           �           �           �"+speC(P_SUPON)+"  reklamy  "+speC(P_SUPOFF)+"�"+speC(P_SUPON)+" w got�wce "+speC(P_SUPOFF)+"�           �           �           �"
-? "              ksi�gowego                         (firma)                                                                                    "+speC(P_SUPON)+"  towar�w  "+speC(P_SUPOFF)+"  przychody    przych�d  handlowych     zakupu   "+speC(P_SUPON)+"limitowane  i w naturze"+speC(P_SUPOFF)+"   wydatki    wydatki"
-? "������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������Ĵ"
+? "                Numer                        Kontrahent                                                                                                   Przychód                 Zakup       Koszty             Wydatki (koszty)"
+? "│     │Dzień│            ├────────────────────────────────────────────┬────────────────────────────────────────────┤    Opis zdarzenia     ├───────────┬───────────┬───────────┤           │           ├───────────┬───────────┬───────────┬───────────┤           │"
+? "  Lp.          dowodu                        imię i nazwisko                                                                                "+speC(P_SUPON)+"  Wartość  "+speC(P_SUPOFF)+"  pozostałe      razem    towarów      uboczne   "+speC(P_SUPON)+"  koszty     wynagrodz."+speC(P_SUPOFF)+"  pozostałe    razem"
+? "│     │mies.│            │                                            │              adres                         │    gospodarczego      │"+speC(P_SUPON)+"sprzedanych"+speC(P_SUPOFF)+"│           │           │           │           │"+speC(P_SUPON)+"  reklamy  "+speC(P_SUPOFF)+"│"+speC(P_SUPON)+" w gotówce "+speC(P_SUPOFF)+"│           │           │           │"
+? "              księgowego                         (firma)                                                                                    "+speC(P_SUPON)+"  towarów  "+speC(P_SUPOFF)+"  przychody    przychód  handlowych     zakupu   "+speC(P_SUPON)+"limitowane  i w naturze"+speC(P_SUPOFF)+"   wydatki    wydatki"
+? "├─────┼─────┼────────────┼────────────────────────────────────────────┼────────────────────────────────────────────┼───────────────────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┤"
 ? "   1     2        3                           4                                         5                                       6                7           8           9          10          11          12          13          14          15          16"
-? "������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������Ĵ"
+? "├─────┼─────┼────────────┼────────────────────────────────────────────┼────────────────────────────────────────────┼───────────────────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┤"
 ?? speC(P_6LPI)
 #endif
 ENDIF
@@ -5090,21 +5090,21 @@ ENDIF
         skip
       enddo
 #ifdef A_PCL
-? "������������������������������������������������������������������������������������������������������������������������"+repl(padr("�",v,"�"),20-v)+"�"
+? "├─────┼─────┼──────────┼───────────────────────────────────────┼───────────────────────────────────┼────────────────────"+repl(padr("┼",v,"─"),20-v)+"┤"
 #else
-? "������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������Ĵ"
+? "├─────┼─────┼────────────┼────────────────────────────────────────────┼────────────────────────────────────────────┼───────────────────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┤"
 #endif
 //    ? repl("-",272)
       if strona>1
 #ifdef A_PCL
-         ? padr("� PODSUMOWANIE STRONY",120)
+         ? padr("│ PODSUMOWANIE STRONY",120)
          for i:=7 to 27-v
          if i=12 .and. dtos(od)>'2006'
             loop
          endif
-            ?? "�"+strpic(strontot[i],v-1,A_ZAOKR,"@EZ ")
+            ?? "│"+strpic(strontot[i],v-1,A_ZAOKR,"@EZ ")
          next
-         ?? "�"
+         ?? "│"
 #else
          ? padr("| PODSUMOWANIE STRONY",139)
          for i:=7 to 16
@@ -5116,14 +5116,14 @@ ENDIF
          ?? "|"
 #endif
 #ifdef A_PCL
-         ? PADR("� PRZENIESIENIE Z POPRZEDNIEJ STRONY",120)
+         ? PADR("│ PRZENIESIENIE Z POPRZEDNIEJ STRONY",120)
          for i:=7 to 27-v
          if i=12 .and. dtos(od)>'2006'
             loop
          endif
-            ?? "�"+strpic(coltot[i]-strontot[i],v-1,A_ZAOKR,"@EZ ")
+            ?? "│"+strpic(coltot[i]-strontot[i],v-1,A_ZAOKR,"@EZ ")
          next
-         ?? "�"
+         ?? "│"
 #else
          ? PADR("| PRZENIESIENIE Z POPRZEDNIEJ STRONY",139)
          for i:=7 to 16
@@ -5138,7 +5138,7 @@ ENDIF
   ENDDO
   if strona>0
 #ifdef A_PCL
-      ? CPAD("� RAZEM",120,20,1)
+      ? CPAD("│ RAZEM",120,20,1)
       for i:=7 to 27-v
          if i=12 .and. dtos(od)>'2006'
             loop
@@ -5146,7 +5146,7 @@ ENDIF
          ?? "|"+strpic(coltot[i],v-1,A_ZAOKR,"@EZ ")
       next
       ?? "|"
-      ? "������������������������������������������������������������������������������������������������������������������������"+repl(padr("�",v,"�"),20-v)+"�"
+      ? "└───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────"+repl(padr("┴",v,"─"),20-v)+"┘"
 #else
       ? CPAD("| RAZEM",139,20,1)
       for i:=7 to 16
@@ -5156,7 +5156,7 @@ ENDIF
          ?? "|"+strpic(coltot[i],11,A_ZAOKR,"@EZ ")
       next
       ?? "|"
-      ? "��������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������"
+      ? "└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┘"
 #endif
   endif
 ENDIF
@@ -5174,7 +5174,7 @@ FIELD STANO_KOSZ,KONTO_KOSZ
 OD := DatY->data_gran+1
 DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
 
-@ 13,10 SAY "ZESTAWIENIE DOKUMENT�W ROZCHODU DLA POSZCZEG�LNTCH KONT KOSZT�W"
+@ 13,10 SAY "ZESTAWIENIE DOKUMENTÓW ROZCHODU DLA POSZCZEGÓLNTCH KONT KOSZTÓW"
 
 @ 15,20 say "PODAJ ZAKRES DANYCH DLA WYDRUKU"
 
@@ -5211,32 +5211,32 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
    endif
    IF prow()>P_ROWN
       IF STRONA>0
-         ?? speC(chr(13)+"")
+         ?? speC(chr(13)+chr(12))
          setprc(0,0)
       else
      print()
       ENDIF
       ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
       ?
-      ? "ZESTAWIENIE ROZCHODU W/G KONT KOSZT�W OD DNIA ",OD," DO ",DO,"."
+      ? "ZESTAWIENIE ROZCHODU W/G KONT KOSZTÓW OD DNIA ",OD," DO ",DO,"."
 /*
       if DatY->d_z_mies1>=do
-        ? "PO ZAMKNI�CIU MIESI�CA"
+        ? "PO ZAMKNIĘCIU MIESIĄCA"
       ELSE
-        ? "PRZED ZAMKNI�CIEM MIESI�CA"
+        ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
       ENDIF
 */
       ?
       ? "Strona"+str(++strona,3)
       ?
-      ? "     KONTO                "+WANAZ+"             NARASTAJ�CO"
+      ? "     KONTO                "+WANAZ+"             NARASTAJĄCO"
    ENDIF
    ? TranR(txt,"XX-XX-XXXXX"),' ',TrAN(W,"@E ",A_ZAOKR,19),' ',TrAN(Wtot+=w,"@E ",A_ZAOKR,19)
 ENDDO
 ******
 ELSE
 ******
-  IF main_flag:=tak("CZY ROZBIJA� DOKUMENTY NA POZYCJE")
+  IF main_flag:=tak("CZY ROZBIJAĆ DOKUMENTY NA POZYCJE")
      MAIN->(ORDSETFOCUS("MAIN_NRK"))
   ENDIF
   @ 8,0 CLEAR
@@ -5253,19 +5253,19 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
    W:=0
    IF MAIN_FLAG .AND. asc(D_LPVAL(pozycja)+4+prow()>P_ROWN .or. prow()+4>P_ROWN
       IF STRONA>0
-         ?? speC(chr(13)+"")
+         ?? speC(chr(13)+chr(12))
          setprc(0,0)
       else
      print()
       ENDIF
       ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
       ?
-      ? "ZESTAWIENIE ROZCHODU W/G KONT KOSZT�W OD DNIA ",OD," DO ",DO,"."
+      ? "ZESTAWIENIE ROZCHODU W/G KONT KOSZTÓW OD DNIA ",OD," DO ",DO,"."
 /*
       if DatY->d_z_mies1>=do
-         ? "PO ZAMKNI�CIU MIESI�CA"
+         ? "PO ZAMKNIĘCIU MIESIĄCA"
       ELSE
-         ? "PRZED ZAMKNI�CIEM MIESI�CA"
+         ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
       ENDIF
 */
       ?
@@ -5278,10 +5278,10 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
      j:=max(1,ascan(dokumenty[MAG_POZ],dm->smb_dow))
     dok_p_r:=dok_par[mag_poz,j,1]
     dok_kon:=dok_par[mag_poz,j,3]
-    ? speC(P_UON)+"Lp|Pe�ne okre�lenie materia�u |"
-    ?? ccpi(5)+" Kod materia�u|"
+    ? speC(P_UON)+"Lp|Pełne określenie materiału |"
+    ?? ccpi(5)+" Kod materiału|"
     ?? if(""=dok_kon,"",ccpi(7)+"Zlecenie |")
-    ?? ccpi(5)+"    Cena |   Ilo��  |Jedn|"+WANAZ+"   "
+    ?? ccpi(5)+"    Cena |   Ilość  |Jedn|"+WANAZ+"   "
     ?? speC(ccpi(4)+P_UOFF)
   endif
   ?
@@ -5294,16 +5294,16 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
         ?? spec(P_UOFF)
         ? "DO PRZENIESIENIA |"+TrAN(W,"@E ",A_ZAOKR,18)+"|                                           "
         ?? speC(P_UOFF)
-        ?? speC(chr(13)+"")
+        ?? speC(chr(13)+chr(12))
         setprc(0,0)
         ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
         ?
-        ? "ZESTAWIENIE ROZCHODU W/G KONT KOSZT�W OD DNIA ",OD," DO ",DO,"."
+        ? "ZESTAWIENIE ROZCHODU W/G KONT KOSZTÓW OD DNIA ",OD," DO ",DO,"."
 /*
         if DatY->d_z_mies1>=do
-           ? "PO ZAMKNI�CIU MIESI�CA"
+           ? "PO ZAMKNIĘCIU MIESIĄCA"
         ELSE
-           ? "PRZED ZAMKNI�CIEM MIESI�CA"
+           ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
         ENDIF
 */
         ?
@@ -5313,10 +5313,10 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
         ? " Z PRZENIESIENIA |"+TrAN(W,"@E ",A_ZAOKR,18)+"|                                           "
         ?? speC(P_UOFF)
         IF MAIN_flag
-          ? speC(P_UON)+"Lp|Pe�ne okre�lenie materia�u |"
-          ?? ccpi(5)+" Kod materia�u|"
+          ? speC(P_UON)+"Lp|Pełne określenie materiału |"
+          ?? ccpi(5)+" Kod materiału|"
           ?? if(""=dok_kon,"",ccpi(7)+"Zlecenie |")
-          ?? ccpi(5)+"    Cena |   Ilo��  |Jedn|"+WANAZ+"   "
+          ?? ccpi(5)+"    Cena |   Ilość  |Jedn|"+WANAZ+"   "
           ?? speC(ccpi(4)+P_UOFF)
         endif
     ENDIF
@@ -5352,7 +5352,7 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
   endif
   ?? speC(CHR(13)+P_UON+SPACE(80))
   ?? spec(P_UOFF)
-  ? " RAZEM "+TranR(txt,"XX-XX-XXXXX")+"|"+TrAN(W,"@E ",A_ZAOKR,18)+"|  NARASTAJ�CO: "+TrAN(Wtot+=w,"@E ",A_ZAOKR,18)
+  ? " RAZEM "+TranR(txt,"XX-XX-XXXXX")+"|"+TrAN(W,"@E ",A_ZAOKR,18)+"|  NARASTAJĄCO: "+TrAN(Wtot+=w,"@E ",A_ZAOKR,18)
 ENDDO
 ENDIF
 return
@@ -5367,7 +5367,7 @@ FIELD STANO_KOSZ,KONTO_KOSZ
 OD := DatY->data_gran+1
 DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
 
-@ 13,10 SAY "ZESTAWIENIE DOKUMENT�W ROZCHODU DLA POSZCZEG�LNTCH STANOWISK KOSZT�W"
+@ 13,10 SAY "ZESTAWIENIE DOKUMENTÓW ROZCHODU DLA POSZCZEGÓLNTCH STANOWISK KOSZTÓW"
 
 @ 15,20 say "PODAJ ZAKRES DANYCH DLA WYDRUKU"
 
@@ -5404,32 +5404,32 @@ DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
    endif
    IF prow()>P_ROWN
       IF STRONA>0
-         ?? speC(chr(13)+"")
+         ?? speC(chr(13)+chr(12))
          setprc(0,0)
       else
      print()
       ENDIF
       ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
       ?
-      ? "ZESTAWIENIE ROZCHODU W/G STANOWISK KOSZT�W OD DNIA ",OD," DO ",DO,"."
+      ? "ZESTAWIENIE ROZCHODU W/G STANOWISK KOSZTÓW OD DNIA ",OD," DO ",DO,"."
       /*
       if DatY->d_z_mies1>=do
-        ? "PO ZAMKNI�CIU MIESI�CA"
+        ? "PO ZAMKNIĘCIU MIESIĄCA"
       ELSE
-        ? "PRZED ZAMKNI�CIEM MIESI�CA"
+        ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
       ENDIF
       */
       ?
       ? "Strona"+str(++strona,3)
       ?
-      ? "     STANOWISKO                 "+WANAZ+"          NARASTAJ�CO"
+      ? "     STANOWISKO                 "+WANAZ+"          NARASTAJĄCO"
    ENDIF
    ? TranR(txt,"XX-XX-XXXXXX/X")+' '+TrAN(W,"@E ",A_ZAOKR,15)+' '+TrAN(Wtot+=w,"@E ",A_ZAOKR,19)
 ENDDO
 *******
 ELSE
 *******
-  IF main_flag:=tak("CZY ROZBIJA� DOKUMENTY NA POZYCJE")
+  IF main_flag:=tak("CZY ROZBIJAĆ DOKUMENTY NA POZYCJE")
      MAIN->(ordsetfocus("MAIN_NRK"))
   ENDIF
   @ 8,0 CLEAR 
@@ -5446,19 +5446,19 @@ DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
    W:=0
    IF MAIN_FLAG .AND. D_LPVAL(pozycja)+4+prow()>P_ROWN .or. prow()+4>P_ROWN
       IF STRONA>0
-         ?? speC(chr(13)+"")
+         ?? speC(chr(13)+chr(12))
          setprc(0,0)
       else
      print()
       ENDIF
       ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
       ?
-      ? "ZESTAWIENIE ROZCHODU W/G STANOWISK KOSZT�W OD DNIA ",OD," DO ",DO,"."
+      ? "ZESTAWIENIE ROZCHODU W/G STANOWISK KOSZTÓW OD DNIA ",OD," DO ",DO,"."
       /*
       if DatY->d_z_mies1>=do
-         ? "PO ZAMKNI�CIU MIESI�CA"
+         ? "PO ZAMKNIĘCIU MIESIĄCA"
       ELSE
-         ? "PRZED ZAMKNI�CIEM MIESI�CA"
+         ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
       ENDIF
       */
       ?
@@ -5471,10 +5471,10 @@ DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
     j:=max(1,ascan(dokumenty[MAG_POZ],dm->smb_dow))
     dok_p_r:=dok_par[mag_poz,j,1]
     dok_kon:=dok_par[mag_poz,j,3]
-    ? speC(P_UON)+"Lp|Pe�ne okre�lenie materia�u |"
-    ?? ccpi(5)+" Kod materia�u|"
+    ? speC(P_UON)+"Lp|Pełne określenie materiału |"
+    ?? ccpi(5)+" Kod materiału|"
     ?? if(""=dok_kon,"",ccpi(7)+"Zlecenie |")
-    ?? ccpi(5)+"    Cena |   Ilo��  |Jedn|"+WANAZ+"   "
+    ?? ccpi(5)+"    Cena |   Ilość  |Jedn|"+WANAZ+"   "
     ?? speC(ccpi(4)+P_UOFF)
   endif
   ?
@@ -5487,16 +5487,16 @@ DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
         ?? spec(P_UOFF)
         ? "DO PRZENIESIENIA |"+TrAN(W,"@E ",A_ZAOKR,17)+"|                                           "
         ?? speC(P_UOFF)
-        ?? speC(chr(13)+"")
+        ?? speC(chr(13)+chr(12))
         setprc(0,0)
         ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
         ?
-        ? "ZESTAWIENIE ROZCHODU W/G STANOWISK KOSZT�W OD DNIA ",OD," DO ",DO,"."
+        ? "ZESTAWIENIE ROZCHODU W/G STANOWISK KOSZTÓW OD DNIA ",OD," DO ",DO,"."
         /*
         if DatY->d_z_mies1>=do
-           ? "PO ZAMKNI�CIU MIESI�CA"
+           ? "PO ZAMKNIĘCIU MIESIĄCA"
         ELSE
-           ? "PRZED ZAMKNI�CIEM MIESI�CA"
+           ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
         ENDIF
         */
         ?
@@ -5506,10 +5506,10 @@ DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
         ? " Z PRZENIESIENIA |"+TrAN(W,"@E ",A_ZAOKR,17)+"|                                           "
         ?? speC(P_UOFF)
         IF MAIN_flag
-          ? speC(P_UON)+"Lp|Pe�ne okre�lenie materia�u |"
-          ?? ccpi(5)+" Kod materia�u|"
+          ? speC(P_UON)+"Lp|Pełne określenie materiału |"
+          ?? ccpi(5)+" Kod materiału|"
           ?? if(""=dok_kon,"",ccpi(7)+"Zlecenie |")
-          ?? ccpi(5)+"    Cena |   Ilo��  |Jedn|"+WANAZ+"   "
+          ?? ccpi(5)+"    Cena |   Ilość  |Jedn|"+WANAZ+"   "
           ?? speC(ccpi(4)+P_UOFF)
         endif
     ENDIF
@@ -5545,7 +5545,7 @@ DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
   endif
   ?? speC(CHR(13)+P_UON+SPACE(80))
   ?? spec(P_UOFF)
-  ? "RAZEM "+TranR(txt,"XX-XX-XXXXXX/X")+"|"+TrAN(W,"@E ",A_ZAOKR,17)+"|  NARASTAJ�CO: "+TrAN(Wtot+=w,"@E ",A_ZAOKR,17)
+  ? "RAZEM "+TranR(txt,"XX-XX-XXXXXX/X")+"|"+TrAN(W,"@E ",A_ZAOKR,17)+"|  NARASTAJĄCO: "+TrAN(Wtot+=w,"@E ",A_ZAOKR,17)
 ENDDO
 ENDIF
 return

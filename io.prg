@@ -156,7 +156,7 @@ local l,a,s:=sign(x)
   endif
 return x
 *******************************
-proc rel(arel) //{SK‰D DOK‰D TAMINDEX RELACJA}
+proc rel(arel) //{SK≈ÑD DOK≈ÑD TAMINDEX RELACJA}
 local s:=select()
 aeval(arel,{|a|sel(a[2],a[3]),sel(a[1])})
 aeval(arel,{|a|dbselectar(a[1]),dbsetrelat(a[2],compile('{||'+a[4]+'}'),expand(a[4]))})
@@ -178,7 +178,7 @@ memvar netio
  if !empty(netio) .and. file=netio
     file:='net:'+subs(file,len(netio)+1)
  endif
-return dbusearea(a,b,file,alias,shared,rdo)
+return dbusearea(a,b,file,alias,shared,rdo,PC852)
 #else
 return NetusE(a,b,file,alias,shared,rdo)
 #endif
@@ -408,7 +408,7 @@ function alarm(txt,parr,i)
 
   ? txt
   if empty(parr)
-    ?? " - Naciònij [Enter]:"
+    ?? " - Naci≈õnij [Enter]:"+chr(7)
     xfr(0,@txt,254)
     return 1
   else
@@ -506,7 +506,7 @@ function alarm(txt,parr,ps,pe,keep)
   ink_flag:=parr=NIL
 
   if empty(parr)
-     parr:={"Naciònij Enter"}
+     parr:={"Naci≈õnij Enter"}
   endif
   IF PS=NIL
      PS:=0
@@ -685,7 +685,7 @@ function window(rown,coln,color)
    endif
    lc := SETCOLOR(color)
    colorselect(3)
-   @ r1,c1,r2,c2 BOX '⁄ƒø≥Ÿƒ¿≥ '
+   @ r1,c1,r2,c2 BOX hb_UTF8ToStrBox('‚îå‚îÄ‚îê‚îÇ‚îò‚îÄ‚îî‚îÇ ')
    colorselect(0)
    return({r1,c1,r2,c2,sc,rs,cs,cu,lc})
  elseif sc="A"
@@ -804,11 +804,11 @@ if var = NIL
    var:=_get:buffer
 endif
 
-SX:=SL:=_l:=LEN(var) // dàugoòÜ var
+SX:=SL:=_l:=LEN(var) // d≈Çugo≈õƒá var
 
 IF !EMPTY(VAR)
    sl:=hb_at(" ",var,sl-len(ltrim(var)))
-if sl=0 // peàne pole
+if sl=0 // pe≈Çne pole
    sl:=_l // sl - dlugosc kodu z okienka
 //   sx:=_l // sx - dlugosc kodu z array (gdy mniejsze od okienka - *)
 endif
@@ -890,9 +890,9 @@ IF _c
    r:=row()
    c:=col()
    IF LEN(ARRAY)<maxrow()
-      @ _a,_b,_c,_d BOX '…Õª∫ºÕ»∫' COLOR "GR+/GR"
+      @ _a,_b,_c,_d BOX hb_UTF8ToStrBox('‚ïî‚ïê‚ïó‚ïë‚ïù‚ïê‚ïö‚ïë') COLOR "GR+/GR"
     ELSE
-      @ _a,_b,_c,_d BOX '÷ƒ∑∫Ωƒ”∫' CODEPAGE 'PLMAZ' COLOR "GR+/GR"
+      @ _a,_b,_c,_d BOX hb_UTF8ToStrBox('‚ïì‚îÄ‚ïñ‚ïë‚ïú‚îÄ‚ïô‚ïë') COLOR "GR+/GR"
    ENDIF
    if tyt#NIL
       @ _a,_b+1 SAY left(tyt,_d-_b) COLOR "GR+/GR"
@@ -948,7 +948,7 @@ RETURN r   // teraz ok
 *********************
 
 proc pushcdp(cdp)
-  DEFAULT cdp TO 'PLMAZ'
+  DEFAULT cdp TO 'UTF8EX'
   ++cdpptr
   if len(cdpstack)<cdpptr
      asize(cdpstack,cdpptr)
@@ -1331,15 +1331,15 @@ win:=window(i,j)
        else
          b:=tbrowsenew(win[1]+1,win[2]+1,win[3]-1,win[4]-1)
        endif
-       b:colsep:=HB_TRANSLATE('≥',PC852,)
+       b:colsep:=HB_TRANSLATE('‚îÇ',PC852,)
        if valtype(n)='A'
-          b:headsep:=HB_TRANSLATE('¬ƒ',PC852,)
+          b:headsep:=HB_TRANSLATE('‚î¨‚îÄ',PC852,)
        endif
        b:gotopblock:={||i:=1,_a:=a[i],i}
        b:gobottomblock:={||i:=len(a),_a:=a[i],i}
        b:skipblock:={|n,l|l:=i,i+=n,i:=max(1,min(i,len(a))),_a:=a[i],i-l}
        if t<>NIL
-          b:footsep:=HB_TRANSLATE('¡ƒ',PC852,)
+          b:footsep:=HB_TRANSLATE('‚î¥‚îÄ',PC852,)
        endif
 
        c:=tbcolumnnew(,{||i})

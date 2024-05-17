@@ -167,17 +167,17 @@ private gt
   IF dok_kop=NIL
     dok_kop=1
     tone(262,2)
-    mes:=message("Wydruk dokumentu;IloòÜ kopii:")
+    mes:=message("Wydruk dokumentu;Ilo≈õƒá kopii:")
     x:=getnew(mes[1]+2,mes[2]+15,{|x|if(x=NIL,str(dok_kop,1),dok_kop:=val(x))},'dok_kop','#')
     GETREADER(x)
     if x:exitstate=K_ESC //.or. dok_kop=0
-    // if 2#alarm("CZY DRUKOWAè",{"NIE","TAK"})
+    // if 2#alarm("CZY DRUKOWAƒÜ",{"NIE","TAK"})
       message(mes)
       return
     endif
-    @ mes[1]+2,mes[2]+2 SAY "Prosz© czekaÜ"
+    @ mes[1]+2,mes[2]+2 SAY "Proszƒô czekaƒá"
   ELSE
-    mes:=message("Prosz© czekaÜ;TRWA WYDRUK.")
+    mes:=message("Proszƒô czekaƒá;TRWA WYDRUK.")
   ENDIF
 
   begin sequence
@@ -234,7 +234,7 @@ private gt
         endif
         if DM->pozycja<>D_LPPUT(x)
            DM->pozycja:=D_LPPUT(x)
-           alarm("ILOóè POZYCJI NIEZGODNA Z INFORMACJ§ W NAGù‡WKU;DOKONANO KOREKTY",,,3)
+           alarm("ILO≈öƒÜ POZYCJI NIEZGODNA Z INFORMACJƒÑ W NAG≈Å√ìWKU;DOKONANO KOREKTY",,,3)
         endif
     endif 
 ********
@@ -285,7 +285,7 @@ private gt
     private df:=dok_p_r='F' .and. dok_df .and. kto_pisal=chr(255)+chr(0), df_ver:=-1, aux, komunikat//,numerp,datap
 #ifdef A_WP
     IF wart_par#0.and.(round(D_DF-wart_par,2)#0.or.round(vat_par-wart_vat,2)#0)
-        alarm("WARTOóè WYDRUKOWANEGO PARAGONU WYNOSI:;"+ltrim(tran(wart_par,"@E"))+" Zù, w tym "+ltrim(tran(vat_par,"@E"))+" podatku VAT.;NIE MOΩNA DRUKOWAè RACHUNKU O WARTOóCI INNEJ NIΩ PARAGON.")
+        alarm("WARTO≈öƒÜ WYDRUKOWANEGO PARAGONU WYNOSI:;"+ltrim(tran(wart_par,"@E"))+" Z≈Å, w tym "+ltrim(tran(vat_par,"@E"))+" podatku VAT.;NIE MO≈ªNA DRUKOWAƒÜ RACHUNKU O WARTO≈öCI INNEJ NI≈ª PARAGON.")
         df:=.f.
         break
     endif
@@ -355,7 +355,7 @@ private gt
           aux:=rsopen(x)
           if aux<=0
              aux:=NIL
-             IF 1=alarm("NIE POTRAFI® SI® PODù§CZYè DO DRUKARKI PARAGON‡W!;CZY PR‡BOWAè JESZCZE RAZ?",{"TAK","NIE"})
+             IF 1=alarm("NIE POTRAFIƒò SIƒò POD≈ÅƒÑCZYƒÜ DO DRUKARKI PARAGON√ìW!;CZY PR√ìBOWAƒÜ JESZCZE RAZ?",{"TAK","NIE"})
                 loop
              ENDIF
              df:=.f.
@@ -401,7 +401,7 @@ private gt
            aeval(k,{|x,i|was[i]:={str(x/100,2),0,0}},1,len(was))
          else
  #endif
-           alarm('Paragon nie moæe byÜ wydrukowany!',,,3)
+           alarm('Paragon nie mo≈ºe byƒá wydrukowany!',,,3)
            df:=.f.
            rsclose(aux)
            aux:=NIL
@@ -566,7 +566,7 @@ private gt
           if dbseek(y)
             select MAIN
             dbseek(y,.f.)
-            ? "Przed korekt•:"
+            ? "Przed korektƒÖ:"
 //            ?
 #ifdef A_DFP
             df:=.f.
@@ -591,7 +591,7 @@ private gt
           end sequence
        else
        if dbSEEK(pad(nr_faktury,D_MM),.f.)
-          ? "Przed korekt•:"
+          ? "Przed korektƒÖ:"
 //          ?
           main->(dbSEEK(dM->(KEY_DOK+NR_DOWODU),.f.))
 #ifdef A_DFP
@@ -803,7 +803,7 @@ private gt
            ++k
         endif
         df := df .and. dfprint(chr(27)+chr(if(df_ver=7,5,6))+IF(y<0,"-"," ")+PAD(if(len(trim(na))<10,PAD(trim(na),10,'.'),na),if(df_ver=7,40,28))+komunikat+l2bin(abs(y))+chr(x)+' '+left((s)->jm,3)+l2bin(WzVATGR(1,ce,val(pv),.t.)));
-		 .and. dfprint(chr(27)+chr(k+64)+l2bin(abs(ROUND(D_DF*100,0))))
+          .and. dfprint(chr(27)+chr(k+64)+l2bin(abs(ROUND(D_DF*100,0))))
 /*
         if df_ver=7
           x  := i2bin(6)
@@ -965,7 +965,7 @@ private gt
          next n
 #endif
       if y.or.dok_zew$"UV" .and. ROUND(warT_vaT-vt,A_ZAOKR)#0
-         if i=dok_kop .and. (tone(130,3),if(changed,1=alarm("NIEZGODNA WARTOóè PODATKU;CZY DOKONAè KOREKTY ?",{"TAK","NIE"},2,2),NIL=alarm("NIEZGODNA WARTOóè PODATKU;NIE DOKONANO KOREKTY !!!")))
+         if i=dok_kop .and. (tone(130,3),if(changed,1=alarm("NIEZGODNA WARTO≈öƒÜ PODATKU;CZY DOKONAƒÜ KOREKTY ?",{"TAK","NIE"},2,2),NIL=alarm("NIEZGODNA WARTO≈öƒÜ PODATKU;NIE DOKONANO KOREKTY !!!")))
              //changed:=.t.
 #ifdef A_A
              for n:=1 to len(stawki)
@@ -1027,22 +1027,22 @@ private gt
           field2bin('d_wartosc',w)
          #endif
          //changed:=.t.
-         alarm("WARTOóè SUMY POZYCJI NIEZGODNA Z INFORMACJ§ W NAGù‡WKU;DOKONANO KOREKTY",,,3)
+         alarm("WARTO≈öƒÜ SUMY POZYCJI NIEZGODNA Z INFORMACJƒÑ W NAG≈Å√ìWKU;DOKONANO KOREKTY",,,3)
       else
-         alarm("NIEZGODNA WARTOóè SUMY POZYCJI;NIE DOKONANO KOREKTY !!!",,,3)
+         alarm("NIEZGODNA WARTO≈öƒÜ SUMY POZYCJI;NIE DOKONANO KOREKTY !!!",,,3)
          wt:=WARTOSC
       endif
       endif
 #endif
       if POZYCJA#MAIN->pozycja
         changed:=.t.
-        alarm("ILOóè POZYCJI NIEZGODNA Z INFORMACJ§ W NAGù‡WKU;DOKONANO KOREKTY",,,3)
+        alarm("ILO≈öƒÜ POZYCJI NIEZGODNA Z INFORMACJƒÑ W NAG≈Å√ìWKU;DOKONANO KOREKTY",,,3)
         pozycja:=MAIN->pozycja
       ENDIF
 #ifdef A_WE
       if ROUND(warT_ewiD-pm*ut,A_ZAOKR)#0
         changed:=.t.
-        alarm("WARTOóè EWIDENCYJNA SUMY POZYCJI NIEZGODNA Z INFORMACJ§ W NAGù‡WKU;DOKONANO KOREKTY",,,3)
+        alarm("WARTO≈öƒÜ EWIDENCYJNA SUMY POZYCJI NIEZGODNA Z INFORMACJƒÑ W NAG≈Å√ìWKU;DOKONANO KOREKTY",,,3)
         warT_ewiD:=pm*ut
       ENDIF
 #endif
@@ -1067,7 +1067,7 @@ private gt
      message(1)
 #ifdef A_DFP
  #ifndef A_POSNET
-    df := df .and. dfprint(chr(27)+chr(7),"") // nie pr¢buje czytaÜ
+    df := df .and. dfprint(chr(27)+chr(7),"") // nie pr√≥buje czytaƒá
  #endif
 #endif
 
@@ -1104,7 +1104,7 @@ private gt
                endif
             endif
  #endif
-            @ mes[1],mes[2]+2 SAY 'Kwota Wpàaty:'
+            @ mes[1],mes[2]+2 SAY 'Kwota Wp≈Çaty:'
             @ mes[3],mes[2]+2 SAY '[Esc] - ANULUJ'
             @ mes[3]-1,mes[2]+2 SAY '   (reszta)   '
             x:=0
@@ -1149,10 +1149,10 @@ private gt
    #else
             dfprint('trcancel')
    #endif
-            alarm("WYDRUK PARAGONU ZOSTAù ANULOWANY!",,,3)
+            alarm("WYDRUK PARAGONU ZOSTA≈Å ANULOWANY!",,,3)
  #else
             if !df
-               dfprint(chr(27)+"#",chr(6),"PARAGON NIE ZOSTAù WYDRUKOWANY PRAWIDùOWO!;") //uniewaænienie paragonu i test przy okazji
+               dfprint(chr(27)+"#",chr(6),"PARAGON NIE ZOSTA≈Å WYDRUKOWANY PRAWID≈ÅOWO!;") //uniewa≈ºnienie paragonu i test przy okazji
             endif
  #endif
          endif
@@ -1191,9 +1191,9 @@ endif
    #else
             dfprint('trcancel')
    #endif
-     alarm("WYDRUK PARAGONU ZOSTAù ANULOWANY!",,,3)
+     alarm("WYDRUK PARAGONU ZOSTA≈Å ANULOWANY!",,,3)
 #else
-     dfprint(chr(27)+"#",chr(6),"PARAGON NIE ZOSTAù WYDRUKOWANY PRAWIDùOWO!;") //uniewaænienie paragonu i test przy okazji
+     dfprint(chr(27)+"#",chr(6),"PARAGON NIE ZOSTA≈Å WYDRUKOWANY PRAWID≈ÅOWO!;") //uniewa≈ºnienie paragonu i test przy okazji
 #endif
      rsclose(aux)
   endif
@@ -1356,9 +1356,7 @@ if valtype(aux)<>'N'
    ndclose:=.t.
 endif
   if Len(ft)>0
-  #ifdef PC852
      ft:=chgmaz(ft)
-  #endif
      ret:=rswrite(aux,chr(27)+'P'+ft+poscheck(ft)+chr(27)+'\')=len(ft)+6
   endif
 if ret .and. b#NIL
@@ -1380,7 +1378,7 @@ if ret .and. b#NIL
           exit
        endif
        if mes=NIL
-          mes:=message("Czekam na odpowied´ drukarki;[Esc] - rezygnuj")
+          mes:=message("Czekam na odpowied≈∫ drukarki;[Esc] - rezygnuj")
        endif
      enddo
      ret:=asc(b)%8>=4
@@ -1629,9 +1627,7 @@ endif
      elseif right(ft,1)<>chr(9)
        ft+=chr(9)
      endif
-  #ifdef PC852
      ft:=chgmaz(ft)
-  #endif
      ret:=rswrite(aux,chr(2)+ft+'#'+poscheck(ft)+chr(3))=len(ft)+7
   endif
 if ret
@@ -1646,18 +1642,18 @@ if ret
            c:=left(ft,at(chr(9),ft))
            if b=chr(2)+c
               if b=chr(2)+c +'?'
-                 message('Drukarka odesàaàa numer bà©du: '+str(val(subs(b,len(c)+3))))
+                 message('Drukarka odes≈Ça≈Ça numer b≈Çƒôdu: '+str(val(subs(b,len(c)+3))))
               else
                  b:=subs(b,len(c)+2,len(b)-len(c)-7)
                  ret:=.t.
               endif
            elseif b=chr(2)+'ERR'
-              message('Drukarka zgàasza bà•d ramki: '+b)
+              message('Drukarka zg≈Çasza b≈ÇƒÖd ramki: '+b)
            else
-              message('Niedorzeczna odpowied´ drukarki: '+b)
+              message('Niedorzeczna odpowied≈∫ drukarki: '+b)
            endif
       else
-           message('Bà©dna odpowied´ drukarki: '+b)
+           message('B≈Çƒôdna odpowied≈∫ drukarki: '+b)
       endif
    else
            message('Brak odpowiedzi drukarki: '+b)
@@ -1739,11 +1735,11 @@ local s:=' ',ret,disp,x,kod
      endif
      S:=ASC(S)
      if s%128>=64
-        l+=";BRAK WYóWIETLACZA KLIJENTA."
+        l+=";BRAK WY≈öWIETLACZA KLIJENTA."
         disp:=.t.
      endif
      if s%64>=32
-        l+=";NAST§PIùO ZABLOKOWANIE NAZWY TOWARU W PARAGONIE."
+        l+=";NASTƒÑPI≈ÅO ZABLOKOWANIE NAZWY TOWARU W PARAGONIE."
         rtr:=NIL
         disp:=.t.
      endif
@@ -1753,15 +1749,15 @@ local s:=' ',ret,disp,x,kod
         disp:=.t.
      endif
      if s%16>=8
-        l+=";ZALEGùY RAPORT DOBOWY."
+        l+=";ZALEG≈ÅY RAPORT DOBOWY."
         disp:=.t.
      endif
      if s%8>=4
-        l+="W PAMI®CI FISKALNEJ DRUKARKI ZOSTAùO MAùO MIEJSCA."
+        l+="W PAMIƒòCI FISKALNEJ DRUKARKI ZOSTA≈ÅO MA≈ÅO MIEJSCA."
         disp:=.t.
      endif
      if s%4>=2
-        l+=";W PAMI®CI DRUKARKI ZNAJDUJE SI® DOKUMENT DO WYDRUKOWANIA."
+        l+=";W PAMIƒòCI DRUKARKI ZNAJDUJE SIƒò DOKUMENT DO WYDRUKOWANIA."
      endif
      if s%2=1
         l+=";BRAK WOLNEGO MIEJSCA W BAZIE KONTRLONEJ NAZW I STAWEK."
@@ -1774,12 +1770,12 @@ local s:=' ',ret,disp,x,kod
      endif
      S:=ASC(S)
      if s%8>=4
-        l+=';MODUù FISKALNY W TRYBIE "TYLKO ODCZYT"!'
+        l+=';MODU≈Å FISKALNY W TRYBIE "TYLKO ODCZYT"!'
         rtr:=NIL
         disp:=.t.
      endif
      s:=' '
-     if RS_SEND(149,@s,'')<>0 .or. S>='Ä'
+     if RS_SEND(149,@s,'')<>0 .or. S>=chr(0x80)
         break
      endif
      S:=ASC(S)
@@ -1788,11 +1784,11 @@ local s:=' ',ret,disp,x,kod
         disp:=.t.
      endif
      if s%32>=16
-        l+=";NAST§PIùO UNIEWAΩNIENIE PARAGONU."
+        l+=";NASTƒÑPI≈ÅO UNIEWA≈ªNIENIE PARAGONU."
         disp:=.t.
      endif
      if s%16>=8
-        l+=";ZA NISKIE NAPI®CIE AKUMULATORA - POWIADOM SERWIS."
+        l+=";ZA NISKIE NAPIƒòCIE AKUMULATORA - POWIADOM SERWIS."
         disp:=.t.
      endif
      if s%8>=4
@@ -1804,7 +1800,7 @@ local s:=' ',ret,disp,x,kod
         disp:=.t.
      endif
      if s%2=1
-        l+=";W BUFORZE DRUKOWANIA S§ ZNAKI DO WYDRUKOWANIA."
+        l+=";W BUFORZE DRUKOWANIA SƒÑ ZNAKI DO WYDRUKOWANIA."
      endif
 
      recover
@@ -1817,7 +1813,7 @@ local s:=' ',ret,disp,x,kod
         s:=' '
         if "DO WYDR" $ l
            tone(130,3)
-           if 1=alarm("Bù§D DRUKARKI PARAGON‡W!"+l+";CZY PR‡BOWAè JESZCZE RAZ?",{"TAK","NIE"})
+           if 1=alarm("B≈ÅƒÑD DRUKARKI PARAGON√ìW!"+l+";CZY PR√ìBOWAƒÜ JESZCZE RAZ?",{"TAK","NIE"})
               if RS_SEND(42,@s,'')<>0 .and. s=chr(6)
                  alarm("PONAWIAM WYDRUK!")
               endif
@@ -1828,9 +1824,9 @@ local s:=' ',ret,disp,x,kod
         endif
         if "RAPORT D" $ l
            tone(130,3)
-           if 1=alarm("Bù§D DRUKARKI PARAGON‡W!"+l+";CZY PR‡BOWAè JESZCZE RAZ?",{"TAK","NIE"})
+           if 1=alarm("B≈ÅƒÑD DRUKARKI PARAGON√ìW!"+l+";CZY PR√ìBOWAƒÜ JESZCZE RAZ?",{"TAK","NIE"})
               if RS_SEND(37,@s,'')<>0 .and. s=chr(6)
-                 alarm("DRUKUJ® ZALEGùY RAPORT DOBOWY!")
+                 alarm("DRUKUJƒò ZALEG≈ÅY RAPORT DOBOWY!")
               endif
               l:=""
               loop
@@ -1841,12 +1837,12 @@ local s:=' ',ret,disp,x,kod
      IF disp .or. !ret
         tone(130,3)
         if !RET .AND. !empty(rtr)
-           if 1=alarm("Bù§D DRUKARKI PARAGON‡W!"+l+";CZY PR‡BOWAè JESZCZE RAZ?",{"TAK","NIE"})
+           if 1=alarm("B≈ÅƒÑD DRUKARKI PARAGON√ìW!"+l+";CZY PR√ìBOWAƒÜ JESZCZE RAZ?",{"TAK","NIE"})
               l:=""
               loop
            endif
         elseif !empty(l)
-           alarm("DRUKARKA PARAGON‡W:"+l)
+           alarm("DRUKARKA PARAGON√ìW:"+l)
         endif
      ENDIF
      exit
@@ -2138,11 +2134,11 @@ memvar aux,df_ver
      endif
      S:=ASC(S)
      if s%128>=64
-        l+=";BRAK WYóWIETLACZA KLIJENTA."
+        l+=";BRAK WY≈öWIETLACZA KLIJENTA."
         disp:=.t.
      endif
      if s%64>=32
-        l+=";NAST§PIùO ZABLOKOWANIE NAZWY TOWARU W PARAGONIE."
+        l+=";NASTƒÑPI≈ÅO ZABLOKOWANIE NAZWY TOWARU W PARAGONIE."
         rtr:=NIL
         disp:=.t.
      endif
@@ -2152,15 +2148,15 @@ memvar aux,df_ver
         disp:=.t.
      endif
      if s%16>=8
-        l+=";ZALEGùY RAPORT DOBOWY."
+        l+=";ZALEG≈ÅY RAPORT DOBOWY."
         disp:=.t.
      endif
      if s%8>=4
-        l+="W PAMI®CI FISKALNEJ DRUKARKI ZOSTAùO MAùO MIEJSCA."
+        l+="W PAMIƒòCI FISKALNEJ DRUKARKI ZOSTA≈ÅO MA≈ÅO MIEJSCA."
         disp:=.t.
      endif
      if s%4>=2
-        l+=";W PAMI®CI DRUKARKI ZNAJDUJE SI® DOKUMENT DO WYDRUKOWANIA."
+        l+=";W PAMIƒòCI DRUKARKI ZNAJDUJE SIƒò DOKUMENT DO WYDRUKOWANIA."
      endif
      if s%2=1
         l+=";BRAK WOLNEGO MIEJSCA W BAZIE KONTRLONEJ NAZW I STAWEK."
@@ -2172,7 +2168,7 @@ memvar aux,df_ver
      endif
      S:=ASC(S)
      if s%8>=4
-        l+=';MODUù FISKALNY W TRYBIE "TYLKO ODCZYT"!'
+        l+=';MODU≈Å FISKALNY W TRYBIE "TYLKO ODCZYT"!'
         rtr:=NIL
         disp:=.t.
      endif
@@ -2185,11 +2181,11 @@ memvar aux,df_ver
         disp:=.t.
      endif
      if s%32>=16
-        l+=";NAST§PIùO UNIEWAΩNIENIE PARAGONU."
+        l+=";NASTƒÑPI≈ÅO UNIEWA≈ªNIENIE PARAGONU."
         disp:=.t.
      endif
      if s%16>=8
-        l+=";ZA NISKIE NAPI®CIE AKUMULATORA - POWIADOM SERWIS."
+        l+=";ZA NISKIE NAPIƒòCIE AKUMULATORA - POWIADOM SERWIS."
         disp:=.t.
      endif
      if s%8>=4
@@ -2201,7 +2197,7 @@ memvar aux,df_ver
         disp:=.t.
      endif
      if s%2=1
-        l+=";W BUFORZE DRUKOWANIA S§ ZNAKI DO WYDRUKOWANIA."
+        l+=";W BUFORZE DRUKOWANIA SƒÑ ZNAKI DO WYDRUKOWANIA."
      endif
 
      recover
@@ -2214,7 +2210,7 @@ memvar aux,df_ver
      IF !ret .AND. s%4<2
         if "DO WYDR" $ l
            tone(130,3)
-           if 1=alarm("Bù§D DRUKARKI PARAGON‡W!"+l+";CZY PR‡BOWAè JESZCZE RAZ?",{"TAK","NIE"})
+           if 1=alarm("B≈ÅƒÑD DRUKARKI PARAGON√ìW!"+l+";CZY PR√ìBOWAƒÜ JESZCZE RAZ?",{"TAK","NIE"})
               s:=' '
               if rswrite(3,chr(27)+"*")=2 .and. rsread(3,@s,1)=1 .and. s=chr(6)
                  alarm("PONAWIAM WYDRUK!")
@@ -2227,9 +2223,9 @@ memvar aux,df_ver
         endif
         if "RAPORT D" $ l
            tone(130,3)
-           if 1=alarm("Bù§D DRUKARKI PARAGON‡W!"+l+";CZY PR‡BOWAè JESZCZE RAZ?",{"TAK","NIE"})
+           if 1=alarm("B≈ÅƒÑD DRUKARKI PARAGON√ìW!"+l+";CZY PR√ìBOWAƒÜ JESZCZE RAZ?",{"TAK","NIE"})
               if rswrite(3,chr(27)+"%")=2 .and. rsread(3,@s,1)=1 .and. s=chr(6)
-                 alarm("DRUKUJ® ZALEGùY RAPORT DOBOWY!")
+                 alarm("DRUKUJƒò ZALEG≈ÅY RAPORT DOBOWY!")
               endif
               l:=""
               x:=seconds()
@@ -2245,13 +2241,13 @@ memvar aux,df_ver
 
      tone(130,3)
      if !RET .AND. !empty(rtr)
-         if 1=alarm("Bù§D DRUKARKI PARAGON‡W!"+l+";CZY PR‡BOWAè JESZCZE RAZ?",{"TAK","NIE"})
+         if 1=alarm("B≈ÅƒÑD DRUKARKI PARAGON√ìW!"+l+";CZY PR√ìBOWAƒÜ JESZCZE RAZ?",{"TAK","NIE"})
           x:=seconds()
           l:=""
           loop
          endif
      elseif !empty(l)
-        alarm("DRUKARKA PARAGON‡W:"+l)
+        alarm("DRUKARKA PARAGON√ìW:"+l)
      endif
 ********************
      exit
@@ -2582,7 +2578,7 @@ local txt1,txt2,txt3,r,i,j,k,s,w,p,bc,bw,x,;
   IF dok_kop=NIL
     dok_kop=1
     tone(262,2)
-    if 2#alarm("CZY DRUKOWAè",{"NIE","TAK"})
+    if 2#alarm("CZY DRUKOWAƒÜ",{"NIE","TAK"})
       return
     endif
   ENDIF
@@ -2600,7 +2596,7 @@ oprn:=D_HWPRN
 #command TEXT <st> => aeval(getlines(strtran(<st>,";",nl)),{|x|qout(x)})
 #endif
   begin sequence
-  mes:=message("Prosz© czekaÜ;TRWA WYDRUK.")
+  mes:=message("Proszƒô czekaƒá;TRWA WYDRUK.")
   select main
 #ifndef STANY
         SET RELATION TO INDEX INTO INDX_MAT
@@ -2628,7 +2624,7 @@ oprn:=D_HWPRN
 
   do case
     case dok_naz="K"
-      txt1:="   Pow¢d:"
+      txt1:="   Pow√≥d:"
       txt2:="Dok. popraw. :"
       txt3:="wystaw. dnia :"
 #ifdef A_FA
@@ -2642,8 +2638,8 @@ oprn:=D_HWPRN
       txt3:="           do"
 #endif
       else
-      txt2:="Nr zam¢wienia:"
-      txt3:="Data sprzedaæy"
+      txt2:="Nr zam√≥wienia:"
+      txt3:="Data sprzeda≈ºy"
       endif
 #endif
     case dok_p_r#"P"
@@ -2678,7 +2674,7 @@ oprn:=D_HWPRN
        set order to "FIRM_NUM"
        if ""#dok_kon .and. dbSEEK(dM->(D_KH),.f.)
           ? numer_kol
-          ? "Pàatnik: ",cpad(nazwa,40)
+          ? "P≈Çatnik: ",cpad(nazwa,40)
           ?? " "+txt2+" "+left(dM->nr_faktury,14)
           ? "  Adres: ",cpad(adres,P_COLN-35)
           if ident#"   "
@@ -2686,7 +2682,7 @@ oprn:=D_HWPRN
           endif
         ELSE
           ?
-          ? "Pàatnik: ",CPAD(dM->dost_odb,P_COLN-40)
+          ? "P≈Çatnik: ",CPAD(dM->dost_odb,P_COLN-40)
           if dok_kon="?" .and. dok_zew="V"
              ?? "            NIP: "
           else
@@ -2700,7 +2696,7 @@ oprn:=D_HWPRN
 #ifdef A_FAT
        if subs(dok_naz,2)#"K"
           ?
-          ? "Numer Specyfikacji: "+nr_spec+" órodek transportu: "+trim(transport)
+          ? "Numer Specyfikacji: "+nr_spec+" ≈örodek transportu: "+trim(transport)
        endif
 #endif
     message(1)
@@ -2708,7 +2704,7 @@ oprn:=D_HWPRN
 #ifdef A_SWW
     ? "Lp|  Nazwa towaru                            | Kod SWW|Symbol|"
 #else
-    ? "Lp  Nazwa towaru lub usàugi                      "
+    ? "Lp  Nazwa towaru lub us≈Çugi                      "
 #ifdef A_SHORTIND
     ?? "| Kod|"
 #else
@@ -2730,14 +2726,14 @@ oprn:=D_HWPRN
     wp17:=pcol()
     if dok_zew="V"
 #ifdef A_CENVAT
-       ?? ccpi(8)+"   IloòÜ  |Jedn| Cena jedn.|WartoòÜ net.| Cena z VAT| % i kwota  VAT| Wart. z VAT",ccpi(7)
+       ?? ccpi(8)+"   Ilo≈õƒá  |Jedn| Cena jedn.|Warto≈õƒá net.| Cena z VAT| % i kwota  VAT| Wart. z VAT",ccpi(7)
 #else
-       ?? "   IloòÜ  |Jedn| Cena jedn.|WartoòÜ net.| % i kwota VAT | Wart. z VAT"
+       ?? "   Ilo≈õƒá  |Jedn| Cena jedn.|Warto≈õƒá net.| % i kwota VAT | Wart. z VAT"
 #endif
     elseif dok_zew="U"
-       ?? "   IloòÜ  |Jedn|Cena brutto|Wart. brutto|  W tym VAT    |Wart. netto "
+       ?? "   Ilo≈õƒá  |Jedn|Cena brutto|Wart. brutto|  W tym VAT    |Wart. netto "
     else
-       ?? "   IloòÜ  |Jedn|Cena jedn.|  WartoòÜ"
+       ?? "   Ilo≈õƒá  |Jedn|Cena jedn.|  Warto≈õƒá"
     endif
     do while .t.
     ut:=wt:=vt:=0
@@ -2760,7 +2756,7 @@ oprn:=D_HWPRN
     elseif subs(dok_naz,2)="K"
        fakkorflag:=recno()
        if dbSEEK(pad(nr_faktury,D_MM),.f.)
-          ? "Przed korekt•:"
+          ? "Przed korektƒÖ:"
        else
           go fakkorflag
           fakkorflag:=NIL
@@ -2886,7 +2882,7 @@ oprn:=D_HWPRN
       wt/=100
 #endif
       if dok_zew$"UV" .and. ROUND(warT_vaT-vt,A_ZAOKR)#0
-         if fakkorflag=NIL .and. i=1 .and. (tone(130,3),if(changed,1=alarm("NIEZGODNA WARTOóè PODATKU;CZY DOKONAè KOREKTY ?",{"TAK","NIE"},2,2),NIL=alarm("NIEZGODNA WARTOóè PODATKU;NIE DOKONANO KOREKTY !!!")))
+         if fakkorflag=NIL .and. i=1 .and. (tone(130,3),if(changed,1=alarm("NIEZGODNA WARTO≈öƒÜ PODATKU;CZY DOKONAƒÜ KOREKTY ?",{"TAK","NIE"},2,2),NIL=alarm("NIEZGODNA WARTO≈öƒÜ PODATKU;NIE DOKONANO KOREKTY !!!")))
              wart_vat:=vt
              for k:=1 to len(stawki)
                 if val(stawki[k])#0
@@ -2920,9 +2916,9 @@ oprn:=D_HWPRN
          field2bin('d_wartosc',w)
          #endif
          //changed:=.t.
-         alarm("WARTOóè SUMY POZYCJI NIEZGODNA Z INFORMACJ§ W NAGù‡WKU;DOKONANO KOREKTY",,,3)
+         alarm("WARTO≈öƒÜ SUMY POZYCJI NIEZGODNA Z INFORMACJƒÑ W NAG≈Å√ìWKU;DOKONANO KOREKTY",,,3)
       else
-         alarm("NIEZGODNA WARTOóè SUMY POZYCJI;NIE DOKONANO KOREKTY !!!",,,3)
+         alarm("NIEZGODNA WARTO≈öƒÜ SUMY POZYCJI;NIE DOKONANO KOREKTY !!!",,,3)
          wt:=WARTOSC
       endif
       endif
@@ -2933,13 +2929,13 @@ oprn:=D_HWPRN
 #ifdef A_WE
       if ROUND(warT_ewiD-pm*ut,A_ZAOKR)#0
         changed:=.t.
-        alarm("WARTOóè EWIDENCYJNA SUMY POZYCJI NIEZGODNA Z INFORMACJ§ W NAGù‡WKU;DOKONANO KOREKTY",,,3)
+        alarm("WARTO≈öƒÜ EWIDENCYJNA SUMY POZYCJI NIEZGODNA Z INFORMACJƒÑ W NAG≈Å√ìWKU;DOKONANO KOREKTY",,,3)
         warT_ewiD:=pm*ut
       ENDIF
 #endif
       if POZYCJA#P
         changed:=.t.
-        alarm("ILOóè POZYCJI NIEZGODNA Z INFORMACJ§ W NAGù‡WKU;DOKONANO KOREKTY",,,3)
+        alarm("ILO≈öƒÜ POZYCJI NIEZGODNA Z INFORMACJƒÑ W NAG≈Å√ìWKU;DOKONANO KOREKTY",,,3)
         pozycja:=p
       ENDIF
       if p>D_LP1
@@ -3038,40 +3034,40 @@ oprn:=D_HWPRN
 #endif
      if dok_zew$"UV"
 #ifdef A_CENVAT
-      ? padl("WARTOóè NETTO"+strpic(wt-vt,15,A_ZAOKR,"@E "),35)+" zà."
+      ? padl("WARTO≈öƒÜ NETTO"+strpic(wt-vt,15,A_ZAOKR,"@E "),35)+" z≈Ç."
 #else
-      ? padl("WARTOóè NETTO"+strpic(wt,15,A_ZAOKR,"@E "),35)+" zà."
+      ? padl("WARTO≈öƒÜ NETTO"+strpic(wt,15,A_ZAOKR,"@E "),35)+" z≈Ç."
       wt+=vt
 #endif
       ?
-      ? padl("+ VAT "+strpic(vt,15,A_ZAOKR,"@E "),35)+" zà."
+      ? padl("+ VAT "+strpic(vt,15,A_ZAOKR,"@E "),35)+" z≈Ç."
       ? padl("----- ---------------",35)
      endif
       wt:=ROUND(wt,A_ZAOKR)
-      ? spec(P_BON),padl("DO ZAPùATY "+strpic(wt,15,A_ZAOKR,"@E "),35)+" zà.",spec(P_BOFF)
+      ? spec(P_BON),padl("DO ZAP≈ÅATY "+strpic(wt,15,A_ZAOKR,"@E "),35)+" z≈Ç.",spec(P_BOFF)
       ?
-      ? "sàownie:",cpad(slownie(wt),70,,0)
+      ? "s≈Çownie:",cpad(slownie(wt),70,,0)
       ?
-      ? "Zapàata "
+      ? "Zap≈Çata "
       if przelewem=0 .and. czekiem=0 .and. termin_p=data
-         ?? "got¢wk•."
+         ?? "got√≥wkƒÖ."
          ?
          ?
       else
       if wt#czekiem+przelewem
-         ?? "  got¢wk•: "+strpic(wt-przelewem-czekiem,15,A_ZAOKR,"@E "),"zà."
+         ?? "  got√≥wkƒÖ: "+strpic(wt-przelewem-czekiem,15,A_ZAOKR,"@E "),"z≈Ç."
          ?
          ?
       else
          ?? spec(chr(13))
       endif
       if przelewem#0
-         ?? "        przelewem: "+strpic(przelewem,15,A_ZAOKR,"@E "),"zà."
+         ?? "        przelewem: "+strpic(przelewem,15,A_ZAOKR,"@E "),"z≈Ç."
          ?
          ?
       endif
       if czekiem#0
-         ?? "            kart•: "+strpic(czekiem,15,A_ZAOKR,"@E "),"zà."
+         ?? "            kartƒÖ: "+strpic(czekiem,15,A_ZAOKR,"@E "),"z≈Ç."
          if !empty(nr_czeku)
             ?? "  Nr karty: "+trim(nr_czeku)
          endif
@@ -3131,7 +3127,7 @@ oprn:=D_HWPRN
 #ifdef A_OLZA
       if ""#dok_kon
          ?
-         ? "Konto koszt¢w: ",dM->konto_kosz,' ',space(P_COLN-48),' ',"Stanowisko koszt¢w: ",dM->stano_kosz
+         ? "Konto koszt√≥w: ",dM->konto_kosz,' ',space(P_COLN-48),' ',"Stanowisko koszt√≥w: ",dM->stano_kosz
       endif
 #endif
     ENDIF
@@ -3163,7 +3159,7 @@ wp17:=0
 #ifdef A_OLZBY
     ? "Lp|Nazwa wyrobu     opakowanie|"
 #else
-    ? "Lp|Peàne okreòlenie materiaàu |"
+    ? "Lp|Pe≈Çne okre≈õlenie materia≈Çu |"
 #endif
 #ifdef A_GRAM
     if dok_war#"-" .or. ""#dok_kon
@@ -3176,17 +3172,17 @@ wp17:=0
     ?? " Waga kg |"
 #endif
 #else
-    ? "Lp|Peàne okreòlenie materiaàu | Kod|"+if(""#dok_kon,"Konto |","")
+    ? "Lp|Pe≈Çne okre≈õlenie materia≈Çu | Kod|"+if(""#dok_kon,"Konto |","")
 #endif
     if dok_war="-"
-    ?? "   IloòÜ  |Jedn"
+    ?? "   Ilo≈õƒá  |Jedn"
     else
 #ifdef A_PCL
-    ?? "Cena jedn|   IloòÜ  |Jedn|WartoòÜ  "
+    ?? "Cena jedn|   Ilo≈õƒá  |Jedn|Warto≈õƒá  "
     #define D_CENLTH 9
 #else
     #define D_CENLTH 10
-    ?? "Cena jedn.|   IloòÜ  |Jedn|WartoòÜ   "
+    ?? "Cena jedn.|   Ilo≈õƒá  |Jedn|Warto≈õƒá   "
 #endif
     endif
 #ifdef A_JMO
@@ -3209,49 +3205,49 @@ wp17:=0
 #ifdef A_SWW
     ? "Lp    Nazwa wyrobu            "
     wp10:=pcol()
-    ?? ccpi(5),"|  SWW   |Symbol|"+if(""#dok_kon,"Konto |","")+"Cena jedn|   IloòÜ  |Jedn|"
+    ?? ccpi(5),"|  SWW   |Symbol|"+if(""#dok_kon,"Konto |","")+"Cena jedn|   Ilo≈õƒá  |Jedn|"
     #define D_CENLTH 9
     if dok_war#"-"
-    ?? "WartoòÜ  "
+    ?? "Warto≈õƒá  "
     endif
 #else
 #ifdef A_KTM
-    ? "Lp Peàne okreòlenie materiaàu"
+    ? "Lp Pe≈Çne okre≈õlenie materia≈Çu"
     wp10:=pcol()
-    ?? ccpi(5),"| Kod materiaàu  |"
+    ?? ccpi(5),"| Kod materia≈Çu  |"
 #ifdef A_OBR
-    ?? if(""=dok_kon,"Cena jedn.|",if(dok_zew="W","Konto           |","Zam¢wienie   |"))+"   IloòÜ  |Jedn|"
+    ?? if(""=dok_kon,"Cena jedn.|",if(dok_zew="W","Konto           |","Zam√≥wienie   |"))+"   Ilo≈õƒá  |Jedn|"
     #define D_CENLTH 10
     if dok_war#"-"
-    ?? "WartoòÜ   "
+    ?? "Warto≈õƒá   "
     endif
 #else
-    ?? if(""#dok_kon,"Konto |","")+"Cena jedn|   IloòÜ  |Jedn|"
+    ?? if(""#dok_kon,"Konto |","")+"Cena jedn|   Ilo≈õƒá  |Jedn|"
     #define D_CENLTH 9
     if dok_war#"-"
-    ?? "WartoòÜ  "
+    ?? "Warto≈õƒá  "
     endif
 #endif
 #else
-    ? "Lp|Peàne okreòlenie materiaàu |"
+    ? "Lp|Pe≈Çne okre≈õlenie materia≈Çu |"
     wp10:=pcol()
     ?? ccpi(5)
 #ifdef A_OLZA
-    ?? " Kod materiaàu|"
+    ?? " Kod materia≈Çu|"
     if ""#dok_kon
        ?? ccpi(7),"Zlecenie |",ccpi(5)
        wp17:=10
     endif
-    ?? "    Cena |   IloòÜ  |Jedn|"
+    ?? "    Cena |   Ilo≈õƒá  |Jedn|"
     #define D_CENLTH 9
     if dok_war#"-"
-    ?? "WartoòÜ  "
+    ?? "Warto≈õƒá  "
     endif
 #else
-    ?? " Kod mater. |"+if(""#dok_kon,"Konto |","")+"Cena jedn.|   IloòÜ  |Jedn|"
+    ?? " Kod mater. |"+if(""#dok_kon,"Konto |","")+"Cena jedn.|   Ilo≈õƒá  |Jedn|"
     #define D_CENLTH 10
     if dok_war#"-"
-    ?? "WartoòÜ   "
+    ?? "Warto≈õƒá   "
     endif
 #endif
 #endif
@@ -3417,7 +3413,7 @@ wp17:=0
 #ifdef A_WE
       if ROUND(warT_ewiD-pm*ut,A_ZAOKR)#0
         changed:=.t.
-        alarm("WARTOóè SUMY POZYCJI NIEZGODNA Z INFORMACJ§ W NAGù‡WKU;DOKONANO KOREKTY",,,3)
+        alarm("WARTO≈öƒÜ SUMY POZYCJI NIEZGODNA Z INFORMACJƒÑ W NAG≈Å√ìWKU;DOKONANO KOREKTY",,,3)
         warT_ewiD:=pm*ut
       ENDIF
 #endif
@@ -3429,7 +3425,7 @@ wp17:=0
       vt/=100
 #endif
       if dok_zew$"UV" .and. ROUND(warT_vaT-vt,A_ZAOKR)#0
-         if fakkorflag=NIL .and. i=1 .and. (tone(130,3),if(changed,1=alarm("NIEZGODNA WARTOóè PODATKU;CZY DOKONAè KOREKTY ?",{"TAK","NIE"},2,2),NIL=alarm("NIEZGODNA WARTOóè PODATKU;NIE DOKONANO KOREKTY !!!")))
+         if fakkorflag=NIL .and. i=1 .and. (tone(130,3),if(changed,1=alarm("NIEZGODNA WARTO≈öƒÜ PODATKU;CZY DOKONAƒÜ KOREKTY ?",{"TAK","NIE"},2,2),NIL=alarm("NIEZGODNA WARTO≈öƒÜ PODATKU;NIE DOKONANO KOREKTY !!!")))
              wart_vat:=vt
              for k:=1 to len(stawki)
                 if val(stawki[k])#0
@@ -3463,9 +3459,9 @@ wp17:=0
            field2bin('d_wartosc',w)
          #endif
          //changed:=.t.
-         alarm("WARTOóè SUMY POZYCJI NIEZGODNA Z INFORMACJ§ W NAGù‡WKU;DOKONANO KOREKTY",,,3)
+         alarm("WARTO≈öƒÜ SUMY POZYCJI NIEZGODNA Z INFORMACJƒÑ W NAG≈Å√ìWKU;DOKONANO KOREKTY",,,3)
       else
-         alarm("NIEZGODNA WARTOóè SUMY POZYCJI;NIE DOKONANO KOREKTY !!!",,,3)
+         alarm("NIEZGODNA WARTO≈öƒÜ SUMY POZYCJI;NIE DOKONANO KOREKTY !!!",,,3)
          wt:=WARTOSC
       endif
       endif
@@ -3475,7 +3471,7 @@ wp17:=0
 #endif
       if POZYCJA#P
         changed:=.t.
-        alarm("ILOóè POZYCJI NIEZGODNA Z INFORMACJ§ W NAGù‡WKU;DOKONANO KOREKTY",,,3)
+        alarm("ILO≈öƒÜ POZYCJI NIEZGODNA Z INFORMACJƒÑ W NAG≈Å√ìWKU;DOKONANO KOREKTY",,,3)
         pozycja:=p
       ENDIF
    if dok_war#"-"

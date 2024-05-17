@@ -44,13 +44,13 @@ lPack:=.f.
 @ 3,0 CLEAR
 do powr_dbed
 if sequr
-   @ 0,0 SAY "Bezpoòrednie zmiany w tej bazie danych mog• rozkojarzyÜ dane !" COLOR "GR+"
-   @ 1,0 SAY "Upewnij si©, czy posiadasz kopi© bezpiecze‰stwa na dyskietce !" COLOR "GR+"
+   @ 0,0 SAY "Bezpo≈õrednie zmiany w tej bazie danych mogƒÖ rozkojarzyƒá dane !" COLOR "GR+"
+   @ 1,0 SAY "Upewnij siƒô, czy posiadasz kopiƒô bezpiecze≈Ñstwa na dyskietce !" COLOR "GR+"
 else
    go top
 ENDIF
   // frame window
-  @ nTop, nLeft, nBottom, nRight box "’Õ∏≥æÕ‘≥" codepage 'PLMAZ'
+  @ nTop, nLeft, nBottom, nRight box hb_UTF8ToStrBox("‚ïí‚ïê‚ïï‚îÇ‚ïõ‚ïê‚ïò‚îÇ")
 
   // clear status row
   @ nTop + 1, nLeft + 1 say Space(nRight - nLeft - 1)
@@ -64,22 +64,10 @@ ENDIF
   oB:nleft:=nLeft + 1
   oB:nbottom:=nBottom - 1
   oB:nright:= nRight - 1
-#ifdef PLWIN
-#ifdef PC852
-  @ nTop + 3, nLeft say "∆" codepage 'PLMAZ' 
-  @ nTop + 3, nRight say "µ"  codepage 'PLMAZ'
-  oB:headSep := HB_UTF8TOSTRBOX(HB_TRANSLATE("—Õ",'PLMAZ','UTF8'))
-  oB:ColSep  := "≥"
-#else
-  oB:ColSep  := "|"
-  ob:HeadSep := "|ó"
-#endif
-#else
-  @ nTop + 3, nLeft say "∆" codepage 'PLMAZ'
-  @ nTop + 3, nRight say "µ" codepage 'PLMAZ' 
-  oB:headSep := HB_UTF8TOSTRBOX(HB_TRANSLATE("—Õ",'PLMAZ','UTF8'))
-  oB:ColSep  := "≥"
-#endif
+  @ nTop + 3, nLeft say "‚ïû"
+  @ nTop + 3, nRight say "‚ï°"
+  oB:headSep := "‚ï§‚ïê"
+  oB:ColSep  := "‚îÇ"
   oB:skipBlock := {|x| Skipped(x, lAppend)}
 
 
@@ -261,7 +249,7 @@ ENDIF
       txt=IndexkeY(i)
       scr_buf = SAVESCREEN(8, 1, 19, 78)
       scroll(8, 1, 19, 78, 0)
-      @ 9,3,18,76 BOX "’Õ∏≥æÕ‘≥" codepage 'PLMAZ' COLOR "W+"
+      @ 9,3,18,76 BOX hb_UTF8ToStrBox("‚ïí‚ïê‚ïï‚îÇ‚ïõ‚ïê‚ïò‚îÇ") COLOR "W+"
       @ 11,5 say "Podaj  numer  klucza  indeksowego  (Esc - bez indeksowania)"
       do while .not. empty(txt)
           @ 11+i,5 prompt str(i,1)+" - " + LEFT(txt, 66)
@@ -274,8 +262,8 @@ ENDIF
        if i != 0
          SET ORDER TO i
          txt=IndexkeY(0)
-         @ nTop + 1, nLeft + 2 say padr("KlejnoòÜ wg: "+txt,nright-nleft-43)
-         @ 16,5 say "Podaj poszukiwan• sekwencj© znak¢w:"
+         @ nTop + 1, nLeft + 2 say padr("Klejno≈õƒá wg: "+txt,nright-nleft-43)
+         @ 16,5 say "Podaj poszukiwanƒÖ sekwencjƒô znak√≥w:"
 
          txt = &txt
          @ 16,41 get txt picture '@KS34'
@@ -292,7 +280,7 @@ ENDIF
 
        else
      SET ORDER TO 0
-       @ nTop + 1, nLeft + 2 say padr("KlejnoòÜ naturalna.",nright-nleft-43)
+       @ nTop + 1, nLeft + 2 say padr("Klejno≈õƒá naturalna.",nright-nleft-43)
        endif
     skip 0
        RESTSCREEN(8, 1, 19, 78, scr_buf)
@@ -329,11 +317,11 @@ ENDIF
 
       scroll(8, 1, 19, 78, 0)
       set color to W+
-      @ 9,3,18,76 BOX "’Õ∏≥æÕ‘≥" codepage 'PLMAZ'
+      @ 9,3,18,76 BOX hb_UTF8ToStrBox("‚ïí‚ïê‚ïï‚îÇ‚ïõ‚ïê‚ïò‚îÇ")
       set color to W
-      @ 11,5 say "Podaj  wyraæenie filtra            (Esc - rezygnacja)"
-      @ 13,5 say 'Dost©pne relacje: =,#,$,<,>,<=,>= '
-      @ 14,5 say 'Dost©pne operacje logicze: .i., .lub., .nie.'
+      @ 11,5 say "Podaj  wyra≈ºenie filtra            (Esc - rezygnacja)"
+      @ 13,5 say 'Dostƒôpne relacje: =,#,$,<,>,<=,>= '
+      @ 14,5 say 'Dostƒôpne operacje logicze: .i., .lub., .nie.'
       txt=dbfilter()
 
     do while .t.
@@ -436,7 +424,7 @@ ENDIF
 set deleted on
 
 @ 0,0 CLEAR to 2,79
-if !shared() .and. lPack .AND. tak('CZY SKASOWAè UKRYTE WIERSZE',0,,.f.,.F.)
+if !shared() .and. lPack .AND. tak('CZY SKASOWAƒÜ UKRYTE WIERSZE',0,,.f.,.F.)
     @ 0,0 SAY "TRWA KASOWANIE UKRYTYCH WIERSZY W BAZIE " COLOR "BG+"
     dispout(alias(),"BG+*")
     i:=lastrec()
@@ -701,7 +689,7 @@ local nTop, nRight
     @ nTop, nRight - 40 say if(set(_SET_DELETED),"          ",If(Deleted(), " <Ukryty> ", "<Widoczny>"))
     @ nTop, nRight - 20 say padr(Ltrim(Str(Recno())) + "/" +;
                   Ltrim(Str(LastRec())), 15) +;
-                If(oB:hitTop, "<g¢ra>", "      ")
+                If(oB:hitTop, "<g√≥ra>", "      ")
   end
 
 return (NIL)
@@ -760,7 +748,7 @@ return (nCount)
 PROCEDURE POWR_DBED
 
   @ maxrow()-1,0  CLEAR
-  @ maxrow()-1,0  SAY '   -wyjòcie     -edycja      -filtr    -pokaæ ukryte       -ukryj rekord'
+  @ maxrow()-1,0  SAY '   -wyj≈õcie     -edycja      -filtr    -poka≈º ukryte       -ukryj rekord'
   @ maxrow(),27 SAY '- nawigacja       -szybkie szukanie'
   @ maxrow()-1,0  SAY 'Esc'  COLOR "I"
   @ maxrow()-1,13 SAY "Ent" COLOR "I"
@@ -786,7 +774,7 @@ PROCEDURE POWR_GET
 
   @ maxrow()-1,0  CLEAR
   @ maxrow()-1,0  SAY     '             -wyjscie z pola z zapisem zmian      -wyjscie z przywr.starej wart.'
-  @ maxrow(),0  SAY     '   -tryb wstawiania <insert> /zamiany znak¢w'
+  @ maxrow(),0  SAY     '   -tryb wstawiania <insert> /zamiany znak√≥w'
   @ maxrow(),65 SAY     '- edycja w polu'
   @ maxrow()-1,0  SAY 'Ent' COLOR "I"
   @ maxrow()-1,4  SAY 'PgUp' COLOR "I"
@@ -1013,7 +1001,7 @@ c[K_HOME]     :={|b|j:=0,b:refreshall()}
 #ifdef __HARBOUR__
 if nextkey()=0 //.and. fseek(h,0,2) < 65536
   b:forcestable()
-  @ maxrow(),maxcol()-31 SAY HB_TRANSLATE('ALT+B - kopiuj CAùOóè do schowka',oldp,) COLOR _sramka
+  @ maxrow(),maxcol()-31 SAY HB_TRANSLATE('ALT+B - kopiuj CA≈ÅO≈öƒÜ do schowka',oldp,) COLOR _sramka
 endif
 #endif
 do while .t.

@@ -173,16 +173,16 @@ endif
 #endif
 
 setpos(3,0)
-? padc(" €€€€€€ €     €  €€€€€€ €€€€€€€ €€€€€€€ €       €",maxcol())
-? padc("€        €   €  €          €    €       €€     €€",maxcol())
-? padc(" €€€€€    € €    €€€€€     €    €€€€€€  € €   € €",maxcol())
-? padc("      €    €          €    €    €       €  € €  €",maxcol())
-? padc("€€€€€€     €    €€€€€€     €    €€€€€€€ €   €   €",maxcol())
+? padc(" ‚ñà‚ñà‚ñà‚ñà‚ñà‚ñà ‚ñà     ‚ñà  ‚ñà‚ñà‚ñà‚ñà‚ñà‚ñà ‚ñà‚ñà‚ñà‚ñà‚ñà‚ñà‚ñà ‚ñà‚ñà‚ñà‚ñà‚ñà‚ñà‚ñà ‚ñà       ‚ñà",maxcol())
+? padc("‚ñà        ‚ñà   ‚ñà  ‚ñà          ‚ñà    ‚ñà       ‚ñà‚ñà     ‚ñà‚ñà",maxcol())
+? padc(" ‚ñà‚ñà‚ñà‚ñà‚ñà    ‚ñà ‚ñà    ‚ñà‚ñà‚ñà‚ñà‚ñà     ‚ñà    ‚ñà‚ñà‚ñà‚ñà‚ñà‚ñà  ‚ñà ‚ñà   ‚ñà ‚ñà",maxcol())
+? padc("      ‚ñà    ‚ñà          ‚ñà    ‚ñà    ‚ñà       ‚ñà  ‚ñà ‚ñà  ‚ñà",maxcol())
+? padc("‚ñà‚ñà‚ñà‚ñà‚ñà‚ñà     ‚ñà    ‚ñà‚ñà‚ñà‚ñà‚ñà‚ñà     ‚ñà    ‚ñà‚ñà‚ñà‚ñà‚ñà‚ñà‚ñà ‚ñà   ‚ñà   ‚ñà",maxcol())
 ?
-? padc("€       €     €      €€€€      €     €€€€€€ €     € €€    €",maxcol())
-? padc("€€     €€    € €    €    ﬂ    € €        ‹ﬂ  €   €  € €   €",maxcol())
-? padc("€ €   € €   €‹‹‹€   €  ‹‹‹   €‹‹‹€     ‹ﬂ     € €   €  €  €",maxcol())
-? trim(padc("€  € €  €  €ﬂﬂﬂﬂﬂ€  €  ﬂﬂ€  €ﬂﬂﬂﬂﬂ€  ‹ﬂ        €    €   € €",maxcol()))
+? padc("‚ñà       ‚ñà     ‚ñà      ‚ñà‚ñà‚ñà‚ñà      ‚ñà     ‚ñà‚ñà‚ñà‚ñà‚ñà‚ñà ‚ñà     ‚ñà ‚ñà‚ñà    ‚ñà",maxcol())
+? padc("‚ñà‚ñà     ‚ñà‚ñà    ‚ñà ‚ñà    ‚ñà    ‚ñÄ    ‚ñà ‚ñà        ‚ñÑ‚ñÄ  ‚ñà   ‚ñà  ‚ñà ‚ñà   ‚ñà",maxcol())
+? padc("‚ñà ‚ñà   ‚ñà ‚ñà   ‚ñà‚ñÑ‚ñÑ‚ñÑ‚ñà   ‚ñà  ‚ñÑ‚ñÑ‚ñÑ   ‚ñà‚ñÑ‚ñÑ‚ñÑ‚ñà     ‚ñÑ‚ñÄ     ‚ñà ‚ñà   ‚ñà  ‚ñà  ‚ñà",maxcol())
+? trim(padc("‚ñà  ‚ñà ‚ñà  ‚ñà  ‚ñà‚ñÄ‚ñÄ‚ñÄ‚ñÄ‚ñÄ‚ñà  ‚ñà  ‚ñÄ‚ñÄ‚ñà  ‚ñà‚ñÄ‚ñÄ‚ñÄ‚ñÄ‚ñÄ‚ñà  ‚ñÑ‚ñÄ        ‚ñà    ‚ñà   ‚ñà ‚ñà",maxcol()))
 #ifdef A_FIFO
 #ifdef A_LIFO
 ?? " LIFO"
@@ -190,7 +190,7 @@ setpos(3,0)
 ?? " FIFO"
 #endif
 #endif
-? trim(padc("€   €   € €       €  €€€€  €       € €€€€€€    €    €    €€",maxcol()))
+? trim(padc("‚ñà   ‚ñà   ‚ñà ‚ñà       ‚ñà  ‚ñà‚ñà‚ñà‚ñà  ‚ñà       ‚ñà ‚ñà‚ñà‚ñà‚ñà‚ñà‚ñà    ‚ñà    ‚ñà    ‚ñà‚ñà",maxcol()))
 
 
 set default to (defa+"roboczy"+HB_ps())
@@ -282,10 +282,10 @@ a:=DISKSPACE(if(subs(defa,2,1)==':',(asc(defa)-64)%32,0))
 #endif
 
 IF a<104857600
-    aadd(txt,message("TYLKO"+STR(int(a/1024/1024),3)+" MEGABAJT‡W;WOLNEGO MIEJSCA NA DYSKU !"))
+    aadd(txt,message("TYLKO"+STR(int(a/1024/1024),3)+" MEGABAJT√ìW;WOLNEGO MIEJSCA NA DYSKU !"))
 ENDIF
 IF date()-45>DatY->D_Z_MIES1
-    aadd(txt,MESSAGE("ZAMKNIJ MIESI§C !"))
+    aadd(txt,MESSAGE("ZAMKNIJ MIESIƒÑC !"))
 ENDIF
 
 if !empty(txt)
@@ -310,7 +310,7 @@ readmodal( {_GET_( dzisiaj, "dzisiaj",,,)} )
 #endif
 
 DO WHILE .T.
-  @ 18,0 SAY " Podaj hasào: "
+  @ 18,0 SAY " Podaj has≈Ço: "
   txt:=""
   SET CURSOR ON
   do while 0<(i:=INkey(0)) .and. i#13
@@ -324,7 +324,7 @@ DO WHILE .T.
       loop
     endif
     txt+=chr(i)
-    ?? ""
+    ?? "‚ô¶"
   enddo
 
 #ifndef A_DECRYPT
@@ -334,7 +334,7 @@ DO WHILE .T.
    XSELECT OBSLUGA READONLY
        LOCATE FOR UpP(txt)==trim(A_DECRYPT(haslo))
        IF EOF()
-          ? "zàe hasào ..."
+          ? "z≈Çe has≈Ço ..."
           set color to w
           @ 20,0 clear
           quit                        // gdy nie znalazl
@@ -388,13 +388,13 @@ endif
           @ 4,maxcol()/2-29 TO 7,maxcol()/2+30
 #else
 */
-          @ 4,maxcol()/2-29,7,maxcol()/2+30 BOX "…Õª∫ºÕ»∫ "
+          @ 4,maxcol()/2-29,7,maxcol()/2+30 BOX hb_UTF8ToStrBox("‚ïî‚ïê‚ïó‚ïë‚ïù‚ïê‚ïö‚ïë ")
           @ 4,maxcol()/2-4 SAY " M E N U " COLOR if(iscolor(),_sbkgr,"W+")
 //#endif
 
-          @ maxrow()-2,0,maxrow(),maxcol() BOX "…Õª∫ºÕ»∫ "
+          @ maxrow()-2,0,maxrow(),maxcol() BOX hb_UTF8ToStrBox("‚ïî‚ïê‚ïó‚ïë‚ïù‚ïê‚ïö‚ïë ")
 
-          @ maxrow()-1,1 SAY "                     -wyb¢r opcji    -                  -wyjòcie" color if(iscolor(),_sbnorm,"W+")
+          @ maxrow()-1,1 SAY "                     -wyb√≥r opcji    -                  -wyj≈õcie" color if(iscolor(),_sbnorm,"W+")
 
       SET COLOR TO I
 
@@ -403,9 +403,9 @@ endif
           @ maxrow()-1,6  SAY "R"
           @ maxrow()-1,8  SAY "Z"
           @ maxrow()-1,10 SAY "P"
-          @ maxrow()-1,12 SAY "ƒ>"
-          @ maxrow()-1,15 SAY "<ƒ"
-          @ maxrow()-1,18 SAY "<ƒŸ"
+          @ maxrow()-1,12 SAY "‚îÄ>"
+          @ maxrow()-1,15 SAY "<‚îÄ"
+          @ maxrow()-1,18 SAY "<‚îÄ‚îò"
           @ maxrow()-1,35 SAY "F1"
           @ maxrow()-1,40 SAY "P O M O C" color (_sbnorm)
           @ maxrow()-1,53 say "Esc"
@@ -420,11 +420,11 @@ endif
 
       SET COLOR TO (_sbnorm)
 
-      @ 6,maxcol()/2-27 PROMPT "Kartoteki"    MESSAGE "Bieæ•ce stany magazynu, kartoteki materiaà¢w."
-      @ 6,maxcol()/2-17 PROMPT "Dok. obrotu"  MESSAGE "Przegl•danie wprowadzonych wczeòniej dokument¢w."
-      @ 6,maxcol()/2-5  PROMPT "Rejestracja " MESSAGE "Wprowadzanie dokument¢w obrotu materiaàowego."
-      @ 6,maxcol()/2+8  PROMPT "Zestawienia"  MESSAGE 'Wydruki zestawie‰.'
-      @ 6,maxcol()/2+20 PROMPT "Pozostaàe"    MESSAGE 'Dodatkowe funkcje programu.'
+      @ 6,maxcol()/2-27 PROMPT "Kartoteki"    MESSAGE "Bie≈ºƒÖce stany magazynu, kartoteki materia≈Ç√≥w."
+      @ 6,maxcol()/2-17 PROMPT "Dok. obrotu"  MESSAGE "PrzeglƒÖdanie wprowadzonych wcze≈õniej dokument√≥w."
+      @ 6,maxcol()/2-5  PROMPT "Rejestracja " MESSAGE "Wprowadzanie dokument√≥w obrotu materia≈Çowego."
+      @ 6,maxcol()/2+8  PROMPT "Zestawienia"  MESSAGE 'Wydruki zestawie≈Ñ.'
+      @ 6,maxcol()/2+20 PROMPT "Pozosta≈Çe"    MESSAGE 'Dodatkowe funkcje programu.'
 
 #ifndef PLWIN
     dispend()
@@ -441,7 +441,7 @@ endif
          IF empty(mlog) .or. !ACZOJS(MAGAZYNY,@MAG_BIEZ,@i,mlog)
 
             @ 18,0
-            menu:=tak("Czy rzeczywiscie ko‰czysz prac©",18,,.t.,0)
+            menu:=tak("Czy rzeczywiscie ko≈Ñczysz pracƒô",18,,.t.,0)
             if valtype(menu)="L"
                EXIT
             ENDIF
@@ -512,7 +512,7 @@ endif
    ENDIF
 ENDDO
 
-menu:=tak("CZY ARCHIWOWAè",18,,.t.,.F.)
+menu:=tak("CZY ARCHIWOWAƒÜ",18,,.t.,.F.)
 
 IF menu
    CLOSE ALL
@@ -863,7 +863,7 @@ field index
 
           sel("DM",1)
 
-       if stary_rok=NIL //tymczasowo bo nie wszyscy maj•
+       if stary_rok=NIL //tymczasowo bo nie wszyscy majƒÖ
 #ifdef A_ADS
 #ifdef A_MM
           mkindex('DM_TRIM','SMB_DOW+PADL(RTRIM(NR_DOWODU),5)')

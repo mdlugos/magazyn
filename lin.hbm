@@ -1,4 +1,8 @@
 -w1 -m -n -oma
+#-lhbcups hbcups.hbc 
+#-lhbcairo hbcairo.hbc
+#-lhbhpdf hbhpdf.hbc
+#-gtxwc
 -gttrm
 -lhbmxml hbmxml.hbc
 mlcfunc.c cppl852m.c

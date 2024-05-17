@@ -123,7 +123,7 @@ local b,d,y,r
       c:=stuff(c,y[2],d,'')
       aeval(b,{|y|if(y[2]>0,y[2]-=d,)},2)
     enddo
-    // probuje usun�� funkcje i tablice itp
+    // probuje usunąć funkcje i tablice itp
     d:=0
     while !empty(d:=hb_at(']',c,1+d))
        y:=rat('[',left(c,d))
@@ -477,7 +477,7 @@ endif
     if !oprn:Create()
        oprn:Destroy()
        oprn:=NIL
-       Alarm('B��d Drukarki')
+       Alarm('Błąd Drukarki')
        Return .f.
     endif
     ccpi(,4)
@@ -486,7 +486,7 @@ endif
     if ! oprn:StartDoc()
        oprn:Destroy()
        oprn:=NIL
-       Alarm('B��d Drukarki')
+       Alarm('Błąd Drukarki')
        Return .f.
     endif
 #endif
@@ -499,7 +499,7 @@ endif
     if !oprn:Create()
        oprn:Destroy()
        oprn:=NIL
-       Alarm('B��d Drukarki')
+       Alarm('Błąd Drukarki')
        Return .f.
     endif
     oprn:LeftMargin:=0
@@ -512,7 +512,7 @@ endif
     if ! oprn:StartDoc()
        oprn:Destroy()
        oprn:=NIL
-       Alarm('B��d Drukarki')
+       Alarm('Błąd Drukarki')
        Return .f.
     endif
     setprc(oprn:PRow(),oprn:PCol())
@@ -1056,78 +1056,78 @@ public  p_rown,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COLN,P_BON,P_BOFF,P_UON,P_UOFF,;
    p_rownl:=40
    p_colnl:=113
    if p_pcl=.t.
-      P_INIT  := {|x|if(x,"(17U&"+"l26a"+if(landscape,'1','0')+"O&"+"a0L",'')+"(s1q0s0b10h12V"}
-//      P_PUSH  := '&'+'f0S'
-//      P_POP   := '&'+'f1S'
-      P_4XON  := '(s24.0v5.0H'
-      P_4XOFF := '(s12.0v10.0H'
+      P_INIT  := {|x|if(x,chr(0x1B)+"(17U"+chr(0x1B)+"&"+"l26a"+if(landscape,'1','0')+"O"+chr(0x1B)+"&"+"a0L",'')+chr(0x1B)+"(s1q0s0b10h12V"}
+//      P_PUSH  := chr(0x1B)+'&'+'f0S'
+//      P_POP   := chr(0x1B)+'&'+'f1S'
+      P_4XON  := chr(0x1B)+'(s24.0v5.0H'
+      P_4XOFF := chr(0x1B)+'(s12.0v10.0H'
       P_COLN  := 78
-      P_BON   := "(s3B"
-      P_BOFF  := "(s0B"
-      P_UON   := "&"+"d0D"
-      P_UOFF  := "&"+"d@"
+      P_BON   := chr(0x1B)+"(s3B"
+      P_BOFF  := chr(0x1B)+"(s0B"
+      P_UON   := chr(0x1B)+"&"+"d0D"
+      P_UOFF  := chr(0x1B)+"&"+"d@"
 
-      P_36LPI := '&'+'l36D'
-      P_12LPI := '&'+'l12D'
-      P_6LPI  := '&'+'l6D'
-      P_7LPI  := '&'+'l7D'
-      P_8LPI  := '&'+'l8D'
+      P_36LPI := chr(0x1B)+'&'+'l36D'
+      P_12LPI := chr(0x1B)+'&'+'l12D'
+      P_6LPI  := chr(0x1B)+'&'+'l6D'
+      P_7LPI  := chr(0x1B)+'&'+'l7D'
+      P_8LPI  := chr(0x1B)+'&'+'l8D'
 /*
-      P_36LPI := '&'+'l2C'
-      P_12LPI := '&'+'l4C'
-      P_6LPI  := '&'+'l8C'
-      P_7LPI  := '&'+'l7C'
-      P_8LPI  := '&'+'l6C'
+      P_36LPI := chr(0x1B)+'&'+'l2C'
+      P_12LPI := chr(0x1B)+'&'+'l4C'
+      P_6LPI  := chr(0x1B)+'&'+'l8C'
+      P_7LPI  := chr(0x1B)+'&'+'l7C'
+      P_8LPI  := chr(0x1B)+'&'+'l6C'
 */
-      P_SUPON := '(s7.0V'
-      P_SUPOFF:= '(s12.0V'
-      p_margin:= {|x|'&'+'a'+ltrim(str(x,3))+'L'}
-      p_col   := {|x|'&'+'a'+ltrim(str(x,3))+'C'}
+      P_SUPON := chr(0x1B)+'(s7.0V'
+      P_SUPOFF:= chr(0x1B)+'(s12.0V'
+      p_margin:= {|x|chr(0x1B)+'&'+'a'+ltrim(str(x,3))+'L'}
+      p_col   := {|x|chr(0x1B)+'&'+'a'+ltrim(str(x,3))+'C'}
 
-      P_PON   := "(s1P"
-      P_POFF  := "(s0P"
+      P_PON   := chr(0x1B)+"(s1P"
+      P_POFF  := chr(0x1B)+"(s0P"
       P_HALFPAGE:={||''}
-      P_LPI   := {|x|'&'+'l'+ltrim(str(x))+'D'}
-      //P_PORT  := {|x|if(landscape=(landscape:=x),'',"&l"+IF(x,"1","0")+"O"))}
-      P_LAND  := {|x|if(MEMVAR->landscape=(MEMVAR->landscape:=!(x=.f.)),'',"&"+"l"+IF(MEMVAR->landscape,"1","0")+"O")}
-      p_cpi:={|n|"(s"+{"0p5H","0p6H","0p8.33H","0p10H","0p12H","0p15H","0p16.67H","0p20H","1P"}[n]}
+      P_LPI   := {|x|chr(0x1B)+'&'+'l'+ltrim(str(x))+'D'}
+      //P_PORT  := {|x|if(landscape=(landscape:=x),'',chr(0x1B)+"&l"+IF(x,"1","0")+"O"))}
+      P_LAND  := {|x|if(MEMVAR->landscape=(MEMVAR->landscape:=!(x=.f.)),'',chr(0x1B)+"&"+"l"+IF(MEMVAR->landscape,"1","0")+"O")}
+      p_cpi:={|n|chr(0x1B)+"(s"+{"0p5H","0p6H","0p8.33H","0p10H","0p12H","0p15H","0p16.67H","0p20H","1P"}[n]}
    else
-      P_INIT  := {||'@P'} //l'+chr(0)}
+      P_INIT  := {||chr(0x1B)+'@'+chr(0x1B)+'P'+chr(0x12)} //chr(0x1B)+'l'+chr(0)}
 //      P_PUSH  := ''
 //      P_POP   := ''
-      P_4XON  := 'w1W1'
-      P_4XOFF := 'w0W0'
+      P_4XON  := chr(0x1B)+'w1'+chr(0x1B)+'W1'
+      P_4XOFF := chr(0x1B)+'w0'+chr(0x1B)+'W0'
       P_COLN  := 80
-      P_BON   := 'G'
-      P_BOFF  := 'H'
-      P_UON   := '-'
-      P_UOFF  := '-0'
-      P_36LPI := '3'
-      P_12LPI := '3'
-      P_8LPI  := '0'
-      P_7LPI  := '1'
-      P_6LPI  := '2'
-      P_SUPON := 'S1'
-      P_SUPOFF:= 'T'
-      p_margin:= {|x|'l'+chr(x)}
-      p_col   := {|x|'$'+i2bin(60*x/ccpi())}
-      P_PON   := "p1"
-      P_POFF  := "p0"
-      P_HALFPAGE:= {|x|"C"+chr(x)}
-      P_LPI   := {|x|x:=round(216/x,0),'3'+chr(x)}
+      P_BON   := chr(0x1B)+'G'
+      P_BOFF  := chr(0x1B)+'H'
+      P_UON   := chr(0x1B)+'-1'
+      P_UOFF  := chr(0x1B)+'-0'
+      P_36LPI := chr(0x1B)+'3'+chr(0x6)
+      P_12LPI := chr(0x1B)+'3'+chr(0x12)
+      P_8LPI  := chr(0x1B)+'0'
+      P_7LPI  := chr(0x1B)+'1'
+      P_6LPI  := chr(0x1B)+'2'
+      P_SUPON := chr(0x1B)+'S1'
+      P_SUPOFF:= chr(0x1B)+'T'
+      p_margin:= {|x|chr(0x1B)+'l'+chr(x)}
+      p_col   := {|x|chr(0x1B)+'$'+i2bin(60*x/ccpi())}
+      P_PON   := chr(0x1B)+"p1"
+      P_POFF  := chr(0x1B)+"p0"
+      P_HALFPAGE:= {|x|chr(0x1B)+"C"+chr(x)}
+      P_LPI   := {|x|x:=round(216/x,0),chr(0x1B)+'3'+chr(x)}
       P_LAND  := {||''}
 #ifdef A_MSCPI
-      p_cpi:={|n|"!"+chr({32,33,36,0,1,4,4,5,2}[n])}
+      p_cpi:={|n|chr(0x1B)+"!"+chr({32,33,36,0,1,4,4,5,2}[n])}
 #else
-      p_cpi:={|n,s|{{""      ,"M"    ,""      ,"W0"   ,"W0M" ,"W0g" ,"W0"  ,"W0M","p1W0"},;
-                    {"P"    ,""      ,"P"    ,"W0P" ,"W0"   ,"W0g" ,"W0P","W0"  ,"p1W0"},;
-                    {"P"   ,"M"   ,""       ,"W0P","W0M","W0g","W0"   ,"W0M" ,"p1W0"},;
-                    {"W1"   ,"W1M" ,"W1"   ,""      ,"M"    ,"g"    ,""     ,"M"   ,"p1"   },;
-                    {"W1P" ,"W1"   ,"W1P" ,"P"    ,""      ,"g"    ,"P"   ,""     ,"p1"   },;
-                    {"W1P" ,"W1M" ,"W1P" ,"P"    ,"M"    ,""      ,"P"   ,"M"   ,"p1"   },;
-                    {"W1"  ,"W1M","W1"    ,""     ,"M"   ,"g"   ,""      ,"M"    ,"p1"  },;
-                    {"W1P","W1"  ,"W1P"  ,"P"   ,""     ,"g"   ,"P"    ,""      ,"p1"  },;
-                    {"p0W1","W1M" ,"p0W1","p0"   ,"M"    ,"g"    ,"p0"  ,"M"   ,""      }}[s,n]}
+      p_cpi:={|n,s|{{""      ,chr(0x1B)+"M"    ,chr(0xF)      ,chr(0x1B)+"W0"   ,chr(0x1B)+"W0"+chr(0x1B)+"M" ,chr(0x1B)+"W0"+chr(0x1B)+"g" ,chr(0x1B)+"W0"+chr(0xF)  ,chr(0x1B)+"W0"+chr(0xF)+chr(0x1B)+"M",chr(0x1B)+"p1"+chr(0x1B)+"W0"},;
+                    {chr(0x1B)+"P"    ,""      ,chr(0x1B)+"P"+chr(0xF)    ,chr(0x1B)+"W0"+chr(0x1B)+"P" ,chr(0x1B)+"W0"   ,chr(0x1B)+"W0"+chr(0x1B)+"g" ,chr(0x1B)+"W0"+chr(0x1B)+"P"+chr(0xF),chr(0x1B)+"W0"+chr(0xF)  ,chr(0x1B)+"p1"+chr(0x1B)+"W0"},;
+                    {chr(0x12)+chr(0x1B)+"P"   ,chr(0x12)+chr(0x1B)+"M"   ,""       ,chr(0x12)+chr(0x1B)+"W0"+chr(0x1B)+"P",chr(0x12)+chr(0x1B)+"W0"+chr(0x1B)+"M",chr(0x12)+chr(0x1B)+"W0"+chr(0x1B)+"g",chr(0x1B)+"W0"   ,chr(0x1B)+"W0"+chr(0x1B)+"M" ,chr(0x1B)+"p1"+chr(0x1B)+"W0"},;
+                    {chr(0x1B)+"W1"   ,chr(0x1B)+"W1"+chr(0x1B)+"M" ,chr(0x1B)+"W1"+chr(0xF)   ,""      ,chr(0x1B)+"M"    ,chr(0x1B)+"g"    ,chr(0xF)     ,chr(0x1B)+"M"+chr(0xF)   ,chr(0x1B)+"p1"   },;
+                    {chr(0x1B)+"W1"+chr(0x1B)+"P" ,chr(0x1B)+"W1"   ,chr(0x1B)+"W1"+chr(0x1B)+"P"+chr(0xF) ,chr(0x1B)+"P"    ,""      ,chr(0x1B)+"g"    ,chr(0x1B)+"P"+chr(0xF)   ,chr(0xF)     ,chr(0x1B)+"p1"   },;
+                    {chr(0x1B)+"W1"+chr(0x1B)+"P" ,chr(0x1B)+"W1"+chr(0x1B)+"M" ,chr(0x1B)+"W1"+chr(0x1B)+"P"+chr(0xF) ,chr(0x1B)+"P"    ,chr(0x1B)+"M"    ,""      ,chr(0x1B)+"P"+chr(0xF)   ,chr(0x1B)+"M"+chr(0xF)   ,chr(0x1B)+"p1"   },;
+                    {chr(0x12)+chr(0x1B)+"W1"  ,chr(0x12)+chr(0x1B)+"W1"+chr(0x1B)+"M",chr(0x1B)+"W1"    ,chr(0x12)     ,chr(0x12)+chr(0x1B)+"M"   ,chr(0x12)+chr(0x1B)+"g"   ,""      ,chr(0x1B)+"M"    ,chr(0x12)+chr(0x1B)+"p1"  },;
+                    {chr(0x12)+chr(0x1B)+"W1"+chr(0x1B)+"P",chr(0x12)+chr(0x1B)+"W1"  ,chr(0x1B)+"W1"+chr(0x1B)+"P"  ,chr(0x12)+chr(0x1B)+"P"   ,chr(0x12)     ,chr(0x12)+chr(0x1B)+"g"   ,chr(0x1B)+"P"    ,""      ,chr(0x12)+chr(0x1B)+"p1"  },;
+                    {chr(0x1B)+"p0"+chr(0x1B)+"W1",chr(0x1B)+"W1"+chr(0x1B)+"M" ,chr(0x1B)+"p0"+chr(0x1B)+"W1"+chr(0xF),chr(0x1B)+"p0"   ,chr(0x1B)+"M"    ,chr(0x1B)+"g"    ,chr(0x1B)+"p0"+chr(0xF)  ,chr(0x1B)+"M"+chr(0xF)   ,""      }}[s,n]}
 #endif
    endif
    txt:="xprn.ini"
@@ -1147,7 +1147,7 @@ local  o,r:=''
 memvar p_cpi
 #else
 #ifdef A_PCL
-local p_cpi:={|n|"(s"+{"5H","6H","8.33H","10H","12H","15H","16.67H","20H","1P"}[n]}
+local p_cpi:={|n|chr(0x1B)+"(s"+{"5H","6H","8.33H","10H","12H","15H","16.67H","20H","1P"}[n]}
 #else
 #ifdef A_MSCPI
 /*
@@ -1215,7 +1215,7 @@ return r
 *******************
 function cdoweek(d)
 return cdow(d)
-//return({"","Niedziela","Poniedzia�ek","Wtorek","�roda","Czwartek","Pi�tek","Sobota"}[1+dow(d)])
+//return({"","Niedziela","Poniedziałek","Wtorek","Środa","Czwartek","Piątek","Sobota"}[1+dow(d)])
 ****************
 #ifdef A_FA
 func slownie(WARTO)
@@ -1256,16 +1256,16 @@ if j>0
       form=3
   endcase
   if i#1 .or. form#1 .or. poz=0
-     txt+=' '+{{"jeden","dwa","trzy","cztery","pi��","sze��","siedem","osiem","dziewi��"},;
-           {"dziesi��","dwadzie�cia","trzydzie�ci","czterdzie�ci","pi��dziesi�t","sze��dziesi�t","siedemdziesi�t","osiemdziesi�t","dziewi��dziesi�t"},;
-           {"sto","dwie�cie","trzysta","czterysta","pi��set","sze��set","siedemset","osiemset","dziewi��set"},;
-           {"jedena�cie","dwana�cie","trzyna�cie","czterna�cie","pi�tna�cie","szesna�cie","siedemna�cie","osiemna�cie","dziewi�tna�cie"};
+     txt+=' '+{{"jeden","dwa","trzy","cztery","pięć","sześć","siedem","osiem","dziewięć"},;
+           {"dziesięć","dwadzieścia","trzydzieści","czterdzieści","pięćdziesiąt","sześćdziesiąt","siedemdziesiąt","osiemdziesiąt","dziewięćdziesiąt"},;
+           {"sto","dwieście","trzysta","czterysta","pięćset","sześćset","siedemset","osiemset","dziewięćset"},;
+           {"jedenaście","dwanaście","trzynaście","czternaście","piętnaście","szesnaście","siedemnaście","osiemnaście","dziewiętnaście"};
            }[i,j]
   endif
   I%=3
 endif
 if i=1 .and. form>0 .and. poz>=3
-  txt+=' '+{{"tysi�c","tysi�ce","tysi�cy"},;
+  txt+=' '+{{"tysiąc","tysiące","tysięcy"},;
       {"milion","miliony","milionow"},;
       {"miliard","miliardy","miliardow"}}[int(poz/3),form]
   form=0
@@ -1277,7 +1277,7 @@ if form<0
    txt+=" zero"
 endif
 
-if form<1  && tysi�c z�otych
+if form<1  && tysiąc złotych
    form=3
 endif
 
@@ -1522,7 +1522,7 @@ begin sequence
 #endif
       endif
     endif
- elseif r='STORE' //wylicza tylko raz mo�liwy b��d?
+ elseif r='STORE' //wylicza tylko raz możliwy błąd?
     b:=rat(" TO ",r)
     IF b=0 //do ret
        //a:=&(p+SUBS(r,7)+'}')
@@ -1542,13 +1542,13 @@ begin sequence
        eval(errorblock(),d)),),a}
     ENDIF
  elseif r='PRIVATE'
-    // probuje usun�� teksty
+    // probuje usunąć teksty
     c:=extractleft(strtran(a:=SUBS(r,9)," ") )
 
     if empty(c)
        c:=NIL
     elseif len(c)=1
-       c:=c[1] //clipper �yknie
+       c:=c[1] //clipper łyknie
     endif
     y:={'('+a+')','PRIVATE',c}
  elseif r='&STORE'
@@ -1841,7 +1841,7 @@ function KCR_U(mode,l,c)
      elseif k=K_CTRL_K
        m:=message("PODAJ  (R, W);ROZKAZ:;... ")
        k:=upper(chr(inkey(0)))
-       @ m[1]+1,m[2]+8 say "NAZW�: "
+       @ m[1]+1,m[2]+8 say "NAZWĘ: "
        n:=pad(MEMVAR->defa,64)
        getlist:={}
        @ m[1]+2,m[2]+2 get n picture "@KS14"
@@ -2227,7 +2227,7 @@ HB_FUNC ( GETLINES )
       }
 */
 
-// wys�anie wart double do pola f lub odczyt pola
+// wysłanie wart double do pola f lub odczyt pola
 
 
 func getscrtxt(txt)
@@ -2334,11 +2334,11 @@ HB_FUNC ( UPP )
 #pragma ENDDUMP
 #ifndef PC852
 #pragma BEGINDUMP
-         const char * f = "ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~������㇈�S�STZZ����������S�STZZ���L�A�٨�S����Z���L�����AS�L�LZRAAAALCCCEEEEIIDDNNOOOO�RUUUUYT�RAAAALCCCEEEEIIDDNNOOOO�RUUUUYT ";
+         const char * f = "ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~ÇüéâäůŃçłëSőSTZZĘęłôöĄľŚŚÖSŤSTZZć╝óLńAź┘ĘęSźČş«Z░▒▓L┤┤╣╗┐AS╗L╝LZRAAAALCCCEEEEIIDDNNOOOO╬RUUUUYT▀RAAAALCCCEEEEIIDDNNOOOO¸RUUUUYT ";
 #pragma ENDDUMP
 #else
 #pragma BEGINDUMP
-         const char * f = "ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~CUEAAUCCLEOOIZACELIOOLLSSOUTTL�CAIOUAAZZEE�ZCS�������AAES����ZZ�������AA��������DDDEDNIIE����TU�O�ONNNSSRURUYYT������������URR� ";
+         const char * f = "ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~CUEAAUCCLEOOIZACELIOOLLSSOUTTLŚCAIOUAAZZEE¬ZCS«»░▒▓│┤AAES╣║╗╝ZZ┐└┴┬├─┼AA╚╔╩╦╠═╬┴DDDEDNIIE┘┌█▄TU▀OßONNNSSRURUYYT´­˝˛ˇ˘§÷¸°¨˙URR■ ";
 #pragma ENDDUMP
 #endif
 #pragma BEGINDUMP

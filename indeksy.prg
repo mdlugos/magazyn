@@ -18,7 +18,7 @@
 #ifdef A_OLZBY
  #define WANAZ "WAGA kg"
 #else
- #define WANAZ "Warto˜†"
+ #define WANAZ "WartoÅ›Ä‡"
 #endif
 
 #ifdef A_SZTUKI
@@ -28,17 +28,17 @@
 #endif
 
 #ifdef A_ANKER
- #define nazwA (field->nazwa+strpic(field->cenA,11,2,"@E ")+" zˆ "+field->proc_vat+"%")
+ #define nazwA (field->nazwa+strpic(field->cenA,11,2,"@E ")+" zÅ‚ "+field->proc_vat+"%")
 #endif
 
 #ifdef A_FP600
- #define nazwA (field->nazwa+strpic(field->cenA,11,2,"@E ")+" zˆ "+field->proc_vat+"%")
+ #define nazwA (field->nazwa+strpic(field->cenA,11,2,"@E ")+" zÅ‚ "+field->proc_vat+"%")
 #endif
 
 #ifndef STANY
-  #define LARMG 'ÂMG'
+  #define LARMG 'â”¬MG'
 #else
-  #define LARMG 'ÄÄ'
+  #define LARMG 'â”€â”€'
 #endif
 
 #ifdef A_KODY
@@ -49,68 +49,68 @@
 
 #ifdef A_SWW
  #ifdef A_VIEWCZAK
-  #define TOPLINE 'KodÄÄÂNazwaÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂdn.ÂC.Zak.'+LARMG+'ÂÄÄÄÄÄStanÂÄjmÄÂCena'
+  #define TOPLINE 'Kodâ”€â”€â”¬Nazwaâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬dn.â”¬C.Zak.'+LARMG+'â”¬â”€â”€â”€â”€â”€Stanâ”¬â”€jmâ”€â”¬Cena'
  #else
   #ifdef A_VIEWVAT
-   #define TOPLINE 'KodÄÄÂNazwaÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄVat'+LARMG+'ÂÄÄÄÄÄStanÂÄjmÄÂCena'
+   #define TOPLINE 'Kodâ”€â”€â”¬Nazwaâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€Vat'+LARMG+'â”¬â”€â”€â”€â”€â”€Stanâ”¬â”€jmâ”€â”¬Cena'
   #else
-   #define TOPLINE 'KodÄÄÂNazwaÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ'+LARMG+'ÂÄÄÄÄÄStanÂÄjmÄÂCena'
+   #define TOPLINE 'Kodâ”€â”€â”¬Nazwaâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€'+LARMG+'â”¬â”€â”€â”€â”€â”€Stanâ”¬â”€jmâ”€â”¬Cena'
   #endif
  #endif
  #ifdef A_SHARP
   #undef TOPLINE
-  #define TOPLINE 'KodÄÄÂNazwaÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂKlawÂÄÄÄÄÄStanÂÄjmÄÂCena'
+  #define TOPLINE 'Kodâ”€â”€â”¬Nazwaâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬Klawâ”¬â”€â”€â”€â”€â”€Stanâ”¬â”€jmâ”€â”¬Cena'
  #endif
 #else
  #ifdef A_SHORTIND
       #ifdef A_KODY
-       #define TOPLINE 'KodÂNazwa'+repl('Ä',40-len(KoD))+'Â'+pad(A_KODY,len(KoD),'Ä')+'ÂÄÄÄÄÄÄStanÂÄjmÄÂCena'
+       #define TOPLINE 'Kodâ”¬Nazwa'+repl('â”€',40-len(KoD))+'â”¬'+pad(A_KODY,len(KoD),'â”€')+'â”¬â”€â”€â”€â”€â”€â”€Stanâ”¬â”€jmâ”€â”¬Cena'
        #undef D_KODY
        #define D_KODY 48
       #else
-       #define TOPLINE 'KodÂNazwaÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ'+LARMG+'ÂÄÄÄÄÄÄStanÂÄjmÄÂCena'
+       #define TOPLINE 'Kodâ”¬Nazwaâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€'+LARMG+'â”¬â”€â”€â”€â”€â”€â”€Stanâ”¬â”€jmâ”€â”¬Cena'
       #endif
  #else
   #ifdef A_KTM
    #ifdef A_OBR
     #undef LARMG
     #ifndef STANY
-     #define LARMG 'ÂM'
+     #define LARMG 'â”¬M'
     #else
-     #define LARMG 'Ä'
+     #define LARMG 'â”€'
     #endif
-    #define TOPLINE 'Kod materiaˆuÄÄÂNazwaÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄNr rys i p¢ˆkiÄ'+LARMG+'ÂÄÄÄÄÄStanÂjm'
+    #define TOPLINE 'Kod materiaÅ‚uâ”€â”€â”¬Nazwaâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€Nr rys i pÃ³Å‚kiâ”€'+LARMG+'â”¬â”€â”€â”€â”€â”€Stanâ”¬jm'
    #else
-    #define TOPLINE 'Kod materiaˆuÄÄÂNazwaÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ'+LARMG+'ÂÄÄÄÄÄStanÂjm'
+    #define TOPLINE 'Kod materiaÅ‚uâ”€â”€â”¬Nazwaâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€'+LARMG+'â”¬â”€â”€â”€â”€â”€Stanâ”¬jm'
    #endif
   #else
    #ifdef A_OLZA
-    #define TOPLINE 'Kod materiaˆuÂNazwaÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ'+LARMG+'ÂÄÄÄÄÄÄStanÂjm'
+    #define TOPLINE 'Kod materiaÅ‚uâ”¬Nazwaâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€'+LARMG+'â”¬â”€â”€â”€â”€â”€â”€Stanâ”¬jm'
    #else
     #ifdef A_ANKER
      #ifdef A_VIEWVAT
-      #define TOPLINE 'Kod kresk.ÄÂNazwaÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂKodÄÄÂVatÄÄÄÄÄÄStanÂÄjmÄÂCena'
+      #define TOPLINE 'Kod kresk.â”€â”¬Nazwaâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬Kodâ”€â”€â”¬Vatâ”€â”€â”€â”€â”€â”€Stanâ”¬â”€jmâ”€â”¬Cena'
      #else
       #ifdef A_VIEWCZAK
-       #define TOPLINE 'Kod kresk.ÄÂNazwaÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂKodÄÄÂC.ZakÂÄÄÄStanÂÄjmÄÂCena'
+       #define TOPLINE 'Kod kresk.â”€â”¬Nazwaâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬Kodâ”€â”€â”¬C.Zakâ”¬â”€â”€â”€Stanâ”¬â”€jmâ”€â”¬Cena'
       #else
 #ifdef STANY
-       #define TOPLINE 'Kod kresk.ÄÂNazwaÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂ'+pad(A_KODY,len(KoD),'Ä')+'ÂÄÄÄStanÂÄjmÄÂCena'
+       #define TOPLINE 'Kod kresk.â”€â”¬Nazwaâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬'+pad(A_KODY,len(KoD),'â”€')+'â”¬â”€â”€â”€Stanâ”¬â”€jmâ”€â”¬Cena'
 #else
-       #define TOPLINE 'Kod kresk.ÄÂNazwaÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂ'+pad(A_KODY,len(KoD),'Ä')+LARMG+'ÂÄÄÄStanÂÄjmÄÂCena'
+       #define TOPLINE 'Kod kresk.â”€â”¬Nazwaâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬'+pad(A_KODY,len(KoD),'â”€')+LARMG+'â”¬â”€â”€â”€Stanâ”¬â”€jmâ”€â”¬Cena'
 #endif
       #endif
      #endif
     #else
      #ifdef A_7
       #ifdef A_KODY
-       #define TOPLINE 'KodÄÄÄÂNazwa'+repl('Ä',49-len(KoD))+'Â'+pad(A_KODY,len(KoD),'Ä')+'ÂÄÄÄÄÄStanÂjm'
+       #define TOPLINE 'Kodâ”€â”€â”€â”¬Nazwa'+repl('â”€',49-len(KoD))+'â”¬'+pad(A_KODY,len(KoD),'â”€')+'â”¬â”€â”€â”€â”€â”€Stanâ”¬jm'
        #define D_KODY 55
       #else
-       #define TOPLINE 'KodÄÄÄÂNazwaÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ'+LARMG+'ÂÄÄÄÄÄStanÂÄjmÄÂCena'
+       #define TOPLINE 'Kodâ”€â”€â”€â”¬Nazwaâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€'+LARMG+'â”¬â”€â”€â”€â”€â”€Stanâ”¬â”€jmâ”€â”¬Cena'
       #endif
      #else
-      #define TOPLINE 'Kod mater.ÄÂNazwaÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ'+LARMG+'ÂÄÄÄÄÄÄStanÂjm'
+      #define TOPLINE 'Kod mater.â”€â”¬Nazwaâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€'+LARMG+'â”¬â”€â”€â”€â”€â”€â”€Stanâ”¬jm'
      #endif
     #endif
    #endif
@@ -235,11 +235,11 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
  #else
   #define LARTXT left(nazwA,44)+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
  #endif
-  RET:=IF(ALIAS(sel:=I_LAM(STANY->(if(il=NIL.and.da>data_zmian.and.stan#0,data_zmian,da))))="IND_LAM","Å","³")
+  RET:=IF(ALIAS(sel:=I_LAM(STANY->(if(il=NIL.and.da>data_zmian.and.stan#0,data_zmian,da))))="IND_LAM","â”¼","â”‚")
   if _sbeg=1
   else
     //sel:=select("INDX_MAT")
-    RET:=IF((sel)->DATA_POPR>DA .OR. STANY->STAN#0 .AND.(SEL)->DATA_POPR>STANY->DATA_ZMIAN,"±",ret)
+    RET:=IF((sel)->DATA_POPR>DA .OR. STANY->STAN#0 .AND.(SEL)->DATA_POPR>STANY->DATA_ZMIAN,"â–’",ret)
   ENDIF
 #else
  #ifdef A_KODY
@@ -247,16 +247,16 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
  #else
   #define LARTXT nazwA
  #endif
-  RET:=IF(ALIAS(sel:=I_LAM(if(il=NIL.and.da>STANY->data_zmian.and.STANY->stan#0,STANY->data_zmian,da)))="IND_LAM","Å","³")
+  RET:=IF(ALIAS(sel:=I_LAM(if(il=NIL.and.da>STANY->data_zmian.and.STANY->stan#0,STANY->data_zmian,da)))="IND_LAM","â”¼","â”‚")
 #endif
 
 #ifdef A_TRWALOSC
- #define TRWALTXT IF(WAZNOSC>0.AND.STANY->STAN>0.AND.STANY->DATA_PRZY+WAZNOSC<DA,"ð",IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET))
+ #define TRWALTXT IF(WAZNOSC>0.AND.STANY->STAN>0.AND.STANY->DATA_PRZY+WAZNOSC<DA,hb_utf8chr(0x2261),IF(STANY->DATA_ZMIAN>DatY->data_gran,"â– ",RET))
 #else
  #ifdef A_WA
-  #define TRWALTXT IF(STANY->STAN>0.AND.STANY->WARTOSC=0,"$",IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET))
+  #define TRWALTXT IF(STANY->STAN>0.AND.STANY->WARTOSC=0,"$",IF(STANY->DATA_ZMIAN>DatY->data_gran,"â– ",RET))
  #else
-  #define TRWALTXT IF(STANY->STAN>0.AND.indx_mat->cenA=0,"$",IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET))
+  #define TRWALTXT IF(STANY->STAN>0.AND.indx_mat->cenA=0,"$",IF(STANY->DATA_ZMIAN>DatY->data_gran,"â– ",RET))
  #endif
 #endif
 
@@ -299,23 +299,23 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
 
 #ifdef A_SHORTIND
  #ifdef A_FA
-  #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,9,CEOKR,"@E ",.t.)
+  #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"â– ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,9,CEOKR,"@E ",.t.)
  #else
   #ifdef A_WA
-   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic( if((D_ST)=0,STANY->cena_przy, D_WA / D_ST) D_CF8,9,CEOKR,"@E ",.t.)
+   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"â– ",RET)+strpic( if((D_ST)=0,STANY->cena_przy, D_WA / D_ST) D_CF8,9,CEOKR,"@E ",.t.)
   #else
-   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,9,CEOKR,"@E ",.t.)
+   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"â– ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,9,CEOKR,"@E ",.t.)
   #endif
  #endif
 #else
  #ifdef A_SWW
   #ifdef A_FA
-   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
+   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"â– ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
   #else
    #ifdef A_WA
-    #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(if((D_ST)=0,STANY->cena_przy, D_WA / D_ST) D_CF8,8,CEOKR,"@E ",.t.)
+    #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"â– ",RET)+strpic(if((D_ST)=0,STANY->cena_przy, D_WA / D_ST) D_CF8,8,CEOKR,"@E ",.t.)
    #else
-    #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
+    #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"â– ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
    #endif
   #endif
   #ifdef A_VIEWCZAK
@@ -347,23 +347,23 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
    #define ILDEC 2
    #ifdef A_VIEWVAT
     #define OBRTXT 10
-    #define LARTXT left(nazwA,33)+IF(""=INDX_MAT->UWAGI,{"0","³","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+KoD+ret+INDX_MAT->proc_vat
+    #define LARTXT left(nazwA,33)+IF(""=INDX_MAT->UWAGI,{"0","â”‚","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+KoD+ret+INDX_MAT->proc_vat
    #else
     #define OBRTXT 7
     #ifdef A_VIEWCZAK
-     #define LARTXT left(nazwA,33)+IF(""=INDX_MAT->UWAGI,{"0","³","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+KoD+ret+strpic(STANY->cenA_zaK D_CF8,5,CEOKR,"@E ")
+     #define LARTXT left(nazwA,33)+IF(""=INDX_MAT->UWAGI,{"0","â”‚","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+KoD+ret+strpic(STANY->cenA_zaK D_CF8,5,CEOKR,"@E ")
     #else
      #undef nazwA
-     #define nazwA (nazwa+'³'+left(indx_mat->shortname,10))
+     #define nazwA (nazwa+'â”‚'+left(indx_mat->shortname,10))
      #ifndef STANY
-      #define LARTXT nazwA+IF(""=INDX_MAT->UWAGI,{"0","³","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
+      #define LARTXT nazwA+IF(""=INDX_MAT->UWAGI,{"0","â”‚","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
      #else
-      #define LARTXT nazwA+IF(""=INDX_MAT->UWAGI,{"0","³","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD
+      #define LARTXT nazwA+IF(""=INDX_MAT->UWAGI,{"0","â”‚","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD
       //+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
      #endif
     #endif
    #endif
-   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,6,CEOKR,"@E ")
+   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"â– ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,6,CEOKR,"@E ")
   #else
    #ifdef A_7
     #ifdef A_KODY
@@ -372,12 +372,12 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
      #define SHORTTXT
     #else
      #ifdef A_FA
-      #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
+      #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"â– ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
      #else
       #ifdef A_WA
-       #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(if((D_ST)=0,STANY->cena_przy, D_WA / D_ST) D_CF8,8,CEOKR,"@E ",.t.)
+       #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"â– ",RET)+strpic(if((D_ST)=0,STANY->cena_przy, D_WA / D_ST) D_CF8,8,CEOKR,"@E ",.t.)
       #else
-       #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"þ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
+       #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"â– ",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
       #endif
      #endif
     #endif
@@ -431,7 +431,7 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
  #endif
 #endif
 
-RETURN (sel)->(tran(index,"@R "+ INDEXPIC )+IF(indx_mat->LAMUS#0 .and. ret="³","*",ret)+;
+RETURN (sel)->(tran(index,"@R "+ INDEXPIC )+IF(indx_mat->LAMUS#0 .and. ret="â”‚","*",ret)+;
     (if(_sbeg=SSBEG,'INDX_MAT',sel))->(LARTXT)+TRWALTXT+D_JMO SHORTTXT)
 #undef D_CF8
 #undef D_ST
@@ -835,7 +835,7 @@ DO CASE
 
 #ifdef A_SZYM
    case _skey=43 .and. il#NIL .and. dok="ZL"
-   //.and. firmy->(if(il=NIL,szukam({1,14,maxrow(),,1,0,'FIRMY',{||numer_kol+if(""=uwagi,"³","*")+nazwa},{|_skey,_s|_sret:=_skey=13,_skey=13 .or. _skey=27},""}),eof()))
+   //.and. firmy->(if(il=NIL,szukam({1,14,maxrow(),,1,0,'FIRMY',{||numer_kol+if(""=uwagi,"â”‚","*")+nazwa},{|_skey,_s|_sret:=_skey=13,_skey=13 .or. _skey=27},""}),eof()))
       if _si=0
          _srec[1]:=recno()
          _sm:=1
@@ -892,7 +892,7 @@ DO CASE
         _swar:=&('{|p|'+IndexkeY(0)+'=p'+'}')
         _sret:=2
     REFRESH(,_s)
-    @ _srow2,_scol1+1 say if(_sfor=NIL,"WSZYSTKIE MATERIAY ","STAN NIEZEROWY ")+trim(magazyny[mag_poz]) COLOR _slinia
+    @ _srow2,_scol1+1 say if(_sfor=NIL,"WSZYSTKIE MATERIAÅY ","STAN NIEZEROWY ")+trim(magazyny[mag_poz]) COLOR _slinia
 
   CASE _skey=-3 .AND. _sret#1// f4   INDX_MAT
       SELECT STANY
@@ -913,7 +913,7 @@ DO CASE
       _swar=&('{|p|'+IndexkeY(0)+'=p'+'}')
       _sfor:=NIL
       REFRESH(,_s)
-      @ _srow2,_scol1+1 say "MATERIAY Z WSZYSTKICH MAGAZYNàW" COLOR _slinia
+      @ _srow2,_scol1+1 say "MATERIAÅY Z WSZYSTKICH MAGAZYNÃ“W" COLOR _slinia
       _sret=1
 
   CASE _skey=-4 .AND. _sret#0 // f5
@@ -970,7 +970,7 @@ DO CASE
       endif
       REFRESH(,_s)
     endif
-    @ _srow2,_scol1+1 say if(_sfor=NIL,"WSZYSTKIE MATERIAY","STAN NIEZEROWY") COLOR _slinia
+    @ _srow2,_scol1+1 say if(_sfor=NIL,"WSZYSTKIE MATERIAÅY","STAN NIEZEROWY") COLOR _slinia
     if _sret=2
       DEVOUT(" "+trim(magazyny[mag_poz]),_slinia)
     endif
@@ -1118,7 +1118,7 @@ DO CASE
             _slth:=7
             refresh(0,_s)
             getlist:={}
-            bl:=message("NIE POTRAFI¨ PRZEPISA DO WASNEJ KARTOTEKI;- INDEKS ZAJ¨TY;PROSZ¨ PODA NOWY SYTMBOL:")
+            bl:=message("NIE POTRAFIÄ˜ PRZEPISAÄ† DO WÅASNEJ KARTOTEKI;- INDEKS ZAJÄ˜TY;PROSZÄ˜ PODAÄ† NOWY SYTMBOL:")
             @ bl[3]-1,bl[4]-18 get _skey[2] picture "@RK ####-###-###-###" valid !(dbseek(mag_biez+_skey[2],.f.) .and. stan#0 .and. cenA_zaK#_skey[3])
             read
             message(bl)
@@ -1152,7 +1152,7 @@ DO CASE
          proc_mar:=_skey[8]
          if hlink[3]
             getlist:={}
-            _skey:=message("PROSZ¨ PODA PROCENT MAR½Y:    %")
+            _skey:=message("PROSZÄ˜ PODAÄ† PROCENT MARÅ»Y:    %")
             @ _skey[1]+1,_skey[4]-5 get proc_mar picture "@K ##"
             read
             message(_skey)
@@ -1248,9 +1248,9 @@ endif
  #endif
 #endif
 #ifdef A_OLZA
-    szukam({1,max(0,maxcol()-79),maxrow(),maxcol(),0,0,"DataÂÄDokumentÂZlecenieÄÂÄPrzych¢dÂÄÄRozch¢dÂÄÄÄ"+WANAZ+"Â"+smiaR+"Â"+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"þ",NR_MAG+INDEX+"@"})
+    szukam({1,max(0,maxcol()-79),maxrow(),maxcol(),0,0,"Dataâ”¬â”€Dokumentâ”¬Zlecenieâ”€â”¬â”€PrzychÃ³dâ”¬â”€â”€RozchÃ³dâ”¬â”€â”€â”€"+WANAZ+"â”¬"+smiaR+"â”¬"+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"â– ",NR_MAG+INDEX+"@"})
 #else
-    szukam({1,max(0,maxcol()-77),maxrow(),maxcol(),0,0,"DataÂÄÄDokumentÂKosztyÂÄPrzych¢dÂÄRozch¢dÄÂÄÄÄ"+WANAZ+"Â"+smiaR+"Â"+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"þ",NR_MAG+INDEX+"@"})
+    szukam({1,max(0,maxcol()-77),maxrow(),maxcol(),0,0,"Dataâ”¬â”€â”€Dokumentâ”¬Kosztyâ”¬â”€PrzychÃ³dâ”¬â”€RozchÃ³dâ”€â”¬â”€â”€â”€"+WANAZ+"â”¬"+smiaR+"â”¬"+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"â– ",NR_MAG+INDEX+"@"})
 #endif
 #undef smiaR
     set filter to
@@ -1275,7 +1275,7 @@ endif
             ++_sm
             SAVE LINE _sm+_srow1-1
           endif
-          if savescreen(_sm+_srow1-1,_scol2 SSEND,_sm+_srow1-1,_scol2 SSEND)="þ"
+          if savescreen(_sm+_srow1-1,_scol2 SSEND,_sm+_srow1-1,_scol2 SSEND)="â– "
              KiBorD(chr(9))
              exit
           endif
@@ -1289,7 +1289,7 @@ endif
             --_sm
             SAVE LINE _sm+_srow1-1
           endif
-          if savescreen(_sm+_srow1-1,_scol2 SSEND,_sm+_srow1-1,_scol2 SSEND)="þ"
+          if savescreen(_sm+_srow1-1,_scol2 SSEND,_sm+_srow1-1,_scol2 SSEND)="â– "
              KiBorD(chr(9))
              exit
           endif
@@ -1327,10 +1327,10 @@ endif
       @ bl[1]+3,bl[2]+2 GET a[2] picture "@K" valid {|g,r|r:=!empty(a[2]).and.aczojs(txt),if(r.and.len(getlist)<6,(SetPos( bl[1]+3, bl[2]+14 ),b[2]:=indx_mat->(&(a[2])),AAdd(GetList,_GET_( b[2], "b[2]", "@KS46", , ):display())) ,),empty(a[2]).or.r}
       @ bl[1]+4,bl[2]+2 GET a[3] picture "@K" valid {|g,r|r:=!empty(a[3]).and.aczojs(txt),if(r.and.len(getlist)<7,(SetPos( bl[1]+4, bl[2]+14 ),b[3]:=indx_mat->(&(a[3])),AAdd(GetList,_GET_( b[3], "b[3]", "@KS46", , ):display())) ,),empty(a[3]).or.r}
       @ bl[1]+5,bl[2]+2 GET a[4] picture "@K" valid {|g,r|r:=!empty(a[4]).and.aczojs(txt),if(r.and.len(getlist)<8,(SetPos( bl[1]+5, bl[2]+14 ),b[4]:=indx_mat->(&(a[4])),AAdd(GetList,_GET_( b[4], "b[4]", "@KS46", , ):display())) ,),empty(a[4]).or.r}
-      @ bl[1]+1,bl[2]+20 Say "Podaj warto˜†:"
+      @ bl[1]+1,bl[2]+20 Say "Podaj wartoÅ›Ä‡:"
       read
       window(bl)
-      if readkey()=K_ESC .or. ALARM("CZY NA PEWNO CHCESZ ZAMIENI¤ WSZYSTKIE TOWARY ZACZYNAJäCE SI¨ NA:"+_spocz,{"TAK","NIE"},2,2)#1
+      if readkey()=K_ESC .or. ALARM("CZY NA PEWNO CHCESZ ZAMIENIÄ„ WSZYSTKIE TOWARY ZACZYNAJÅ„CE SIÄ˜ NA:"+_spocz,{"TAK","NIE"},2,2)#1
          return .f.
       endif
       k_pola:=a
@@ -1445,7 +1445,7 @@ endif
   else
     bl:=_sfor
   endif
-  txt:=message("Licz© stan,;prosz© czeka†.")
+  txt:=message("LiczÄ™ stan,;proszÄ™ czekaÄ‡.")
   seek _spocz
   _skey:=0
   DBEval( {||_skey+=STANY->stan*(i_lam(da))->gram},bl,{|| EVAL(_swar,_spocz,_skon).AND.nextkey()=0},,, .T. )

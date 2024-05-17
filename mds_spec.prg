@@ -24,8 +24,8 @@ else
   txt:=old
 endif
   skf2:=setkey(-1,{|a,x|a:=listfields(sel,{},{}),x:=0,if(aczojs(a[1],"",@x,a[2],"Wybierz pola"),(txt:=trim(txt),txt+=if(""=txt,""," + ")+trim(a[1,x]),updated(.t.)),)})
-  ? "Prosz© okreòliÜ, kt¢re z dost©pnych p¢l maj• byÜ listowane."
-  ? "Sci•gawka pod [F2]. Listing od bieæ•cej pozycji w d¢à.    Scroll Lock - pàynny."
+  ? "Proszƒô okre≈õliƒá, kt√≥re z dostƒôpnych p√≥l majƒÖ byƒá listowane."
+  ? "SciƒÖgawka pod [F2]. Listing od bie≈ºƒÖcej pozycji w d√≥≈Ç.    Scroll Lock - p≈Çynny."
   ?
   ?
   listfi(sel)
@@ -49,7 +49,7 @@ endif
          bl:=errornew()
          bl:severity:=2
          bl:canretry:=.t.
-         bl:description:="WartoòÜ wyraæenia nie jest typu tekstowego."
+         bl:description:="Warto≈õƒá wyra≈ºenia nie jest typu tekstowego."
          eval(older,bl)
          break
       endif
@@ -84,7 +84,7 @@ endif
   endif
   cls
   begin sequence
-  if tak("LISTING NA DRUKARK®",0,0,.F.,.F.)
+  if tak("LISTING NA DRUKARKƒò",0,0,.F.,.F.)
 #ifdef A_HPDF
   #define D_HWPRN A_HPRN
 #endif
@@ -112,11 +112,11 @@ endif
      oprn:=NIL
 #endif
   endif
-  ?? strtran(r,"≥","|")
+  ?? strtran(r,"‚îÇ","|")
   ?
   _skip(1,0,_s)
   setcancel(.f.)
-  DBEval( {|t,l|scrltxt(),t:=trim(eval(txt,0,_s,.t.)),scrltxt(),qqout(strtran(left(t,l:=maxcol()-col()),"≥","|")),;
+  DBEval( {|t,l|scrltxt(),t:=trim(eval(txt,0,_s,.t.)),scrltxt(),qqout(strtran(left(t,l:=maxcol()-col()),"‚îÇ","|")),;
     if(len(t)>l,(if(row()=maxrow(),(scrllf()/*,scroll(0,0,row(),maxcol(),1),setpos(row(),maxcol()-len(t)+l)*/),/*setpos(row()+1,maxcol()-len(t)+l)*/),qqout(subs(t,l+1))),),;
     if(row()=maxrow(),scrllf(),),qout(),scrltxt()},lfor,{||scrltxt(), EVAL(_swar,_spocz,_skon).AND.inkey()#27},,, .T. )
   end sequence
@@ -134,7 +134,7 @@ endif
   endif
 #endif
   endif
-  wait "Koniec, naciònij klawisz"
+  wait "Koniec, naci≈õnij klawisz"+chr(7)
   RESTore SCREEN FROM hwbuf
   refresh(,_s)
 
@@ -152,8 +152,8 @@ SAVE SCREEN to hwbuf
 clS
       * clear window and draw box
 sel=select()
-?? 'Dost©pne relacje: =,#,$,<,>,<=,>= ; Dost©pne operacje logicze: .i., .lub., .nie.'
-? 'Dost©pne nazwy pod [F2] '
+?? 'Dostƒôpne relacje: =,#,$,<,>,<=,>= ; Dostƒôpne operacje logicze: .i., .lub., .nie.'
+? 'Dostƒôpne nazwy pod [F2] '
 ? "Jaki filtr ?"
 ?
 ?
@@ -184,7 +184,7 @@ do while .t.
          b:=errornew()
          b:severity:=2
          b:canretry:=.t.
-         b:description:="WartoòÜ wyraæenia nie jest typu prawda/faàsz."
+         b:description:="Warto≈õƒá wyra≈ºenia nie jest typu prawda/fa≈Çsz."
          eval(older,b)
          break
       endif
@@ -209,7 +209,7 @@ ELSEIF valtype(_s)='A' .and. ReadkeY()#K_ESC .AND.! _sfilt==txt
   ELSE
     _sfilb:=&("{||"+txt+"}")
     if !r
-       @ _srow1+_sm-1,_scol1 say padc("PROSZ® CZEKAè",_scoln) COLOR "*"+_slinia
+       @ _srow1+_sm-1,_scol1 say padc("PROSZƒò CZEKAƒÜ",_scoln) COLOR "*"+_slinia
     endif
   ENDIF
   refresh(1,_s)
@@ -350,13 +350,13 @@ stat func _srap(txt,_s)
      _sl=LEN(_SDIR)
      
      if _sl>0
-        ?? "Raport od bieæ•cej pozycji w d¢à, wybierz gotow• form© wydruku",txt
+        ?? "Raport od bie≈ºƒÖcej pozycji w d√≥≈Ç, wybierz gotowƒÖ formƒô wydruku",txt
         txt:="        "
         aczojs(_sdir,@txt,0)
         @ 0,0
         if lastkey()=K_ENTER
            txt:=trim(txt)+'.frm'
-           @ 0,0 say "Dodatkowy tytuà"
+           @ 0,0 say "Dodatkowy tytu≈Ç"
            tyt:=if(""=_sfilt,IF(_sfor=NIL,"","Raport z wybranych pozycji"),"Raport z wybranych pozycji, kryterium wyboru: "+_sfilt)+" "
            @ 1,0 get tyt picture "@KS"+ltrim(str(maxcol(),3)) send cargo:=.t.
            begin sequence
@@ -381,8 +381,8 @@ stat func _srap(txt,_s)
 #endif
             tyt:=if(empty(tyt),,trim(strtran(tyt,";",nl)))
            setcancel(.t.)
-            __REPORTFORM(p+TXT,tak("LISTING NA DRUKARK®",0,,.F.,.F.),,.F.,lfor,{||scrltxt(),EVAL(_swar,_spocz,_skon).AND.inkey()#27},,,.T.,;
-             tyt=NIL.and.!TAK("CZY PODZAù NA STRONY",0,,.t.),tyt,.F.,TAK("CZY TYLKO SUMY",0,,.F.))
+            __REPORTFORM(p+TXT,tak("LISTING NA DRUKARKƒò",0,,.F.,.F.),,.F.,lfor,{||scrltxt(),EVAL(_swar,_spocz,_skon).AND.inkey()#27},,,.T.,;
+             tyt=NIL.and.!TAK("CZY PODZA≈Å NA STRONY",0,,.t.),tyt,.F.,TAK("CZY TYLKO SUMY",0,,.F.))
            end
 #ifdef D_HWPRN
            oprn:=NIL
@@ -399,7 +399,7 @@ stat func _srap(txt,_s)
            endif
            scrllf()
            setcancel(.t.)
-           wait "Koniec, naciònij klawisz"
+           wait "Koniec, naci≈õnij klawisz"+chr(7)
            RETURN .t.
         endif
         @ 0,0 clear to 1,maxcol()

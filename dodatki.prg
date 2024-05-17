@@ -49,13 +49,13 @@ DatY->(dbgoto(1))
 m=menupom
 SET COLOR TO GR+/GR
 
-@ 7,maxcol()/2+15,16,maxcol()/2+33 BOX '�ͻ���Ⱥ'
+@ 7,maxcol()/2+15,16,maxcol()/2+33 BOX hb_UTF8ToStrBox('╔═╗║╝═╚║')
 
 if !iscolor()
    set color to W
 endif
 
-@ 18,maxcol()/2-39,20,maxcol()/2+39 BOX '�ͻ���Ⱥ '
+@ 18,maxcol()/2-39,20,maxcol()/2+39 BOX hb_UTF8ToStrBox('╔═╗║╝═╚║ ')
 
 if iscolor()
    SET COLOR TO W+/GR
@@ -63,17 +63,17 @@ endif
 
 SET MESSAGE TO 19 center
 
-@  8,maxcol()/2+16 PROMPT '1. Inwentaryzacja' MESSAGE 'Drukowanie "Arkusza spisu z natury" dla okre�lonych ga��zi kodu materia�u.'
-@  9,maxcol()/2+16 PROMPT '2. Dzie� pocz.   ' MESSAGE 'Wyb�r dnia, od kt�rego wy�wietlane s� ruchy.'
-@ 10,maxcol()/2+16 PROMPT '3. Zamkni�cie.   ' MESSAGE 'Zamkni�cie miesi�ca (lub roku), kontrola stan�w na podst. ruch�w.'
-@ 11,maxcol()/2+16 PROMPT '4. Otwarcie.     ' MESSAGE 'Otwarcie pomy�kowo zamkni�tego miesi�ca lub dokumentu.'
-@ 12,maxcol()/2+16 PROMPT '5. Symbole i kody' MESSAGE 'Przegl�danie i porawianie baz danych, opis�w, symboli, kod�w, hase�, itp.'
+@  8,maxcol()/2+16 PROMPT '1. Inwentaryzacja' MESSAGE 'Drukowanie "Arkusza spisu z natury" dla określonych gałęzi kodu materiału.'
+@  9,maxcol()/2+16 PROMPT '2. Dzień pocz.   ' MESSAGE 'Wybór dnia, od którego wyświetlane są ruchy.'
+@ 10,maxcol()/2+16 PROMPT '3. Zamknięcie.   ' MESSAGE 'Zamknięcie miesiąca (lub roku), kontrola stanów na podst. ruchów.'
+@ 11,maxcol()/2+16 PROMPT '4. Otwarcie.     ' MESSAGE 'Otwarcie pomyłkowo zamkniętego miesiąca lub dokumentu.'
+@ 12,maxcol()/2+16 PROMPT '5. Symbole i kody' MESSAGE 'Przeglądanie i porawianie baz danych, opisów, symboli, kodów, haseł, itp.'
 IF STARY_ROK#NIL
-@ 13,maxcol()/2+16 PROMPT '6. Zmiana roku.  ' MESSAGE 'Wej�cie do poprzedniego roku lub powr�t do bie��cego roku.'
+@ 13,maxcol()/2+16 PROMPT '6. Zmiana roku.  ' MESSAGE 'Wejście do poprzedniego roku lub powrót do bieżącego roku.'
  ELSE
-@ 13,maxcol()/2+16 PROMPT '6. Stary rok.    ' message 'Wej�cie do zesz�ego roku, zmiany przenoszone na bie��cy rok po zamkni�ciu.'
+@ 13,maxcol()/2+16 PROMPT '6. Stary rok.    ' message 'Wejście do zeszłego roku, zmiany przenoszone na bieżący rok po zamknięciu.'
 ENDIF
-@ 14,maxcol()/2+16 PROMPT '7. Ilo�� linii.  ' message 'Zmiana ilo�ci linii widocznych na ekranie.'
+@ 14,maxcol()/2+16 PROMPT '7. Ilość linii.  ' message 'Zmiana ilości linii widocznych na ekranie.'
 @ 15,maxcol()/2+16 PROMPT '8. Ratuj.        ' message 'Reindeksacja baz - Odtwarzanie skorowidzy.'
       SETKEY(4,{||NIL})
       SETKEY(19,{||KIBORD(CHR(27)+CHR(5)+CHR(13))})
@@ -107,7 +107,7 @@ DO CASE
    CASE m=4
     if iS_spec
     hAslo_spec(21)
-    if DatY->d_z_mies1>DatY->d_z_rok .and. alarm(if(DatY->d_z_mies1>DatY->d_z_mies2,"CZY OTWORZY� MIESI�C ?","CZY OTWORZY� CA�Y ROK ?"),{"Tak","Nie"})=1
+    if DatY->d_z_mies1>DatY->d_z_rok .and. alarm(if(DatY->d_z_mies1>DatY->d_z_mies2,"CZY OTWORZYĆ MIESIĄC ?","CZY OTWORZYĆ CAŁY ROK ?"),{"Tak","Nie"})=1
       if stary_rok#NIL
          txt:=defa+str(year(stary_rok+D_OLZA),4)+HB_ps()
          if ! file(txt+'daty.*')
@@ -124,7 +124,7 @@ DO CASE
          #define D_Z3 &(subs(txt[3],at(':=',txt[3])+2))
 #endif
          if D_Z1#D_Z3
-            alarm("Otwarcie niemo�liwe;Nowy rok jest zamkni�ty do "+dtoc(D_Z1)+" .")
+            alarm("Otwarcie niemożliwe;Nowy rok jest zamknięty do "+dtoc(D_Z1)+" .")
 #ifdef A_LAN
             use
 #endif
@@ -170,7 +170,7 @@ DO CASE
    CASE m=6
 
    if stary_rok#NIL
-      txt:={"POWR�T"} //nie wiem, jak g�boko zakopany
+      txt:={"POWRÓT"} //nie wiem, jak gęboko zakopany
    else
       txt:={}
    endif
@@ -223,7 +223,7 @@ DO CASE
       m:=1
 #ifdef PLWIN
     #include   'hbgtinfo.ch'
-      aczojs({"98x32","80x25 (Norm)","Zmieniaj ilo�� linii","Zmieniaj wielko�� czcionki","Pe�ny ekran (Alt+Enter)"},"",@m)
+      aczojs({"98x32","80x25 (Norm)","Zmieniaj ilość linii","Zmieniaj wielkość czcionki","Pełny ekran (Alt+Enter)"},"",@m)
       do case
       case m<2
         SetMode(32,98)
@@ -283,7 +283,7 @@ DO CASE
       sysint(51,0)
 #endif
        else
-          alarm("NIE DOST�PNE NA MONITORZE TYPU HERCULES")
+          alarm("NIE DOSTĘPNE NA MONITORZE TYPU HERCULES")
        endif
      case m=8
        ratuj()
@@ -302,11 +302,11 @@ local i:=3
         if iscolor()
            SET COLOR TO BG+/B
         endif
-        @ 20,maxcol()/2-20,23,maxcol()/2+20 BOX '�ͻ���Ⱥ '
-        @ 20,maxcol()/2-15 SAY "Wybierz jedn� z podanych dat:"
+        @ 20,maxcol()/2-20,23,maxcol()/2+20 BOX hb_UTF8ToStrBox('╔═╗║╝═╚║ ')
+        @ 20,maxcol()/2-15 SAY "Wybierz jedną z podanych dat:"
         SET MESSAGE TO 22 CENTER
         @ 21,maxcol()/2-18 PROMPT dtoc(DatY->d_z_mies1) MESSAGE "        Tylko ostatnie ruchy.       "
-        @ 21,maxcol()/2-6 PROMPT dtoc(DatY->d_z_mies2) MESSAGE "Ruchy w ostatnio zamykanym miesi�cu."
+        @ 21,maxcol()/2-6 PROMPT dtoc(DatY->d_z_mies2) MESSAGE "Ruchy w ostatnio zamykanym miesiącu."
         @ 21,maxcol()/2+6 PROMPT dtoc(DatY->d_z_rok)   MESSAGE "           Wszystkie ruchy.         "
 
         MENU TO I
@@ -370,7 +370,7 @@ IF dz1>DatY->d_z_mies1
      #define D_Z1 &(subs(m,at(':=',m)+2))
 #endif
      if D_Z1<DatY->d_z_rok
-        alarm("Najpierw zamknij rok"+str(year(D_Z1+D_OLZA),5)+" !;Nie mo�na teraz zamkn�� roku"+str(year(DatY->d_z_rok+D_OLZA),5)+" !")
+        alarm("Najpierw zamknij rok"+str(year(D_Z1+D_OLZA),5)+" !;Nie można teraz zamknąć roku"+str(year(DatY->d_z_rok+D_OLZA),5)+" !")
         dz1:=DatY->d_z_mies1
      endif
 #ifdef A_DDBF
@@ -392,9 +392,9 @@ IF dz1>DatY->d_z_mies1
       aadd(ar1,dz1)
       dz1-=day(dz1)
     enddo
-    aadd(ar,"Kontrola Stan�w")
+    aadd(ar,"Kontrola Stanów")
     aadd(ar1,DatY->d_z_mies1)
-    if 0=(key:=alarm("Zamkni�cie do:;( Esc - Rezygnacja )",ar))
+    if 0=(key:=alarm("Zamknięcie do:;( Esc - Rezygnacja )",ar))
       break
     endif
     dz1:=ar1[key]
@@ -430,7 +430,7 @@ IF dz1>DatY->d_z_mies1
   if dz1>DatY->d_z_mies1
     select 0
     nuse dm
-    if !filock(.t.,"Prosz� wszystkich u�ytkownik�w sieci o wyj�cie na chwil� z wprowadzania/poprawiania dokument�w, aby mo�na by�o upewni� si�, �e nikt nie zmienia danych z zamykanego okresu. Po rozpocz�ciu zamykania mo�na b�dzie powr�ci� do przerwanej pracy.;Omi� - tylko kontrola stan�w")
+    if !filock(.t.,"Proszę wszystkich użytkowników sieci o wyjście na chwilę z wprowadzania/poprawiania dokumentów, aby można było upewnić się, że nikt nie zmienia danych z zamykanego okresu. Po rozpoczęciu zamykania można będzie powrócić do przerwanej pracy.;Omiń - tylko kontrola stanów")
        dz1:=DatY->d_z_mies1
     else
        DatY->data_gran:=dz1
@@ -441,7 +441,7 @@ IF dz1>DatY->d_z_mies1
   endif
 #endif
 
-  ?? "PRZYGOTUJ DRUKARK� (NA WSZELKI WYPADEK)."
+  ?? "PRZYGOTUJ DRUKARKĘ (NA WSZELKI WYPADEK)."
   ?
   ?
 #ifdef A_HPDF
@@ -464,16 +464,16 @@ IF dz1>DatY->d_z_mies1
 #else
     IF month(dz1) = 12 .and. dz1>DatY->d_z_rok
 #endif
-      ?? "Kontrola stan�w i zamkni�cie roku !"
+      ?? "Kontrola stanów i zamknięcie roku !"
     else
-      ?? "Kontrola stan�w i zamkni�cie do dnia",dz1
+      ?? "Kontrola stanów i zamknięcie do dnia",dz1
     endif
     DatY->d_z_mies1:=DatY->d_z_mies2:=DatY->d_z_rok
   #ifndef A_DDBF
     inisave(set(_SET_DEFAULT)+"daty.ini")
   #endif
   else
-     ?? "Kontrola stan�w."
+     ?? "Kontrola stanów."
      dz2:=DatY->d_z_mies2
      dz3:=dz2
   endif
@@ -483,7 +483,7 @@ IF dz1>DatY->d_z_mies1
 
 DO WHILE !(EOF() .and. STANY->(eof()))
 #ifdef A_LAN
-   //if !canfix //tylko kontrola stan�w
+   //if !canfix //tylko kontrola stanów
       unlock in STANY
       lock in STANY
    //endif
@@ -505,14 +505,14 @@ DO WHILE !(EOF() .and. STANY->(eof()))
   begin sequence
       PRINT(1)
   end
-      ?? "W BAZIE STANY BRAKUJE MATERIA�U O KODZIE:",NR_MAG,tran(INDEX,"@R "+ INDEXPIC )
+      ?? "W BAZIE STANY BRAKUJE MATERIAŁU O KODZIE:",NR_MAG,tran(INDEX,"@R "+ INDEXPIC )
 #ifdef A_JMALTTOT
 #define D_JMA A_JMALTTOT(ILOSC,MAIN->nr_zlec,4,x)
 #endif
 #ifndef STANY
     if INDX_MAT->(DBSEEK(MAIN->INDEX,.F.))
        ? indx_mat->NAZWA
-       ? "ZAK�ADAM, �E STAN BY� ZEROWY NA POCZ�TKU ROKU !!!!"
+       ? "ZAKŁADAM, ŻE STAN BYŁ ZEROWY NA POCZĄTKU ROKU !!!!"
        STANY->(dbappend())
        STANY->nr_mag:=nr_mag
        STANY->index:=index
@@ -612,8 +612,8 @@ DO WHILE !(EOF() .and. STANY->(eof()))
       PRINT(1)
   end
       ?? NR_MAG+"/"+tran(indx_mat->INDEX,"@R "+ INDEXPIC ),cpad(indx_mat->NAZWA,36),stan,indx_mat->jm,wartosc
-      ? "R�NICA W STANIE KO�COWYM"
-      ? "BY�O",STAN,INDX_MAT->JM,WARTOSC,"z�"
+      ? "RÓŻNICA W STANIE KOŃCOWYM"
+      ? "BYŁO",STAN,INDX_MAT->JM,WARTOSC,"zł"
     sTAN:=s
 #ifndef STANY
 #ifdef A_ZAGRODA
@@ -623,7 +623,7 @@ DO WHILE !(EOF() .and. STANY->(eof()))
 #endif
 #endif
     WARTOSC:=round(W,A_ZAOKR)
-    ?? " JEST",STAN,INDX_MAT->JM,WARTOSC,"z�"
+    ?? " JEST",STAN,INDX_MAT->JM,WARTOSC,"zł"
     ?
     ?
   else
@@ -636,8 +636,8 @@ DO WHILE !(EOF() .and. STANY->(eof()))
       PRINT(1)
   end
       ?? NR_MAG+"/"+tran(indx_mat->INDEX,"@R "+ INDEXPIC ),cpad(indx_mat->NAZWA,36),stan,indx_mat->jm
-      ? "R�NICA W STANIE KO�COWYM"
-      ? "BY�O",STAN,INDX_MAT->JM
+      ? "RÓŻNICA W STANIE KOŃCOWYM"
+      ? "BYŁO",STAN,INDX_MAT->JM
     sTAN:=s
     ?? " JEST",STAN,INDX_MAT->JM
     ?
@@ -664,7 +664,7 @@ DO WHILE !(EOF() .and. STANY->(eof()))
       PRINT(1)
   end
       ?? NR_MAG+"/"+tran(indx_mat->INDEX,"@R "+ INDEXPIC ),cpad(indx_mat->NAZWA,36),stan,indx_mat->jm
-      ? "ZDUBLOWANA KARTOTEKA - USUN��EM!!!"
+      ? "ZDUBLOWANA KARTOTEKA - USUNĄŁEM!!!"
       ?
       ?
       LOCK
@@ -707,10 +707,10 @@ if stary_rok=dz1
      #define D_Z1 &(subs(m,at(':=',m)+2))
 #endif
    set color to (_sel)
-   ? "SPRAWDZENIE ZGODNO�CI STANU KO�COWEGO I BILANSU OTWARCIA NOWEGO ROKU."
+   ? "SPRAWDZENIE ZGODNOŚCI STANU KOŃCOWEGO I BILANSU OTWARCIA NOWEGO ROKU."+chr(7)
    ?
    set color to (_snorm)
-   canfix:=D_Z1=DatY->d_z_mies1 .and. 1=alarm("Czy przenie�� STAN KO�COWY;na BILANS OTWARCIA NOWEGO ROKU",{"TAK","NIE"})
+   canfix:=D_Z1=DatY->d_z_mies1 .and. 1=alarm("Czy przenieść STAN KOŃCOWY;na BILANS OTWARCIA NOWEGO ROKU",{"TAK","NIE"})
 #undef D_Z1
       select 0
       nuse ind_lam readonly
@@ -777,9 +777,9 @@ if stary_rok=dz1
         PRINT(1)
         ? "MAGAZYN",NOWY->NR_MAG,"KOD:",tran(NOWY->INDEX,"@R "+ INDEXPIC )
         ? "NAZWA BO:",NOWY_IDX->NAZWA
-        ? "STAN KO�COWY:  BRAK !"
+        ? "STAN KOŃCOWY:  BRAK !"
 #ifdef A_WA
-        ? "STAN BO:     ",NOWY->ZAMKN_ROKU,NOWY_IDX->jm,NOWY->WART_ROKU,"z�"
+        ? "STAN BO:     ",NOWY->ZAMKN_ROKU,NOWY_IDX->jm,NOWY->WART_ROKU,"zł"
         if canfix
            lock in NOWY
            ? "DOKONANO KOREKTY BO !"
@@ -829,9 +829,9 @@ if stary_rok=dz1
         ? "MAGAZYN",NR_MAG,"KOD:",tran(INDEX,"@R "+ INDEXPIC )
         ? "NAZWA:   ",indx_mat->NAZWA
 #ifdef A_WA
-        ? "STAN KO�COWY:",ZAMK_MIES1,indx_mat->jm,WART_MIES1,"z�"
+        ? "STAN KOŃCOWY:",ZAMK_MIES1,indx_mat->jm,WART_MIES1,"zł"
 #else
-        ? "STAN KO�COWY:",ZAMK_MIES1,indx_mat->jm
+        ? "STAN KOŃCOWY:",ZAMK_MIES1,indx_mat->jm
 #endif
         ? "STAN BO:       BRAK !"
         if canfix
@@ -898,10 +898,10 @@ if stary_rok=dz1
         ? "NAZWA BO:",NOWY_IDX->NAZWA
         endif
 #ifdef A_WA
-        ? "STAN KO�COWY:",ZAMK_MIES1,indx_mat->jm,WART_MIES1,"z�"
-        ? "STAN BO:     ",NOWY->ZAMKN_ROKU,NOWY_IDX->jm,NOWY->WART_ROKU,"z�"
+        ? "STAN KOŃCOWY:",ZAMK_MIES1,indx_mat->jm,WART_MIES1,"zł"
+        ? "STAN BO:     ",NOWY->ZAMKN_ROKU,NOWY_IDX->jm,NOWY->WART_ROKU,"zł"
 #else
-        ? "STAN KO�COWY:",ZAMK_MIES1,indx_mat->jm
+        ? "STAN KOŃCOWY:",ZAMK_MIES1,indx_mat->jm
         ? "STAN BO:     ",NOWY->ZAMKN_ROKU,NOWY_IDX->jm
 #endif
       if canfix
@@ -946,12 +946,12 @@ if stary_rok=dz1
                if NAZWA#NOWY_IDX->NAZWA
                   ? "NAZWA BO:",NOWY_IDX->NAZWA
                endif
-               ? "R�NICA ZAWARTO�CI P�L: "
+               ? "RÓŻNICA ZAWARTOŚCI PÓL: "
                if canfix
                   LOCK IN NOWY_IDX
                endif
             endif
-            ? fieldname(key),"STAN KO�COWY",fieldget(key),"STAN BO",NOWY_IDX->(fieldget(key))
+            ? fieldname(key),"STAN KOŃCOWY",fieldget(key),"STAN BO",NOWY_IDX->(fieldget(key))
             aadd(s,fieldname(key))
             if canfix
                NOWY_IDX->(FIELDPUT(KEY,INDX_MAT->(FIELDGET(KEY))))
@@ -979,27 +979,27 @@ if stary_rok=dz1
 #undef NOWY_IDX
 elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
    set color to (_sel)
-   ? "ZAMKNI�CIE ROKU"
-   ?? ", TROCH� POTRWA"
+   ? "ZAMKNIĘCIE ROKU"
+   ?? ", TROCHĘ POTRWA"
    set color to (_snorm)
    ?
    close databases
 #ifdef A_DIETA
    select 4
-   nuse indx_mat READONLY EXCLUSIVE alias "YYYY" //�eby nikt si� nie pcha� do "roboczy"
+   nuse indx_mat READONLY EXCLUSIVE alias "YYYY" //żeby nikt się nie pchał do "roboczy"
    if !used()
       break
    endif
    close databases
 #endif
 #ifdef A_DDBF
-   nuse daty READONLY EXCLUSIVE //�eby nikt si� nie pcha� do "roboczy"
+   nuse daty READONLY EXCLUSIVE //żeby nikt się nie pchał do "roboczy"
    if !used()
       break
    endif
 #endif
      if !file(defa+"kopia.*") .and. !file(defa+"archiwum"+HB_ps()+"kopi"+str(year(DatY->d_z_mies1),4)+".*")
-        alarm("Brak kopii bezpiecze�stwa danych.;Nie b�d� zamyka� roku!",0,3)
+        alarm("Brak kopii bezpieczeństwa danych.;Nie będę zamykać roku!",0,3)
         break
      endif
      mkdir(defa+"archiwum")
@@ -1014,7 +1014,7 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
 
 
   ?
-  ? "Kasowanie pozosta�o�ci kartoteki ROBOCZY."
+  ? "Kasowanie pozostałości kartoteki ROBOCZY."
 
    AEVAL(DIRECTORY(defa+"roboczy"+HB_ps()+"*.txt"),{|X|QOUT(X[1]),FERASE(defa+"roboczy"+HB_ps()+X[1])})
    AEVAL(DIRECTORY(defa+"roboczy"+HB_ps()+"*.prn"),{|X|QOUT(X[1]),FERASE(defa+"roboczy"+HB_ps()+X[1])})
@@ -1028,7 +1028,7 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
 
    AEVAL(DIRECTORY(defa+"tmp"+HB_ps()+"*.*"),{|X|QOUT(X[1]),FERASE(defa+"tmp"+HB_ps()+X[1])})
   ?
-  ? "Tworzenie nowych zbior�w tymczasowo w kartotece TMP:"
+  ? "Tworzenie nowych zbiorów tymczasowo w kartotece TMP:"
   ?
   ? "Tworzenie zbioru DATY"
  
@@ -1073,7 +1073,7 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
 
    IF FILE(defa+"tmp"+HB_ps()+"firmy.dbf")
   ?
-  ?   "Przenoszenie kontrahent�w."
+  ?   "Przenoszenie kontrahentów."
 
       nuse firmy exclusive
       append from (defa+"roboczy"+HB_ps()+"firmy")
@@ -1085,7 +1085,7 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
   w:=DatY->d_z_rok-31
   do while .t.
      tone(130,3)
-     alarm("Kasowanie kartotek,;kt�re maj� stan zerowy po dniu: "+dtoc(w)+";(klawisze [+] i [-] - zmiana daty);Esc - bez kasowania" ,{"-","OK","+"},@key)
+     alarm("Kasowanie kartotek,;które mają stan zerowy po dniu: "+dtoc(w)+";(klawisze [+] i [-] - zmiana daty);Esc - bez kasowania" ,{"-","OK","+"},@key)
      if key=3
         w+=32
      elseif key#1
@@ -1183,13 +1183,13 @@ endif
 
     SET DEFAULT TO (defa+"roboczy"+HB_ps())              // roboczy katalog
 #ifdef A_DIETA
-   nuse indx_mat READONLY EXCLUSIVE alias "YYYY" //�eby nikt si� nie pcha� do "roboczy"
+   nuse indx_mat READONLY EXCLUSIVE alias "YYYY" //żeby nikt się nie pchał do "roboczy"
    if !used()
       break
    endif
 #endif
 #ifdef A_DDBF
-   nuse daty READONLY EXCLUSIVE alias "XXXX" //�eby nikt si� nie pcha� do "roboczy"
+   nuse daty READONLY EXCLUSIVE alias "XXXX" //żeby nikt się nie pchał do "roboczy"
    if !used()
       break
    endif
@@ -1205,7 +1205,7 @@ endif
 
 #define NTRIM(n)    ( LTrim(Str(n)) )
   ?
-  ? "B��d "
+  ? "Błąd "
 
   // add subsystem name if available
   if ( ValType(w:subsystem) == "C" )
@@ -1335,7 +1335,7 @@ select main
 
 GAL:=MAG_BIEZ+space(len(index))
 
-@ 9,10 say "Prosz� poda� numer magazynu i ga���:" 
+@ 9,10 say "Proszę podać numer magazynu i gałąź:" 
 @ 10,30 get gal PICTURE "@RK ##/"+ INDEXPIC
 read
 if readkey()=27
@@ -1354,16 +1354,16 @@ SELECT STANY
 
 setpos(21,0)
 
-if !tak("Czy drukowa� pozycje o stanie zerowym w/g kartoteki magazynu")
+if !tak("Czy drukować pozycje o stanie zerowym w/g kartoteki magazynu")
   set filter to stan#0
 endif
 
   if !dbseek(gal,.f.)
-    alarm("Brak takich materia��w",,,3)
+    alarm("Brak takich materiałów",,,3)
     return
   endif
 
-sflag:=tak("Czy drukowa� stan ilo�ciowy w/g kartoteki magazynu")
+sflag:=tak("Czy drukować stan ilościowy w/g kartoteki magazynu")
 #ifdef A_JMO
 jm_o:=TAK("CZY W ALTERNATYWNEJ JEDNOSTCE MIARY",,,miar_opcja,.F.)
 #define D_ILOUT(x) if(jm_o,if(x%indx_mat->przel=0,str(x/indx_mat->przel,6)+"    ",stuff(str(int(x/indx_mat->przel)+x%indx_mat->przel/1000,10,3),7,1,"r")),str(x,10,3))
@@ -1378,7 +1378,7 @@ jm_o:=TAK("CZY W ALTERNATYWNEJ JEDNOSTCE MIARY",,,miar_opcja,.F.)
   exec {++ile,wat+=WartosC} while NR_MAG+index=gal
 #define D_WAOUT(x) strpic(WartosC,10,A_ZAOKR,"@E ")
 
-@ 11,10 say "Ta ga��� liczy "+LTRIM(STR(ILE))+" pozycji, "+LTRIM(STR(INT(ILE/30+.99)))+" arkuszy."
+@ 11,10 say "Ta gałąź liczy "+LTRIM(STR(ILE))+" pozycji, "+LTRIM(STR(INT(ILE/30+.99)))+" arkuszy."
 seek gal
 ark=1
 @ 13,30 say "Od arkusza numer:" get ark picture "@K 99" valid ark<1+ile/30 .and. ark>0
@@ -1389,7 +1389,7 @@ if readkey()=27
 endif
 lp=ark*30-29
 skip lp-1
-  mes:=message("Prosz� czeka�;TRWA WYDRUK.")
+  mes:=message("Proszę czekać;TRWA WYDRUK.")
 begin sequence
 set console off
 #ifdef D_HWPRN
@@ -1406,30 +1406,30 @@ do while ile>0
 ? 
 ? TRIM(magazyny[mag_poz]),trim(ADRES_MAG[mag_poz]),"POLE SPISOWE:",TranR(gal,"XX/"+ INDEXPIC )
 ? 
-? "SK�AD OSOBOWY ZESPO�U SPISUJ�CEGO:     OSOBY ODPOWIEDZIALNE MATERIALNIE:"
+? "SKŁAD OSOBOWY ZESPOŁU SPISUJĄCEGO:     OSOBY ODPOWIEDZIALNE MATERIALNIE:"
 ?
 ? "1.                                     1."
 ? "2.                                     2."
 ? "3.                                     3."
 ?
 #ifdef A_SHORTIND
-? ccpi(7)+"����������������������������������������������������������������������������������������������������������������������������������������",spec(P_12LPI)
-?  "   �    �                       �    �",spec(P_SUPON)+"ILO��     �STAN      �WARTO��   � DATA I NUMER OST.   �R�NICA MI�DZY STANEM�",spec(P_SUPOFF)
-?  "LP. KOD  OKRE�LENIE PRZEDMIOTU   JEDN ",spec(P_SUPON)+"STWIERDZ.  WED�UG     WED�UG      DOK. MAGAZYNOWEGO    FAKT. I KSI�GOWYM    ",spec(P_SUPOFF)+" UWAGI ZESPO�U"
-?  "   �    �                       �    �",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"�",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"�",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"�������������������������������������������Ĵ"
-?  "         NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU   MAGAZYNU    PRZYCH�D   ROZCH�D   NIEDOBORY   NADWY�KI ",spec(P_SUPOFF)+" SPISUJ�CEGO"
-?  "����������������������������������������������������������������������������������������������������������������������������������������",spec(P_8LPI)
+? ccpi(7)+"───┬────┬───────────────────────┬────┬──────────┬──────────┬──────────┬─────────────────────┬─────────────────────┬─────────────────────",spec(P_12LPI)
+?  "   │    │                       │    │",spec(P_SUPON)+"ILOŚĆ     │STAN      │WARTOŚĆ   │ DATA I NUMER OST.   │RÓŻNICA MIĘDZY STANEM│",spec(P_SUPOFF)
+?  "LP. KOD  OKREŚLENIE PRZEDMIOTU   JEDN ",spec(P_SUPON)+"STWIERDZ.  WEDŁUG     WEDŁUG      DOK. MAGAZYNOWEGO    FAKT. I KSIĘGOWYM    ",spec(P_SUPOFF)+" UWAGI ZESPOŁU"
+?  "   │    │                       │    │",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"│",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"│",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"├──────────┬──────────┼──────────┬──────────┤"
+?  "         NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU   MAGAZYNU    PRZYCHÓD   ROZCHÓD   NIEDOBORY   NADWYŻKI ",spec(P_SUPOFF)+" SPISUJĄCEGO"
+?  "───┴────┴───────────────────────┴────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴─────────────────────",spec(P_8LPI)
 do while lp<=min(ark*30,ile)
 ? str(lp,3)+"|"+INDEX+"|"+LEFT(INDX_MAT->NAZWA,23)+"|"+INDX_MAT->jM+"|          |"+if(sflag,D_ILOUT(stan)+"|"+D_WAOUT(stan),"          |          ")+"|"+ostp(@DOP)+"|"+ostr(@DOR)+"|          |          |"
 ? "   |    |"+pad(substr(INDX_MAT->NAZWA,24),23)+"|    |          |          |          |"+dop+"|"+dor+"|          |          |"
 #else
 #ifdef A_KTM
-? ccpi(7)+"����������������������������������������������������������������������������������������������������������������������������������������",spec(P_12LPI)
-?  "   �                �                       �    �",spec(P_SUPON)+"ILO��     �STAN/wart. � DATA I NUMER OST.  �R�NICA MI�DZY STANEM�",spec(P_SUPOFF)
-?  "LP. KOD MATERIA�U    OKRE�LENIE PRZEDMIOTU   JEDN ",spec(P_SUPON)+"STWIERDZ.  WED�UG       DOK. MAGAZYNOWEGO   FAKT. I KSI�GOWYM   ",spec(P_SUPOFF)+"  UWAGI ZESPO�U"
-?  "   �                �                       �    �",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"�",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"�������������������������������������������Ĵ"
-?  "                     NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU    PRZYCH�D   ROZCH�D   NIEDOBORY   NADWY�KI",spec(P_SUPOFF)+"  SPISUJ�CEGO"
-?  "����������������������������������������������������������������������������������������������������������������������������������������",spec(P_8LPI)
+? ccpi(7)+"───┬────────────────┬───────────────────────┬────┬──────────┬──────────┬─────────────────────┬─────────────────────┬────────────────────",spec(P_12LPI)
+?  "   │                │                       │    │",spec(P_SUPON)+"ILOŚĆ     │STAN/wart. │ DATA I NUMER OST.  │RÓŻNICA MIĘDZY STANEM│",spec(P_SUPOFF)
+?  "LP. KOD MATERIAŁU    OKREŚLENIE PRZEDMIOTU   JEDN ",spec(P_SUPON)+"STWIERDZ.  WEDŁUG       DOK. MAGAZYNOWEGO   FAKT. I KSIĘGOWYM   ",spec(P_SUPOFF)+"  UWAGI ZESPOŁU"
+?  "   │                │                       │    │",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"│",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"├──────────┬──────────┼──────────┬──────────┤"
+?  "                     NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU    PRZYCHÓD   ROZCHÓD   NIEDOBORY   NADWYŻKI",spec(P_SUPOFF)+"  SPISUJĄCEGO"
+?  "───┴────────────────┴───────────────────────┴────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴────────────────────",spec(P_8LPI)
 do while lp<=min(ark*30,ile)
 ? str(lp,3)+"|"+tran(INDEX,"@R "+ INDEXPIC )+"|"+LEFT(INDX_MAT->NAZWA,23)+"|"+INDX_MAT->jM+"|          |"+if(sflag,D_ILOUT(stan),space(10))+"|"+ostp(@DOP)+"|"+ostr(@DOR)+"|          |          |"
 ? "   |"
@@ -1437,12 +1437,12 @@ do while lp<=min(ark*30,ile)
 ?? "|"+pad(substr(INDX_MAT->NAZWA,24),23)+"|    |          |"+if(sflag,D_WAOUT(stan),space(10))+"|"+dop+"|"+dor+"|          |          |"
 #else
 #ifdef A_OLZA
-? ccpi(7)+"����������������������������������������������������������������������������������������������������������������������������������������",spec(P_12LPI)
-?  "   �              �                       �    �",spec(P_SUPON)+"ILO��     �STAN/wart. � DATA I NUMER OST.  �R�NICA MI�DZY STANEM�",spec(P_SUPOFF)
-?  "LP. KOD MATERIA�U  OKRE�LENIE PRZEDMIOTU   JEDN ",spec(P_SUPON)+"STWIERDZ.  WED�UG       DOK. MAGAZYNOWEGO   FAKT. I KSI�GOWYM   ",spec(P_SUPOFF)+"  UWAGI ZESPO�U"
-?  "   �              �                       �    �",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"�",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"�������������������������������������������Ĵ"
-?  "    INDEKS SWW     NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU    PRZYCH�D   ROZCH�D   NIEDOBORY   NADWY�KI",spec(P_SUPOFF)+"  SPISUJ�CEGO"
-?  "����������������������������������������������������������������������������������������������������������������������������������������",spec(P_8LPI)
+? ccpi(7)+"───┬──────────────┬───────────────────────┬────┬──────────┬──────────┬─────────────────────┬─────────────────────┬──────────────────────",spec(P_12LPI)
+?  "   │              │                       │    │",spec(P_SUPON)+"ILOŚĆ     │STAN/wart. │ DATA I NUMER OST.  │RÓŻNICA MIĘDZY STANEM│",spec(P_SUPOFF)
+?  "LP. KOD MATERIAŁU  OKREŚLENIE PRZEDMIOTU   JEDN ",spec(P_SUPON)+"STWIERDZ.  WEDŁUG       DOK. MAGAZYNOWEGO   FAKT. I KSIĘGOWYM   ",spec(P_SUPOFF)+"  UWAGI ZESPOŁU"
+?  "   │              │                       │    │",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"│",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"├──────────┬──────────┼──────────┬──────────┤"
+?  "    INDEKS SWW     NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU    PRZYCHÓD   ROZCHÓD   NIEDOBORY   NADWYŻKI",spec(P_SUPOFF)+"  SPISUJĄCEGO"
+?  "───┴──────────────┴───────────────────────┴────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────────────────",spec(P_8LPI)
 do while lp<=min(ark*30,ile)
 ? str(lp,3)+"|"+tran(INDEX,"@R "+ INDEXPIC )+"|"+LEFT(INDX_MAT->NAZWA,23)+"|"+INDX_MAT->jM+"|          |"+if(sflag,D_ILOUT(stan),space(10))+"|"+ostp(@DOP)+"|"+ostr(@DOR)+"|          |          |"
 ? "   |              |"+pad(substr(INDX_MAT->NAZWA,24),23)+"|    |          |"+if(sflag,D_WAOUT(stan),space(10))+"|"+dop+"|"+dor+"|          |          |"
@@ -1450,21 +1450,21 @@ do while lp<=min(ark*30,ile)
 #ifdef A_SWW
 ? ccpi(7)+;
    "----------------------------------------------------------------------------------------------------------------------------------------",spec(P_12LPI)
-?  "                                  |    |",spec(P_SUPON)+"ILO��     ",spec(P_SUPOFF)+"|",spec(P_SUPON)+"STAN/wart.",spec(P_SUPOFF)+"|"+P_SUPON+"  DATA I NUMER OST.  "+spec(P_SUPOFF)+"|"+spec(P_SUPON)+"R�NICA MI�DZY STANEM"+spec(P_SUPOFF)+"|"
-?  "LP. SYMBOL OKRE�LENIE PRZEDMIOTU   JEDN ",spec(P_SUPON)+"STWIERDZ.  WED�UG       DOK. MAGAZYNOWEGO   FAKT. I KSI�GOWYM   ",spec(P_SUPOFF)+"  UWAGI ZESPO�U"
+?  "                                  |    |",spec(P_SUPON)+"ILOŚĆ     ",spec(P_SUPOFF)+"|",spec(P_SUPON)+"STAN/wart.",spec(P_SUPOFF)+"|"+P_SUPON+"  DATA I NUMER OST.  "+spec(P_SUPOFF)+"|"+spec(P_SUPON)+"RÓŻNICA MIĘDZY STANEM"+spec(P_SUPOFF)+"|"
+?  "LP. SYMBOL OKREŚLENIE PRZEDMIOTU   JEDN ",spec(P_SUPON)+"STWIERDZ.  WEDŁUG       DOK. MAGAZYNOWEGO   FAKT. I KSIĘGOWYM   ",spec(P_SUPOFF)+"  UWAGI ZESPOŁU"
 ?  "   |      |                       |    |",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"|",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"|----------+----------|----------+----------|"
-?  "      SWW  NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU    PRZYCH�D   ROZCH�D   NIEDOBORY   NADWY�KI",spec(P_SUPOFF)+"  SPISUJ�CEGO"
+?  "      SWW  NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU    PRZYCHÓD   ROZCHÓD   NIEDOBORY   NADWYŻKI",spec(P_SUPOFF)+"  SPISUJĄCEGO"
 ?  "___|______|_______________________|____|__________|__________|__________|__________|__________|__________|______________________________",spec(P_8LPI)
 do while lp<=min(ark*30,ile)
 ? str(lp,3)+"|"+tran(INDEX,"@R "+ INDEXPIC )+"|"+LEFT(INDX_MAT->NAZWA,23)+"|"+INDX_MAT->jM+"|          |"+if(sflag,D_ILOUT(stan),space(10))+"|"+ostp(@DOP)+"|"+ostr(@DOR)+"|          |          |"
 ? padl(trim(indx_mat->sww),10)+"|"+pad(substr(INDX_MAT->NAZWA,24),23)+"|    |          |"+if(sflag,D_WAOUT(stan),space(10))+"|"+dop+"|"+dor+"|          |          |"
 #else
-? ccpi(7)+"����������������������������������������������������������������������������������������������������������������������������������������",spec(P_12LPI)
-?  "   �            �                       �    �",spec(P_SUPON)+"ILO��     �STAN/wart. � DATA I NUMER OST.  �ROZNICA MI�DZY STANEM�",spec(P_SUPOFF)
-?  "LP. KOD MATER.   OKRE�LENIE PRZEDMIOTU   JEDN ",spec(P_SUPON)+"STWIERDZ.  WED�UG       DOK. MAGAZYNOWEGO   FAKT. I KSI�GOWYM   ",spec(P_SUPOFF)+"  UWAGI ZESPO�U"
-?  "   �            �                       �    �",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"�",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"�������������������������������������������Ĵ"
-?  "    INDEKS SWW   NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU    PRZYCH�D   ROZCH�D   NIEDOBORY   NADWY�KI",spec(P_SUPOFF)+"  SPISUJ�CEGO"
-?  "����������������������������������������������������������������������������������������������������������������������������������������",spec(P_8LPI)
+? ccpi(7)+"───┬────────────┬───────────────────────┬────┬──────────┬──────────┬─────────────────────┬─────────────────────┬────────────────────────",spec(P_12LPI)
+?  "   │            │                       │    │",spec(P_SUPON)+"ILOŚĆ     │STAN/wart. │ DATA I NUMER OST.  │ROZNICA MIĘDZY STANEM│",spec(P_SUPOFF)
+?  "LP. KOD MATER.   OKREŚLENIE PRZEDMIOTU   JEDN ",spec(P_SUPON)+"STWIERDZ.  WEDŁUG       DOK. MAGAZYNOWEGO   FAKT. I KSIĘGOWYM   ",spec(P_SUPOFF)+"  UWAGI ZESPOŁU"
+?  "   │            │                       │    │",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"│",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"├──────────┬──────────┼──────────┬──────────┤"
+?  "    INDEKS SWW   NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU    PRZYCHÓD   ROZCHÓD   NIEDOBORY   NADWYŻKI",spec(P_SUPOFF)+"  SPISUJĄCEGO"
+?  "───┴────────────┴───────────────────────┴────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴────────────────────────",spec(P_8LPI)
 #ifndef A_INOWA
 ?? spec(P_SUPON)
 #endif
@@ -1488,7 +1488,7 @@ enddo
 if sflag .and. lp>ile
 ?? space(57),strpic(wat,12,A_ZAOKR,"@E ",.f.)
 endif
-? "Podpis osoby odpowiedzialnej materialnie                                Podpisy zespo�u spisuj�cego"
+? "Podpis osoby odpowiedzialnej materialnie                                Podpisy zespołu spisującego"
 ?? spec(P_6LPI+ccpi(4)+chr(13)+"")
 if lp>ile
    break
@@ -1558,7 +1558,7 @@ memvar operator,mag_biez
 field haslo_spec,magazyn,magazynier
     local m,txt
       @ p,0
-      @ p,0 SAY "Podaj has�o:"
+      @ p,0 SAY "Podaj hasło:"
        txt:=""
     set cursor on
   do while 0<(m:=INkey(0)) .and. m#13
@@ -1572,7 +1572,7 @@ field haslo_spec,magazyn,magazynier
       loop
     endif
     txt+=chr(m)
-    ?? "�"
+    ?? "░"
   enddo
     set cursor off
    select 0
@@ -1585,7 +1585,7 @@ field haslo_spec,magazyn,magazynier
    XSELECT OBSLUGA READONLY
        LOCATE FOR mag_biez==magazyn .and. Trim(operator)==Trim(magazynier) .and. lower(txt)==TRIM(A_DECRYPT(haslo_spec))
        IF EOF()
-          ? "z�e has�o ..."
+          ? "złe hasło ..."
       use
       inkey(2)
       break

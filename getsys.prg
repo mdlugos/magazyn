@@ -658,7 +658,7 @@ local valid := .t.,x,y,z
     y:=get:untransform()
     /*
     if get:type$"CM" .and. valtype(get:cargo)="L" .and. get:cargo
-        get:varput(get:buffer) //assign u¾ywa untransform, a ten ma bˆ¥d
+        get:varput(get:buffer) //assign uÅ¼ywa untransform, a ten ma bÅ‚Ä…d
     else
         get:Assign()
     endif
@@ -680,7 +680,7 @@ local valid := .t.,x,y,z
   // reform edit buffer, set cursor to home position, redisplay
   //if get:type#'L'
      get:home()
-     //get:Reset() bo ma bˆ¥d dla expandable
+     //get:Reset() bo ma bÅ‚Ä…d dla expandable
   //endif
 
 
@@ -691,7 +691,7 @@ local valid := .t.,x,y,z
 
     if get:type$"CM" .and. valtype(get:cargo)="L" .and. get:cargo
         fixbuff(get,get:varget())
-        //get:buffer:=get:varget() //updatebuffer ma bˆ¥d
+        //get:buffer:=get:varget() //updatebuffer ma bÅ‚Ä…d
         //get:display()
     else
         get:UpdateBuffer()
@@ -715,7 +715,7 @@ local x
   // if editing occurred, assign the new value to the variable
   if ( get:changed )
     if get:type$"CM" .and. valtype(get:cargo)="L" .and. get:cargo
-        get:varput(get:buffer) //assign u¾ywa untransform, a ten ma bˆ¥d
+        get:varput(get:buffer) //assign uÅ¼ywa untransform, a ten ma bÅ‚Ä…d
     else
         get:Assign()
     endif
@@ -727,7 +727,7 @@ local x
 
     if get:type$"CM" .and. valtype(get:cargo)="L" .and. get:cargo
         fixbuff(get,get:varget())
-        //get:buffer:=get:varget() //updatebuffer ma bˆ¥d
+        //get:buffer:=get:varget() //updatebuffer ma bÅ‚Ä…d
         //get:display()
     else
         get:UpdateBuffer()
@@ -1126,7 +1126,7 @@ return OldExit
 */
 static proc DateMsg()
 
-    alarm("Nieprawidˆowa data",,3,3)
+    alarm("NieprawidÅ‚owa data",,3,3)
 
 return
 
@@ -1238,7 +1238,7 @@ static proc getval(get)
 #endif
        exit
     endif
-    alarm("Tego si© nie da wyliczy†",,3,3)
+    alarm("Tego siÄ™ nie da wyliczyÄ‡",,3,3)
   enddo
   g:killfocus()
   readprocname:=pn
@@ -1294,17 +1294,17 @@ static proc getchr(get,expandable)
 
     sc = SAVESCREEN(r1,c1,r2,c2)
     if iscolor()
-       @ r1,c1,r2,c2 BOX 'ÚÄ¿³ÙÄÀ³ ' color "BG+/BG"
+       @ r1,c1,r2,c2 BOX hb_UTF8ToStrBox('â”Œâ”€â”â”‚â”˜â”€â””â”‚ ') color "BG+/BG"
        lc = SETCOLOR("W+/B")
     else
         lc = SETCOLOR("I")
-        @ r1,c1,r2,c2 BOX 'ÚÄ¿³ÙÄÀ³ '
+        @ r1,c1,r2,c2 BOX hb_UTF8ToStrBox('â”Œâ”€â”â”‚â”˜â”€â””â”‚ ')
     endif
         SET COLOR TO I
         @ r1,c1+3  say 'WPIS WIELOWIERSZOWY'
         @ r2,c1+3 say 'Esc'
-        SAYl "^"+CHR(26)
-        SAYl "^"+CHR(27)
+        SAYl "^â†’"
+        SAYl "^â†"
         SAYl 'Hom'
         SAYl 'End'
         sayl 'PgU'
@@ -1347,7 +1347,7 @@ osk:=HB_SETKEYSAVE()
        m:=message("PODAJ  (B,M,K,E,R,W);ROZKAZ:;... ")
        k:=upper(chr(inkey(0)))
        if k$'RW'
-         @ m[1]+1,m[2]+8 say "NAZW¨: "
+         @ m[1]+1,m[2]+8 say "NAZWÄ˜: "
          n:=pad(defa,64)
          @ m[1]+2,m[2]+2 get n picture "@KS14"
          read

@@ -178,7 +178,7 @@ if empty(token['sessiontoken'])
    ans:=subs(ans,j)
    hb_memowrit(defa+'session.json',ans,.f.)
    token['sessiontoken']:=hb_jsondecode(ans,,'UTF8')
-   HB_IDLESLEEP(1) // jak za szybko to bˆ¥d
+   HB_IDLESLEEP(1) // jak za szybko to bÅ‚Ä…d
 endif
 //restore screen from scr
 return token['sessiontoken','sessionToken','token']
@@ -288,7 +288,7 @@ static func uwagi2odb(uwagi)
           next
           l:=len(a)
           if l<2
-               alarm('Odbiorca nie daje si© podzieli† na nazw© i adres, wstaw ˜rednik:;'+uwagi)
+               alarm('Odbiorca nie daje siÄ™ podzieliÄ‡ na nazwÄ™ i adres, wstaw Å›rednik:;'+uwagi)
           elseif l<3
                s:=a[1]
                a:=adres2arr(a[2])
@@ -312,7 +312,7 @@ static func adres2arr(adres)
      endif
      aeval(a,{|x,i|a[i]:=alltrim(x)})
      if len(a)<>2
-          alarm('Adres nie daje si© podzieli† na dwie cz©˜ci, wstaw przecinek:;'+adres)
+          alarm('Adres nie daje siÄ™ podzieliÄ‡ na dwie czÄ™Å›ci, wstaw przecinek:;'+adres)
      endif
 return a
 
@@ -357,7 +357,7 @@ local element, node, s
      DEFAULT filen TO str(year(FIELD->Data)%100,2)+strtran(trim(FIELD->smb_dow+FIELD->nr_dowodu),' ','0')+".xml"
 
      if tree<>NIL
-          alarm("Poprzedna faktura nie zakoäczona")
+          alarm("Poprzedna faktura nie zakoÅ„czona")
           break
           return nil
      endif
@@ -969,7 +969,7 @@ DEFAULT waluta TO 'PLN'
 
       node := mxmlNewElement( element, "PelnaNazwa")
        mxmlNewText( node,, Trim(memvar->firma_PelNaz) )
-	   
+   
     if !empty(memvar->firma_email)
 	  
       node := mxmlNewElement( element, "Email")

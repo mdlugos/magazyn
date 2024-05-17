@@ -47,7 +47,8 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
   HB_LANGSELECT('PL')
 
   REQUEST HB_CODEPAGE_PL852M
-  REQUEST HB_CODEPAGE_PLMAZ //ramki
+//  REQUEST HB_CODEPAGE_PLMAZ //ramki
+  REQUEST HB_CODEPAGE_UTF8EX
   #ifdef PLWIN
    request hb_translate
    hb_gtInfo( HB_GTI_FONTNAME , "Lucida Console" )
@@ -58,15 +59,17 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
    SetCursor( 0 )
    hb_gtInfo( HB_GTI_CLOSABLE, .t. )
    hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
-
+   HB_CDPSELECT('UTF8EX')
+/*
     #ifdef PC852
      HB_CDPSELECT(PC852)
     #else
      REQUEST HB_CODEPAGE_PLWIN
      HB_CDPSELECT('PLWIN')
     #endif
+*/
   #else
-     HB_CDPSELECT(PC852)
+   HB_CDPSELECT('UTF8EX')
   #endif
    //SET(_SET_DEBUG, .t.)
 #ifdef A_ADS
@@ -180,7 +183,7 @@ CLEAR screen
 @ 1,0 say padc("program dla:     "+firma_n+space(17),maxcol())
 @ 2,0 say padc(firma_a,maxcol())
 @ 16,0 say padc(a,maxcol())
-//@ 20,0 say padc("Program napisano w j©zyku CLIPPER 5.01, numer licencji: CDX 218558",maxcol())
+//@ 20,0 say padc("Program napisano w jÄ™zyku CLIPPER 5.01, numer licencji: CDX 218558",maxcol())
 @ 20,0 say padc(wersja()+', kompilator: '+version(1),maxcol())
 #ifdef A_LAN
 @ 22,0 say padc(trim("WERSJA SIECIOWA "+os()+" "+netname()),maxcol())
@@ -188,9 +191,9 @@ CLEAR screen
 @ 22,0 say padc(os(),maxcol())
 #endif
 #ifdef A_DEMO
-@ 23,0 say padc(IF(DTOS(date())<A_DEMO,"NA OKRES WDRO½ENIOWY","DLA CELàW DEMONSTRACYJNYCH"),maxcol())
+@ 23,0 say padc(IF(DTOS(date())<A_DEMO,"NA OKRES WDROÅ»ENIOWY","DLA CELÃ“W DEMONSTRACYJNYCH"),maxcol())
 #endif
-@ 18,0 say padc("PROSZ¨ CHWIL¨ POCZEKA !",maxcol()) color "*"+setcolor()
+@ 18,0 say padc("PROSZÄ˜ CHWILÄ˜ POCZEKAÄ† !",maxcol()) color "*"+setcolor()
 #ifdef A_MYSZ
 sysint(51,0)
 #else
@@ -221,7 +224,7 @@ field nazwa,baza,klucz,path,plik,for,unique,descend
 static s:=0,ee:=NIL
 #ifdef __HARBOUR__
     #ifdef PC852
-     HB_CDPSELECT(PC852)
+     HB_CDPSELECT('UTF8EX')
     #else
      HB_CDPSELECT('PLWIN')
     #endif
@@ -277,11 +280,11 @@ static s:=0,ee:=NIL
   elseIf ( e:genCode == EG_OPEN .OR. e:genCode == EG_CREATE).AND. e:osCode == 55
    __Run( "Echo > Nul")
    //Return (.t.)
-    e:description := 'Bˆãd sieci MS-Windows, wybierz "spr¢buj"...'
+    e:description := 'BÅ‚Ä…d sieci MS-Windows, wybierz "sprÃ³buj"...'
 #endif
 
   elseif ( e:genCode == EG_DATAWIDTH )
-    e:description := "WYNIK NIE MIE—CI SI¨ W POLU BAZY DANYCH !!!;Istnieje du¾e prawdopodobieästwo, ¾e nast¥piˆo rozkojarzenie danych."
+    e:description := "WYNIK NIE MIEÅšCI SIÄ˜ W POLU BAZY DANYCH !!!;Istnieje duÅ¼e prawdopodobieÅ„stwo, Å¼e nastÄ…piÅ‚o rozkojarzenie danych."
 
   elseif ( e:genCode == EG_LOCK )
 #ifndef NONTXERR
@@ -297,7 +300,7 @@ static s:=0,ee:=NIL
   tone(130,5)
   clear typeahead
   #endif
-       ALARM("UWAGA SIE: Nie potrafi© uzyska† prawa zapisu do skorowidza. Prawdopodobnie zablokowany przez innego u¾ytkownika. Sprawd«, kto to jest i dlaczego wisi. Pr¢buj a¾ do skutku! Przerwanie programu w takiej sytuacji nie jest bezpieczne dla danych.;Naci˜nij Enter aby ponowi† pr¢b©.")
+       ALARM("UWAGA SIEÄ†: Nie potrafiÄ™ uzyskaÄ‡ prawa zapisu do skorowidza. Prawdopodobnie zablokowany przez innego uÅ¼ytkownika. SprawdÅº, kto to jest i dlaczego wisi. PrÃ³buj aÅ¼ do skutku! Przerwanie programu w takiej sytuacji nie jest bezpieczne dla danych.;NaciÅ›nij Enter aby ponowiÄ‡ prÃ³bÄ™.")
     endif
     s:=seconds()
 #endif
@@ -305,28 +308,28 @@ static s:=0,ee:=NIL
     return .t.
 
   elseif ( e:genCode == EG_APPENDLOCK )
-    e:description := "Nie potraf© dopisa† nowego rekordu do bazy "+alias()+";Jest zablokowana przez innego u¾ytkownika."
+    e:description := "Nie potrafÄ™ dopisaÄ‡ nowego rekordu do bazy "+alias()+";Jest zablokowana przez innego uÅ¼ytkownika."
     //e:canDefault:=.f.
     //neterr(.t.)
 
 
   elseif ( e:osCode = 32 )
-    e:description := "Nie mam dost©pu do zbioru.;Jest zablokowany przez inny program."
+    e:description := "Nie mam dostÄ™pu do zbioru.;Jest zablokowany przez inny program."
     //e:canDefault:=.f.
     //neterr(.t.)
 
 
   elseif ( e:osCode > 32 )
-    e:description := "Nie mam dost©pu do zbioru.;Prawdopodobnie awaria sieci."
+    e:description := "Nie mam dostÄ™pu do zbioru.;Prawdopodobnie awaria sieci."
     //e:canDefault:=.f.
     //neterr(.t.)
 
   elseif ( e:osCode == 8 )
-    e:description := 'Za maˆo miejsca na dysku.;Nie potrafi© zapisa† zbioru'
+    e:description := 'Za maÅ‚o miejsca na dysku.;Nie potrafiÄ™ zapisaÄ‡ zbioru'
     //e:canDefault:=.f.
 
   elseif ( e:osCode == 4 )
-    e:description := 'Za maˆy limit otwartych zbior¢w.;Program nie uruchomiony za pomoc¥ wˆa˜ciwego pliku "BAT", lub;za maˆa deklaracja ilo˜ci zbior¢w w sieci, lub;za maˆo zadeklarowanych "FILES" w CONFIG.SYS, lub;za maˆo zadeklarowanych zbior¢w w "SET CLIPPER=Fxx" w AUTOEXEC.BAT;wymagania programu: '+A_FILELIMIT+'.;Zbi¢r:'
+    e:description := 'Za maÅ‚y limit otwartych zbiorÃ³w.;Program nie uruchomiony za pomocÄ… wÅ‚aÅ›ciwego pliku "BAT", lub;za maÅ‚a deklaracja iloÅ›ci zbiorÃ³w w sieci, lub;za maÅ‚o zadeklarowanych "FILES" w CONFIG.SYS, lub;za maÅ‚o zadeklarowanych zbiorÃ³w w "SET CLIPPER=Fxx" w AUTOEXEC.BAT;wymagania programu: '+A_FILELIMIT+'.;ZbiÃ³r:'
     //e:canDefault:=.f.
 
   elseif ( e:genCode == EG_PRINT )
@@ -341,10 +344,10 @@ static s:=0,ee:=NIL
   clear typeahead
   #endif
 #ifdef A_LAN
-  nChoice:=alarm('Drukarka nie jest gotowa. Sprawd«, czy jest "On line".;'+;
-      'Je¾eli skierujesz wydruk do zbioru, to mo¾esz go potem;'+;
-      'wydrukowa† za pomoca komendy PRINT.',;
-      {"Spr¢buj","Przerwij","Druk do zbioru"})
+  nChoice:=alarm('Drukarka nie jest gotowa. SprawdÅº, czy jest "On line".;'+;
+      'JeÅ¼eli skierujesz wydruk do zbioru, to moÅ¼esz go potem;'+;
+      'wydrukowaÄ‡ za pomoca komendy PRINT.',;
+      {"SprÃ³buj","Przerwij","Druk do zbioru"})
       if nChoice > 2
          f:=set(_SET_DEFAULT)
          h:=fcreateu(@f)
@@ -359,10 +362,10 @@ static s:=0,ee:=NIL
       endif
 #else
   f:=left(procname(i),8)+".PRN"
-  nChoice:=alarm('Drukarka nie jest gotowa. Sprawd«, czy jest "On line".;'+;
-      'Je¾eli skierujesz wydruk do zbioru, to mo¾esz go potem;'+;
-      'wydrukowa† za pomoca komendy :;PRINT '+set(_SET_DEFAULT)+f,;
-      {"Spr¢buj","Przerwij","Druk do zbioru"})
+  nChoice:=alarm('Drukarka nie jest gotowa. SprawdÅº, czy jest "On line".;'+;
+      'JeÅ¼eli skierujesz wydruk do zbioru, to moÅ¼esz go potem;'+;
+      'wydrukowaÄ‡ za pomoca komendy :;PRINT '+set(_SET_DEFAULT)+f,;
+      {"SprÃ³buj","Przerwij","Druk do zbioru"})
 #endif
   do case
     case nChoice = 2 ; SET PRINTER TO ;ee:=NIL; BREAK(e)
@@ -374,7 +377,7 @@ static s:=0,ee:=NIL
 #ifdef A_ADS
   elseif  e:subsystem = 'ADS' .and. e:subcode=7041 .and. file("indeks.dbf")
  #ifndef __PLATFORM__LINUX
-          AdsRegCallBack( {|nPercent|dispout(replicate( "±", int(npercent/100*(f[4]-f[2]-5))-(i-f[2]))),message(1),i:=col(),dispout(str(nPercent,3)+'%'),setpos(row(),i),.f.}  )
+          AdsRegCallBack( {|nPercent|dispout(replicate( "â–’", int(npercent/100*(f[4]-f[2]-5))-(i-f[2]))),message(1),i:=col(),dispout(str(nPercent,3)+'%'),setpos(row(),i),.f.}  )
  #endif
 
     cMessage:=lower(alias())
@@ -407,9 +410,9 @@ static s:=0,ee:=NIL
  #endif
           c:=trim(indeks->for)
           if empty(c)
-             ordCondSet(,,,,{||dispout("±"),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
+             ordCondSet(,,,,{||dispout("â–’"),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
           else
-             ordCondSet( expand(c),,,,{||dispout("±"),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
+             ordCondSet( expand(c),,,,{||dispout("â–’"),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
           endif
           i:=f[2]
           //a:=strtran(expand(a),'UPP(','UPPER(')
@@ -446,7 +449,7 @@ static s:=0,ee:=NIL
 #ifndef SIMPLE
         clear typeahead
 #endif
-        alarm("Uszkodzony skorowidz "+e:filename+" zostaˆ usuni©ty;Prosz© uruchomi† program jeszcze raz.")
+        alarm("Uszkodzony skorowidz "+e:filename+" zostaÅ‚ usuniÄ™ty;ProszÄ™ uruchomiÄ‡ program jeszcze raz.")
         endif
         errorinhandler()
     endif
@@ -539,9 +542,9 @@ static s:=0,ee:=NIL
           setpos(f[3]-1,f[2]+1)
           select (cMessage)
           if empty(c)
-             ordCondSet(,,,,{||dispout("±"),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
+             ordCondSet(,,,,{||dispout("â–’"),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
           else
-             ordCondSet( expand(c),{||&c},,,{||dispout("±"),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
+             ordCondSet( expand(c),{||&c},,,{||dispout("â–’"),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
           endif
  #endif
  #ifdef A_ADS
@@ -551,7 +554,7 @@ static s:=0,ee:=NIL
           AdsRegCallBack( {|nPercent|outerr(replicate(".",nPercent/2-i),i:=nPercent/2,.f.}  )
   #else
           i:=f[2]
-          AdsRegCallBack( {|nPercent|dispout(replicate( "±", int(npercent/100*(f[4]-f[2]-5))-(i-f[2]))),message(1),i:=col(),dispout(str(nPercent,3)+'%'),setpos(row(),i),.f.}  )
+          AdsRegCallBack( {|nPercent|dispout(replicate( "â–’", int(npercent/100*(f[4]-f[2]-5))-(i-f[2]))),message(1),i:=col(),dispout(str(nPercent,3)+'%'),setpos(row(),i),.f.}  )
   #endif
 
   #ifdef A_CDX
@@ -648,7 +651,7 @@ static s:=0,ee:=NIL
 #else
           t:=MESSAGE("Odtwarzanie skorowidza "+expand(d)+", baza: "+expand(b)+".dbf, klucz: "+expand(a)+";.")
           setpos(t[3]-1,t[2]+1)
-          ordCondSet( expand(c),if(empty(c),,{||&c}),,,{||dispout("±"),message(1),.t.},int(1+lastrec()/(t[4]-t[2]-1)),recno(),,,,indeks->descend)
+          ordCondSet( expand(c),if(empty(c),,{||&c}),,,{||dispout("â–’"),message(1),.t.},int(1+lastrec()/(t[4]-t[2]-1)),recno(),,,,indeks->descend)
 #endif
 #ifdef IndexkeY
           ordCreate(e:filename,,strtran(expand(a),'UPP(','UPPER('),{||&a},indeks->unique)
@@ -762,7 +765,7 @@ static proc ErrorMessage(e,cMessage,aOptions)
 
 if ""=cMessage
   // start error message
-  cMessage := if( e:severity > ES_WARNING, "Bˆ¥d ", "Uwaga " )
+  cMessage := if( e:severity > ES_WARNING, "BÅ‚Ä…d ", "Uwaga " )
 
   // add subsystem name if available
   if ( ValType(e:subsystem) $ "MC" )
@@ -805,13 +808,13 @@ endif
   aoptions:={}
 
   if (e:canRetry)
-    AAdd(aOptions, "Spr¢buj")
+    AAdd(aOptions, "SprÃ³buj")
   end
 
 
   if (e:severity > ES_WARNING )
      if (e:canDefault)
-       AAdd(aOptions, "Omiä")
+       AAdd(aOptions, "OmiÅ„")
      end
      aadd(aoptions,"Przerwij")
      aadd(aoptions,"Koniec !")
@@ -926,7 +929,7 @@ do while !(al)->(if(empty(rec),dbrlock(),dbrlock(rec)))
   clear typeahead
   #endif
       s:=.t.
-      alarm("UWAGA SIE: "+IF(M=NIL,"Nie potrafi© uzyska† wyˆ¥cznego prawa zapisu.",M)+";BAZA: "+alias(al),if(l=.t.,{"Pr¢buj","Rezygnuj","Omiä"},{"Pr¢buj","Rezygnuj"}),@e,2,@s)
+      alarm("UWAGA SIEÄ†: "+IF(M=NIL,"Nie potrafiÄ™ uzyskaÄ‡ wyÅ‚Ä…cznego prawa zapisu.",M)+";BAZA: "+alias(al),if(l=.t.,{"PrÃ³buj","Rezygnuj","OmiÅ„"},{"PrÃ³buj","Rezygnuj"}),@e,2,@s)
       if e>1
 #ifndef SIMPLE
          window(s)
@@ -940,7 +943,7 @@ do while !(al)->(if(empty(rec),dbrlock(),dbrlock(rec)))
          return c
       endif
 #ifdef SIMPLE
-      ? "[Esc] - rezygnacja, Pr¢ba  "
+      ? "[Esc] - rezygnacja, PrÃ³ba  "
    else
       message(1)
 #ifdef __HARBOUR__
@@ -948,7 +951,7 @@ do while !(al)->(if(empty(rec),dbrlock(),dbrlock(rec)))
 #endif      
 #else
       @ s[3]-1,s[2]+1 say padl("[Esc] - rezygnacja",s[4]-s[2]-2)
-      @ s[3]-1,s[2]+2 say "Pr¢ba..."
+      @ s[3]-1,s[2]+2 say "PrÃ³ba..."
    elseif inkey(.6-seconds()%.5)#0
       window(s)
       s:=NIL
@@ -984,7 +987,7 @@ do while !(al)->(flock())
   clear typeahead
   #endif
       s:=.t.
-      alarm("UWAGA SIE: "+IF(M=NIL,"Nie potrafi© uzyska† wyˆ¥cznego prawa zapisu.",M)+";BAZA: "+alias(al),if(l=.t.,{"Pr¢buj","Rezygnuj"},{"Pr¢buj","Rezygnuj","Omiä"}),@e,2,@s)
+      alarm("UWAGA SIEÄ†: "+IF(M=NIL,"Nie potrafiÄ™ uzyskaÄ‡ wyÅ‚Ä…cznego prawa zapisu.",M)+";BAZA: "+alias(al),if(l=.t.,{"PrÃ³buj","Rezygnuj"},{"PrÃ³buj","Rezygnuj","OmiÅ„"}),@e,2,@s)
       if e>1
 #ifndef SIMPLE
          window(s)
@@ -998,12 +1001,12 @@ do while !(al)->(flock())
          return c
       endif
 #ifdef SIMPLE
-      ? "[Esc] - rezygnacja, Pr¢ba"
+      ? "[Esc] - rezygnacja, PrÃ³ba"
    else
       ?? chr(8)+message(1)
 #else
       @ s[3]-1,s[2]+1 say padl("[Esc] - rezygnacja",s[4]-s[2]-2)
-      @ s[3]-1,s[2]+2 say "Pr¢ba..."
+      @ s[3]-1,s[2]+2 say "PrÃ³ba..."
    elseif inkey(.6-seconds()%.5)#0// .or. seconds()>w
       window(s)
       s:=NIL

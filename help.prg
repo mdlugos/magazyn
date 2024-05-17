@@ -82,7 +82,7 @@ endif
         * clear window and draw box
         lastcolor = SETCOLOR("RB+/GR")
         scroll(r1,c1,r2,c2, 0)
-        @ r1+1,c1+2,r2-1,c2-2 BOX '⁄ƒø≥Ÿƒ¿≥'
+        @ r1+1,c1+2,r2-1,c2-2 BOX hb_UTF8ToStrBox('‚îå‚îÄ‚îê‚îÇ‚îò‚îÄ‚îî‚îÇ')
         SET COLOR TO I
         @ r2-1,c1+3 say 'Esc'
         @ r2-1,c1+7 SAY "^"+CHR(26)
@@ -136,7 +136,7 @@ osk:=HB_SETKEYSAVE()
     k:=lastkey()
     if k=K_CTRL_W .or. k=K_F10 .or. k=K_CTRL_L
           HB_MEMOWRIT(HTEXT,strtran(txt,chr(141)+chr(10)),.f.)
-    elseif k=K_CTRL_P .and. 1=alarm("Czy drukowaÜ",{"Tak","Nie"},2)
+    elseif k=K_CTRL_P .and. 1=alarm("Czy drukowaƒá",{"Tak","Nie"},2)
           set console off
           k:=getlines(hardcr(txt))
           print()
@@ -168,7 +168,7 @@ osk:=HB_SETKEYSAVE()
     elseif k=K_CTRL_K
        m:=message("PODAJ  (R, W);ROZKAZ:;... ")
        k:=upper(chr(INkey(0)))
-       @ m[1]+1,m[2]+8 say "NAZW®: "
+       @ m[1]+1,m[2]+8 say "NAZWƒò: "
        n:=pad(defa,64)
        @ m[1]+2,m[2]+2 get n picture "@KS14"
        read

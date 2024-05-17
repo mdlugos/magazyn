@@ -179,11 +179,11 @@ DO WHILE .T.
      rf:=firMy->(recno())
      set order to 1
 #ifdef A_FK
-    znalaz:= szukam({1,40,maxrow(),,1,0,"Przegl•d "+dok,;
-        {||nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+if(data>DatY->d_z_mies1 .and. kto_pisal="ˇ","≥","≈")+D_KH+"≥"+DTOV(data)+"≥"+D_KH1},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
+    znalaz:= szukam({1,40,maxrow(),,1,0,"PrzeglƒÖd "+dok,;
+        {||nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+if(data>DatY->d_z_mies1 .and. kto_pisal=HB_UTF8CHR(0x00A0),"‚îÇ","‚îº")+D_KH+"‚îÇ"+DTOV(data)+"‚îÇ"+D_KH1},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
 #else
-    znalaz:= szukam({1,40,maxrow(),,1,0,"Przegl•d "+dok,;
-        {||nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+if(data>DatY->d_z_mies1 .and. kto_pisal="ˇ","≥","≈")+DTOV(data)+"≥"+dost_odb},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
+    znalaz:= szukam({1,40,maxrow(),,1,0,"PrzeglƒÖd "+dok,;
+        {||nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+if(data>DatY->d_z_mies1 .and. kto_pisal=HB_UTF8CHR(0x00A0),"‚îÇ","‚îº")+DTOV(data)+"‚îÇ"+dost_odb},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
 #endif
      firMy->(dbgoto(rf))
     if znalaz
@@ -235,7 +235,7 @@ END SEQUENCE
    else
     set order to 1
     go s
-    if _flp=0 .or. (tone(130,3),1=alarm("CZY CHCESZ ZMIENIè NUMER BIEΩ§CEGO DOKUMENTU ?",{"TAK","NIE"},2))
+    if _flp=0 .or. (tone(130,3),1=alarm("CZY CHCESZ ZMIENIƒÜ NUMER BIE≈ªƒÑCEGO DOKUMENTU ?",{"TAK","NIE"},2))
        return .t.
     endif
     g:undo()
@@ -260,7 +260,7 @@ do case
   if DEF_WAR (pozycja=D_LP0 .or. data>max(DatY->d_z_mies1,DatY->data_gran)) .and. lanwar(_skey,_f,nk2)
 #else
   if DEF_WAR (pozycja=D_LP0 .or. data>max(DatY->d_z_mies1,DatY->data_gran) ).and. (compNk(nr_dowodu,nk2) .or. _flp=0 .or. _skey=13 .and. pozycja=D_LP0 DEF_WAR1 .and.;
-     (tone(130,3),1=alarm("CZY CHCESZ ZMIENIè NUMER BIEΩ§CEGO DOKUMENTU ?",{"TAK","NIE"},2)) .and.;
+     (tone(130,3),1=alarm("CZY CHCESZ ZMIENIƒÜ NUMER BIE≈ªƒÑCEGO DOKUMENTU ?",{"TAK","NIE"},2)) .and.;
     (dbdelete(),.t.))
 #endif
     RETURN(_sret:=.T.)
@@ -305,9 +305,9 @@ do case
     elseif _skey=3
        _spocz:=""
 #ifdef A_NRLTH3
-       _spform:={|p,l|TranR(right(p,l),"XXX≥##.##")}
+       _spform:={|p,l|TranR(right(p,l),"XXX‚îÇ##.##")}
 #else
-       _spform:={|p,l|TranR(right(p,l),"XXXXX≥##.##")}
+       _spform:={|p,l|TranR(right(p,l),"XXXXX‚îÇ##.##")}
 #endif
 #endif
        _sbeg:=10
@@ -372,8 +372,8 @@ RETURN(.F.)
 #ifdef A_LAN
 static function lanwar(_skey,_f,nk2)
 local r:=compNk(nr_dowodu,nk2)
-  if !r .and. (_flp=0 .or. _skey=13 .and. pozycja=D_LP0 DEF_WAR1 .and.(tone(130,3),1=alarm("CZY CHCESZ ZMIENIè NUMER BIEΩ§CEGO DOKUMENTU ?",{"TAK","NIE"},2)))
-     r:=reclock(.f.,"DOKUMENT NIEDOST®PNY DO POPRAWY;jest poprawiany przez innego uæytkownika sieci",.f.,,recno())
+  if !r .and. (_flp=0 .or. _skey=13 .and. pozycja=D_LP0 DEF_WAR1 .and.(tone(130,3),1=alarm("CZY CHCESZ ZMIENIƒÜ NUMER BIE≈ªƒÑCEGO DOKUMENTU ?",{"TAK","NIE"},2)))
+     r:=reclock(.f.,"DOKUMENT NIEDOSTƒòPNY DO POPRAWY;jest poprawiany przez innego u≈ºytkownika sieci",.f.,,recno())
      if r .and. _flp#0
         delete
         unlock recno()
@@ -421,7 +421,7 @@ return r
        kk:=b
        getactive():updatebuffer()
        b:=subs(kk,4,1)
-       if !aczojs(zaklady,@b,,,"Zakàady:")
+       if !aczojs(zaklady,@b,,,"Zak≈Çady:")
           getactive():pos:=4
           return .f.
        endif
@@ -456,7 +456,7 @@ return r
        sk:=b
        getactive():updatebuffer()
        b:=subs(sk,4,1)
-       if !aczojs(zaklady,@b,@j,,"Zakàady:")
+       if !aczojs(zaklady,@b,@j,,"Zak≈Çady:")
           getactive():pos:=4
           return .f.
        endif
@@ -474,12 +474,12 @@ return r
        aeval(dzial,{|x,i|z[i]:=b=trim(substr(x,4,1))})
        b:=subs(sk,5)
        j:=NIL
-       if !aczojs(dzial,@b,@j,z,"Dziaày:")
+       if !aczojs(dzial,@b,@j,z,"Dzia≈Çy:")
           getactive():pos:=5
           return .f.
        endif
        sk:=stuff(sk,5,2,b)
-       if dzial[j]=b //do peàna
+       if dzial[j]=b //do pe≈Çna
           if d_o=" "
              d_o:=trim(subs(stano[i],8))+subs(dzial[j],5)
              getlist[d]:display()
@@ -515,21 +515,21 @@ return r
       cz=substr(nz,2,2)
       dz=substr(nz,4,2)
    do while .t.
-      if !aczojs(zaklady,@za,,,"Zakàady")
+      if !aczojs(zaklady,@za,,,"Zak≈Çady")
          getactive():pos:=1
          return .f.
       elseif nz#za
          nz:=za+cz+dz+subs(nz,6)
          getactive():updatebuffer()
          loop
-      elseif !aczojs(czynnosc,@cz,,,"CzynnoòÜ")
+      elseif !aczojs(czynnosc,@cz,,,"Czynno≈õƒá")
          getactive():pos:=2
          return .f.
       elseif cz#substr(nz,2,2)
          nz:=za+cz+dz+subs(nz,6)
          getactive():updatebuffer()
          loop
-      elseif dz#subs(sk,5,2).and.(dzwz:=array(len(dzial)),aeval(dzial,{|x,i|dzwz[i]:=za=trim(substr(x,4,1))}),j:=NIL,!aczojs(dzial,@dz,@j,dzwz,"Dziaày"))
+      elseif dz#subs(sk,5,2).and.(dzwz:=array(len(dzial)),aeval(dzial,{|x,i|dzwz[i]:=za=trim(substr(x,4,1))}),j:=NIL,!aczojs(dzial,@dz,@j,dzwz,"Dzia≈Çy"))
              getactive():pos:=4
              return .f.
       elseif dz#subs(nz,4,2)
@@ -547,7 +547,7 @@ return r
              getactive():updatebuffer()
              loop
       elseif TRIM(nz)#nz
-          alarm("WYPEù„ CAùE POLE !!!",,,3)
+          alarm("WYPE≈Å≈É CA≈ÅE POLE !!!",,,3)
           getactive():pos:=6
           return .f.
       else
@@ -627,9 +627,9 @@ endif
                    if empty(indexord())
                      w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
-                       index on &v tag main_ind eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v tag main_ind eval {||dispout("‚ñí"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
-                       index on &v for &u tag main_ind eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v for &u tag main_ind eval {||dispout("‚ñí"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      endif
                      //break
                    endif
@@ -638,9 +638,9 @@ endif
                      index on &v to (defa+y+HB_ps()+'main_ind')
                      w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
-                       index on &v to (defa+y+HB_ps()+'main_ind') eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') eval {||dispout("‚ñí"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
-                       index on &v to (defa+y+HB_ps()+'main_ind') for &u eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') for &u eval {||dispout("‚ñí"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      endif
                      //break
                    else
@@ -709,7 +709,7 @@ endif
              endif
              if round(a+il,3)>0  //? czemu nie >=
                 *
-                //ci•gnie òredni• cene partii
+                //ciƒÖgnie ≈õredniƒÖ cene partii
                 c:=max(a-ilosc,0)
                 d:=max(b-wartosc,0)
                 if round(a-c,3)=0
@@ -726,7 +726,7 @@ endif
           do while .t.
              skip -1
 //----------------------------
-             if (bof() .or. STANY->nr_mag+STANY->index>nr_mag+index) .and. round(a+il,3)>0 //rozchod nie bierze caàego stanu pocz
+             if (bof() .or. STANY->nr_mag+STANY->index>nr_mag+index) .and. round(a+il,3)>0 //rozchod nie bierze ca≈Çego stanu pocz
                y:=str(year(if(empty(data),da,data))-1,4)
                x:=select('main'+y)
                if x=0
@@ -744,9 +744,9 @@ endif
                    if empty(indexord())
                      w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
-                       index on &v tag main_ind eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v tag main_ind eval {||dispout("‚ñí"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
-                       index on &v tag main_ind for &u eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v tag main_ind for &u eval {||dispout("‚ñí"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      endif
                      //break
                    endif
@@ -755,9 +755,9 @@ endif
                      index on &v to (defa+y+HB_ps()+'main_ind')
                      w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
-                       index on &v to (defa+y+HB_ps()+'main_ind') eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') eval {||dispout("‚ñí"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
-                       index on &v to (defa+y+HB_ps()+'main_ind') for &u eval {||dispout("±"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') for &u eval {||dispout("‚ñí"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      endif
                      //break
                    else
@@ -815,7 +815,7 @@ endif
              endif
              /*
              if data>da
-                a:=e  // a,b - stan od ktorego ck zresetowany po PZ kt¢re po rozchodzie
+                a:=e  // a,b - stan od ktorego ck zresetowany po PZ kt√≥re po rozchodzie
                 b:=f
                 loop
              endif
@@ -823,7 +823,7 @@ endif
              a-=ilosc
              b-=wartosc
 
-             if if(valtype(ames)='A', round(a+il,3)<0, round(a+il,3)<=0)              //dotaràem do wàaòciwego PZ
+             if if(valtype(ames)='A', round(a+il,3)<0, round(a+il,3)<=0)              //dotar≈Çem do w≈Ça≈õciwego PZ
                 ck:=((a+il)*wartosc/ilosc - b)/il
 #ifdef A_CEOKR
                 x:=Round(wartosc/ilosc,A_ZAOKR)
@@ -856,7 +856,7 @@ local wk,sk,rcrd,a,b,x
 #ifdef A_SPECYF
      if g:changed //round(pm*il-g:original,3)#0
         a:=specyfik(_f,1)
-        if a#0 .and. g:changed /*round(a-g:original,3)=0 */.and. round(a-pm*il,3)#0 .and. (tone(130,3),1#ALARM("CZY KASOWAè SPECYFIKACJ® ?",{"TAK","NIE"},2))
+        if a#0 .and. g:changed /*round(a-g:original,3)=0 */.and. round(a-pm*il,3)#0 .and. (tone(130,3),1#ALARM("CZY KASOWAƒÜ SPECYFIKACJƒò ?",{"TAK","NIE"},2))
            g:undo()
            return .f.
         endif
@@ -914,9 +914,9 @@ ENDIF
 
 tone(130,3) //('')
 #ifdef A_JMO
-return 2=alarm('NA STANIE JEST TYLKO'+if(miar_opcja,restouT(sk,(lam)->przel)+" "+(lam)->jm_opcja,strpic(SK,11,ILDEC,,.t.)+" "+(lam)->jm)+",;"+strpic(WK,12,A_ZAOKR,"@E ")+" ZùOTYCH.",{"Poprawa","Akceptacja"})
+return 2=alarm('NA STANIE JEST TYLKO'+if(miar_opcja,restouT(sk,(lam)->przel)+" "+(lam)->jm_opcja,strpic(SK,11,ILDEC,,.t.)+" "+(lam)->jm)+",;"+strpic(WK,12,A_ZAOKR,"@E ")+" Z≈ÅOTYCH.",{"Poprawa","Akceptacja"})
 #else
-return 2=alarm('NA STANIE JEST TYLKO'+strpic(SK,11,ILDEC,,.t.)+" "+(lam)->jm+",;"+strpic(WK,12,A_ZAOKR,"@E ")+" ZùOTYCH.",{"Poprawa","Akceptacja"})
+return 2=alarm('NA STANIE JEST TYLKO'+strpic(SK,11,ILDEC,,.t.)+" "+(lam)->jm+",;"+strpic(WK,12,A_ZAOKR,"@E ")+" Z≈ÅOTYCH.",{"Poprawa","Akceptacja"})
 #endif
 #endif
 *****
@@ -955,7 +955,7 @@ return 2=alarm('NA STANIE JEST TYLKO'+strpic(SK,11,ILDEC,,.t.)+" "+(lam)->jm,{"P
 #endif
 **************************
 #ifdef A_FA
-func cenpz(_f,getlist) //zawsze na ko‰cu po zmianach il, wa, ce ,ck
+func cenpz(_f,getlist) //zawsze na ko≈Ñcu po zmianach il, wa, ce ,ck
   local cx,wk,sk,vt
   if dok_p_r="F" .or. dok_ew="Z" .or. dok_ew="E"      //.or. dok_p_r#"P" bo KW w TISie
      Return .t.
@@ -988,7 +988,7 @@ func cenpz(_f,getlist) //zawsze na ko‰cu po zmianach il, wa, ce ,ck
         if A_WEBRUT 1 = 1
           return .t.
         endif
-        // ze wsp¢àczynnikiem na nowo wyliczmay wa
+        // ze wsp√≥≈Çczynnikiem na nowo wyliczmay wa
       endif
         cx:=avat
         private avat:=aclone(cx)
@@ -1098,20 +1098,20 @@ DatY->(dbgoto(1))
 #endif
 do case
   case dat <= max(DatY->d_z_mies1,DatY->data_gran)
-    alarm('DATA WSTECZNA !;ZAMKNI®TO OKRES DO DNIA '+dtoc(max(DatY->d_z_mies1,DatY->data_gran))+';TAKI DOKUMENT NIE B®DZIE ZAKSI®GOWANY !',,,3)
+    alarm('DATA WSTECZNA !;ZAMKNIƒòTO OKRES DO DNIA '+dtoc(max(DatY->d_z_mies1,DatY->data_gran))+';TAKI DOKUMENT NIE BƒòDZIE ZAKSIƒòGOWANY !',,,3)
     return .f.
   case stary_rok#NIL.and.dat>stary_rok
-    alarm('NIE WYCHODç POZA STARY ROK',,,3)
+    alarm('NIE WYCHOD≈π POZA STARY ROK',,,3)
     return .f.
   case year(dat D_OLZA)>year(DatY->d_z_rok+1 D_OLZA)
-    alarm('DATA PRZYSZùOROCZNA !;ZAMKNIJ ROK ZANIM ZACZNIESZ WPISYWAè TEGOROCZNE DOKUMENTY !',,,3)
+    alarm('DATA PRZYSZ≈ÅOROCZNA !;ZAMKNIJ ROK ZANIM ZACZNIESZ WPISYWAƒÜ TEGOROCZNE DOKUMENTY !',,,3)
     return .f.
 ENDcase
 RETURN(.t.)
 ***************************
 #ifdef A_OBR
 function nzval(nz)
-return szukam({0,10,maxrow(),,1,0,"",{||konto+"≥"+opis_koszt},{|_skey,_s|zlec_obr(_skey,_s)},nz})
+return szukam({0,10,maxrow(),,1,0,"",{||konto+"‚îÇ"+opis_koszt},{|_skey,_s|zlec_obr(_skey,_s)},nz})
 ***************************
 function zlec_obr(_skey,_s)
 
@@ -1212,7 +1212,7 @@ DO CASE
       set order to "main_zle"
       set relation to nr_mag+index into indx_mat
       seek stanowis->konto
-         szukam({1,17,maxrow(),,1,0,trim(stanowis->opis_koszt),{||index+"≥"+DTOV(data)+"≥"+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+"≥"+str(pm*ilosc,9,ILDEC)+"≥"+indx_mat->jm+"≥"+indx_mat->nazwa},{|_skey,_s|_skey=K_ESC},stanowis->konto+mag_biez})
+         szukam({1,17,maxrow(),,1,0,trim(stanowis->opis_koszt),{||index+"‚îÇ"+DTOV(data)+"‚îÇ"+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+"‚îÇ"+str(pm*ilosc,9,ILDEC)+"‚îÇ"+indx_mat->jm+"‚îÇ"+indx_mat->nazwa},{|_skey,_s|_skey=K_ESC},stanowis->konto+mag_biez})
       select indx_mat
       goto k
       select main
@@ -1302,7 +1302,7 @@ LOCAL ZNALAZ,recf,RECM,RECS,RECI,RECD,rec1,rec2,PRZE:=IL,A,B,c,d,j,oldp,dpushl,a
 memvar ppush,parr,pflag
 dpushl:=.f.
 if ppush
-   if nim=""
+   if nim=HB_UTF8CHR(0x000E)
    dpushl:=.t.
 #ifdef A_MM
    mag_biez:=parr[7]
@@ -1524,7 +1524,7 @@ ames:={}
 #endif
            a:=updated(,{|g|ebl(g,_f,getlist,.t.)}) // set EditBlock
            if !updated(.t.) //lock nie udany
-              if a=NIL //ale przedtem byà
+              if a=NIL //ale przedtem by≈Ç
 #ifdef A_MM
                 mag_biez:=nr_mag
 #endif
@@ -1600,10 +1600,10 @@ ames:={}
           go recm
           set order to "MAIN_NRK"
 #ifdef A_WA
-          c:=if(ROUND(STANY->stan-a,3)=0,0,(STANY->wartosc-b)/(STANY->stan-a)) // przed zaksi©gowaniem
-          d:=if(ROUND(STANY->stan+ilosc-a,3)=0,0,(wartosc+STANY->wartosc-b)/(ilosc+STANY->stan-a)) // po zaksi©gowaniu
+          c:=if(ROUND(STANY->stan-a,3)=0,0,(STANY->wartosc-b)/(STANY->stan-a)) // przed zaksiƒôgowaniem
+          d:=if(ROUND(STANY->stan+ilosc-a,3)=0,0,(wartosc+STANY->wartosc-b)/(ilosc+STANY->stan-a)) // po zaksiƒôgowaniu
           if ROUND(b-c*a,A_ZAOKR)#0
-             aadd(ames,message(trim(index+" "+indx_mat->nazwa)+";Wyci•gasz t© pozycj© ze òrodka kartoteki !;Przed wyksi©gowaniem cena na dzie‰ "+dtoc(data)+";wynosiàa "+ltrim(strpic(d,12,A_ZAOKR,"@E "))+", a po "+ltrim(strpic(c,12,A_ZAOKR,"@E "))+" zà."))
+             aadd(ames,message(trim(index+" "+indx_mat->nazwa)+";WyciƒÖgasz tƒô pozycjƒô ze ≈õrodka kartoteki !;Przed wyksiƒôgowaniem cena na dzie≈Ñ "+dtoc(data)+";wynosi≈Ça "+ltrim(strpic(d,12,A_ZAOKR,"@E "))+", a po "+ltrim(strpic(c,12,A_ZAOKR,"@E "))+" z≈Ç."))
           endif
           B:=ROUND(STANY->WARTOSC-B,A_ZAOKR)
 #endif
@@ -1612,15 +1612,15 @@ ames:={}
               aadd(ames,message('STAN UJEMNY TEGO DNIA :'+strpic(A,11,ILDEC,,.t.)+" "+(lam)->jm+";"+INDX_MAT->NAZWA+';'+INDEX))
 #ifdef A_WA
           ELSEIF B<0 .and. STANY->wartosc>=0
-              aadd(ames,message('WARTOóè UJEMNA TEGO DNIA :'+strpic(B,12,A_ZAOKR,"@E ")+";"+INDX_MAT->NAZWA+';'+INDEX))
+              aadd(ames,message('WARTO≈öƒÜ UJEMNA TEGO DNIA :'+strpic(B,12,A_ZAOKR,"@E ")+";"+INDX_MAT->NAZWA+';'+INDEX))
           ELSEIF B#0 .AND. A=0  .and. (STANY->wartosc=0 .or. STANY->stan#0)
-              aadd(ames,message('WARTOóè BEZ STANU TEGO DNIA :'+strpic(B,12,A_ZAOKR,"@E ")+";"+INDX_MAT->NAZWA+';'+INDEX))
+              aadd(ames,message('WARTO≈öƒÜ BEZ STANU TEGO DNIA :'+strpic(B,12,A_ZAOKR,"@E ")+";"+INDX_MAT->NAZWA+';'+INDEX))
 #endif
 #ifndef A_NOZAP
           ELSEIF INDX_MAT->zapas_min # 0 .and. A<INDX_MAT->zapas_min .and. STANY->stan>=indx_mat->zapas_min
-              aadd(ames,message('ZA MAùY ZAPAS TEGO DNIA :'+strpic(A,11,ILDEC,,.t.)+" "+(lam)->JM+";"+INDX_MAT->NAZWA+';'+INDEX))
+              aadd(ames,message('ZA MA≈ÅY ZAPAS TEGO DNIA :'+strpic(A,11,ILDEC,,.t.)+" "+(lam)->JM+";"+INDX_MAT->NAZWA+';'+INDEX))
           ELSEIF INDX_MAT->zapas_max # 0 .and. A>INDX_MAT->zapas_max .and. STANY->stan<=indx_mat->zapas_max
-              aadd(ames,message('ZA DUΩY ZAPAS TEGO DNIA :'+strpic(A,11,ILDEC,,.t.)+" "+(lam)->JM+";"+INDX_MAT->NAZWA+';'+INDEX))
+              aadd(ames,message('ZA DU≈ªY ZAPAS TEGO DNIA :'+strpic(A,11,ILDEC,,.t.)+" "+(lam)->JM+";"+INDX_MAT->NAZWA+';'+INDEX))
 #endif
           ENDIF
         endif
@@ -1630,9 +1630,9 @@ ames:={}
               aadd(ames,message('STAN UJEMNY :'+str(STANY->STAN)+" "+indx_mat->jm+";"+INDX_MAT->NAZWA+';'+INDEX))
 #ifdef A_WA
         ELSEIF STANY->WARTOSC<0
-              aadd(ames,message('WARTOóè UJEMNA :'+strpic(STANY->WARTOSC,,,"@E")+";"+INDX_MAT->NAZWA+';'+INDEX))
+              aadd(ames,message('WARTO≈öƒÜ UJEMNA :'+strpic(STANY->WARTOSC,,,"@E")+";"+INDX_MAT->NAZWA+';'+INDEX))
         ELSEIF STANY->WARTOSC#0 .AND. STANY->STAN=0
-              aadd(ames,message('WARTOóè BEZ STANU :'+strpic(STANY->WARTOSC,,,"@E")+";"+INDX_MAT->NAZWA+';'+INDEX))
+              aadd(ames,message('WARTO≈öƒÜ BEZ STANU :'+strpic(STANY->WARTOSC,,,"@E")+";"+INDX_MAT->NAZWA+';'+INDEX))
 #endif
 #ifndef A_NOZAP
         ELSEIF INDX_MAT->zapas_min # 0 .and. STANY->stan<INDX_MAT->zapas_min
@@ -1733,7 +1733,7 @@ ames:={}
 #endif
 #ifdef A_IZ
      if dok_ew="Z"
-        updated(.t.) //æeby nie skasowali indeksu
+        updated(.t.) //≈ºeby nie skasowali indeksu
      else
 #endif
 #ifdef A_LAN
@@ -1755,7 +1755,7 @@ ames:={}
         nim:=space(46)
       if (a:=len(ames))>0
          a:=ames[a]
-         @ a[3],a[2] SAY left("Naciònij coò...",a[4]-a[2])
+         @ a[3],a[2] SAY left("Naci≈õnij co≈õ...",a[4]-a[2])
            tone(130,3)
            inkey(0)
            for a:=len(ames) to 1 step -1
@@ -1830,7 +1830,7 @@ endif
           endif
 #ifndef A_MINUS
         else
-         aadd(ames,message('NA STANIE JEST TYLKO'+str(STANY->stan)+" "+(lam)->jm+";Nie mam z czego rozchodowaÜ"+strpic(-prze,11,ILDEC,,.t.)+" "+(lam)->jm))
+         aadd(ames,message('NA STANIE JEST TYLKO'+str(STANY->stan)+" "+(lam)->jm+";Nie mam z czego rozchodowaƒá"+strpic(-prze,11,ILDEC,,.t.)+" "+(lam)->jm))
        endif
 #endif
       endif
@@ -1842,7 +1842,7 @@ endif
 #ifdef A_JMO
     if miar_opcja
        @ _fk+1,48 say (lam)->jm_opcja
-       if !_fnowy .and. oldp#(lam)->przel .and. il#0 .and. il%oldp=0 .and. 1=alarm("ZMIANA KWANTU Z"+str(oldp,4)+" NA"+str((lam)->przel,4)+";CZY ZMIENIè OG‡LN§ ILOóè SZTUK",{"TAK","NIE"})
+       if !_fnowy .and. oldp#(lam)->przel .and. il#0 .and. il%oldp=0 .and. 1=alarm("ZMIANA KWANTU Z"+str(oldp,4)+" NA"+str((lam)->przel,4)+";CZY ZMIENIƒÜ OG√ìLNƒÑ ILO≈öƒÜ SZTUK",{"TAK","NIE"})
           il:=int(il/oldp)*(lam)->przel
        elseif il#0
           aeval(getlist,{|g|if(g:name='il',g:display(),)})
@@ -1890,11 +1890,11 @@ endif
   #else
    #define D_KOB
   #endif
-//tu byào D_CZ
-    if D_IZ !nowystan .and. (_fnowy D_KOB .or. il=0 .or. dok_war#"+" .or. pm=-1 .or. (tone(130,3),1=alarm("CZY AKTUALIZOWAè WARTOóè EWIDENCYJN§ DOKUMENTU ?" ,{"TAK","NIE"},2)))
+//tu by≈Ço D_CZ
+    if D_IZ !nowystan .and. (_fnowy D_KOB .or. il=0 .or. dok_war#"+" .or. pm=-1 .or. (tone(130,3),1=alarm("CZY AKTUALIZOWAƒÜ WARTO≈öƒÜ EWIDENCYJNƒÑ DOKUMENTU ?" ,{"TAK","NIE"},2)))
 #else
-//tu teæ
-    if D_IZ (_fnowy .or. il=0 .or. dok_war#"+" .or. pm=-1 .or. (tone(130,3),1=alarm("CZY AKTUALIZOWAè WARTOóè EWIDENCYJN§ DOKUMENTU ?" ,{"TAK","NIE"},2)))
+//tu te≈º
+    if D_IZ (_fnowy .or. il=0 .or. dok_war#"+" .or. pm=-1 .or. (tone(130,3),1=alarm("CZY AKTUALIZOWAƒÜ WARTO≈öƒÜ EWIDENCYJNƒÑ DOKUMENTU ?" ,{"TAK","NIE"},2)))
 #endif
       if pm=1 .and. dok_zew#"W" .and. !chg_cen
             chg_cen:=.t.
@@ -1973,9 +1973,9 @@ endif
 #endif
     if dok_p_r="F"
 #ifdef A_NOPV
-if pv#(lam)->proc_vat .or. D_DIETANEG  cz#(lam)->D_ALTCEN .AND.(_fnowy .or. il=0 .or. cz=0 D_MM .or. g:original#nim  .and. (tone(130,3),1=alarm("CZY ZMIENIAè CEN® ZBYTU ?" ,{"TAK","NIE"},2)))
+if pv#(lam)->proc_vat .or. D_DIETANEG  cz#(lam)->D_ALTCEN .AND.(_fnowy .or. il=0 .or. cz=0 D_MM .or. g:original#nim  .and. (tone(130,3),1=alarm("CZY ZMIENIAƒÜ CENƒò ZBYTU ?" ,{"TAK","NIE"},2)))
 #else
-if D_DIETANEG (pv#(lam)->proc_vat .or. cz#(lam)->D_ALTCEN) .AND.(_fnowy .or. il=0 .or. cz=0 D_MM .or. g:original#nim  .and. (tone(130,3),1=alarm("CZY ZMIENIAè CEN® ZBYTU ?" ,{"TAK","NIE"},2)))
+if D_DIETANEG (pv#(lam)->proc_vat .or. cz#(lam)->D_ALTCEN) .AND.(_fnowy .or. il=0 .or. cz=0 D_MM .or. g:original#nim  .and. (tone(130,3),1=alarm("CZY ZMIENIAƒÜ CENƒò ZBYTU ?" ,{"TAK","NIE"},2)))
 #endif
          pv:=(lam)->proc_vat
          cz:=(lam)->D_ALTCEN
@@ -1987,9 +1987,9 @@ if D_DIETANEG (pv#(lam)->proc_vat .or. cz#(lam)->D_ALTCEN) .AND.(_fnowy .or. il=
       endif
     elseif dok_ew#"E"
 #ifdef A_NOPV
-         if dok_zew$"UV" .and. pv#(lam)->proc_vat .or. D_DIETANEG  cz#STANY->cenA_zaK .and.( _fnowy .or. il=0 D_MM .or. g:original#nim .and. (tone(130,3),1=alarm("CZY ZMIENIAè CEN® ZAKUPU ?" ,{"TAK","NIE"},2)))
+         if dok_zew$"UV" .and. pv#(lam)->proc_vat .or. D_DIETANEG  cz#STANY->cenA_zaK .and.( _fnowy .or. il=0 D_MM .or. g:original#nim .and. (tone(130,3),1=alarm("CZY ZMIENIAƒÜ CENƒò ZAKUPU ?" ,{"TAK","NIE"},2)))
 #else
-         if D_DIETANEG ( dok_zew$"UV" .and. pv#(lam)->proc_vat .or. cz#STANY->cenA_zaK).and.( _fnowy .or. il=0 D_MM .or. g:original#nim .and. (tone(130,3),1=alarm("CZY ZMIENIAè CEN® ZAKUPU ?" ,{"TAK","NIE"},2)))
+         if D_DIETANEG ( dok_zew$"UV" .and. pv#(lam)->proc_vat .or. cz#STANY->cenA_zaK).and.( _fnowy .or. il=0 D_MM .or. g:original#nim .and. (tone(130,3),1=alarm("CZY ZMIENIAƒÜ CENƒò ZAKUPU ?" ,{"TAK","NIE"},2)))
 #endif
          pv:=(lam)->proc_vat
          cz:=STANY->cenA_zaK
@@ -2046,7 +2046,7 @@ if D_DIETANEG (pv#(lam)->proc_vat .or. cz#(lam)->D_ALTCEN) .AND.(_fnowy .or. il=
 #ifdef A_LAN
     a:=updated(,{|g|ebl(g,_f,getlist,.t.)}) // set EditBlock
     if a=NIL
-     if !updated(.t.) //nie byà
+     if !updated(.t.) //nie by≈Ç
       if !_fnowy
         il:=ilosc
         nz:=nr_zlec
@@ -2097,7 +2097,7 @@ if D_DIETANEG (pv#(lam)->proc_vat .or. cz#(lam)->D_ALTCEN) .AND.(_fnowy .or. il=
 #ifdef A_JMO
 if !_fnowy
     @ _fk+1,48 say (lam)->(if(miar_opcja,jm_opcja,jm))
-    if miar_opcja .and. oldp#(lam)->przel .and. il#0 .and. il%oldp=0 .and. 1=alarm("ZMIANA KWANTU Z"+str(oldp,4)+" NA"+str((lam)->przel,4)+";CZY ZMIENIè OG‡LN§ ILOóè SZTUK",{"TAK","NIE"})
+    if miar_opcja .and. oldp#(lam)->przel .and. il#0 .and. il%oldp=0 .and. 1=alarm("ZMIANA KWANTU Z"+str(oldp,4)+" NA"+str((lam)->przel,4)+";CZY ZMIENIƒÜ OG√ìLNƒÑ ILO≈öƒÜ SZTUK",{"TAK","NIE"})
        il:=int(il/oldp)*(lam)->przel
     elseif il#0
        aeval(getlist,{|g|if(g:name='il',g:display(),)})
@@ -2119,7 +2119,7 @@ UNLOCK IN STANY
 
       if (a:=len(ames))>0
          a:=ames[a]
-         @ a[3],a[2] SAY left("Naciònij coò...",a[4]-a[2])
+         @ a[3],a[2] SAY left("Naci≈õnij co≈õ...",a[4]-a[2])
          tone(130,3)
          inkey(0)
          for a:=len(ames) to 1 step -1
@@ -2245,7 +2245,7 @@ field spec_nr
       unlock
       select main
       return 0
-   ELSEIF mode=3  //zmie‰ pozycj©
+   ELSEIF mode=3  //zmie≈Ñ pozycjƒô
       sel("SPEC","SPEC_NR")
       ksp:=dm->(KEY_DOK+nr_dowodu)+g
       dbseek(ksp,.f.)
@@ -2302,7 +2302,7 @@ field spec_nr
    b:gotopblock:={||i:=1}
    b:skipblock:={|s|-i+(i:=min(max(1,i+s),len(asp)))}
    b:addcolumn(tbcolumnnew('opis',{||pad(asp[i,1],10)}))
-   b:addcolumn(tbcolumnnew('pudeà',{||tran(asp[i,2],"@Z #####")}))
+   b:addcolumn(tbcolumnnew('pude≈Ç',{||tran(asp[i,2],"@Z #####")}))
    b:addcolumn(tbcolumnnew('lot kod',{||asp[i,3]}))
    b:addcolumn(tbcolumnnew('palet',{||tran(asp[i,4],"@Z #####")}))
 #else
@@ -2321,7 +2321,7 @@ field spec_nr
    b:addcolumn(tbcolumnnew('opis',{||pad(asp[i,1],10)}))
    if jmsp='m2'
       b:addcolumn(tbcolumnnew('il.szt',{||tran(asp[i,2],"@Z ######")}))
-      b:addcolumn(tbcolumnnew('dàug.m',{||tran(asp[i,3],"@Z ###.##")}))
+      b:addcolumn(tbcolumnnew('d≈Çug.m',{||tran(asp[i,3],"@Z ###.##")}))
 #ifdef A_KAMIX
       b:addcolumn(tbcolumnnew('sz.m',{||tran(asp[i,4],"@Z ###.##")}))
       b:addcolumn(tbcolumnnew('RAZEM m2',{||tran(asp[i,2]*asp[i,3]*asp[i,4],"@Z ######.##")}))
@@ -2332,7 +2332,7 @@ field spec_nr
       c[K_TAB]      :={|b|if(b:colpos>=b:colcount-1,(b:home(),b:down()),b:right())}
    elseif jmsp='m3'
       b:addcolumn(tbcolumnnew('il.szt',{||tran(asp[i,2],"@Z ######")}))
-      b:addcolumn(tbcolumnnew('dàug.m',{||tran(asp[i,3],"@Z ###.##")}))
+      b:addcolumn(tbcolumnnew('d≈Çug.m',{||tran(asp[i,3],"@Z ###.##")}))
 #ifdef A_KAMIX
       b:addcolumn(tbcolumnnew('sz.m',{||tran(asp[i,4],"@Z ###.##")}))
       b:addcolumn(tbcolumnnew('gr.m',{||tran(asp[i,5],"@Z ##.##")}))
@@ -2340,7 +2340,7 @@ field spec_nr
       b:addcolumn(tbcolumnnew('sz.mm',{||tran(asp[i,4],"@Z #####")}))
       b:addcolumn(tbcolumnnew('gr.mm',{||tran(asp[i,5],"@Z ###")}))
 #endif
-      b:addcolumn(tbcolumnnew('mi©æsz.m3/m',{||tran(asp[i,6],"@Z ##.###")}))
+      b:addcolumn(tbcolumnnew('miƒô≈ºsz.m3/m',{||tran(asp[i,6],"@Z ##.###")}))
 #ifdef A_KAMIX
       b:addcolumn(tbcolumnnew('RAZEM m3',{||tran(if(asp[i,6]#0,asp[i,2]*asp[i,3]*asp[i,6],asp[i,2]*asp[i,3]*asp[i,4]*asp[i,5]),"@Z ######.###")}))
 #else
@@ -2348,15 +2348,15 @@ field spec_nr
 #endif
       c[K_TAB]      :={|b|if(b:colpos>=b:colcount-2,(b:home(),b:down()),b:right())}
    else
-      b:addcolumn(tbcolumnnew('iloòÜ',{||tran(asp[i,2],"@Z ######"+if(jmsp=lower((lam)->jm_opcja),'',' '+lower((lam)->jm_opcja)))}))
+      b:addcolumn(tbcolumnnew('ilo≈õƒá',{||tran(asp[i,2],"@Z ######"+if(jmsp=lower((lam)->jm_opcja),'',' '+lower((lam)->jm_opcja)))}))
       b:addcolumn(tbcolumnnew('po '+jmsp,{||tran(asp[i,3],"@Z ###.##")}))
       b:addcolumn(tbcolumnnew('RAZEM',{||tran(asp[i,2]*asp[i,3],"@Z ######.##")}))
       c[K_TAB]      :={|b|if(b:colpos>=b:colcount-1,(b:home(),b:down()),b:right())}
    endif
 #endif
 
-   b:headSep := "¬ƒ"
-   b:colsep:='≥'
+   b:headSep := "‚î¨‚îÄ"
+   b:colsep:='‚îÇ'
 
    i:=1
    b:gobottom()
@@ -2512,12 +2512,12 @@ DO CASE
       SET ORDER TO TAG FIRM_NUM
       sel('KH','KH')
       SET RELATION TO str(N1,A_NRLTH) INTO FIRMY
-      _sprompt:={||str(n1,A_NRLTH)+if(""=uwagi,"≥","*")+n15+"≥"+longname}
+      _sprompt:={||str(n1,A_NRLTH)+if(""=uwagi,"‚îÇ","*")+n15+"‚îÇ"+longname}
 #else
 #ifdef A_FFULL
-      _sprompt:={||numer_kol+if(""=uwagi,"≥","*")+nazwa+"≥"+longname}
+      _sprompt:={||numer_kol+if(""=uwagi,"‚îÇ","*")+nazwa+"‚îÇ"+longname}
 #else
-      _sprompt:={||numer_kol+if(""=uwagi,"≥","*")+nazwa}
+      _sprompt:={||numer_kol+if(""=uwagi,"‚îÇ","*")+nazwa}
 #endif
 #endif
       _spocz:=UpP(_spocz)
@@ -2579,9 +2579,9 @@ DO CASE
 
 
 #ifdef A_KB
-               if szukam({1,14,maxrow(),,15,_slth-1,'DOKUMENTY',{||smb_dow+nr_dowodu+"≥"+DTOV(data)+"≥"+nr_faktury+"≥"+dost_odb},,txt})
+               if szukam({1,14,maxrow(),,15,_slth-1,'DOKUMENTY',{||smb_dow+nr_dowodu+"‚îÇ"+DTOV(data)+"‚îÇ"+nr_faktury+"‚îÇ"+dost_odb},,txt})
 #else
-               if szukam({1,14,maxrow(),,15,_slth-1,'DOKUMENTY',{||smb_dow+nr_dowodu+"≥"+DTOV(data)+"≥"+dost_odb},,txt})
+               if szukam({1,14,maxrow(),,15,_slth-1,'DOKUMENTY',{||smb_dow+nr_dowodu+"‚îÇ"+DTOV(data)+"‚îÇ"+dost_odb},,txt})
                   if /*dok_zew="V" .and.*/ dok_p_r="F"
                     n_f:=nr_faktury
                     @ 3,2 say "    NIP      " color _sbkgr
@@ -2685,14 +2685,14 @@ DO CASE
                      _slth:=0
                      _sfilt:='['+txt+']$UPPER(longname)'
                      _sfilb:={||txt$UPPER(longname)}
-                     _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"≥","*")+nazwa+"≥"+longname,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+                     _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"‚îÇ","*")+nazwa+"‚îÇ"+longname,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
                   endif
 #else
                   _spocz:=''
                   _slth:=0
                   _sfilt:='['+txt+']$UPPER(naZwa)'
                   _sfilb:={||txt$UPPER(naZwa)}
-                  _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"≥","*")+nazwa,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+                  _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"‚îÇ","*")+nazwa,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
 #endif
                endif
       ENDCASE
@@ -2940,7 +2940,7 @@ PROCEDURE FIRM_EDIT(n,_s)
       SAYL 'Nr:' GET n picture "@K" valid {|g|empty(n) .or.(n:=str(val(n),A_NRLTH),.t.)}
 #endif
       SAYL 'Nazwa:' GET f picture "@KS"+ltrim(str(s[4]-col()-1))
-      @ s[1]+4,s[2]+2 SAY 'Nazwa peàna firmy:'
+      @ s[1]+4,s[2]+2 SAY 'Nazwa pe≈Çna firmy:'
       @ s[1]+4,s[2]+21 GET b[1] PICTURE '@K' WHEN {|g|if(empty(b[1]),b[1]:=pad(f,len(b[1])),),.t.}
       @ s[1]+5,s[2]+21 GET b[2] PICTURE '@K'
       @ s[1]+6,s[2]+21 GET b[3] PICTURE '@K'
@@ -2948,7 +2948,7 @@ PROCEDURE FIRM_EDIT(n,_s)
       @ s[1]+8,s[2]+9 GET a[1] PICTURE '@KS7'
       @ s[1]+8,s[2]+17 GET a[2] PICTURE '@KS25' SEND cargo:=.t.
       @ s[1]+8,s[2]+43 SAY 'ul.' GET a[3] PICTURE '@KS25' SEND cargo:=.t.
-      @ s[1]+9,s[2]+2 SAY "PàatnoòÜ dni:" GET tp PICTURE '@K'
+      @ s[1]+9,s[2]+2 SAY "P≈Çatno≈õƒá dni:" GET tp PICTURE '@K'
 #ifdef A_CENSPEC
       SAYL 'Ceny:' GET c picture "@KS20"
 #endif
@@ -2973,7 +2973,7 @@ PROCEDURE FIRM_EDIT(n,_s)
               endif
               exit
          case empty(f)
-              if tak('WYKASOWAè FIRM®',s[3],s[2]+5,.f.,.F.)
+              if tak('WYKASOWAƒÜ FIRMƒò',s[3],s[2]+5,.f.,.F.)
                  lock
                  delete
                  unlock
@@ -2996,7 +2996,7 @@ PROCEDURE FIRM_EDIT(n,_s)
               set order to ord
               do case
                  case found() .or. empty(n)
-                   if tak("CZY NADAè KOLEJNY NUMER",s[3],s[2]+5,.F.,.F.)
+                   if tak("CZY NADAƒÜ KOLEJNY NUMER",s[3],s[2]+5,.F.,.F.)
                    begin sequence
                       go bottom
                       n:=FIELD->n1
@@ -3107,7 +3107,7 @@ stat func nipval(i,n)
 field longname
 local ord:=ordsetfocus('firm_nip'),rec:=recno()
 set filter to rec#recno()
-if !dbseek(strtran(i,'-','')) .or. !szukam({1,4,maxrow(),,1,0,'Inne firmy o tym NIPie:',{||numer_kol+"≥"+nazwa+"≥"+longname},,strtran(i,'-','')})
+if !dbseek(strtran(i,'-','')) .or. !szukam({1,4,maxrow(),,1,0,'Inne firmy o tym NIPie:',{||numer_kol+"‚îÇ"+nazwa+"‚îÇ"+longname},,strtran(i,'-','')})
    dbgoto(rec)
 else
    lock
@@ -3213,7 +3213,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
       u+=" "
       s:=SAVESCREEN(9,_scol1-1, 20, _scol2)
       set color to (_SRAMKA)
-      @  9,_scol1-1, 20, _scol2 BOX '…Õª∫ºÕ»∫ '
+      @  9,_scol1-1, 20, _scol2 BOX hb_UTF8ToStrBox('‚ïî‚ïê‚ïó‚ïë‚ïù‚ïê‚ïö‚ïë ')
       @  9,_scol1+1 SAY 'Poprawianie dopisywanie kasowanie firmy'
       @ 11,_scol1+1 SAY 'Nr'
 #ifdef A_KHFILLZERO
@@ -3224,8 +3224,8 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
       GETl f picture "@KS"+ltrim(str(_scoln-A_NRLTH-1))
 #ifdef A_FFULL
       getlist[2]:postblock:={||if(empty(b),(b:=pad(f,len(b)),getlist[3]:display()),),.t.}
-      @ 11,_scol1+A_NRLTH+2 SAY 'Nazwa skr¢cona firmy:'
-      @ 12,_scol2-20 SAY 'Nazwa peàna firmy:'
+      @ 11,_scol1+A_NRLTH+2 SAY 'Nazwa skr√≥cona firmy:'
+      @ 12,_scol2-20 SAY 'Nazwa pe≈Çna firmy:'
       @ 13,_scol1 GET b PICTURE '@KS'+ltrim(str(_scol2-col()))
       @ 14,_scol1+1 SAY 'Adres:'
       GETL a PICTURE '@KS'+ltrim(str(_scol2-col()))
@@ -3277,7 +3277,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
          case empty(f)
               if eof()
                  loop
-              elseif tak('WYKASOWAè FIRM®',20,_scol1+5,.f.,.F.)
+              elseif tak('WYKASOWAƒÜ FIRMƒò',20,_scol1+5,.f.,.F.)
                  lock
                  delete
                  unlock
@@ -3298,7 +3298,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
               endif
               do case
                  case empty(n) .or. found()
-                   if tak("CZY NADAè KOLEJNY NUMER",20,_scol1+5,.F.,.F.)
+                   if tak("CZY NADAƒÜ KOLEJNY NUMER",20,_scol1+5,.F.,.F.)
                       SET ORDER TO "FIRM_NUM"
                       GO BOTTOM
 #ifdef A_KHFILLZERO
@@ -3411,17 +3411,17 @@ endif
 endif
 _s:=array(_sLEN)
 _spocz:=trim(n_ksef)
-n_ksef:=stuff(n_ksef,19,17,space(17)) //skracam poniæej progu æeby ponownie nie wchodziÜ 
+n_ksef:=stuff(n_ksef,19,17,space(17)) //skracam poni≈ºej progu ≈ºeby ponownie nie wchodziƒá 
 if !dbseek(_spocz,,.t.)
    _spocz:=left(_spocz,10)
    if !dbseek(_spocz,,.t.)
      _spocz:=''
    endif
 endif
-_sprompt:={|d,_s,t|tran(fieldget(1),if(empty(t),,"##########≥########≥################"))+"≥"+tran(fieldget(2),)+"≥"+tran(fieldget(3),)+"≥"+tran(fieldget(4),)}
+_sprompt:={|d,_s,t|tran(fieldget(1),if(empty(t),,"##########‚îÇ########‚îÇ################"))+"‚îÇ"+tran(fieldget(2),)+"‚îÇ"+tran(fieldget(3),)+"‚îÇ"+tran(fieldget(4),)}
 _snagkol:=0//_scol1
 d:=dbstruct()
-_snagl:=padl(d[1,1],d[1,3],'ƒ')+"¬"+pad(d[2,1],d[2,3],'ƒ')+"¬"+pad(d[3,1],d[3,3],'ƒ')+"¬"+d[4,1]
+_snagl:=padl(d[1,1],d[1,3],'‚îÄ')+"‚î¨"+pad(d[2,1],d[2,3],'‚îÄ')+"‚î¨"+pad(d[3,1],d[3,3],'‚îÄ')+"‚î¨"+d[4,1]
 _sbeg:=1
 _slth:=len(_spocz)
 if szukam(_s) .and. !eof()

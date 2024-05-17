@@ -1,8 +1,8 @@
 #ifdef __HARBOUR__
         #define mkdir(x) makedir(x)
         #command SET RDD DEFAULT [TO] <x> => REQUEST <x>;rddsetdefault(<"x">)
-        #command @ <top>, <left>, <bottom>, <right> BOX <string> CODEPAGE <cdp> [COLOR <color>] => @ <top>, <left>, <bottom>, <right> BOX HB_UTF8TOSTRBOX(HB_TRANSLATE(<string>,<cdp>,'UTF8')) [COLOR <color>]
-        #command @ <row>, <col> SAY <xpr> CODEPAGE <cdp> [COLOR <color>] => pushCDP(<cdp>); @ <row>, <col> SAY <xpr> [COLOR <color>] ; popCDP()
+//        #command @ <top>, <left>, <bottom>, <right> BOX <string> CODEPAGE <cdp> [COLOR <color>] => @ <top>, <left>, <bottom>, <right> BOX HB_UTF8TOSTRBOX(HB_TRANSLATE(<string>,<cdp>,'UTF8')) [COLOR <color>]
+//        #command @ <row>, <col> SAY <xpr> CODEPAGE <cdp> [COLOR <color>] => pushCDP(<cdp>); @ <row>, <col> SAY <xpr> [COLOR <color>] ; popCDP()
 #else
 #define MSHOW() sysint(51,1)
 #define MHIDE() sysint(51,2)
@@ -141,7 +141,7 @@
         #command SELECT <f>([<list,...>]) => dbSelectArea( <f>(<list>) )
         #command USE => dbCloseArea()
         #command USE <(db)> [VIA <rdd>] [ALIAS <a>] [<new: NEW>] [<ex: EXCLUSIVE>] [<sh: SHARED>] [<ro: READONLY>] [INDEX <(index1)> [, <(indexn)>]] ;
-         => dbUseArea( <.new.>, <rdd>, <(db)>, <(a)>,if(<.sh.> .or. <.ex.>, !<.ex.>, NIL), <.ro.> ) [; ordlistadd( <(index1)> )] [; ordlistadd( <(indexn)> )]
+         => dbUseArea( <.new.>, <rdd>, <(db)>, <(a)>,if(<.sh.> .or. <.ex.>, !<.ex.>, NIL), <.ro.> ,PC852, ) [; ordlistadd( <(index1)> )] [; ordlistadd( <(indexn)> )]
         #command APPEND BLANK => dbAppend()
         #command PACK => __dbPack()
         #command ZAP => __dbZap()
@@ -279,11 +279,11 @@
 #else
 #ifdef A_SX
 #command NUSE <(db)> [VIA <rdd>] [ALIAS <a>] [<new: NEW>] [<ex: EXCLUSIVE>] [<sh: SHARED>] [<ro: READONLY>] [INDEX <(index1)> [, <(indexn)>]] ;
-         => dbusearea( <.new.>, <rdd>, <(db)>, <(a)>,if(<.sh.> .or. <.ex.>, !<.ex.>, NIL), <.ro.> );IF DBINFO(132);DBINFO(131,A_SX);ENDIF [; ordlistadd( <(index1)> )] [; ordlistadd( <(indexn)> )]
-#define NetusE(a,b,c,d,e,f) (dbusearea(a,b,c,d,e,f),if(DBINFO(132),DBINFO(131,A_SX),))
+         => dbusearea( <.new.>, <rdd>, <(db)>, <(a)>,if(<.sh.> .or. <.ex.>, !<.ex.>, NIL), <.ro.> ,PC852,);IF DBINFO(132);DBINFO(131,A_SX);ENDIF [; ordlistadd( <(index1)> )] [; ordlistadd( <(indexn)> )]
+#define NetusE(a,b,c,d,e,f) (dbusearea(a,b,c,d,e,f,PC852,),if(DBINFO(132),DBINFO(131,A_SX),))
 #else
 #command NUSE <(db)> [VIA <rdd>] [ALIAS <a>] [<new: NEW>] [<ex: EXCLUSIVE>] [<sh: SHARED>] [<ro: READONLY>] [INDEX <(index1)> [, <(indexn)>]] ;
-         => dbUseArea( <.new.>, <rdd>, <(db)>, <(a)>,if(<.sh.> .or. <.ex.>, !<.ex.>, NIL), <.ro.> ) [; ordlistadd( <(index1)> )] [; ordlistadd( <(indexn)> )]
-#define NetusE(a,b,c,d,e,f) dbusearea(a,b,c,d,e,f)
+         => dbUseArea( <.new.>, <rdd>, <(db)>, <(a)>,if(<.sh.> .or. <.ex.>, !<.ex.>, NIL), <.ro.> ,PC852, ) [; ordlistadd( <(index1)> )] [; ordlistadd( <(indexn)> )]
+#define NetusE(a,b,c,d,e,f) dbusearea(a,b,c,d,e,f,PC852,)
 #endif
 #endif

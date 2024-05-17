@@ -1,9 +1,12 @@
+#ifdef __PLATFORM__UNIX
+//  #define A_EXT cupsPrintFile,cupsGetDefault
+#endif
 #ifdef __PLATFORM__WINDOWS
 //    #define PLWIN
   #define A_WIN_PRN eval(memvar->do_getoprn)
   #define A_ZEBRA
 #endif
-#define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usàug Informatycznych Marek Dàugosz, 43-400 Cieszyn, ul. R¢wna 16'
+#define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Us≈Çug Informatycznych Marek D≈Çugosz, 43-400 Cieszyn, ul. R√≥wna 16'
 //#define A_ADS 1
 #define UpP(x) UPPER(x)
 #define PC852 'PL852M'
@@ -37,10 +40,10 @@
 #define A_SET_DAT   GERMAN
 #define A_SHORTIND
 #define STANY     indx_mat
-#define A_SUMK    -48818082076
-#define A_KOMU_N  "Programowanie Komputer¢w Marek Díugosz"
-#define A_KOMU_A  "Cieszyn, ul. òw. Jerzego 11/48"
-#define A_AUTOR   "A.D. 1995, Marek Díugosz, Cieszyn, ul. Korfantego 24, tel. (0-386)24048"
+#define A_SUMK    -28441314785
+#define A_KOMU_N  "Firma Us≈Çug Informatycznych Marek D≈Çugosz"
+#define A_KOMU_A  "Cieszyn, ul. R√≥wna 16"
+#define A_AUTOR   "A.D. 1991-2024, Marek D≈Çugosz, Cieszyn, ul. R√≥wna 16, tel. 338522553"
 #define A_FILELIMIT '36'
 #define A_NAZBEG 5
 #define A_NRLTH 3
