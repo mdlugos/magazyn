@@ -3213,7 +3213,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
       u+=" "
       s:=SAVESCREEN(9,_scol1-1, 20, _scol2)
       set color to (_SRAMKA)
-      @  9,_scol1-1, 20, _scol2 BOX hb_UTF8ToStrBox('╔═╗║╝═╚║ ')
+      @  9,_scol1-1, 20, _scol2 BOX UNICODE '╔═╗║╝═╚║ '
       @  9,_scol1+1 SAY 'Poprawianie dopisywanie kasowanie firmy'
       @ 11,_scol1+1 SAY 'Nr'
 #ifdef A_KHFILLZERO

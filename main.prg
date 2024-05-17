@@ -388,11 +388,11 @@ endif
           @ 4,maxcol()/2-29 TO 7,maxcol()/2+30
 #else
 */
-          @ 4,maxcol()/2-29,7,maxcol()/2+30 BOX hb_UTF8ToStrBox("╔═╗║╝═╚║ ")
+          @ 4,maxcol()/2-29,7,maxcol()/2+30 BOX UNICODE "╔═╗║╝═╚║ "
           @ 4,maxcol()/2-4 SAY " M E N U " COLOR if(iscolor(),_sbkgr,"W+")
 //#endif
 
-          @ maxrow()-2,0,maxrow(),maxcol() BOX hb_UTF8ToStrBox("╔═╗║╝═╚║ ")
+          @ maxrow()-2,0,maxrow(),maxcol() BOX UNICODE "╔═╗║╝═╚║ "
 
           @ maxrow()-1,1 SAY "                     -wybór opcji    -                  -wyjście" color if(iscolor(),_sbnorm,"W+")
 

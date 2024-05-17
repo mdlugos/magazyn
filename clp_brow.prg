@@ -50,7 +50,7 @@ else
    go top
 ENDIF
   // frame window
-  @ nTop, nLeft, nBottom, nRight box hb_UTF8ToStrBox("╒═╕│╛═╘│")
+  @ nTop, nLeft, nBottom, nRight box UNICODE "╒═╕│╛═╘│"
 
   // clear status row
   @ nTop + 1, nLeft + 1 say Space(nRight - nLeft - 1)
@@ -249,7 +249,7 @@ ENDIF
       txt=IndexkeY(i)
       scr_buf = SAVESCREEN(8, 1, 19, 78)
       scroll(8, 1, 19, 78, 0)
-      @ 9,3,18,76 BOX hb_UTF8ToStrBox("╒═╕│╛═╘│") COLOR "W+"
+      @ 9,3,18,76 BOX UNICODE "╒═╕│╛═╘│" COLOR "W+"
       @ 11,5 say "Podaj  numer  klucza  indeksowego  (Esc - bez indeksowania)"
       do while .not. empty(txt)
           @ 11+i,5 prompt str(i,1)+" - " + LEFT(txt, 66)
@@ -317,7 +317,7 @@ ENDIF
 
       scroll(8, 1, 19, 78, 0)
       set color to W+
-      @ 9,3,18,76 BOX hb_UTF8ToStrBox("╒═╕│╛═╘│")
+      @ 9,3,18,76 BOX UNICODE "╒═╕│╛═╘│"
       set color to W
       @ 11,5 say "Podaj  wyrażenie filtra            (Esc - rezygnacja)"
       @ 13,5 say 'Dostępne relacje: =,#,$,<,>,<=,>= '

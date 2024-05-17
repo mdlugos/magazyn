@@ -990,7 +990,7 @@ IF _si<_srown
     --_srow1
     SCROLL(_srow1-1,_scol1-1,_srow2-1,_scol2,1)
   ENDIF
-  @ _srow2-1,_scol1-1,_srow2,_scol2 BOX hb_UTF8ToStrBox('│ ││┘─└│') COLOR _SRAMKA
+  @ _srow2-1,_scol1-1,_srow2,_scol2 BOX UNICODE '│ ││┘─└│' COLOR _SRAMKA
   @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
   ++_si
  ELSE
@@ -1018,7 +1018,7 @@ IF _si<_srown
    ELSE
     --_srow1
   ENDIF
-  @ _srow1-1,_scol1-1,_srow1,_scol2 BOX hb_UTF8ToStrBox('┌─┐││ ││') COLOR _SRAMKA
+  @ _srow1-1,_scol1-1,_srow1,_scol2 BOX UNICODE '┌─┐││ ││' COLOR _SRAMKA
   @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
   ++_si
  ELSE
@@ -1124,22 +1124,22 @@ endif
 
       if _srowe>_srow2 .and. !_sef
         ++_srow2
-        @ _srow2-1,_scol1-1,_srow2,_scol2 BOX hb_UTF8ToStrBox('│ ││┘─└│') COLOR _SRAMKA
+        @ _srow2-1,_scol1-1,_srow2,_scol2 BOX UNICODE '│ ││┘─└│' COLOR _SRAMKA
         @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
         oef:=.f.
       elseif _srowb<_srow1-1 .and. !_sbf
         --_srow1
-        @ _srow1-1,_scol1-1,_srow1,_scol2 BOX hb_UTF8ToStrBox('┌─┐││ ││') COLOR _SRAMKA
+        @ _srow1-1,_scol1-1,_srow1,_scol2 BOX UNICODE '┌─┐││ ││' COLOR _SRAMKA
         @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
         obf:=.f.
       elseif _srowe>_srow2
         ++_srow2
-        @ _srow2-1,_scol1-1,_srow2,_scol2 BOX hb_UTF8ToStrBox('│ ││╛═╘│') COLOR _SRAMKA
+        @ _srow2-1,_scol1-1,_srow2,_scol2 BOX UNICODE '│ ││╛═╘│' COLOR _SRAMKA
         @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) COLOR _SRAMKA
         oef:=.t.
       else
         --_srow1
-        @ _srow1-1,_scol1-1,_srow1,_scol2 BOX hb_UTF8ToStrBox('╒═╕││ ││') COLOR _SRAMKA
+        @ _srow1-1,_scol1-1,_srow1,_scol2 BOX UNICODE '╒═╕││ ││' COLOR _SRAMKA
         @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) COLOR _SRAMKA
         obf:=.t.
       endif
@@ -1161,7 +1161,7 @@ endif
         ++_srow2
         ++_si
         _srec[_si]=RECNO()
-        @ _srow2-1,_scol1-1,_srow2,_scol2 BOX hb_UTF8ToStrBox('│ ││┘─└│') COLOR _SRAMKA
+        @ _srow2-1,_scol1-1,_srow2,_scol2 BOX UNICODE '│ ││┘─└│' COLOR _SRAMKA
         @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
         @ _srow2-1,_scol1 say padr(EVAL(_sprompt,1,_s),_scol2-COL())
         oef:=.f.
@@ -1172,7 +1172,7 @@ endif
       DO WHILE _srow1>_srowb+1 .AND. D_MYSZE .AND. _skip(-1,0,_s)
         ++_sm
         --_srow1
-        @ _srow1-1,_scol1-1,_srow1,_scol2 BOX hb_UTF8ToStrBox('┌─┐││ ││') COLOR _SRAMKA
+        @ _srow1-1,_scol1-1,_srow1,_scol2 BOX UNICODE '┌─┐││ ││' COLOR _SRAMKA
         @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
         obf:=.f.
         AINS(_srec,1)
@@ -1189,7 +1189,7 @@ endif
             ++_sm
             ++_srow2
             SCROLL(_srow1,_scol1-1,_srow2,_scol2,-1)
-            @ _srow1-1,_scol1-1,_srow1,_scol2 BOX hb_UTF8ToStrBox('┌─┐││ ││') COLOR _SRAMKA
+            @ _srow1-1,_scol1-1,_srow1,_scol2 BOX UNICODE '┌─┐││ ││' COLOR _SRAMKA
             @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
             obf:=.f.
             AINS(_srec,1)
@@ -1205,7 +1205,7 @@ endif
           ++_si
           _srec[_si]=RECNO()
           SCROLL(_srow1-1,_scol1-1,_srow2-1,_scol2,1)
-          @ _srow2-1,_scol1-1,_srow2,_scol2 BOX hb_UTF8ToStrBox('│ ││┘─└│') COLOR _SRAMKA
+          @ _srow2-1,_scol1-1,_srow2,_scol2 BOX UNICODE '│ ││┘─└│' COLOR _SRAMKA
           @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
           @ _srow2-1,_scol1 say padr(EVAL(_sprompt,1,_s),_scol2-COL())
           oef:=.f.
@@ -1261,7 +1261,7 @@ else
   endif
   _srow2:=_srow1+x
   _si:=x
-  @ _srow1-1,_scol1-1,_srow2,_scol2 BOX hb_UTF8ToStrBox('┌─┐│┘─└│') COLOR _SRAMKA
+  @ _srow1-1,_scol1-1,_srow2,_scol2 BOX UNICODE '┌─┐│┘─└│' COLOR _SRAMKA
   @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
   @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
   _sef=.F.

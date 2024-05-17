@@ -798,7 +798,7 @@ PROCEDURE DOK10(_f)
   endif
 
   set color to (_sbkgr)
-  @ 1,0,6,79 BOX hb_UTF8ToStrBox('╔═╗║║ ║║ ')
+  @ 1,0,6,79 BOX UNICODE '╔═╗║║ ║║ '
   if dok_kh
     @ 1,2 SAY if(pm=-1,"Odbiorca:","Dostawca:")
     @ 1,12 SAY trim(dok_naz)
@@ -810,7 +810,7 @@ _frow:=2
 
 #ifdef A_FA
   if dok_p_r="F"
-    @ 5,0,11,79 BOX hb_UTF8ToStrBox('╟─╢║║ ║║ ')
+    @ 5,0,11,79 BOX UNICODE '╟─╢║║ ║║ '
     _frow:=7
  #ifdef A_FK
    if dok_fk
@@ -884,7 +884,7 @@ _frow:=2
  #undef D_ODDO
  #undef D_KPR
     @ 5,7 say "gotówką───────przelewem─────────kartą───────Nr karty───Termin płatności"
-    @ _frow+1,0,_frow+4,79 BOX hb_UTF8ToStrBox(if(pozycja>D_LP1.and.!nowydm,'╠═╣║╜─╙║ ','╠═╣║╝═╚║ '))
+    @ _frow+1,0,_frow+4,79 BOX if(pozycja>D_LP1.and.!nowydm,'╠═╣║╜─╙║ ','╠═╣║╝═╚║ ')
     @ _frow+1,2 say 'Lp══════Materiał═══════════════════════Ilość════════Cena zbytu══'+WANAZ
     return
     *******
@@ -959,7 +959,7 @@ endif
        devout("    Data   Nr KPR Nr Kol")
     endif
 #endif
-  @ _frow+1,0,_frow+4,79 BOX hb_UTF8ToStrBox(if(pozycja>D_LP1.and.!nowydm,'╠═╣║╜─╙║ ','╠═╣║╝═╚║ '))
+  @ _frow+1,0,_frow+4,79 BOX UNICODE if(pozycja>D_LP1.and.!nowydm,'╠═╣║╜─╙║ ','╠═╣║╝═╚║ ')
   @ _frow+1,2 say   'Lp══Kod materiału══════════════════════Ilość════════Cena════════'+WANAZ
 #ifdef A_SB
   @ _frow+1,10 SAY if(dok_p_r="S",'Stan bież.',if(""=dok_kon,'','══'+if(dok_zew="W","Zlecenie","Rodzaj")))
@@ -2681,7 +2681,7 @@ IF p='DOK4'
       endif
    else
       ++_fl
-      @ (_fl-_fj)*_fskip+_frow,_fco1,(_fl-_fj+1)*_fskip+_frow,_fco2 BOX hb_UTF8ToStrBox('║ ║║╝═╚║ ') color _sbkgr
+      @ (_fl-_fj)*_fskip+_frow,_fco1,(_fl-_fj+1)*_fskip+_frow,_fco2 BOX UNICODE '║ ║║╝═╚║ ' color _sbkgr
       @ (_fl-_fj)*_fskip+_frow,_fco1+1 SAY str(_fl,3)+'.' color _sbkgr
    endif
    g:killfocus()
@@ -3728,7 +3728,7 @@ if _flp>D_LPVAL(dm->pozycja) .or. if(_flp=0, dm->pozycja >D_LP0,_fi#D_LPVAL(pozy
    _fj:=0
    _fl:=_fi:=1
    RESTSCREEN(_frow+2,_fco1,maxrow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(_frow+2)+1))
-   @ _frow+2,_fco1,_frow+4,_fco2 BOX hb_UTF8ToStrBox(if(pozycja>D_LP1,'║ ║║╜─╙║ ','║ ║║╝═╚║ ')) color _SBKGR
+   @ _frow+2,_fco1,_frow+4,_fco2 BOX UNICODE if(pozycja>D_LP1,'║ ║║╜─╙║ ','║ ║║╝═╚║ ') color _SBKGR
    _fpopkey:=.f.
    dok11(_f)
    _fkey:=K_ESC

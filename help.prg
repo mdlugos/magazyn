@@ -82,7 +82,7 @@ endif
         * clear window and draw box
         lastcolor = SETCOLOR("RB+/GR")
         scroll(r1,c1,r2,c2, 0)
-        @ r1+1,c1+2,r2-1,c2-2 BOX hb_UTF8ToStrBox('┌─┐│┘─└│')
+        @ r1+1,c1+2,r2-1,c2-2 BOX UNICODE '┌─┐│┘─└│'
         SET COLOR TO I
         @ r2-1,c1+3 say 'Esc'
         @ r2-1,c1+7 SAY "^"+CHR(26)

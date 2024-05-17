@@ -281,7 +281,7 @@ endif
     set cursor off
   scr= savescreen(9,1,22,78)
   stos:={}
-  @ 9,1,22,78 BOX hb_UTF8ToStrBox('╔═╗║╝═╚║') color 'RG+/BG'
+  @ 9,1,22,78 BOX UNICODE '╔═╗║╝═╚║' color 'RG+/BG'
   @ 9,3 SAY 'Wpisywanie nowej, poprawianie lub kasowanie starej Karty Materiału' color 'RG+/BG'
   SET COLOR TO BG+/B
   SCROLL(10,2,21,77,0)
