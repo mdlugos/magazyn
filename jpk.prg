@@ -109,7 +109,7 @@ if empty(token)
       endif
    endif
    s:=findfile('session.json')
-   token['sessiontoken']:=if(empty(s),,hb_jsondecode(memoread(s),,'UTF8'))
+   token['sessiontoken']:=if(empty(s),,hb_jsondecode(memoread(s)))
 endif
 
 //    save screen to scr
@@ -128,10 +128,10 @@ if !empty(token['sessiontoken'])
    endif
 endif
 if empty(token['sessiontoken'])
-   curl('Session/AuthorisationChallenge','-X POST -H Content-Type:application/json',hb_jsonencode({"contextIdentifier"=>{"type"=>"onip","identifier"=>nip}},,'UTF8'),@ans)
+   curl('Session/AuthorisationChallenge','-X POST -H Content-Type:application/json',hb_jsonencode({"contextIdentifier"=>{"type"=>"onip","identifier"=>nip}}),@ans)
    j:=at('{',ans)
-   if j<=5 .or. empty(j:=hb_jsondecode(substr(ans,j),,'UTF8')) .or. !hb_hhaskey(j,"timestamp")
-     alarm(hb_translate(ans,'UTF8',))
+   if j<=5 .or. empty(j:=hb_jsondecode(substr(ans,j))) .or. !hb_hhaskey(j,"timestamp")
+     alarm(ans)
      //restore screen from scr
      return NIL
    endif
@@ -170,14 +170,14 @@ if empty(token['sessiontoken'])
    s:=memoline(ans,,1)
    if ' 201 '$s .or. ' 100 '$s
    else
-      alarm(HB_TRANSLATE(ans,'UTF8',))
+      alarm(ans)
       //restore screen from scr
       return NIL
    endif
    j:=at('{',ans)
    ans:=subs(ans,j)
    hb_memowrit(defa+'session.json',ans,.f.)
-   token['sessiontoken']:=hb_jsondecode(ans,,'UTF8')
+   token['sessiontoken']:=hb_jsondecode(ans)
    HB_IDLESLEEP(1) // jak za szybko to błąd
 endif
 //restore screen from scr
@@ -204,12 +204,12 @@ local scr,i
 
    if empty(i:=at('<?xml',ans))
       //hb_memowrit('get.txt',ans,.f.)
-      alarm(HB_TRANSLATE(ans,'UTF8',))
+      alarm(ans)
       return NIL
    endif
 
    ans:=subs(ans,i)
-return ans //hb_translate(ans,'UTF8',)
+return ans
 
 func ksef_sendfa(c,b,d)
 local a,ans,i,scr
@@ -218,7 +218,7 @@ local a,ans,i,scr
       c:=memoread(c)
    endif
 
-   b:={'invoiceHash'=>{'fileSize'=>len(c), 'hashSHA'=> {'algorithm'=> 'SHA-256', 'encoding'=> 'Base64', 'value'=> HB_BASE64ENCODE(HB_SHA256(c,.t.))}}, 'invoicePayload'=> {'type'=> 'plain', 'invoiceBody'=>HB_BASE64ENCODE(c)}}
+   b:={'invoiceHash'=>{'fileSize'=>binlen(c), 'hashSHA'=> {'algorithm'=> 'SHA-256', 'encoding'=> 'Base64', 'value'=> HB_BASE64ENCODE(HB_SHA256(c,.t.))}}, 'invoicePayload'=> {'type'=> 'plain', 'invoiceBody'=>HB_BASE64ENCODE(c)}}
    hb_hautoadd(b,.t.)
 
    //save screen to scr
@@ -230,12 +230,12 @@ local a,ans,i,scr
       RETURN NIL
    endif
 
-   curl('Invoice/Send','-X PUT -H Content-Type:application/json -H sessionToken:'+d,hb_jsonencode(b,,'UTF8'),@ans)
+   curl('Invoice/Send','-X PUT -H Content-Type:application/json -H sessionToken:'+d,hb_jsonencode(b),@ans)
    if empty(i:=at('{',ans)) .or.;
-      empty(i:=hb_jsondecode(subs(ans,i),,'UTF8')) .or.;
+      empty(i:=hb_jsondecode(subs(ans,i))) .or.;
       empty(i:=hb_HGetDef(i,'elementReferenceNumber',''))
       hb_memowrit('send.txt',ans,.f.)
-      alarm(HB_TRANSLATE(ans,'UTF8',))
+      alarm(ans)
       //restore screen from scr
       return NIL
    endif
@@ -244,7 +244,7 @@ local a,ans,i,scr
       HB_IDLESLEEP(1)
       curl(a,'-X GET -H sessionToken:'+d,,@ans)
       i:=at('{',ans)
-      i:=hb_jsondecode(subs(ans,i),,'UTF8')
+      i:=hb_jsondecode(subs(ans,i))
       //"invoiceStatus":{"invoiceNumber":"FA6","ksefReferenceNumber"
       c:=hb_HGetDef(i,"invoiceStatus",{=>})
       if !empty(c) .and. hb_HHasKey(c,"ksefReferenceNumber")
@@ -255,7 +255,7 @@ local a,ans,i,scr
       c:=hb_HGetDef(i,"processingCode",400)
       if c>=400
         hb_memowrit('status.txt',ans,.f.)
-        alarm(HB_TRANSLATE(ans,'UTF8',))
+        alarm(ans)
         //restore screen from scr
         return NIL
       endif
@@ -268,7 +268,7 @@ return NIL
 //http://www.e-deklaracje.mf.gov.pl/Repozytorium/Slowniki/KodyKrajow_v3-0.xsd
 static func nip2kraj(nip)
      nip:=Upper(left(alltrim(nip),2))
-     if IsDigit(nip) .or. len(nip)<2 
+     if IsDigit(nip) .or. binlen(nip)<2 
         return "PL"
      endif
 return nip
@@ -391,7 +391,7 @@ local element, node, s
      addtree(jpk,fa,hb_HPos(fa,'Podmiot1'))
 
      mxmlsetwrapmargin(250)
-     if len(filen) < 1024
+     if binlen(filen) < 1024
         s:=memvar->defa+filen
         mxmlSaveFile( tree, s , @wscb() )
      else
@@ -480,7 +480,7 @@ local c,d,a,b,n,h
                   d:=b
                elseif !empty(b:=hb_ctod(d,"YYYY-MM-DD"))
                   d:=b
-               elseif tran(b:=val(d),)==d .and. ('.'$d .or. len(d)<9)
+               elseif tran(b:=val(d),)==d .and. ('.'$d .or. binlen(d)<9)
                   d:=b
                endif
             endif
@@ -1033,7 +1033,7 @@ func jpk_vatdeklaracja(wariant, deklaracja, na, ar)
         hb_hAutoAdd(a,.t.)
         hb_hKeepOrder(a,.f.)
         if valtype(deklaracja) = 'H'
-          hb_heval(deklaracja,{|k,v,i|a[if(len(k)>4,k,k+' ')]:=v})
+          hb_heval(deklaracja,{|k,v,i|a[if(binlen(k)>4,k,k+' ')]:=v})
         endif
         deklaracja := a
         a := NIL
@@ -1216,7 +1216,7 @@ endif
 
     endif
 
-    if !empty(nip) .and. isalpha(nip) .and. len(strtran(nip,' '))<10
+    if !empty(nip) .and. isalpha(nip) .and. binlen(strtran(nip,' '))<10
        nip:='brak'
     endif
 
@@ -1235,7 +1235,7 @@ endif
      node := mxmlNewElement( element, 'LpSprzedazy' )
      mxmlNewText( node,,ltrim(tran(++lp,)))
 
-    if dekl .and. len(trim(nip))>10 .and. nip>='A'
+    if dekl .and. binlen(trim(nip))>10 .and. nip>='A'
      node := mxmlNewElement( element, 'KodKrajuNadaniaTIN')
      mxmlNewText( node,,left(nip,2))
      nip := alltrim(subs(nip,3))
@@ -1419,7 +1419,7 @@ local a,b,c,d,element,node,i
 
       endif
 
-    if !empty(nip) .and. isalpha(nip) .and. len(strtran(nip,' '))<10
+    if !empty(nip) .and. isalpha(nip) .and. binlen(strtran(nip,' '))<10
        nip:='brak'
     endif
 
@@ -1437,7 +1437,7 @@ local a,b,c,d,element,node,i
      node := mxmlNewElement( element, 'LpZakupu' )
      mxmlNewText( node,,ltrim(tran(++lp,)))
 
-     if dekl .and. len(trim(nip))>10 .and. nip>='A'
+     if dekl .and. binlen(trim(nip))>10 .and. nip>='A'
           node := mxmlNewElement( element, 'KodKrajuNadaniaTIN')
           mxmlNewText( node,,left(nip,2))
           nip := alltrim(subs(nip,3))

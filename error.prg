@@ -29,7 +29,7 @@ SET(_SET_DEBUG,.t.)
 ErrorBlock( {|e| DefError(e)} )
 
 t:=a+f+fa
-n:=int(len(t)/4)*4
+n:=int(binlen(t)/4)*4
 for i:=1 to n step 4
   sc+=bin2l(substr(t,i,4))
 next
@@ -44,8 +44,7 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
 #ifdef __HARBOUR__
   hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
   REQUEST HB_LANG_PL
-  HB_LANGSELECT('PL')
-
+  SET(_SET_LANGUAGE,'PL')
   REQUEST HB_CODEPAGE_PL852M
 //  REQUEST HB_CODEPAGE_PLMAZ //ramki
   REQUEST HB_CODEPAGE_UTF8EX
@@ -59,7 +58,7 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
    SetCursor( 0 )
    hb_gtInfo( HB_GTI_CLOSABLE, .t. )
    hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
-   HB_CDPSELECT('UTF8EX')
+   SET(_SET_CODEPAGE,'UTF8EX')
 /*
     #ifdef PC852
      HB_CDPSELECT(PC852)
@@ -69,8 +68,9 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
     #endif
 */
   #else
-   HB_CDPSELECT('UTF8EX')
+   SET(_SET_CODEPAGE,'UTF8EX')
   #endif
+   SET(_SET_DBCODEPAGE,PC852)
    //SET(_SET_DEBUG, .t.)
 #ifdef A_ADS
 #ifdef __PLATFORM__WINDOWS

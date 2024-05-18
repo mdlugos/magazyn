@@ -223,7 +223,7 @@ private gt
 #else
   #define D_LOCK
 #endif
-    if DM->kto_pisal=chr(255)
+    if DM->kto_pisal=HB_UTF8CHR(0x00A0)
       select main
         SEEK dM->(KEY_DOK+NR_DOWODU)
         y:={};l:=.f.;x:=0
@@ -244,7 +244,7 @@ private gt
     l:=if(empty(dok),dok_def[7],dok)
 
     if valtype(l)$"MC"
-     if len(l)<=12
+     if binlen(l)<=12
         y:=lower(l)
         if !"."$y
            y+=".ppr"
@@ -282,7 +282,7 @@ private gt
 #else
   #define D_DF (wartosc+wart_vat)
 #endif
-    private df:=dok_p_r='F' .and. dok_df .and. kto_pisal=chr(255)+chr(0), df_ver:=-1, aux, komunikat//,numerp,datap
+    private df:=dok_p_r='F' .and. dok_df .and. kto_pisal=HB_UTF8CHR(0x00A0)+chr(0), df_ver:=-1, aux, komunikat//,numerp,datap
 #ifdef A_WP
     IF wart_par#0.and.(round(D_DF-wart_par,2)#0.or.round(vat_par-wart_vat,2)#0)
         alarm("WARTOŚĆ WYDRUKOWANEGO PARAGONU WYNOSI:;"+ltrim(tran(wart_par,"@E"))+" ZŁ, w tym "+ltrim(tran(vat_par,"@E"))+" podatku VAT.;NIE MOŻNA DRUKOWAĆ RACHUNKU O WARTOŚCI INNEJ NIŻ PARAGON.")
@@ -340,7 +340,7 @@ private gt
     print(1,lpt)
 
 #ifdef A_DFP
-    changed:=kto_pisal=chr(255)
+    changed:=kto_pisal=HB_UTF8CHR(0x00A0)
     if df
        aux:=NIL
        do while aux=NIL
@@ -458,16 +458,16 @@ private gt
     l:=j+1
 #ifdef A_DF
     IF dok_df
-     if kto_pisal=chr(255)+chr(0)
+     if kto_pisal=HB_UTF8CHR(0x00A0)+chr(0)
        changed:=.t.
        kto_pisal:=chr(0)+operator
-     elseif kto_pisal=chr(255)
+     elseif kto_pisal=HB_UTF8CHR(0x00A0)
        changed:=.t.
        kto_pisal:=chr(1)+operator
      endif
-    ELSEIF KTO_PISAL=CHR(255)
+    ELSEIF KTO_PISAL=HB_UTF8CHR(0x00A0)
 #else
-    IF KTO_PISAL=CHR(255)
+    IF KTO_PISAL=HB_UTF8CHR(0x00A0)
 #endif
           changed:=.t.
           KTO_PISAL:=OPERATOR
@@ -628,10 +628,10 @@ private gt
          elseif fakkormem#NIL
 *
           x:=getlines(trim(subs(dm->nr_faktury,D_MM+2)),',')
-          y:=ascan(fakkormem,{|x|index=pad(x[1],len(index)).and.round(x[3]-cena,2)=0.and.x[4]=proc_vat})
+          y:=ascan(fakkormem,{|x|index=pad(x[1],binlen(index)).and.round(x[3]-cena,2)=0.and.x[4]=proc_vat})
           if len(x)>0 .and. y>0
              for k:=1 to len(x)
-                y:=ascan(fakkormem,{|a|a[6]=D_LPPUT(val(x[k])) .and. index=pad(a[1],len(index)).and.round(a[3]-cena,2)=0.and.a[4]=proc_vat })
+                y:=ascan(fakkormem,{|a|a[6]=D_LPPUT(val(x[k])) .and. index=pad(a[1],binlen(index)).and.round(a[3]-cena,2)=0.and.a[4]=proc_vat })
                 if y<>0
                    exit
                 endif
@@ -691,7 +691,7 @@ private gt
           il_f:=il_f+fakkormem[y,2]
           adel(fakkormem,y)
           asize(fakkormem,len(fakkormem)-1)
-          nz:=space(len(nz))
+          nz:=space(binlen(nz))
 *
           if il_f=0
              do while j<=linecount .and. !(valtype(dok[j])="C" .and. dok[j]="SUMA")
@@ -1314,11 +1314,11 @@ RETURN -1
 *****************************
 function rsread(n,x,y)
 local c:=chr(0), i:=0
-if valtype(x)<>'C' .or. !empty(y) .and. len(x)<y
+if valtype(x)<>'C' .or. !empty(y) .and. binlen(x)<y
    x:=space(y)
 endif
 if empty(y)
-   y:=len(x)
+   y:=binlen(x)
 endif
 while hb_comRecv( n, @c, 1 , D_TIMEOUT ) = 1
    x:=stuff(@x,++i,1,c)
@@ -1335,7 +1335,7 @@ return HB_TRANSLATE(a,,'PLMAZ')
 ************************
 static function poscheck(a)
 local i,b:=511
-for i:=1 to len(a)
+for i:=1 to binlen(a)
   b:= hb_bitxor(b,asc(subs(a,i,1)))
 next
 return subs(HB_NUMTOHEX(b),2)
@@ -1355,9 +1355,9 @@ if valtype(aux)<>'N'
    endif
    ndclose:=.t.
 endif
-  if Len(ft)>0
+  if binLen(ft)>0
      ft:=chgmaz(ft)
-     ret:=rswrite(aux,chr(27)+'P'+ft+poscheck(ft)+chr(27)+'\')=len(ft)+6
+     ret:=rswrite(aux,chr(27)+'P'+ft+poscheck(ft)+chr(27)+'\')=binlen(ft)+6
   endif
 if ret .and. b#NIL
    if b='\'
@@ -1478,13 +1478,13 @@ RETURN -1
 ***********************
 function rsread(n,x,y)
 static spare:=''
-local c, i:=0 , j:=len(spare), k
+local c, i:=0 , j:=binlen(spare), k
 
-if valtype(x)<>'C' .or. !empty(y) .and. len(x)<y
+if valtype(x)<>'C' .or. !empty(y) .and. binlen(x)<y
    x:=space(y)
 endif
 if empty(y)
-   y:=len(x)
+   y:=binlen(x)
 endif
 
   if j>0
@@ -1628,7 +1628,7 @@ endif
        ft+=chr(9)
      endif
      ft:=chgmaz(ft)
-     ret:=rswrite(aux,chr(2)+ft+'#'+poscheck(ft)+chr(3))=len(ft)+7
+     ret:=rswrite(aux,chr(2)+ft+'#'+poscheck(ft)+chr(3))=binlen(ft)+7
   endif
 if ret
    //b:=left(ft,at(chr(9),ft))
@@ -1638,13 +1638,13 @@ if ret
    c:=rsread(aux,@b,1024)
    b:=left(b,c)
    if c>5
-      if right(b,5) == poscheck(subs(b,2,len(b)-7))+chr(3)
+      if right(b,5) == poscheck(subs(b,2,binlen(b)-7))+chr(3)
            c:=left(ft,at(chr(9),ft))
            if b=chr(2)+c
               if b=chr(2)+c +'?'
-                 message('Drukarka odesłała numer błędu: '+str(val(subs(b,len(c)+3))))
+                 message('Drukarka odesłała numer błędu: '+str(val(subs(b,binlen(c)+3))))
               else
-                 b:=subs(b,len(c)+2,len(b)-len(c)-7)
+                 b:=subs(b,binlen(c)+2,binlen(b)-binlen(c)-7)
                  ret:=.t.
               endif
            elseif b=chr(2)+'ERR'
@@ -1685,8 +1685,8 @@ return RS_DONE()=0
 
 function rswrite(x,buf,n)
 
-  if n=NIL .or. Len(buf)<n
-    n:=Len(buf)
+  if n=NIL .or. binLen(buf)<n
+    n:=binLen(buf)
   endif
   if n>=2 .and. ! RS_SEND(asc(subs(buf,2,1)),,subs(buf,3,n-2))
     n:=0
@@ -1715,12 +1715,12 @@ local s:=' ',ret,disp,x,kod
 
      DO WHILE .T.
         disp:=""#l
-        s:=space(len(ack))
+        s:=space(binlen(ack))
         if RS_SEND(kod,@s,rtr)=0
            if ack=='' .or. s<>chr(21)
               ret:=.t.
            endif
-           ack:=pad(s,len(ack))
+           ack:=pad(s,binlen(ack))
            if !disp .and. ret
               exit
            endif
@@ -1986,11 +1986,11 @@ RETURN -1
 ***********************
 function rsread(n,x,y)
 local c:=chr(0), i:=0 , j
-if valtype(x)<>'C' .or. !empty(y) .and. len(x)<y
+if valtype(x)<>'C' .or. !empty(y) .and. binlen(x)<y
    x:=space(y)
 endif
 if empty(y)
-   y:=len(x)
+   y:=binlen(x)
 endif
 
   if valtype(n)='P'
@@ -2093,7 +2093,7 @@ memvar aux,df_ver
         endif
 
      if empty(rtr)
-        ret :=  len(ack) = 0 .or. rsread( 3, @ack, len(ack) ) = len(ack)
+        ret :=  len(ack) = 0 .or. rsread( 3, @ack, binlen(ack) ) = binlen(ack)
      else
         ret:=.t.
         s:=''
@@ -2106,10 +2106,10 @@ memvar aux,df_ver
            rtr := subs( rtr, 3 )
         endif
         if ret
-           ret := ( rtr == '' ) .or. rswrite( 3, rtr ) == len( rtr )
-           if (len(ack)>1)
-             ack:=space(len(ack)-1)
-             ret := rsread( 3, @ack, len(ack) ) = len(ack)
+           ret := ( rtr == '' ) .or. rswrite( 3, rtr ) == binlen( rtr )
+           if (binlen(ack)>1)
+             ack:=space(binlen(ack)-1)
+             ret := rsread( 3, @ack, binlen(ack) ) = binlen(ack)
              ack := s + ack
            endif
         endif
@@ -2616,7 +2616,7 @@ oprn:=D_HWPRN
   print(1 D_LPT)
   setprc(0,0)
 
-    IF KTO_PISAL=CHR(255)
+    IF KTO_PISAL=HB_UTF8CHR(0x00A0)
       KTO_PISAL:=OPERATOR
       changed:=.t.
     ENDIF     

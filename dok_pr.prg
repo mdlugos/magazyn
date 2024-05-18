@@ -86,7 +86,7 @@ field transport
 
 #ifdef A_KSEF
 field nr_ksef
-#define D_EF if(len(trim(nr_ksef))<35,'│','§')
+#define D_EF if(binlen(trim(nr_ksef))<35,'│','§')
 #else
 #define D_EF '│'
 #endif
@@ -169,7 +169,7 @@ field przelewem,czekiem
    #ifdef A_KTM
      #define STDPOZ1 smb_dow+nr_dowodu+'/'+D_LPSTR1(pozycja)
      #ifdef A_OBR
-       #define STDPOZ2 smb_dow+nr_dowodu+if(data<=DatY->d_z_mies1 .or. kto_pisal=operator .or. kto_pisal#chr(255).and.!is_spec,"/","*")+D_LPSTR1(pozycja)
+       #define STDPOZ2 smb_dow+nr_dowodu+if(data<=DatY->d_z_mies1 .or. kto_pisal=operator .or. kto_pisal#HB_UTF8CHR(0x00A0).and.!is_spec,"/","*")+D_LPSTR1(pozycja)
        #define ILPIC 8,ILDEC
        #define STDTOP "Nr/p┬─Data┬──Ilość─┬Jedn┬───Koszty───────┬MG┬─Kod materiału──┬Materiał:"
        #define STDZLE tran(nr_zlec,"@R XXX/XXX/XX/XXXXX")
@@ -198,7 +198,7 @@ field przelewem,czekiem
         #define ILPIC 8,ILDEC
         #define STDPOZ1 smb_dow+nr_dowodu+'/'+str(D_LPVAL(pozycja),2)
         #ifdef A_ZATW
-        #define STDPOZ2 smb_dow+nr_dowodu+if(data<=DatY->d_z_mies1 .or. operator=kto_pisal .or. kto_pisal#chr(255).and.!is_spec,"/","*")+str(D_LPVAL(pozycja),2)
+        #define STDPOZ2 smb_dow+nr_dowodu+if(data<=DatY->d_z_mies1 .or. operator=kto_pisal .or. kto_pisal#HB_UTF8CHR(0x00A0).and.!is_spec,"/","*")+str(D_LPVAL(pozycja),2)
         #else
         #define STDPOZ2 STDPOZ1
         #endif
@@ -308,7 +308,7 @@ if doc_opcja
            _sfor:={||pozycja#D_LP0}
 #endif
 #ifdef A_DOKCOLOR
-         DEFAULT _scol2 TO min(maxcol(),_scol1+1+len(eval(_sprompt,0,_s,.t.)))
+         DEFAULT _scol2 TO min(maxcol(),_scol1+1+binlen(eval(_sprompt,0,_s,.t.)))
          a:=_sprompt
          _sprompt:={|d,_s,z,x|x:=eval(a,d,_s,z),if(z=.t.,x,(devout(left(x,_scol2-_scol1-1),A_DOKCOLOR ),''))}
 #endif
@@ -430,7 +430,7 @@ endif
            _spocz:=""
 #ifdef A_ZLEC11
            _spform={|p|TranR(p,"XXXXXXXXXXX|##|"+ INDEXPIC +"|XXXX.XX.XX")}
-           //_spform={|p|TranR(p,"XXXXXXXXXXX|")+TRANR(subs(p,len(nr_zlec)+1),"##|"+ INDEXPIC +"|XXXX.XX.XX")}
+           //_spform={|p|TranR(p,"XXXXXXXXXXX|")+TRANR(subs(p,binlen(nr_zlec)+1),"##|"+ INDEXPIC +"|XXXX.XX.XX")}
 #else
            _spform={|p|TranR(p,"XXXXXX|##|"+ INDEXPIC +"|XXXX.XX.XX")}
 #endif
@@ -549,7 +549,7 @@ DO CASE
 #else
 #ifdef A_DOKFAK
          _spocz+=UpP(trim(n_f))
-         _slth:=len(trim(n_f))
+         _slth:=binlen(trim(n_f))
 #else
          _spocz+=FIRMY->numer_kol
          _slth:=A_NRLTH
@@ -866,7 +866,7 @@ DO CASE
     ENDIF
 
    CASE _skey=asc('+')
-      _spocz:=left(_spocz,len(_spocz)-1)
+      _spocz:=left(_spocz,binlen(_spocz)-1)
       --_slth
       go _srec[_sm]
       _skey=ordnumber()

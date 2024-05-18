@@ -172,15 +172,15 @@ endif
 
 return a
 ************************
-func netuse(a,b,file,alias,shared,rdo)   // w netio sciezka serwera
+func netuse(a,b,file,alias,shared,rdo,cp)   // w netio sciezka serwera
 #ifdef A_NETIO
 memvar netio
  if !empty(netio) .and. file=netio
     file:='net:'+subs(file,len(netio)+1)
  endif
-return dbusearea(a,b,file,alias,shared,rdo,PC852)
+return dbusearea(a,b,file,alias,shared,rdo,cp)
 #else
-return NetusE(a,b,file,alias,shared,rdo)
+return NetusE(a,b,file,alias,shared,rdo,cp)
 #endif
 **************************
 func linpath(x)
@@ -190,7 +190,7 @@ return(Lower(Strtran(strtran(x,';',':'),'\','/')))
 return x
 #endif
 **************************
-func sel(alias,order,shared,rdo)
+func sel(alias,order,shared,rdo,cp)
 field baza,path,nazwa,plik
 local s,a,b,c
 
@@ -215,7 +215,7 @@ s:=select(alias)
          if !empty(b)
            a:=b
          endif
-         NUSE (a) ALIAS (alias)
+         NUSE (a) ALIAS (alias) CODEPAGE cp
       else
          a:=b:=alias
 #ifdef A_CDX
@@ -249,16 +249,16 @@ s:=select(alias)
          if !empty(b)
            a:=b
          endif
-         NetusE(NIL,NIL,a,alias,shared,rdo)
+         NetusE(NIL,NIL,a,alias,shared,rdo,cp)
          if !empty(a)
             a:=left(a,len(a)-4)
          endif
          s:=select()
          if !empty(order) .and. empty(ordbagname(order)) .and. select("indeks")#0 .and. indeks->(found())
             select indeks
-            c:=pad(c,len(baza))
+            c:=pad(c,binlen(baza))
             if valtype(order)='C'
-              b:=pad(upper(order),len(nazwa))
+              b:=pad(upper(order),binlen(nazwa))
               locate while baza==c for nazwa==b
             else
               skip (order-1)
@@ -290,7 +290,7 @@ s:=select(alias)
             if !empty(b)
               a:=b
             endif
-            NetusE(NIL,NIL,a,alias,shared,rdo)
+            NetusE(NIL,NIL,a,alias,shared,rdo,cp)
             s:=select()
          else
             locate for {||c:=trim(baza), lower(expand(c))==alias}
@@ -322,7 +322,7 @@ s:=select(alias)
             if used()
                select 0
             endif
-            NetusE(NIL,NIL,a,alias,shared,rdo)
+            NetusE(NIL,NIL,a,alias,shared,rdo,cp)
             s:=select()
             select indeks
             if found()
@@ -614,7 +614,7 @@ do while (b:=inkey(,INKEY_ALL))#0
    aadd(a,b)
 enddo
 
-set typeahead to max(len(a)+len(txt),set(_SET_TYPEAHEAD))
+set typeahead to max(len(a)+binlen(txt),set(_SET_TYPEAHEAD))
 if valtype(txt)='A'
   aeval(txt,{|x|hb_keyput(x)})
 else
@@ -642,7 +642,7 @@ DO WHILE (k:=nextkey())#0
    endif
 ENDDO
 
-set typeahead to max(len(txt),set(_SET_TYPEAHEAD))
+set typeahead to max(binlen(txt),set(_SET_TYPEAHEAD))
 KEYBOARD txt
 #endif
 RETURN(.t.)
@@ -804,7 +804,7 @@ if var = NIL
    var:=_get:buffer
 endif
 
-SX:=SL:=_l:=LEN(var) // długość var
+SX:=SL:=_l:=binlen(var) // długość var
 
 IF !EMPTY(VAR)
    sl:=hb_at(" ",var,sl-len(ltrim(var)))
@@ -948,7 +948,6 @@ RETURN r   // teraz ok
 *********************
 
 proc pushcdp(cdp)
-  DEFAULT cdp TO 'UTF8EX'
   ++cdpptr
   if len(cdpstack)<cdpptr
      asize(cdpstack,cdpptr)

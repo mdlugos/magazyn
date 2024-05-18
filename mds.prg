@@ -124,7 +124,7 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
   endif
 
   if _scol1=NIL.or._scol2=NIL
-     _stxt:=len(eval(_sprompt,0,_s,.t.))
+     _stxt:=binlen(eval(_sprompt,0,_s,.t.))
      if _scol2=NIL .and. _scol1=NIL
         _scol2:=min(maxcol(),max(_stxt,int(COL()+_stxt/2))+1)
         _scol1:=max(1,_scol2-_stxt)
@@ -391,7 +391,7 @@ elseif ( k=K_CTRL_LEFT .or. k=K_CTRL_RIGHT ) .and. ordnumber()<>0
       endif
    endif
    _swar:=&('{|p|'+IndexkeY(0)+'=p'+'}')
-   _spocz:=left(_spocz,len(_spocz)-_slth)
+   _spocz:=left(_spocz,binlen(_spocz)-_slth)
    _slth:=0
    REFRESH(1,_s)
 elseif k=K_F9
@@ -719,18 +719,18 @@ FUNCTION _sbot(_s)
             GO 0
 #ifdef UpP
 #ifdef __HARBOUR__
-          ELSEIF len(DbOrderInfo(DBOI_KEYVAL)) > len(_spocz)
+          ELSEIF binlen(DbOrderInfo(DBOI_KEYVAL)) > binlen(_spocz)
             SEEK _spocz+chr(if(DbOrderInfo(DBOI_ISDESC),0,255))
 #else
-          ELSEIF len(&(IndexkeY(0))) > len(_spocz)
+          ELSEIF binlen(&(IndexkeY(0))) > binlen(_spocz)
             SEEK _spocz+chr(255)
 #endif
 #endif
           ELSE
 #ifdef __HARBOUR__
-            SEEK LEFT(_spocz,LEN(_spocz)-1)+CHR(min(255,max(0,ASC(RIGHT(_spocz,1))+if(DbOrderInfo(DBOI_ISDESC),-1,1))))
+            SEEK LEFT(_spocz,binlen(_spocz)-1)+CHR(min(255,max(0,ASC(RIGHT(_spocz,1))+if(DbOrderInfo(DBOI_ISDESC),-1,1))))
 #else
-            SEEK LEFT(_spocz,LEN(_spocz)-1)+CHR(min(255,ASC(RIGHT(_spocz,1))+1))
+            SEEK LEFT(_spocz,binlen(_spocz)-1)+CHR(min(255,ASC(RIGHT(_spocz,1))+1))
 #endif
           ENDIF
          ELSE
@@ -767,7 +767,7 @@ RETURN .f.
 
 FUNCTION _shome(_s)
   IF _skproc[6]#NIL
-    _spocz:=left(_spocz,len(_spocz)-_slth)
+    _spocz:=left(_spocz,binlen(_spocz)-_slth)
     _slth:=0
     restscreen(_sm+_srow1-1,_scol1,_sm+_srow1-1,_scol2-1,hiattr(_sprpt))
   endif
@@ -779,7 +779,7 @@ return .f.
 FUNCTION _sznak(_s,_skey)
     local _scond:=.f.,x,l
 
-    if _scoln-_sbeg+1<len(EVAL(_spform,_spocz,_slth))
+    if _scoln-_sbeg+1<binlen(EVAL(_spform,_spocz,_slth))
       return .f.
     endif
     IF _si>0
@@ -804,7 +804,7 @@ FUNCTION _sznak(_s,_skey)
       if l#0
          _sbf:=.t.
       elseif _si>0
-         l:=_scol1+_sbeg+len(EVAL(_spform,_spocz,_slth))-2
+         l:=_scol1+_sbeg+binlen(EVAL(_spform,_spocz,_slth))-2
          l:=UpP(getscrtxt(savescreen(_srow1,l,_srow1,l)))
          l:=if(l=UpP(chr(_skey)),1,0)
       endif
@@ -863,7 +863,7 @@ FUNCTION _sznak(_s,_skey)
       CLEAR TYPEAHEAD
       tone(130,3)
       _slth:=max(0,_slth-1)
-      _spocz:=left(_spocz,LEN(_spocz)-1)
+      _spocz:=left(_spocz,binlen(_spocz)-1)
     ENDIF
 
 RETURN .F.
@@ -876,10 +876,10 @@ IF _si>0
 
   GO _srec[_sm]
   wiele=.f.
-  sw:=len(eval(&("{||"+IndexkeY(0)+"}")))
+  sw:=binlen(eval(&("{||"+IndexkeY(0)+"}")))
   sl:=UpP(getscrtxt(_sprpt))
   sp:=EVAL(_spform,_spocz,_slth)
-  do while _scoln-_sbeg+1>(l:=len(sp)) .and. len(_spocz)<sw
+  do while _scoln-_sbeg+1>(l:=binlen(sp)) .and. binlen(_spocz)<sw
     spb:=_spocz
 
     if _sp2s<>NIL
@@ -916,11 +916,11 @@ local ltb,l,spb,spp,sp,sl,wiele,sw
 IF _si>0
   wiele:=.f.
   go _srec[_sm]
-  sw:=len(eval(&('{||'+IndexkeY(0)+'}')))
+  sw:=binlen(eval(&('{||'+IndexkeY(0)+'}')))
   sl:=UpP(getscrtxt(_sprpt))
   do while .t.
   ltb:=_slth
-  do while _scoln-_sbeg+1>(l:=len(sp:=EVAL(_spform,_spocz,_slth))).and.len(_spocz)<sw
+  do while _scoln-_sbeg+1>(l:=binlen(sp:=EVAL(_spform,_spocz,_slth))).and.binlen(_spocz)<sw
     spb:=_spocz
     spp:=SUBSTR(sl,_sbeg+l,1)
     if _sp2s<>NIL
@@ -964,10 +964,10 @@ FUNCTION _slewo(_s,_skey)
   else
   do while _slth>0
     --_slth
-    _spocz:=left(_spocz,LEN(_spocz)-1)
+    _spocz:=left(_spocz,binlen(_spocz)-1)
     //_sef=.F.
     //_sbf=.F.
-    l=len(EVAL(_spform,_spocz,_slth))+_sbeg-1
+    l=binlen(EVAL(_spform,_spocz,_slth))+_sbeg-1
     restscreen(_sm+_srow1-1,_scol1+l,_sm+_srow1-1,_scol2-1,hiattr(SUBSTR(_sprpt,l*D_REST+1)))
     setpos(_sm+_srow1-1,_scol1+l)
     if nextkey()#_skey .or. _slth=0 .OR. _si=0
@@ -1094,7 +1094,7 @@ endif
                   crsr:=1
                   loop
                elseif _slth>0
-                  _spocz:=LEFT(_spocz,len(_spocz)-_slth)
+                  _spocz:=LEFT(_spocz,binlen(_spocz)-_slth)
                   _slth:=0
                   _sbf:=_sef:=.f.
                   if eval(_swar,_spocz,_skon) .or. (_sef:=_skip(-1,,_s)) .or. (_sbf:=dbseek(_spocz))

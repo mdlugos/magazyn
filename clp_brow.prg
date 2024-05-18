@@ -450,8 +450,8 @@ local b:=lower(alias()),c
   if empty(ordbagname(n))
      sel("INDEKS")
      Locate FOR {||c:=trim(baza), lower(expand(c))==b}
-     n:=pad(n,len(nazwa))
-     c:=pad(c,len(baza))
+     n:=pad(n,binlen(nazwa))
+     c:=pad(c,binlen(baza))
      Locate FOR nazwa==n WHILE baza==c
      IF ! FOUND()
        skip -1
@@ -533,7 +533,7 @@ local lFresh, nCursSave, mGetVar
   // create a corresponding GET with ambiguous set/get block
   oGet := GetNew(Row(), Col(),{|x| if(PCount() == 0, mGetVar, mGetVar := x)},"mGetVar",oCol:picture,oB:colorSpec)
 
-  if oCol:cargo=.t. .or. valtype(mGetVar)$"MC" .and. len(mGetVar) >= maxcol() - 1
+  if oCol:cargo=.t. .or. valtype(mGetVar)$"MC" .and. binlen(mGetVar) >= maxcol() - 1
      oGet:picture:="@S"+ltrim(str(maxcol()-1,3))
      oGet:cargo:=oCol:cargo // expandable field
   endif
@@ -812,7 +812,7 @@ local b:=TBColumnNew(m[1],fb)
     elseif m[2]=="M"
          b:width:=maxcol()-1
          b:cargo:=.t.
-         b:block:={|x,y|y:=eval(fb,x),if(x=NIL.and.y<>NIL.and.len(y)<maxcol(),padr(y,maxcol()-1),y)}
+         b:block:={|x,y|y:=eval(fb,x),if(x=NIL.and.y<>NIL.and.binlen(y)<maxcol(),padr(y,maxcol()-1),y)}
     elseif m[2]=="C" .and. m[3]>maxcol()-3
          b:width:=maxcol()-1
     endif
@@ -850,14 +850,14 @@ static i,b,lth
      r:=0
      if k>0
         do while n>lth
-           l:=at(chr(10),subs(b,r+1,k-r))
+           l:=binat(chr(10),binsubstr(b,r+1,k-r))
            if l=0 .and. r#0
               exit
            endif
-           if subs(b,r+l,1)=chr(13)
+           if binsubstr(b,r+l,1)=chr(13)
               --l
            endif
-           if len(a)>lth
+           if binlen(a)>lth
               ++lth
               ++i
            else
@@ -894,9 +894,9 @@ static i,b,lth
        l:=r:=k-p
        xfr(h,@b,r)
 //#ifdef __PLATFORM__UNIX
-       if subs(b,r,1)=chr(10)
+       if binsubstr(b,r,1)=chr(10)
          eol:=1
-         if subs(b,r-eol,1)=chr(13)
+         if binsubstr(b,r-eol,1)=chr(13)
             ++eol
          endif
        else
@@ -907,19 +907,19 @@ static i,b,lth
 //       eol:=if(subs(b,r-1,2)=nl,2,0)
 //#endif
        do while n<1 .and. l#0
-          l:=rat(chr(10),left(b,r-eol))
+          l:=binrat(chr(10),binleft(b,r-eol))
           if l#0
 //#ifndef __PLATFORM__UNIX
 //             ++l
 //#endif
              eol:=1
-             if subs(b,l-eol)=chr(13)
+             if binsubstr(b,l-eol)=chr(13)
                 ++eol
              endif
           elseif r#k-p
              exit
           endif
-          if lth<len(a)
+          if lth<binlen(a)
              ++lth
           endif
           ains(a,i)
@@ -941,13 +941,13 @@ static i,b,lth
     r:=0
   endif
   eol:=0
-  if i<lth.or.subs(b,r+a[i,2],1)=chr(10)
+  if i<lth.or.binsubstr(b,r+a[i,2],1)=chr(10)
      eol:=1
-     if subs(b,r+a[i,2]-eol,1)=chr(13)
+     if binsubstr(b,r+a[i,2]-eol,1)=chr(13)
         ++eol
      endif
   endif
-  o:=subs(b,r,a[i,2]-eol)
+  o:=binsubstr(b,r,a[i,2]-eol)
 return strtran(o,chr(9)," ")
 #undef D_BLEN
 *********************
@@ -962,19 +962,8 @@ endif
   a:=array(3*maxrow())
   j:=0
   txt:=sk(.t.,a,h)
-#ifdef __HARBOUR__
-if !HB_CDPISUTF8(cdp) .and. 'utf-8'$lower(txt)
-  cdp:='UTF8'
-endif
-if !empty(cdp)
-  //txt:=HB_TRANSLATE(txt,cdp,)
-  oldp:=hb_cdpSelect(cdp)
-  if HB_CDPISUTF8(cdp)
-     b:=TUTF8Browse():New(0,0,maxrow(),maxcol())
-     c:=tbcolumnnew("",{||HB_UTF8SUBSTR(txt,j+1)})
-  endif
-endif
-#endif
+  b:=TUTF8Browse():New(0,0,maxrow(),maxcol())
+  c:=tbcolumnnew("",{||HB_UTF8SUBSTR(txt,j+1)})
 if empty(b)
   b:=tbrowseNew(0,0,maxrow(),maxcol())
 endif
@@ -998,12 +987,11 @@ c[K_CTRL_PGUP]:={|b|b:gotop()}
 c[K_CTRL_PGDN]:={|b|b:gobottom()}
 c[K_HOME]     :={|b|j:=0,b:refreshall()}
 
-#ifdef __HARBOUR__
 if nextkey()=0 //.and. fseek(h,0,2) < 65536
   b:forcestable()
-  @ maxrow(),maxcol()-31 SAY HB_TRANSLATE('ALT+B - kopiuj CAŁOŚĆ do schowka',oldp,) COLOR _sramka
+  @ maxrow(),maxcol()-31 SAY 'ALT+B - kopiuj CAŁOŚĆ do schowka' COLOR _sramka
 endif
-#endif
+
 do while .t.
    b:stabilize()
    if b:stable
@@ -1017,10 +1005,8 @@ do while .t.
       loop
    elseif key=K_ESC
       exit
-#ifdef __HARBOUR__
    elseif key=K_ALT_B //.and. fseek(h,0,2) < 65536
       hb_gtInfo( HB_GTI_CLIPBOARDDATA , memoread(f) )
-#endif
    elseif key>0 .and. key<32 .and. c[key]#NIL
       eval(c[key],b)
       if scrlflag=1
@@ -1053,8 +1039,5 @@ do while .t.
 enddo
 sk() //kasuj buf
 fclose(h)
-if !empty(oldp)
-  hb_cdpSelect(oldp)
-endif
 return
 ***********

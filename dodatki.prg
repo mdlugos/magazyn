@@ -1333,7 +1333,7 @@ FIELD NR_MAG,INDEX,STAN,nazwa,JM,jm_opcja,wartosc
 select main
   set order to TAG MAIN_IND
 
-GAL:=MAG_BIEZ+space(len(index))
+GAL:=MAG_BIEZ+space(binlen(index))
 
 @ 9,10 say "Proszę podać numer magazynu i gałąź:" 
 @ 10,30 get gal PICTURE "@RK ##/"+ INDEXPIC
