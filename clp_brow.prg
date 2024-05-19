@@ -450,8 +450,8 @@ local b:=lower(alias()),c
   if empty(ordbagname(n))
      sel("INDEKS")
      Locate FOR {||c:=trim(baza), lower(expand(c))==b}
-     n:=pad(n,binlen(nazwa))
-     c:=pad(c,binlen(baza))
+     n:=pad(n,len(nazwa))
+     c:=pad(c,len(baza))
      Locate FOR nazwa==n WHILE baza==c
      IF ! FOUND()
        skip -1
@@ -533,7 +533,7 @@ local lFresh, nCursSave, mGetVar
   // create a corresponding GET with ambiguous set/get block
   oGet := GetNew(Row(), Col(),{|x| if(PCount() == 0, mGetVar, mGetVar := x)},"mGetVar",oCol:picture,oB:colorSpec)
 
-  if oCol:cargo=.t. .or. valtype(mGetVar)$"MC" .and. binlen(mGetVar) >= maxcol() - 1
+  if oCol:cargo=.t. .or. valtype(mGetVar)$"MC" .and. len(mGetVar) >= maxcol() - 1
      oGet:picture:="@S"+ltrim(str(maxcol()-1,3))
      oGet:cargo:=oCol:cargo // expandable field
   endif
@@ -812,7 +812,7 @@ local b:=TBColumnNew(m[1],fb)
     elseif m[2]=="M"
          b:width:=maxcol()-1
          b:cargo:=.t.
-         b:block:={|x,y|y:=eval(fb,x),if(x=NIL.and.y<>NIL.and.binlen(y)<maxcol(),padr(y,maxcol()-1),y)}
+         b:block:={|x,y|y:=eval(fb,x),if(x=NIL.and.y<>NIL.and.len(y)<maxcol(),padr(y,maxcol()-1),y)}
     elseif m[2]=="C" .and. m[3]>maxcol()-3
          b:width:=maxcol()-1
     endif
@@ -850,14 +850,14 @@ static i,b,lth
      r:=0
      if k>0
         do while n>lth
-           l:=binat(chr(10),binsubstr(b,r+1,k-r))
+           l:=HB_BAT(chr(10),hb_bsubstr(b,r+1,k-r))
            if l=0 .and. r#0
               exit
            endif
-           if binsubstr(b,r+l,1)=chr(13)
+           if hb_bsubstr(b,r+l,1)=chr(13)
               --l
            endif
-           if binlen(a)>lth
+           if hb_blen(a)>lth
               ++lth
               ++i
            else
@@ -894,9 +894,9 @@ static i,b,lth
        l:=r:=k-p
        xfr(h,@b,r)
 //#ifdef __PLATFORM__UNIX
-       if binsubstr(b,r,1)=chr(10)
+       if hb_bsubstr(b,r,1)=chr(10)
          eol:=1
-         if binsubstr(b,r-eol,1)=chr(13)
+         if hb_bsubstr(b,r-eol,1)=chr(13)
             ++eol
          endif
        else
@@ -907,19 +907,19 @@ static i,b,lth
 //       eol:=if(subs(b,r-1,2)=nl,2,0)
 //#endif
        do while n<1 .and. l#0
-          l:=binrat(chr(10),binleft(b,r-eol))
+          l:=HB_BRAT(chr(10),HB_BLEFT(b,r-eol))
           if l#0
 //#ifndef __PLATFORM__UNIX
 //             ++l
 //#endif
              eol:=1
-             if binsubstr(b,l-eol)=chr(13)
+             if hb_bsubstr(b,l-eol)=chr(13)
                 ++eol
              endif
           elseif r#k-p
              exit
           endif
-          if lth<binlen(a)
+          if lth<hb_blen(a)
              ++lth
           endif
           ains(a,i)
@@ -941,13 +941,13 @@ static i,b,lth
     r:=0
   endif
   eol:=0
-  if i<lth.or.binsubstr(b,r+a[i,2],1)=chr(10)
+  if i<lth.or.hb_bsubstr(b,r+a[i,2],1)=chr(10)
      eol:=1
-     if binsubstr(b,r+a[i,2]-eol,1)=chr(13)
+     if hb_bsubstr(b,r+a[i,2]-eol,1)=chr(13)
         ++eol
      endif
   endif
-  o:=binsubstr(b,r,a[i,2]-eol)
+  o:=hb_bsubstr(b,r,a[i,2]-eol)
 return strtran(o,chr(9)," ")
 #undef D_BLEN
 *********************
@@ -962,14 +962,8 @@ endif
   a:=array(3*maxrow())
   j:=0
   txt:=sk(.t.,a,h)
-  b:=TUTF8Browse():New(0,0,maxrow(),maxcol())
-  c:=tbcolumnnew("",{||HB_UTF8SUBSTR(txt,j+1)})
-if empty(b)
   b:=tbrowseNew(0,0,maxrow(),maxcol())
-endif
-if empty(c)
   c:=tbcolumnNew("",{||subs(txt,j+1)})
-endif
 c:width:=maxcol()+1
 b:addcolumn(c)
 b:skipblock:={|x|txt:=sk(@x,a,h),frow+=x,x}

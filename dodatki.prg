@@ -15,7 +15,7 @@
 #else
 #define D_LP0 '0'
 #define D_LP1 '1'
-#define D_LPVAL(x) (asc(x)-48)
+#define D_LPVAL(x) (HB_BCODE(x)-48)
 #define D_LPSTR(x) str(D_LPVAL(x),3)
 #define D_LPPUT(x) chr(x+48)
 #endif
@@ -1333,7 +1333,7 @@ FIELD NR_MAG,INDEX,STAN,nazwa,JM,jm_opcja,wartosc
 select main
   set order to TAG MAIN_IND
 
-GAL:=MAG_BIEZ+space(binlen(index))
+GAL:=MAG_BIEZ+space(len(index))
 
 @ 9,10 say "Proszę podać numer magazynu i gałąź:" 
 @ 10,30 get gal PICTURE "@RK ##/"+ INDEXPIC

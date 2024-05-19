@@ -429,7 +429,7 @@ private HLINK
 #ifdef A_DOKCOMP
     private self,j,getlist
   if valtype(dok_co)$"MC"
-     if binlen(dok_co)<=12
+     if len(dok_co)<=12
         buf:=dok_co
         if !"."$buf
            buf+=".ppd"
@@ -556,7 +556,7 @@ procedure dok1(_f)
 #endif
       zac:=zap:=0
       avat:={} //getVAT(); aeval(avat,{|x,i|avat[i,2]:=0})
-      nrc:=space(binlen(nr_czeku))
+      nrc:=space(len(nr_czeku))
       dv:=tp:=da
       uw:="BEZ UWAG "
 #else
@@ -581,7 +581,7 @@ procedure dok1(_f)
 #endif
       if dok_kh.and.firMy->(dbseek(kh))
 #ifdef A_FFULL
-         d_o:=PAD(firMy->(trim(nazwa)+" * "+longname),binLEN(DOST_ODB))
+         d_o:=PAD(firMy->(trim(nazwa)+" * "+longname),LEN(DOST_ODB))
 #ifdef A_AF
          KH->(dbseek(kh))
 #endif
@@ -589,7 +589,7 @@ procedure dok1(_f)
 #ifdef A_OLZBY
          d_o:=firMy->nazwa
 #else
-         d_o:=PAD(firMy->nazwa,binLEN(DOST_ODB))
+         d_o:=PAD(firMy->nazwa,LEN(DOST_ODB))
 #endif
 #endif
 #ifdef A_KSEF
@@ -602,7 +602,7 @@ procedure dok1(_f)
            x:=''
          endif
       endif
-      n_ksef:=pad(if(empty(x),'',left(x,10)+'-'+left(dtos(da),6)),binlen(nr_ksef))
+      n_ksef:=pad(if(empty(x),'',left(x,10)+'-'+left(dtos(da),6)),len(nr_ksef))
          endif
 #endif
       else
@@ -705,7 +705,7 @@ procedure dok1(_f)
 #endif
       if dok_kh.and.firMy->(dbseek(kh))
 #ifdef A_FFULL
-         d_o:=PAD(firMy->(trim(nazwa)+" * "+longname),binLEN(DOST_ODB))
+         d_o:=PAD(firMy->(trim(nazwa)+" * "+longname),LEN(DOST_ODB))
 #ifdef A_AF
          KH->(dbseek(kh))
 #endif
@@ -713,7 +713,7 @@ procedure dok1(_f)
 #ifdef A_OLZBY
          d_o:=firMy->nazwa
 #else
-         d_o:=PAD(firMy->nazwa,binLEN(DOST_ODB))
+         d_o:=PAD(firMy->nazwa,LEN(DOST_ODB))
 #endif
 #endif
       else
@@ -828,14 +828,14 @@ _frow:=2
     setpos(_frow,1)
   #ifdef A_NAZWISKO
     sayl "Nazwisko:"
-    setpos(row(),col()+min(20,binlen(nazwisko))+1)
+    setpos(row(),col()+min(20,len(nazwisko))+1)
   #endif
   #ifdef A_CENSPEC
     sayl "Cennik:"
-    setpos(row(),col()+min(18,binlen(nr_spec))+1)
+    setpos(row(),col()+min(18,len(nr_spec))+1)
   #else
     sayl "Nr spec.:"
-    setpos(row(),col()+binlen(nr_spec)+1)
+    setpos(row(),col()+len(nr_spec)+1)
   #endif
     sayl "Transport:"
     ++_frow
@@ -1128,7 +1128,7 @@ procedure dok2(_f,getlist)
 #ifdef A_MULTIDI
     elseif dok$dok_di .and. mag_biez=A_MAGDI
        d:=aclone(stanowis[mag_poz])
-       aeval(d,{|x,i|d[i]:=pad(strtran(x,"*"," "),binlen(d_o))})
+       aeval(d,{|x,i|d[i]:=pad(strtran(x,"*"," "),len(d_o))})
        get:postblock:={|g|if(g:changed,(dflag:=.f.,darr:={},dpos:=1),),aczojs(d)}
 #endif
     endif
@@ -1145,7 +1145,7 @@ procedure dok2(_f,getlist)
 #endif
 
     if subs(dok,2)="K"
-      @ 4,2 GET n_f PICTURE "@K!S13" valid {|x|x:=recno(),empty(n_f).and.szukam({1,1,maxrow(),,1,0,'DOKUMENTY',{||smb_dow+nr_dowodu+"│"+dtoc(data)+"│"+dost_odb},{|_skey,_s|(_sret:=_skey=13).or._skey=27.or._skey=0.and.(if(val(d_o)=0,,_sfor:={||dost_odb=left(d_o,A_NRLTH)}),dbseek(D_MM "■"),.f.)},D_MM ''}).and.(dd:=data,n_f:=pad(KEY_DOK+nr_dowodu,binlen(n_f)),updated(.t.),.t.),dbgoto(x),.t.}
+      @ 4,2 GET n_f PICTURE "@K!S13" valid {|x|x:=recno(),empty(n_f).and.szukam({1,1,maxrow(),,1,0,'DOKUMENTY',{||smb_dow+nr_dowodu+"│"+dtoc(data)+"│"+dost_odb},{|_skey,_s|(_sret:=_skey=13).or._skey=27.or._skey=0.and.(if(val(d_o)=0,,_sfor:={||dost_odb=left(d_o,A_NRLTH)}),dbseek(D_MM "■"),.f.)},D_MM ''}).and.(dd:=data,n_f:=pad(KEY_DOK+nr_dowodu,len(n_f)),updated(.t.),.t.),dbgoto(x),.t.}
       @ 4,16 GET dd
 //#ifndef A_NVAT
       iv:=ascan(avat,{|y|y[2]#0})
@@ -1348,7 +1348,7 @@ endif
 #ifdef A_OLZA
     if dok_zew="W" .and. ""#dok_kon
        @  _frow,48 get kk PICTURE "@!K" valid gkon() .or. aczojs(kont)
-       @  _frow,54 get sk PICTURE "@!K" valid {|A,B,POZ|gsta(getlist) .or. aczojs(stano,,@poz).and.(d_o#" ".or. (d_o:=padr(substr(stano[poz],7),binlen(d_o)),aeval(getlist,{|g|if(g:name=='d_o',g:display(),)}),.t.))}
+       @  _frow,54 get sk PICTURE "@!K" valid {|A,B,POZ|gsta(getlist) .or. aczojs(stano,,@poz).and.(d_o#" ".or. (d_o:=padr(substr(stano[poz],7),len(d_o)),aeval(getlist,{|g|if(g:name=='d_o',g:display(),)}),.t.))}
     else
        kk:=sk:=""
     endif
@@ -1508,7 +1508,7 @@ memvar exp_od,exp_do
 #ifdef A_FAT
 #ifdef A_CENSPEC
     if empty(sp)  //indx_mat->(type(sp))#"N"
-       sp:=pad("CENA",binlen(nr_spec))
+       sp:=pad("CENA",len(nr_spec))
        aeval(getlist,{|g|if(g:name="sp",g:display(),)})
     endif
 #endif
@@ -1586,7 +1586,7 @@ memvar exp_od,exp_do
            unlock
 #endif
            else
-           i:=binlen(&(INDEXKEY(3)))-binlen(index)-A_NRLTH-10
+           i:=len(&(INDEXKEY(3)))-len(index)-A_NRLTH-10
 #ifndef A_LAN
            replace nr_zlec with left(nr_zlec,i)+kh while KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu) for c==subs(nr_zlec,i+1,A_NRLTH)
 #else
@@ -1642,7 +1642,7 @@ memvar exp_od,exp_do
 #undef D_POSG
 #endif
 
- NZ:=SPACE(a:=binLEN(MAIN->NR_ZLEC))
+ NZ:=SPACE(a:=LEN(MAIN->NR_ZLEC))
 
 #ifdef A_OLZA
  if dok_zew="W" .and. ""#dok_kon
@@ -1681,14 +1681,14 @@ begin sequence
           select 0
           nuse (path_zb+'exp_main') readonly exclusive
           darr:=array(lastrec())
-          exec {||message(10),darr[recno()]:=pad(index,binlen(main->index))+str(ilosc,10,ILDEC)+" "+proc_vat+"% "+str(cena,10,A_ZAOKR)+" zł "+str(licznik,3)+" X "+nazwa+str(wartosc,10,A_ZAOKR)}
+          exec {||message(10),darr[recno()]:=pad(index,len(main->index))+str(ilosc,10,ILDEC)+" "+proc_vat+"% "+str(cena,10,A_ZAOKR)+" zł "+str(licznik,3)+" X "+nazwa+str(wartosc,10,A_ZAOKR)}
           use
        endif
        end sequence
 #else
        select main
        set order to tag MAIN_ZLE
-       a:=binlen(&(INDEXKEY()))-binlen(index)-10
+       a:=len(&(INDEXKEY()))-len(index)-10
 #ifdef A_GOCZ
        for k:=1 to LEN(zamowienie[mag_poz])
           if zamowienie[mag_poz,k]<>'Z'
@@ -1802,7 +1802,7 @@ begin sequence
           if dbseek(d) .and. (empty(j) .or. c$j)
             dflag:=.t.
             c:=right(trim(indeks->baza),1)+if(empty(j),c,left(j,1))
-            exec {||message(10),aadd(darr,c+if(empty(j),pad(dieta,binlen(main->nr_zlec)-2),space(binlen(main->nr_zlec)-2))+skladnik+str(ilosc,8,3))} rest while dtos(data)+posilek=d
+            exec {||message(10),aadd(darr,c+if(empty(j),pad(dieta,len(main->nr_zlec)-2),space(len(main->nr_zlec)-2))+skladnik+str(ilosc,8,3))} rest while dtos(data)+posilek=d
           endif
           next i
        endif
@@ -1810,7 +1810,7 @@ begin sequence
           j:=0
           *
           i:=1
-          k:=binlen(main->nr_zlec)+binlen(surowce->skladnik)
+          k:=len(main->nr_zlec)+len(surowce->skladnik)
           do while i<len(darr) //sumowanie
               j:=ascan(darr,{|x|left(darr[i],k)=left(x,k)},max(i+1,j))
               if j=0
@@ -1821,8 +1821,8 @@ begin sequence
                  asize(darr,len(darr)-1)
               endif
           enddo
-          c:=binlen(main->nr_zlec)+1
-          k:=binlen(surowce->skladnik)
+          c:=len(main->nr_zlec)+1
+          k:=len(surowce->skladnik)
           for i:=1 to len(darr)-2
               if i+1<(j:=ascan(darr,{|x|subs(darr[i],c,k)=subs(x,c,k)},max(i+1,++j)))
                  txt:=darr[j]
@@ -1945,12 +1945,12 @@ begin sequence
 #else
               if surowce->skladnik==skladnik .and. j==posilek .and. k==dieta
                  --i
-                 darr[i]:=surowce->indx_mat+" "+pad("W"+posilek+dieta,binlen(main->nr_zlec))+" "+surowce->nazwa+HB_UTF8CHR(0x00A0)+str(ilosc+val(subs(darr[i],-13)),9,3)+" "+surowce->jmag
+                 darr[i]:=surowce->indx_mat+" "+pad("W"+posilek+dieta,len(main->nr_zlec))+" "+surowce->nazwa+HB_UTF8CHR(0x00A0)+str(ilosc+val(subs(darr[i],-13)),9,3)+" "+surowce->jmag
                  adel(darr,i+1)
                  asize(darr,len(darr)-1)
               else
                  surowce->(dbseek(ro_zapot->skladnik,.f.))
-                 darr[i]:=surowce->indx_mat+" "+pad("W"+posilek+dieta,binlen(main->nr_zlec))+" "+surowce->nazwa+HB_UTF8CHR(0x00A0)+str(ilosc,9,3)+" "+surowce->jmag
+                 darr[i]:=surowce->indx_mat+" "+pad("W"+posilek+dieta,len(main->nr_zlec))+" "+surowce->nazwa+HB_UTF8CHR(0x00A0)+str(ilosc,9,3)+" "+surowce->jmag
               endif
               j:=posilek
               k:=dieta
@@ -2033,9 +2033,9 @@ proc dok4(_f,getlist,_s)
       #define NZBEG 24
       #undef  NZPIC
 #ifdef A_SB
-      #define NZPIC "@KS" +ltrim(str(min(binlen(nr_zlec),21-NIMBEG-binlen( INDEXPIC ))))
+      #define NZPIC "@KS" +ltrim(str(min(len(nr_zlec),21-NIMBEG-len( INDEXPIC ))))
 #else
-      #define NZPIC "@KS" +ltrim(str(min(binlen(nr_zlec),33-NIMBEG-binlen( INDEXPIC ))))
+      #define NZPIC "@KS" +ltrim(str(min(len(nr_zlec),33-NIMBEG-len( INDEXPIC ))))
 #endif
 #endif
       #define NZVAL aczojs(stanowis[mag_poz])
@@ -2051,7 +2051,7 @@ proc dok4(_f,getlist,_s)
 #endif
 
 #undef NZBEG
-#define NZBEG NIMBEG+binlen( INDEXPIC )+2
+#define NZBEG NIMBEG+len( INDEXPIC )+2
 
 local txt,j,x,s:=0,si:='',gzl,y,z,a
 
@@ -2064,12 +2064,12 @@ local txt,j,x,s:=0,si:='',gzl,y,z,a
 #endif
       nim:=space(46)
 #ifdef A_NOMZ
-      a:=binlen(nr_zlec)
+      a:=len(nr_zlec)
 #ifdef A_ZLEC11
       nz:=space(a)
 #endif
 #else
-      a:=binLEN(&(INDEXKEY(3)))-10-binlen(index)
+      a:=LEN(&(INDEXKEY(3)))-10-len(index)
 #endif
       il:=0
 #ifdef A_WA
@@ -2170,7 +2170,7 @@ local txt,j,x,s:=0,si:='',gzl,y,z,a
 */
 #ifdef A_ODDO
          if dok$dok_zb
-           il:=pm*val(subs(nim,binlen(index)+2))
+           il:=pm*val(subs(nim,len(index)+2))
 #ifdef A_KASA
            nz:=subs(nim,44)
            pv:=subs(nim,20,2)
@@ -2191,21 +2191,21 @@ local txt,j,x,s:=0,si:='',gzl,y,z,a
 //#undef A_ODDO //po co to ?
 #else //kasa
 //#undef D_DIETA_OR_ODDO
-           cz:=val(subs(nim,binlen(index)+21,10))
+           cz:=val(subs(nim,len(index)+21,10))
 if dok_p_r="F"
            wz:=W(pm*il,cz,val(pv),dok_df)
 else
            wz:=WPZ(pm*il*cz)
 endif
-           @ _fk,5 SAY subs(nim,binlen(index)+35,46)
-           @ _fk+1,48 SAY subs(nim,binlen(index)+13,4)
+           @ _fk,5 SAY subs(nim,len(index)+35,46)
+           @ _fk+1,48 SAY subs(nim,len(index)+13,4)
            select STANY
            set order to 2
-           dbseek(mag_biez+left(nim,binlen(index)),.f.)
+           dbseek(mag_biez+left(nim,len(index)),.f.)
 #ifndef STANY
            select indx_mat
            set order to tag INDX_NUM
-           dbseek(left(nim,binlen(index),.f.)
+           dbseek(left(nim,len(index),.f.)
 #endif
            lam:=i_lam(da)
            pv:=(lam)->proc_vat
@@ -2218,20 +2218,20 @@ endif
 #ifdef A_DIETA //#else  //oddo
          if dok$dok_di
            il:=-val(subs(nim,rat(HB_UTF8CHR(0x00A0),nim)+1))
-           nz:=subs(nim,binlen(index)+2,binlen(nr_zlec))
+           nz:=subs(nim,len(index)+2,len(nr_zlec))
            @ _fk+1,48 say right(nim,4)
-           txt:=subs(nim,binlen(INDEX)+2+binLEN(nr_zlec)+1)
+           txt:=subs(nim,len(INDEX)+2+LEN(nr_zlec)+1)
            j:=rat(HB_UTF8CHR(0x00A0),txt)
-           txt:=left(nim,binlen(INDEX)+2)+trim(nz)+' '+TRIM(left(txt,j-1))+' '+subs(txt,j+1)
+           txt:=left(nim,len(INDEX)+2)+trim(nz)+' '+TRIM(left(txt,j-1))+' '+subs(txt,j+1)
            @ _fk+2,1 SAY "ZAPOTRZEBOWANIE: "+txt+space(60-len(txt)) color _sbkgr
-           nim:=pad(left(nim,binlen(index)),46)
+           nim:=pad(left(nim,len(index)),46)
            select STANY
            set order to 2
-           dbseek(mag_biez+left(nim,binlen(index)),.f.)
+           dbseek(mag_biez+left(nim,len(index)),.f.)
 #ifndef STANY
            select indx_mat
            set order to tag INDX_NUM
-           dbseek(left(nim,binlen(index)),.f.)
+           dbseek(left(nim,len(index)),.f.)
 #endif
            select main
 
@@ -2354,7 +2354,7 @@ endif
         @ _fk+1, NIMBEG SAY ean13(nim)
 #endif
 
-        txt:=getnew(_fk+1,NIMBEG,{|x|if(pcount()=0,nim,nim:=x)},"nim","@!KRS"+NIMLTH+strtran( INDEXPIC ,"#","X")+repl("X",46-binlen(index)))
+        txt:=getnew(_fk+1,NIMBEG,{|x|if(pcount()=0,nim,nim:=x)},"nim","@!KRS"+NIMLTH+strtran( INDEXPIC ,"#","X")+repl("X",46-len(index)))
         txt:display()
       if _fkey=0
 #ifdef A_F9
@@ -2467,7 +2467,7 @@ endif
 #else
             j:postblock:=if(dok_kon="?".and.empty(kh),{||aczojs(zaMowienie[MAG_POZ])},{|g,x,y|y:=.t.,x:=nz,aczojs(zaMowienie[MAG_POZ],@x) .AND.;
                   (if(empty(subs(x,a+1-A_NRLTH,A_NRLTH)),;
-                  (nz#(nz:=padr(left(x,a-A_NRLTH)+kh,binlen(NR_ZLEC))).and.updated(@y)),;
+                  (nz#(nz:=padr(left(x,a-A_NRLTH)+kh,len(NR_ZLEC))).and.updated(@y)),;
                   (nz:=x)#g:original.and.updated(@y)),y)})
 #endif
 #endif
@@ -2975,10 +2975,10 @@ static proc azapchoice(g,_f,getlist)
           nim:=darr[dpos]
 #ifdef A_ODDO
           if dok$dok_zb
-          @ _fk,5 SAY subs(nim,binlen(index)+35,46) color _sbkgr
-          il:=pm*val(subs(nim,binlen(index)+2))
-          cz:=val(subs(nim,binlen(index)+21))
-          NIM:=left(nim,binlen(index))
+          @ _fk,5 SAY subs(nim,len(index)+35,46) color _sbkgr
+          il:=pm*val(subs(nim,len(index)+2))
+          cz:=val(subs(nim,len(index)+21))
+          NIM:=left(nim,len(index))
           select STANY
           set order to 2
           dbseek(mag_biez+nim,.f.)
@@ -3006,13 +3006,13 @@ endif
        if dok$dok_di
           dpush:=.t.
 #ifdef A_KASA
-          @ _fk,5 SAY subs(nim,binlen(index)+2,46)
+          @ _fk,5 SAY subs(nim,len(index)+2,46)
 #else
           il:=-val(subs(nim,rat(HB_UTF8CHR(0x00A0),nim)+1))
-          nz:=subs(nim,binlen(index)+2,binlen(main->nr_zlec))
-          txt:=subs(nim,binlen(INDEX)+binlen(main->nr_zlec)+3)
+          nz:=subs(nim,len(index)+2,len(main->nr_zlec))
+          txt:=subs(nim,len(INDEX)+len(main->nr_zlec)+3)
           p:=rat(HB_UTF8CHR(0x00A0),txt)
-          txt:=left(nim,binlen(INDEX)+2)+trim(nz)+' '+trim(left(txt,p-1))+subs(txt,p)
+          txt:=left(nim,len(INDEX)+2)+trim(nz)+' '+trim(left(txt,p-1))+subs(txt,p)
           if _fi>=_flp
              @ _fk+2,1 SAY "ZAPOTRZEBOWANIE: "+txt+space(60-len(txt)) color _sbkgr
           else

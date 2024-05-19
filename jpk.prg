@@ -218,7 +218,7 @@ local a,ans,i,scr
       c:=memoread(c)
    endif
 
-   b:={'invoiceHash'=>{'fileSize'=>binlen(c), 'hashSHA'=> {'algorithm'=> 'SHA-256', 'encoding'=> 'Base64', 'value'=> HB_BASE64ENCODE(HB_SHA256(c,.t.))}}, 'invoicePayload'=> {'type'=> 'plain', 'invoiceBody'=>HB_BASE64ENCODE(c)}}
+   b:={'invoiceHash'=>{'fileSize'=>hb_blen(c), 'hashSHA'=> {'algorithm'=> 'SHA-256', 'encoding'=> 'Base64', 'value'=> HB_BASE64ENCODE(HB_SHA256(c,.t.))}}, 'invoicePayload'=> {'type'=> 'plain', 'invoiceBody'=>HB_BASE64ENCODE(c)}}
    hb_hautoadd(b,.t.)
 
    //save screen to scr
@@ -268,7 +268,7 @@ return NIL
 //http://www.e-deklaracje.mf.gov.pl/Repozytorium/Slowniki/KodyKrajow_v3-0.xsd
 static func nip2kraj(nip)
      nip:=Upper(left(alltrim(nip),2))
-     if IsDigit(nip) .or. binlen(nip)<2 
+     if IsDigit(nip) .or. len(nip)<2 
         return "PL"
      endif
 return nip
@@ -391,7 +391,7 @@ local element, node, s
      addtree(jpk,fa,hb_HPos(fa,'Podmiot1'))
 
      mxmlsetwrapmargin(250)
-     if binlen(filen) < 1024
+     if len(filen) < 1024
         s:=memvar->defa+filen
         mxmlSaveFile( tree, s , @wscb() )
      else
@@ -480,7 +480,7 @@ local c,d,a,b,n,h
                   d:=b
                elseif !empty(b:=hb_ctod(d,"YYYY-MM-DD"))
                   d:=b
-               elseif tran(b:=val(d),)==d .and. ('.'$d .or. binlen(d)<9)
+               elseif tran(b:=val(d),)==d .and. ('.'$d .or. len(d)<9)
                   d:=b
                endif
             endif
@@ -1033,7 +1033,7 @@ func jpk_vatdeklaracja(wariant, deklaracja, na, ar)
         hb_hAutoAdd(a,.t.)
         hb_hKeepOrder(a,.f.)
         if valtype(deklaracja) = 'H'
-          hb_heval(deklaracja,{|k,v,i|a[if(binlen(k)>4,k,k+' ')]:=v})
+          hb_heval(deklaracja,{|k,v,i|a[if(len(k)>4,k,k+' ')]:=v})
         endif
         deklaracja := a
         a := NIL
@@ -1216,7 +1216,7 @@ endif
 
     endif
 
-    if !empty(nip) .and. isalpha(nip) .and. binlen(strtran(nip,' '))<10
+    if !empty(nip) .and. isalpha(nip) .and. len(strtran(nip,' '))<10
        nip:='brak'
     endif
 
@@ -1235,7 +1235,7 @@ endif
      node := mxmlNewElement( element, 'LpSprzedazy' )
      mxmlNewText( node,,ltrim(tran(++lp,)))
 
-    if dekl .and. binlen(trim(nip))>10 .and. nip>='A'
+    if dekl .and. len(trim(nip))>10 .and. nip>='A'
      node := mxmlNewElement( element, 'KodKrajuNadaniaTIN')
      mxmlNewText( node,,left(nip,2))
      nip := alltrim(subs(nip,3))
@@ -1419,7 +1419,7 @@ local a,b,c,d,element,node,i
 
       endif
 
-    if !empty(nip) .and. isalpha(nip) .and. binlen(strtran(nip,' '))<10
+    if !empty(nip) .and. isalpha(nip) .and. len(strtran(nip,' '))<10
        nip:='brak'
     endif
 
@@ -1437,7 +1437,7 @@ local a,b,c,d,element,node,i
      node := mxmlNewElement( element, 'LpZakupu' )
      mxmlNewText( node,,ltrim(tran(++lp,)))
 
-     if dekl .and. binlen(trim(nip))>10 .and. nip>='A'
+     if dekl .and. len(trim(nip))>10 .and. nip>='A'
           node := mxmlNewElement( element, 'KodKrajuNadaniaTIN')
           mxmlNewText( node,,left(nip,2))
           nip := alltrim(subs(nip,3))

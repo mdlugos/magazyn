@@ -139,10 +139,10 @@ if curdir()=HB_ps()
 endif
 #endif
 
-aeval(defa,{|x,j,i|defa[j]:=if(x='.'+HB_ps(),a+subs(x,3),if(x='..'+HB_ps().and.(i:=rat(HB_ps(),left(a,binlen(a)-1)))>0,left(a,i)+subs(x,4),x))})
+aeval(defa,{|x,j,i|defa[j]:=if(x='.'+HB_ps(),a+subs(x,3),if(x='..'+HB_ps().and.(i:=rat(HB_ps(),left(a,len(a)-1)))>0,left(a,i)+subs(x,4),x))})
 
 menu:=.f.
-aeval(defa,{|x,j,i|if(lower(a)=lower(x),(menu:=.t.,defa[j]:=if((i:=binlen(x))=0,a,left(a,i))),)})
+aeval(defa,{|x,j,i|if(lower(a)=lower(x),(menu:=.t.,defa[j]:=if((i:=len(x))=0,a,left(a,i))),)})
 
 if menu
   a:=defa[1]
@@ -166,7 +166,7 @@ else
    a:=getenv("DIETADEF")
 endif
   if empty(a)
-    i:=rat(HB_ps(),left(defa,binlen(defa)-1))
+    i:=rat(HB_ps(),left(defa,len(defa)-1))
     a:=if(i=0,defa+'..'+HB_ps(),left(defa,i))+'dieta'+HB_ps()
   endif
   SET PATH TO (set(_SET_PATH)+HB_OsPathListSeparator()+a+'roboczy'+HB_ps()+HB_OsPathListSeparator()+a)
@@ -521,7 +521,7 @@ IF menu
 #endif
    IF type('bckp')='C' .and. !empty(year2bckp)
 #ifdef A_BACKUP
-      if binlen(bckp)>12
+      if len(bckp)>12
         txt:=bckp
       else
         txt:=memoread(defa+bckp)

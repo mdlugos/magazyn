@@ -156,7 +156,7 @@ local b,d,y,r
     b:=getlines(c,',')
     for d:=len(b) To 1 step -1
        c:=b[d]:=alltrim(b[d])
-       y:=binlen(c)
+       y:=len(c)
        while y>0 .and. (isalpha(r:=subs(c,y,1)) .or. isdigit(r) .or. r='_')
           --y
        enddo
@@ -385,7 +385,7 @@ local a,l,i,y:=""
  endif
 #ifdef A_NETIO
  if !empty(netio) .and. y=netio
-    y:='net:'+subs(y,binlen(netio)+1)
+    y:='net:'+subs(y,len(netio)+1)
  endif
 #endif
 return y
@@ -777,7 +777,7 @@ func oprn(x)
 static func getnum(x,i,c)
 local y:='',wasdot:=.f.
 DEFAULT i TO 1
-for i:=i to binlen(x)
+for i:=i to len(x)
    c:=subs(x,i,1)
    if isdigit(c) .or. (!wasdot .and. (wasdot:=(c='.'))).or.(''=y .and. c$'+-')
       y+=c
@@ -981,7 +981,7 @@ while valtype(oprn)='O' .and. ""<>x
       endif
    endif
 
-   for i:=1 To binlen(x)
+   for i:=1 To len(x)
       c:=asc(subs(x,i,1))
    if c=13
       qqout(chr(c))
@@ -1787,7 +1787,7 @@ function hex2N(as)
 local l,i
 as:=UpP(alltrim(as))
 l:=0
-for i:=1 to binlen(as)
+for i:=1 to len(as)
    l:=16*l+at(subs(as,i,1),'123456789ABCDEF')
 next i
 return l
@@ -2112,11 +2112,11 @@ return
 **************
 func xfr(x,y,z)
 if z=NIL
-   z:=binlen(y)
+   z:=hb_blen(y)
 elseif valtype(y)<>'C'
    y:=space(z)
-elseif binlen(y)<z
-   y:=pad(y,z)
+elseif hb_blen(y)<z
+   y+=space(z-hb_blen(y)) //:=pad(y,z)
 endif
 return fread(x,@y,z)
 ************
@@ -2174,15 +2174,12 @@ j:=1
 
 do while .t.
   i:=hb_at(delim,txt,j)
-  //i:=at(delim,subs(txt,j))-1
   if i>0
-    //aadd(a,substr(txt,j,i))
     aadd(a,substr(txt,j,i-j))
-    j:=i+binlen(delim)
-    //j+=i+len(delim)
+    j:=i+len(delim)
     loop
   endif
-  if j<=binlen(txt)
+  if j<=len(txt)
     aadd(a,substr(txt,j))
   endif
   exit
@@ -2235,9 +2232,9 @@ local ret:='',i,l
 
 //#ifdef __PLATFORM__UNIX
 local k:=4
-l:=binlen(txt)/k
+l:=hb_blen(txt)/k
 for i:=0 to l-1
-  ret+=HB_utf8chr(bin2l(subs(txt,i*k+1,2)))
+  ret+=HB_utf8chr(bin2w(hb_bsubstr(txt,i*k+1,2)))
 next i
 
 return ret //HB_TRANSLATE(ret,'UTF8',)
@@ -2256,140 +2253,6 @@ return ret
 #include "hbapi.h"
 
 #include "hbapiitm.h"
-
-HB_FUNC( BINLEFT )
-{
-   PHB_ITEM pText = hb_param( 1, HB_IT_STRING );
-
-   if( pText && HB_ISNUM( 2 ) )
-   {
-      HB_ISIZ nLen = hb_parns( 2 );
-      if( nLen <= 0 )
-         hb_retc_null();
-      else
-      {
-         HB_SIZE nText = hb_itemGetCLen( pText );
-         if( ( HB_SIZE ) nLen >= nText )
-            hb_itemReturn( pText );
-         else
-            hb_retclen( hb_itemGetCPtr( pText ), nLen );
-      }
-   }
-}
-
-HB_FUNC( BINSUBSTR )
-{
-   PHB_ITEM pText = hb_param( 1, HB_IT_STRING );
-   int iPCount = hb_pcount();
-
-   if( pText && HB_ISNUM( 2 ) && ( iPCount < 3 || HB_ISNUM( 3 ) ) )
-   {
-      const char * pszText = hb_itemGetCPtr( pText );
-      HB_ISIZ nSize = hb_itemGetCLen( pText );
-      HB_ISIZ nFrom = hb_parns( 2 );
-      HB_ISIZ nCount = iPCount < 3 ? nSize : hb_parns( 3 );
-
-      if( nFrom > 0 )
-      {
-         if( --nFrom > nSize )
-            nCount = 0;
-      }
-
-      if( nCount > 0 )
-      {
-            if( nFrom < 0 )
-               nFrom += nSize;
-            if( nFrom > 0 )
-            {
-               pszText += nFrom;
-               nSize -= nFrom;
-            }
-            if( nCount > nSize )
-               nCount = nSize;
-      }
-
-      if( nCount > 0 )
-      {
-         if( nFrom <= 0 && nCount == nSize )
-            hb_itemReturn( pText );
-         else
-            hb_retclen( pszText, nCount );
-      }
-      else
-         hb_retc_null();
-   }
-}
-
-HB_FUNC( BINRAT )
-{
-   HB_SIZE nSubLen = hb_parclen( 1 );
-   HB_SIZE nPos = 0;
-
-   if( nSubLen )
-   {
-      HB_ISIZ nTo = hb_parclen( 2 ) - nSubLen;
-
-      if( nTo >= 0 )
-      {
-         const char * pszSub = hb_parc( 1 );
-         const char * pszText = hb_parc( 2 );
-
-         do
-         {
-            if( pszText[ nTo ] == *pszSub &&
-                memcmp( pszSub, pszText + nTo, nSubLen ) == 0 )
-            {
-               nPos = nTo + 1;
-               break;
-            }
-         }
-         while( --nTo >= 0 );
-      }
-   }
-   /* This function never seems to raise an error */
-   hb_retns( nPos );
-}
-
-HB_FUNC( BINAT )
-{
-   PHB_ITEM pSub  = hb_param( 1, HB_IT_STRING );
-   PHB_ITEM pText = hb_param( 2, HB_IT_STRING );
-
-   if( pText && pSub )
-   {
-      HB_SIZE nPos = hb_strAt( hb_itemGetCPtr( pSub ), hb_itemGetCLen( pSub ),
-                               hb_itemGetCPtr( pText ), hb_itemGetCLen( pText ) );
-      hb_retns( nPos );
-   }
-}
-
-HB_FUNC( BINLEN )
-{
-   PHB_ITEM pItem = hb_param( 1, HB_IT_ANY );
-
-   /* NOTE: Double safety to ensure that a parameter was really passed,
-            compiler checks this, but a direct hb_vmDo() call
-            may not do so. [vszakats] */
-
-   if( pItem )
-   {
-      if( HB_IS_STRING( pItem ) )
-      {
-         hb_retns( hb_itemGetCLen( pItem ) );
-         return;
-      }
-      else if( HB_IS_ARRAY( pItem ) )
-      {
-         hb_retns( hb_arrayLen( pItem ) );
-         return;
-      }
-      else if( HB_IS_HASH( pItem ) )
-      {
-         hb_retns( hb_hashLen( pItem ) );
-         return;
-      }
-   }
-}
 
 HB_FUNC ( BIN2D )
 {

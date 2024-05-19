@@ -244,7 +244,7 @@ private gt
     l:=if(empty(dok),dok_def[7],dok)
 
     if valtype(l)$"MC"
-     if binlen(l)<=12
+     if len(l)<=12
         y:=lower(l)
         if !"."$y
            y+=".ppr"
@@ -628,10 +628,10 @@ private gt
          elseif fakkormem#NIL
 *
           x:=getlines(trim(subs(dm->nr_faktury,D_MM+2)),',')
-          y:=ascan(fakkormem,{|x|index=pad(x[1],binlen(index)).and.round(x[3]-cena,2)=0.and.x[4]=proc_vat})
+          y:=ascan(fakkormem,{|x|index=pad(x[1],len(index)).and.round(x[3]-cena,2)=0.and.x[4]=proc_vat})
           if len(x)>0 .and. y>0
              for k:=1 to len(x)
-                y:=ascan(fakkormem,{|a|a[6]=D_LPPUT(val(x[k])) .and. index=pad(a[1],binlen(index)).and.round(a[3]-cena,2)=0.and.a[4]=proc_vat })
+                y:=ascan(fakkormem,{|a|a[6]=D_LPPUT(val(x[k])) .and. index=pad(a[1],len(index)).and.round(a[3]-cena,2)=0.and.a[4]=proc_vat })
                 if y<>0
                    exit
                 endif
@@ -691,7 +691,7 @@ private gt
           il_f:=il_f+fakkormem[y,2]
           adel(fakkormem,y)
           asize(fakkormem,len(fakkormem)-1)
-          nz:=space(binlen(nz))
+          nz:=space(len(nz))
 *
           if il_f=0
              do while j<=linecount .and. !(valtype(dok[j])="C" .and. dok[j]="SUMA")
@@ -1314,14 +1314,14 @@ RETURN -1
 *****************************
 function rsread(n,x,y)
 local c:=chr(0), i:=0
-if valtype(x)<>'C' .or. !empty(y) .and. binlen(x)<y
+if valtype(x)<>'C' .or. !empty(y) .and. hb_blen(x)<y
    x:=space(y)
 endif
 if empty(y)
-   y:=binlen(x)
+   y:=hb_blen(x)
 endif
 while hb_comRecv( n, @c, 1 , D_TIMEOUT ) = 1
-   x:=stuff(@x,++i,1,c)
+   x:=binstuff(x,++i,1,c)
    if i=y
       exit
    endif
@@ -1335,10 +1335,10 @@ return HB_TRANSLATE(a,,'PLMAZ')
 ************************
 static function poscheck(a)
 local i,b:=511
-for i:=1 to binlen(a)
-  b:= hb_bitxor(b,asc(subs(a,i,1)))
+for i:=1 to hb_blen(a)
+  b:= hb_bitxor(b,HB_BCODE(hb_bsubstr(a,i,1)))
 next
-return subs(HB_NUMTOHEX(b),2)
+return hb_bsubstr(HB_NUMTOHEX(b),2)
 ************************
 func dfprint(ft,b)
 local ret:=.t.,mes,ndclose:=.f.,closeaux,c
@@ -1355,9 +1355,9 @@ if valtype(aux)<>'N'
    endif
    ndclose:=.t.
 endif
-  if binLen(ft)>0
+  if hb_blen(ft)>0
      ft:=chgmaz(ft)
-     ret:=rswrite(aux,chr(27)+'P'+ft+poscheck(ft)+chr(27)+'\')=binlen(ft)+6
+     ret:=rswrite(aux,chr(27)+'P'+ft+poscheck(ft)+chr(27)+'\')=hb_blen(ft)+6
   endif
 if ret .and. b#NIL
    if b='\'
@@ -1381,7 +1381,7 @@ if ret .and. b#NIL
           mes:=message("Czekam na odpowiedź drukarki;[Esc] - rezygnuj")
        endif
      enddo
-     ret:=asc(b)%8>=4
+     ret:=HB_BCODE(b)%8>=4
    endif
    message(mes)
 endif
@@ -1442,7 +1442,7 @@ local p,i
 
    hb_comClose( 3 )
 
-   if 0<>(p:=val(subs(x,i:=rat(':',x)+1)))
+   if 0<>(p:=val(substr(x,i:=rat(':',x)+1)))
       if !empty(socket) .or. valtype(socket:=hb_inetCreate(D_TIMEOUT))='P'
          ipactive:=.t.
          hb_inetClearError(Socket)
@@ -1478,22 +1478,22 @@ RETURN -1
 ***********************
 function rsread(n,x,y)
 static spare:=''
-local c, i:=0 , j:=binlen(spare), k
+local c, i:=0 , j:=hb_blen(spare), k
 
-if valtype(x)<>'C' .or. !empty(y) .and. binlen(x)<y
+if valtype(x)<>'C' .or. !empty(y) .and. hb_blen(x)<y
    x:=space(y)
 endif
 if empty(y)
-   y:=binlen(x)
+   y:=hb_blen(x)
 endif
 
   if j>0
-     k:=at(chr(3),left(spare,j))
+     k:=HB_BAT(chr(3),HB_BLEFT(spare,j))
      if k>0
         j:=k
      endif
-     x:=stuff(@x,i+1,j,left(spare,j))
-     spare:=subs(spare,j+1)
+     x:=binstuff(@x,i+1,j,HB_BLEFT(spare,j))
+     spare:=hb_bsubstr(spare,j+1)
      i+=j
      if k>0
         return i
@@ -1508,12 +1508,12 @@ endif
 
   if valtype(n)='P'
    while (j:=hb_inetRecv( n, @c, y-i )) > 0
-     k:=at(chr(3),left(c,j))
+     k:=HB_BAT(chr(3),HB_BLEFT(c,j))
      if k>0
-        spare:=subs(c,k+1,j-k)
+        spare:=hb_bsubstr(c,k+1,j-k)
         j:=k
      endif
-     x:=stuff(@x,i+1,j,left(c,j))
+     x:=binstuff(@x,i+1,j,left(c,j))
      i+=j
      if y<=i .or. k>0
         exit
@@ -1524,12 +1524,12 @@ endif
   endif
 
 while (j:=hb_comRecv( n, @c, y-i , D_TIMEOUT )) > 0
-   k:=at(chr(3),left(c,j))
+   k:=HB_BAT(chr(3),HB_BLEFT(c,j))
    if k>0
-      spare:=subs(c,k+1,j-k)
+      spare:=hb_bsubstr(c,k+1,j-k)
       j:=k
    endif
-   x:=stuff(@x,i+1,j,left(c,j))
+   x:=binstuff(@x,i+1,j,left(c,j))
    i+=j
    if i>=y .or. k>0
       exit
@@ -1624,11 +1624,11 @@ endif
        c:=''
        aeval(ft,{|x|c+=x+chr(9)})
        ft:=c
-     elseif right(ft,1)<>chr(9)
+     elseif binright(ft,1)<>chr(9)
        ft+=chr(9)
      endif
      ft:=chgmaz(ft)
-     ret:=rswrite(aux,chr(2)+ft+'#'+poscheck(ft)+chr(3))=binlen(ft)+7
+     ret:=rswrite(aux,chr(2)+ft+'#'+poscheck(ft)+chr(3))=hb_blen(ft)+7
   endif
 if ret
    //b:=left(ft,at(chr(9),ft))
@@ -1636,15 +1636,15 @@ if ret
    b:=''
    ret:=.f.
    c:=rsread(aux,@b,1024)
-   b:=left(b,c)
+   b:=HB_BLEFT(b,c)
    if c>5
-      if right(b,5) == poscheck(subs(b,2,binlen(b)-7))+chr(3)
-           c:=left(ft,at(chr(9),ft))
+      if binright(b,5) == poscheck(hb_bsubstr(b,2,hb_blen(b)-7))+chr(3)
+           c:=HB_BLEFT(ft,HB_BAT(chr(9),ft))
            if b=chr(2)+c
               if b=chr(2)+c +'?'
-                 message('Drukarka odesłała numer błędu: '+str(val(subs(b,binlen(c)+3))))
+                 message('Drukarka odesłała numer błędu: '+str(val(hb_bsubstr(b,hb_blen(c)+3))))
               else
-                 b:=subs(b,binlen(c)+2,binlen(b)-binlen(c)-7)
+                 b:=hb_bsubstr(b,hb_blen(c)+2,hb_blen(b)-hb_blen(c)-7)
                  ret:=.t.
               endif
            elseif b=chr(2)+'ERR'
@@ -1678,17 +1678,17 @@ function rsopen(x)
          x:="COM1"
       endif
    endif
-return IF(RS_INIT(val(subs(x,4)),A_DFP, D_TIMEOUT /1000)=0,44,-44)
+return IF(RS_INIT(val(substr(x,4)),A_DFP, D_TIMEOUT /1000)=0,44,-44)
 
 function rsclose()
 return RS_DONE()=0
 
 function rswrite(x,buf,n)
 
-  if n=NIL .or. binLen(buf)<n
-    n:=binLen(buf)
+  if n=NIL .or. hb_blen(buf)<n
+    n:=hb_blen(buf)
   endif
-  if n>=2 .and. ! RS_SEND(asc(subs(buf,2,1)),,subs(buf,3,n-2))
+  if n>=2 .and. ! RS_SEND(HB_BCODE(subs(buf,2,1)),,hb_bsubstr(buf,3,n-2))
     n:=0
   endif
 
@@ -1705,8 +1705,8 @@ local s:=' ',ret,disp,x,kod
         l:=""
      endif
 
-     kod:=asc(subs(rtr,2,1))
-     rtr:=subs(rtr,3)
+     kod:=HB_BCODE(hb_bsubstr(rtr,2,1))
+     rtr:=hb_bsubstr(rtr,3)
      ret:=.f.
 
      if ack=NIL
@@ -1715,12 +1715,13 @@ local s:=' ',ret,disp,x,kod
 
      DO WHILE .T.
         disp:=""#l
-        s:=space(binlen(ack))
+        s:=space(hb_blen(ack))
         if RS_SEND(kod,@s,rtr)=0
            if ack=='' .or. s<>chr(21)
               ret:=.t.
            endif
-           ack:=pad(s,binlen(ack))
+           //ack:=pad(s,hb_blen(ack))
+	   ack:=s+space(hb_blen(ack)-hb_blen(s))
            if !disp .and. ret
               exit
            endif
@@ -1733,7 +1734,7 @@ local s:=' ',ret,disp,x,kod
      if RS_SEND(148,@s,'')<>0 .or. S>=chr(0x80)
         break
      endif
-     S:=ASC(S)
+     S:=HB_BCODE(S)
      if s%128>=64
         l+=";BRAK WYŚWIETLACZA KLIJENTA."
         disp:=.t.
@@ -1768,7 +1769,7 @@ local s:=' ',ret,disp,x,kod
      if RS_SEND(155,@s,'')<>0
         break
      endif
-     S:=ASC(S)
+     S:=HB_BCODE(S)
      if s%8>=4
         l+=';MODUŁ FISKALNY W TRYBIE "TYLKO ODCZYT"!'
         rtr:=NIL
@@ -1778,7 +1779,7 @@ local s:=' ',ret,disp,x,kod
      if RS_SEND(149,@s,'')<>0 .or. S>=chr(0x80)
         break
      endif
-     S:=ASC(S)
+     S:=HB_BCODE(S)
      if s%128>=64
         l+=";WYDRUK PARAGONU ZATRZYMANY Z POWODU BRAKU PAPIERU."
         disp:=.t.
@@ -1986,11 +1987,11 @@ RETURN -1
 ***********************
 function rsread(n,x,y)
 local c:=chr(0), i:=0 , j
-if valtype(x)<>'C' .or. !empty(y) .and. binlen(x)<y
+if valtype(x)<>'C' .or. !empty(y) .and. hb_blen(x)<y
    x:=space(y)
 endif
 if empty(y)
-   y:=binlen(x)
+   y:=hb_blen(x)
 endif
 
   if valtype(n)='P'
@@ -2093,7 +2094,7 @@ memvar aux,df_ver
         endif
 
      if empty(rtr)
-        ret :=  len(ack) = 0 .or. rsread( 3, @ack, binlen(ack) ) = binlen(ack)
+        ret :=  len(ack) = 0 .or. rsread( 3, @ack, hb_blen(ack) ) = hb_blen(ack)
      else
         ret:=.t.
         s:=''
@@ -2106,10 +2107,10 @@ memvar aux,df_ver
            rtr := subs( rtr, 3 )
         endif
         if ret
-           ret := ( rtr == '' ) .or. rswrite( 3, rtr ) == binlen( rtr )
-           if (binlen(ack)>1)
-             ack:=space(binlen(ack)-1)
-             ret := rsread( 3, @ack, binlen(ack) ) = binlen(ack)
+           ret := ( rtr == '' ) .or. rswrite( 3, rtr ) == hb_blen( rtr )
+           if (hb_blen(ack)>1)
+             ack:=space(hb_blen(ack)-1)
+             ret := rsread( 3, @ack, hb_blen(ack) ) = hb_blen(ack)
              ack := s + ack
            endif
         endif

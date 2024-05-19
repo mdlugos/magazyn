@@ -29,9 +29,9 @@ SET(_SET_DEBUG,.t.)
 ErrorBlock( {|e| DefError(e)} )
 
 t:=a+f+fa
-n:=int(binlen(t)/4)*4
+n:=int(hb_blen(t)/4)*4
 for i:=1 to n step 4
-  sc+=bin2l(substr(t,i,4))
+  sc+=bin2l(hb_bsubstr(t,i,4))
 next
 
 if sc#0
@@ -47,7 +47,7 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
   SET(_SET_LANGUAGE,'PL')
   REQUEST HB_CODEPAGE_PL852M
 //  REQUEST HB_CODEPAGE_PLMAZ //ramki
-  REQUEST HB_CODEPAGE_UTF8EX
+  REQUEST HB_CODEPAGE_UTF8MD
   #ifdef PLWIN
    request hb_translate
    hb_gtInfo( HB_GTI_FONTNAME , "Lucida Console" )
@@ -58,7 +58,7 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
    SetCursor( 0 )
    hb_gtInfo( HB_GTI_CLOSABLE, .t. )
    hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
-   SET(_SET_CODEPAGE,'UTF8EX')
+   SET(_SET_CODEPAGE,'UTF8MD')
 /*
     #ifdef PC852
      HB_CDPSELECT(PC852)
@@ -68,7 +68,7 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
     #endif
 */
   #else
-   SET(_SET_CODEPAGE,'UTF8EX')
+   SET(_SET_CODEPAGE,'UTF8MD')
   #endif
    SET(_SET_DBCODEPAGE,PC852)
    //SET(_SET_DEBUG, .t.)
@@ -224,7 +224,7 @@ field nazwa,baza,klucz,path,plik,for,unique,descend
 static s:=0,ee:=NIL
 #ifdef __HARBOUR__
     #ifdef PC852
-     HB_CDPSELECT('UTF8EX')
+     HB_CDPSELECT('UTF8MD')
     #else
      HB_CDPSELECT('PLWIN')
     #endif

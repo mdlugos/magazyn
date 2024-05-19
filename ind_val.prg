@@ -101,7 +101,7 @@ if k=0
    endif
    if val(_spocz)=0
       ordsetfocus('SUR_NAZ')
-      _sbeg:=binlen(skladnik)+2
+      _sbeg:=len(skladnik)+2
       _swar=&('{|p|'+ordkey()+'=p'+'}')
       if _slth>0
          dbseek(_spocz)
@@ -115,7 +115,7 @@ if k=0
            return .t.
          endif
       else
-         dbseek(str(val(_spocz),binlen(skladnik)))
+         dbseek(str(val(_spocz),len(skladnik)))
          _spocz:=''
          _slth:=0
       endif
@@ -131,8 +131,8 @@ elseif k=K_ESC
    return .t.
 elseif ISALPHA(UpP(chr(k))) .and. _sbeg=1
    ordsetfocus('SUR_NAZ')
-   _sbeg:=binlen(skladnik)+2
-   _spocz:=LEFT(_spocz,binlen(_spocz)-_slth)+UpP(CHR(K))
+   _sbeg:=len(skladnik)+2
+   _spocz:=LEFT(_spocz,len(_spocz)-_slth)+UpP(CHR(K))
    _slth:=1
    _swar:=&('{|p|'+ordkey()+'=p'+'}')
    refresh(,_s)
@@ -141,7 +141,7 @@ elseif ISALPHA(UpP(chr(k))) .and. _sbeg=1
 elseif k=K_CTRL_LEFT .and. _sbeg<>1
     ordsetfocus('SUR_KOD')
     _swar:=&('{|p|'+INDEXKEY(0)+'=p'+'}')
-    _spocz:=LEFT(_spocz,binlen(_spocz)-_slth)
+    _spocz:=LEFT(_spocz,len(_spocz)-_slth)
     _slth:=0
     _sbeg:=1
     REFRESH LINE _sm+_srow1-1 DIRECTION 0
@@ -150,9 +150,9 @@ elseif k=K_CTRL_LEFT .and. _sbeg<>1
 elseif k=K_CTRL_RIGHT .and. _sbeg=1
     ordsetfocus('SUR_NAZ')
     _swar:=&('{|p|'+INDEXKEY(0)+'=p'+'}')
-    _spocz:=LEFT(_spocz,binlen(_spocz)-_slth)
+    _spocz:=LEFT(_spocz,len(_spocz)-_slth)
     _slth:=0
-    _sbeg:=binlen(skladnik)+2
+    _sbeg:=len(skladnik)+2
     REFRESH LINE _sm+_srow1-1 DIRECTION 0
     refresh(1,_s)
 
@@ -207,7 +207,7 @@ return
 **************
 func nextni()
 local i,s,ni:=index
-  for i:=binlen(index) to 1 step -1
+  for i:=len(index) to 1 step -1
     if isdigit(subs(index,i,1))
        ni:=subs(index,i+1)
        exit
@@ -406,21 +406,21 @@ endif
   lam:=recno()
 
   ni:=nextni()
-  s:=left(index,binlen(index)-binlen(ni))
+  s:=left(index,len(index)-len(ni))
   dbSkip(1)
 
-  DBEval({||ni:=nextni(),s:=left(index,binlen(index)-binlen(ni))},,{|x|x:=val(ni),index=s .and. val(right(index,binlen(ni)))<=x+1},,,.F. )
+  DBEval({||ni:=nextni(),s:=left(index,len(index)-len(ni))},,{|x|x:=val(ni),index=s .and. val(right(index,len(ni)))<=x+1},,,.F. )
 
   dbGoto(lam)
 
-  for i:=binlen(ni) to 1 step -1
+  for i:=len(ni) to 1 step -1
     if isdigit(subs(ni,i,1))
-       ni:=s+pad(strtran(str(val(ni)+1,i)," ","0"),binlen(ni))
+       ni:=s+pad(strtran(str(val(ni)+1,i)," ","0"),len(ni))
        exit
     endif
   next
 
-  DevPos(9,78-binlen(ni) ); DevOut(ni,"RG+/BG" )
+  DevPos(9,78-len(ni) ); DevOut(ni,"RG+/BG" )
 #ifdef A_SZYM
   if !empty(beg)
 #ifdef STANY
@@ -442,7 +442,7 @@ endif
 #endif
 
 #ifdef A_ZAGRODA
-  rt:=space(binlen(rt))
+  rt:=space(len(rt))
   gr:=0
   UW := "BEZ UWAG "
 #endif
@@ -499,7 +499,7 @@ endif
     IF empty(stos)
       @ 10,5 say "        "
     else
-      @ 10,5 SAY "Lamus:"+str(binlen(STOS),2)
+      @ 10,5 SAY "Lamus:"+str(len(STOS),2)
     endif
     @ 10,61 SAY "Symbol"
     @ 11,3  say dp
@@ -558,7 +558,7 @@ endif
 #ifdef A_KODVAL
     atail(getlist):postblock:=A_KODVAL
 #else
-    atail(getlist):postblock:={|g,y|y:=UpP(trim(kw)),!g:changed.or.empty(y).or.binlen(y)=10.or.SUROWCE->(szukam({,,,,1,binlen(y),'Wybierz '+A_KODY,{||KoD+'│'+nazwa},,y}).and.(kw:=KoD)='')}
+    atail(getlist):postblock:={|g,y|y:=UpP(trim(kw)),!g:changed.or.empty(y).or.len(y)=10.or.SUROWCE->(szukam({,,,,1,len(y),'Wybierz '+A_KODY,{||KoD+'│'+nazwa},,y}).and.(kw:=KoD)='')}
 #endif
 #endif
 #endif
@@ -567,7 +567,7 @@ endif
   #ifdef A_PKWiU
     @ 12,57 SAY "PKWiU:" get s picture "@RK ##.##.##-##.##"
   #else
-    @ 12,75-binlen(A_SWWKTM)-binlen(s) SAY A_SWWKTM+":"
+    @ 12,75-len(A_SWWKTM)-len(s) SAY A_SWWKTM+":"
     getl s picture "@K"
   #endif
 #ifdef A_SWWVAL
@@ -646,7 +646,7 @@ endif
 
 #ifdef A_ALTCEN
  #ifdef A_PROCMAR
-    getlist[len(getlist)-2]:postblock:={|g,v|!g:changed .or. ni=index .and. (varput(getlist,'pm',eval(memvar->liczm,STANY->cenA_zaK,ce,val(pv)),.t.),.f.) .or. (x:=g,aeval(getlist,{|g,y|if(g:name='pm'.and.binlen(g:name)=3,eval(g:postblock,x,g:varget(),getlist,y),)}),.t.)}
+    getlist[len(getlist)-2]:postblock:={|g,v|!g:changed .or. ni=index .and. (varput(getlist,'pm',eval(memvar->liczm,STANY->cenA_zaK,ce,val(pv)),.t.),.f.) .or. (x:=g,aeval(getlist,{|g,y|if(g:name='pm'.and.len(g:name)=3,eval(g:postblock,x,g:varget(),getlist,y),)}),.t.)}
     c1:=cena1;    c2:=cena2;    c3:=cena3
     pm1:=proc_mar1;    pm2:=proc_mar2;    pm3:=proc_mar3
     @ 13,3 say "Cena1:" get pm1 picture "@K ###"
@@ -664,7 +664,7 @@ endif
     pm1:=10
   endif
 
-       getlist[len(getlist)-8]:postblock:={|g,v|!g:changed .or. ni=index .and. (varput(getlist,'pm',eval(memvar->liczm,STANY->cenA_zaK,ce,val(pv)),.t.),varput(getlist,'pm1',max(10,pm/5),g),.f.) .or. (x:=g,aeval(getlist,{|g,y|if(g:name='pm3'.and.binlen(g:name)=3,eval(g:postblock,x,g:varget(),getlist,y),)}),.t.)}
+       getlist[len(getlist)-8]:postblock:={|g,v|!g:changed .or. ni=index .and. (varput(getlist,'pm',eval(memvar->liczm,STANY->cenA_zaK,ce,val(pv)),.t.),varput(getlist,'pm1',max(10,pm/5),g),.f.) .or. (x:=g,aeval(getlist,{|g,y|if(g:name='pm3'.and.len(g:name)=3,eval(g:postblock,x,g:varget(),getlist,y),)}),.t.)}
 
        x:=getlist[len(getlist)-5]
        x:postblock:={|g|!g:changed .or. ni#index .or. pm1=0 .or. (varput(getlist,'c1',eval(MEMVAR->liczCzM,D_KASA,val(pv),pm1,p),g),.t.)}
@@ -765,8 +765,8 @@ endif
     a:=select()
     sel('SUROWCE','SUR_KOD')
     SAYl 'Dieta:'
-    GETl id picture "@K! "+replicate("X",binlen(surowce->skladnik)) VALID {|g|!g:changed .or. SUROWCE->(szukam({,,,,1,len(trim(id)),'Surowce z Diety',{||field->skladnik+"│"+nazwa+"│"+field->jmag+' ='+str(field->przel)+' '+field->jedn},{|_skey,_s D_MYSZ|surinfo(_skey,_s,@id,ni D_MYSZ)} ,UpP(Trim(id))}).and.(setpos(g:row,g:col+binlen(field->skladnik)+1),dispout(left(nazwa,78-col())),.t.) )}
-    if dbseek(left(id,binlen(field->skladnik)))
+    GETl id picture "@K! "+replicate("X",len(surowce->skladnik)) VALID {|g|!g:changed .or. SUROWCE->(szukam({,,,,1,len(trim(id)),'Surowce z Diety',{||field->skladnik+"│"+nazwa+"│"+field->jmag+' ='+str(field->przel)+' '+field->jedn},{|_skey,_s D_MYSZ|surinfo(_skey,_s,@id,ni D_MYSZ)} ,UpP(Trim(id))}).and.(setpos(g:row,g:col+len(field->skladnik)+1),dispout(left(nazwa,78-col())),.t.) )}
+    if dbseek(left(id,len(field->skladnik)))
        sayl left(nazwa,78-col())
     endif
     select (a)
@@ -1434,7 +1434,7 @@ endif
   unlock in STANY
 
   if .t.=rf .or. .t.=new
-    _spocz:=left(_spocz,binlen(_spocz)-_slth)
+    _spocz:=left(_spocz,len(_spocz)-_slth)
     _slth:=0
     refresh(,_s)
   ELSE
@@ -1459,8 +1459,8 @@ field ilosc,data,smb_dow,nr_dowodu,pozycja,nr_zlec
 #else
 #define D_LP0 '0'
 #define D_LP1 '1'
-#define D_LPVAL(x) (asc(x)-48)
-#define D_LPSTR(x) str(asc(x)-48,3)
+#define D_LPVAL(x) (HB_BCODE(x)-48)
+#define D_LPSTR(x) str(HB_BCODE(x)-48,3)
 #define D_LPSTR1(x) x
 #define D_LPPUT(x) chr(x+48)
 #endif

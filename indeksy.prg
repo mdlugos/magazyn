@@ -64,7 +64,7 @@
 #else
  #ifdef A_SHORTIND
       #ifdef A_KODY
-       #define TOPLINE 'Kod┬Nazwa'+repl('─',40-binlen(KoD))+'┬'+pad(A_KODY,binlen(KoD),'─')+'┬──────Stan┬─jm─┬Cena'
+       #define TOPLINE 'Kod┬Nazwa'+repl('─',40-len(KoD))+'┬'+pad(A_KODY,len(KoD),'─')+'┬──────Stan┬─jm─┬Cena'
        #undef D_KODY
        #define D_KODY 48
       #else
@@ -95,16 +95,16 @@
        #define TOPLINE 'Kod kresk.─┬Nazwa────────────────────────────┬Kod──┬C.Zak┬───Stan┬─jm─┬Cena'
       #else
 #ifdef STANY
-       #define TOPLINE 'Kod kresk.─┬Nazwa───────────────────────────────────┬──────────┬'+pad(A_KODY,binlen(KoD),'─')+'┬───Stan┬─jm─┬Cena'
+       #define TOPLINE 'Kod kresk.─┬Nazwa───────────────────────────────────┬──────────┬'+pad(A_KODY,len(KoD),'─')+'┬───Stan┬─jm─┬Cena'
 #else
-       #define TOPLINE 'Kod kresk.─┬Nazwa───────────────────────────────────┬──────────┬'+pad(A_KODY,binlen(KoD),'─')+LARMG+'┬───Stan┬─jm─┬Cena'
+       #define TOPLINE 'Kod kresk.─┬Nazwa───────────────────────────────────┬──────────┬'+pad(A_KODY,len(KoD),'─')+LARMG+'┬───Stan┬─jm─┬Cena'
 #endif
       #endif
      #endif
     #else
      #ifdef A_7
       #ifdef A_KODY
-       #define TOPLINE 'Kod───┬Nazwa'+repl('─',49-binlen(KoD))+'┬'+pad(A_KODY,binlen(KoD),'─')+'┬─────Stan┬jm'
+       #define TOPLINE 'Kod───┬Nazwa'+repl('─',49-len(KoD))+'┬'+pad(A_KODY,len(KoD),'─')+'┬─────Stan┬jm'
        #define D_KODY 55
       #else
        #define TOPLINE 'Kod───┬Nazwa──────────────────────────────────────'+LARMG+'┬─────Stan┬─jm─┬Cena'
@@ -170,7 +170,7 @@ private hlink:=NIL
       else
          DEFAULT _sinfo TO {|skey,s D_MYSZ|peoma(skey,s D_MYSZ)}
          if valtype(g)='O' .and. _spocz=NIL .and. _slth=NIL .and. _sbeg=NIL
-            _spocz:=trim(right(g:varget(),binlen(indx_mat->index)))
+            _spocz:=trim(right(g:varget(),len(indx_mat->index)))
          endif
       endif
       DEFAULT _spocz TO ''
@@ -191,7 +191,7 @@ private hlink:=NIL
       r:=szukam(_s)
       if r.and.valtype(g)='O'
          t:=g:varget()
-         t:=right(STANY->(left(t,binlen(t)-binlen(nr_mag+index))+nr_mag+index),binlen(t))
+         t:=right(STANY->(left(t,len(t)-len(nr_mag+index))+nr_mag+index),len(t))
          g:varput(t)
       endif
 return r
@@ -243,7 +243,7 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
   ENDIF
 #else
  #ifdef A_KODY
-  #define LARTXT left(nazwA,45-binlen(KoD))+ret+INDX_MAT->KoD
+  #define LARTXT left(nazwA,45-len(KoD))+ret+INDX_MAT->KoD
  #else
   #define LARTXT nazwA
  #endif
@@ -368,7 +368,7 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
    #ifdef A_7
     #ifdef A_KODY
      #undef LARTXT
-     #define LARTXT left(nazwA,54-binlen(KoD))+ret+INDX_MAT->KoD
+     #define LARTXT left(nazwA,54-len(KoD))+ret+INDX_MAT->KoD
      #define SHORTTXT
     #else
      #ifdef A_FA
@@ -503,7 +503,7 @@ DO CASE
     _spform={|p,l|TranR(right(p,l), INDEXPIC )}
 #endif
 #ifdef A_KKR
-    if val(txt)<>0 .and. binlen(txt)>=8
+    if val(txt)<>0 .and. len(txt)>=8
         SET ORDER TO TAG INDX_KKR
  #ifdef A_MM
         IF dbseek(txt) .and. txt=trim(INDX_MAT->info)
@@ -526,7 +526,7 @@ DO CASE
         SET ORDER TO TAG INDX_NUM
     endif
 #endif
-    _slth:=binlen(txt)
+    _slth:=len(txt)
     DO CASE
       CASE ""=txt
 #ifdef A_ENAZ
@@ -541,7 +541,7 @@ DO CASE
          txt:=UpP(txt)
          _sfilt:='['+txt+']$UPPER(INDX_MAT->naZwa)'
          _sfilb:={||txt$UPPER(INDX_MAT->naZwa)}
-         _spocz:=left(_spocz,binlen(_spocz)-binlen(txt))
+         _spocz:=left(_spocz,len(_spocz)-len(txt))
 #ifdef A_ZAZNACZ
          _sprompt:={|d,s,z,x,l,k,c|c:={_snorm,"GR+/N+","R+/N+","G+/N+","GB+/N+","BR+/N",12,13,14,15}[indx_mat->zaznacz+1],x:=lpeoma(s),if(z=.t.,x,(l:=if(empty(txt),0,at(txt,UpP(x))),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
 #else
@@ -557,9 +557,9 @@ DO CASE
         _spform={|p,l|right(p,l)}
 #ifdef A_ANKER
 #ifdef A_ZAGRODA
-      CASE pad(txt,binlen(index))=index .and. if(len(trim(field->tandem))>=6,dbseek(pad(field->tandem,binlen(index))),.t.)
+      CASE pad(txt,len(index))=index .and. if(len(trim(field->tandem))>=6,dbseek(pad(field->tandem,len(index))),.t.)
 #else
-      CASE pad(txt,binlen(index))=index
+      CASE pad(txt,len(index))=index
 #endif
 #else
  #ifdef A_LFIRST
@@ -691,8 +691,8 @@ DO CASE
       _sbeg:=D_KODY
     elseif _sbeg=if(_skey=2,1,D_KODY) // ^>
   #else
-      _sbeg:=binlen( INDEXPIC )+D_KODY-binlen(KoD)
-    elseif _sbeg=if(_skey=2,1,binlen( INDEXPIC )+D_KODY-binlen(KoD)) // ^>
+      _sbeg:=len( INDEXPIC )+D_KODY-len(KoD)
+    elseif _sbeg=if(_skey=2,1,len( INDEXPIC )+D_KODY-len(KoD)) // ^>
   #endif
 #endif
 
@@ -820,7 +820,7 @@ DO CASE
        _sbeg:=1
     endif
     _swar:=&('{|p|'+IndexkeY(0)+'=p'+'}')
-    _spocz:=LEFT(_spocz,binlen(_spocz)-_slth)
+    _spocz:=LEFT(_spocz,len(_spocz)-_slth)
     _slth:=0
     REFRESH LINE _sm+_srow1-1 DIRECTION 0
     refresh(1,_s)
@@ -841,7 +841,7 @@ DO CASE
          _sm:=1
       endif
       _slth=_slth-1
-      _spocz=left(_spocz,binlen(_spocz)-1)
+      _spocz=left(_spocz,len(_spocz)-1)
       goto _srec[_sm]
       KIM_EDIT(_s,FIRMY->numer_kol+right(dm->nr_dowodu,3))
       return .t.
@@ -852,7 +852,7 @@ DO CASE
          _sm:=1
       endif
       _slth:=_slth-1
-      _spocz:=left(_spocz,binlen(_spocz)-1)
+      _spocz:=left(_spocz,len(_spocz)-1)
       goto _srec[_sm]
       KIM_EDIT(_s,.t.)
       return .t.
@@ -1032,7 +1032,7 @@ DO CASE
          endif
          unlock recno()
          select (a)
-         _spocz:=left(_spocz,binlen(_spocz)-1)
+         _spocz:=left(_spocz,len(_spocz)-1)
          --_slth
          REFRESH LINE _sm+_srow1-1 DIRECTION 0
          _SDOL(_s,24)
@@ -1054,7 +1054,7 @@ DO CASE
            SET ORDER TO TAG STAN_NAZ
         endif
  #endif
-        _spocz=LEFT(_spocz,binlen(_spocz)-_slth)+UpP(CHR(_SKEY))
+        _spocz=LEFT(_spocz,len(_spocz)-_slth)+UpP(CHR(_SKEY))
         _slth=1
         _spform={|p,l|right(p,l)}
         _sbeg=SSBEG

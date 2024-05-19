@@ -6,13 +6,9 @@
 -lhbmxml hbmxml.hbc
 #-lhbcurl hbcurl.hbc
 #sddmy.hbc
-main
-mlcfunc.c cppl852m.c io error help io_2 clp_brow mds mds_spec frmrun
-getsys
-#tgetlist
-#getlist
+mlcfunc.c
+cppl852m.c
+cp_utf8m.c
+main io error help io_2 clp_brow mds mds_spec frmrun getsys
 ind_val dok dm_valid dm_form dok_druk dok_pr dodatki druk_zes indeksy
 jpk
-#boromeus
-#puszczew
-#zagroda

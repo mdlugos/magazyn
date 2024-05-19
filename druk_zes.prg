@@ -136,8 +136,8 @@ FIELD WARTOSC,ILOSC,DATA,INDEX,nr_mag,smb_dow,nr_dowodu,pozycja,nr_zlec,dost_odb
 #else
 #define D_LP0 '0'
 #define D_LP1 '1'
-#define D_LPVAL(x) (asc(x)-48)
-#define D_LPSTR(x) str(asc(x)-48,3)
+#define D_LPVAL(x) (HB_BCODE(x)-48)
+#define D_LPSTR(x) str(HB_BCODE(x)-48,3)
 #define D_LPSTR1(x) x
 #define D_LPPUT(x) chr(x+48)
 #endif
@@ -392,11 +392,11 @@ if valtype(g)='O'
 endif
 r:=szukam({1,14,maxrow(),,1,0,'FIRMY',{||numer_kol+if(""=uwagi,"|","*")+nazwa},{|_skey,_s|if(_skey=13,_s[12]:=.t.,gfirma(_skey,_s,getlist))},""})
       if r.and.valtype(g)='O'
-         a:=MAIN->(binlen(&(INDEXKEY(3)))-10-binlen(index))
-      if binlen(t)>=binlen(main->nr_zlec)
-         t:=left(t,a-binlen(firmy->numer_kol))+FIRMY->numer_kol+subs(t,a+1)
+         a:=MAIN->(len(&(INDEXKEY(3)))-10-len(index))
+      if len(t)>=len(main->nr_zlec)
+         t:=left(t,a-len(firmy->numer_kol))+FIRMY->numer_kol+subs(t,a+1)
       else
-         t:=FIRMY->numer_kol+subs(t,binlen(firmy->numer_kol)+1)
+         t:=FIRMY->numer_kol+subs(t,len(firmy->numer_kol)+1)
       endif
          g:varput(t)
       endif
@@ -434,8 +434,8 @@ pm:=-1
   BKEY:=&('{||'+LEFT(i_od,RAT('+DTOS(',UpP(i_od))-1)+'}') //UpP(nr_zlec)+NR_MAG+index}
   I_OD:=I_DO:=EVAL(bkey)
 #ifdef A_ZLEC11
-  i_gr:=binlen(i_od)
-  bpic:=padl("XXXXXXXXXXX-XX/"+ INDEXPIC ,i_gr+2+binlen( INDEXPIC )-binlen(index),"X")
+  i_gr:=len(i_od)
+  bpic:=padl("XXXXXXXXXXX-XX/"+ INDEXPIC ,i_gr+2+len( INDEXPIC )-len(index),"X")
   i_gr:=11
 #else
   i_gr:=8
@@ -449,7 +449,7 @@ pm:=-1
   @ 19,5 SAY 'KONTO-MAGAZYN-INDEKS od :' GET I_OD PICTURE "@KR! "+bpic valid {||if(i_do<i_od,(i_do:=i_od),),.t.}
   @ 20,5 SAY 'KONTO-MAGAZYN-INDEKS do :' GET I_DO PICTURE "@KR! "+bpic valid {||if(i_do<i_od,(i_do:=i_od)=NIL,.t.)}
 #endif
-  @ 22,10 SAY 'Grupowanie wedlug pierwszych' GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=binlen(i_od)
+  @ 22,10 SAY 'Grupowanie wedlug pierwszych' GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=len(i_od)
   devout(" znaków klucza")
 READ
 if readkey()=27
@@ -458,7 +458,7 @@ endif
 
 I_OD=UpP(TRIM(I_OD))
 I_DO=UpP(TRIM(I_DO))
-a:=binlen(&(INDEXKEY()))-10-binlen(index)
+a:=len(&(INDEXKEY()))-10-len(index)
 #ifdef A_OBR
 stanowis->(ordsetfocus("kont_num"))
 return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,"ZESTAWIENIE ROZCHODÓW W/G KONT",{||NIL},{|x,y|;
@@ -501,8 +501,8 @@ DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
   BKEY:=&('{||'+LEFT(i_od,RAT('+DTOS(',UpP(i_od))-1)+'}') //UpP(nr_zlec)+NR_MAG+index}
   I_OD:=I_DO:=EVAL(bkey)
 #ifdef A_ZLEC11
-  i_gr:=binlen(i_od)
-  bpic:=padl("XXXXXXXXXXX-XX/"+ INDEXPIC ,i_gr+2+binlen( INDEXPIC )-binlen(index),"X")
+  i_gr:=len(i_od)
+  bpic:=padl("XXXXXXXXXXX-XX/"+ INDEXPIC ,i_gr+2+len( INDEXPIC )-len(index),"X")
   i_gr:=13
 #else
   i_gr:=8
@@ -514,7 +514,7 @@ DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
      i_gr-=2
   endif
 #endif
-  @ 22,10 SAY 'Grupowanie według pierwszych' GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=binlen(i_od)
+  @ 22,10 SAY 'Grupowanie według pierwszych' GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=len(i_od)
   devout(" znaków klucza")
 READ
 if readkey()=27
@@ -522,7 +522,7 @@ if readkey()=27
 endif
 I_OD=UpP(TRIM(I_OD))
 I_DO=UpP(TRIM(I_DO))
-a:=binlen(&(INDEXKEY()))-10-binlen(index)
+a:=len(&(INDEXKEY()))-10-len(index)
 
 return({od,do,i_od,i_do,i_gr,bkey,bpic,1,"ZESTAWIENIE PRZYCHODÓW W/G KONT",{||NIL},{||;
   FIRMY->(IF(i_gr>=a.and.DBSEEK(subs(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),chr(13)+replicate('_',78)}})
@@ -585,14 +585,14 @@ SELECT STANY
   @ 20,05 SAY 'MAT. "od" :' GET I_OD PICTURE "@KR! "+bpic valid {||if(i_do<i_od,(i_do:=i_od),),.t.}
   @ 20,45 SAY 'MAT. "do" :' GET I_DO PICTURE "@KR! "+bpic valid {||if(i_do<i_od,(i_do:=i_od)=NIL,.t.)}
   i_gr:=2
-  @ 22,10 SAY 'grupowanie wedlug pierwszych' GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=binlen(index)
+  @ 22,10 SAY 'grupowanie wedlug pierwszych' GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=len(index)
   devout(" znaków klucza")
   READ
   if readkey()=27
     break
   endif
   d:=dok_sp:=alltrim(dok_sp)
-  if binlen(d)=2 .and. (i:=ascan(dokumenty[mag_poz],d))>0
+  if len(d)=2 .and. (i:=ascan(dokumenty[mag_poz],d))>0
      d:=dokumenty[mag_poz,i]
   endif
   I_OD=UpP(TRIM(I_OD))
@@ -3185,8 +3185,8 @@ IF tak("CZY KOJEJNOŚĆ W/G NAZW",20,,.F.,.F.)
    I_DO:=MAG_BIEZ+subs(eval(bkey),3)
    SEEK MAG_BIEZ
    I_OD:=MAG_BIEZ+subs(eval(bkey),3)
-   @ 19,05 SAY 'MAT. "od" :' GET I_OD PICTURE "@KR! ##/"+repl("X",binlen(i_do)-2) valid {||if(i_do<i_od,(i_do:=i_od),),.t.}
-   @ 20,05 SAY 'MAT. "do" :' GET I_DO PICTURE "@KR! ##/"+repl("X",binlen(i_do)-2) valid {||if(i_do<i_od,(i_do:=i_od)=NIL,.t.)}
+   @ 19,05 SAY 'MAT. "od" :' GET I_OD PICTURE "@KR! ##/"+repl("X",len(i_do)-2) valid {||if(i_do<i_od,(i_do:=i_od),),.t.}
+   @ 20,05 SAY 'MAT. "do" :' GET I_DO PICTURE "@KR! ##/"+repl("X",len(i_do)-2) valid {||if(i_do<i_od,(i_do:=i_od)=NIL,.t.)}
 ELSE
 #endif
    bkey:=&('{||'+IndexkeY(0)+'}')
@@ -3230,7 +3230,7 @@ IF i_gr=NIL
 
 i_gr:=2
 
-@ 22,10 SAY 'grupowanie według pierwszych' GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=binlen(eval(bkey))
+@ 22,10 SAY 'grupowanie według pierwszych' GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=len(eval(bkey))
   devout(" znaków klucza")
 read
 
@@ -4422,10 +4422,10 @@ ELSE
 #endif
         ? speC(ccpi(7)+P_UON)
 #ifdef A_MM
-#define D_MM1 left("MG|Kod materiału",3+binlen( INDEXPIC ))
+#define D_MM1 left("MG|Kod materiału",3+len( INDEXPIC ))
 #define D_MM2 "|"+nr_mag+"|"+Tran(index,"@R "+ INDEXPIC )+"|"
 #else
-#define D_MM1 left("Kod materiału",binlen( INDEXPIC ))
+#define D_MM1 left("Kod materiału",len( INDEXPIC ))
 #define D_MM2 "|"+Tran(index,"@R "+ INDEXPIC )+"|"
 #endif
 #ifdef A_SHORTIND
@@ -5251,7 +5251,7 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
       LOOP
    ENDIF
    W:=0
-   IF MAIN_FLAG .AND. asc(D_LPVAL(pozycja)+4+prow()>P_ROWN .or. prow()+4>P_ROWN
+   IF MAIN_FLAG .AND. D_LPVAL(pozycja)+4+prow()>P_ROWN .or. prow()+4>P_ROWN
       IF STRONA>0
          ?? speC(chr(13)+chr(12))
          setprc(0,0)
