@@ -2251,8 +2251,27 @@ return ret
 **************/
 #pragma BEGINDUMP
 #include "hbapi.h"
-
+#include "hbapicdp.h"
 #include "hbapiitm.h"
+#include "hbapierr.h"
+
+HB_FUNC( UUPPER )
+{
+   PHB_ITEM pText = hb_param( 1, HB_IT_STRING );
+   PHB_ITEM pCP   = hb_param( 2, HB_IT_STRING );
+   
+   PHB_CODEPAGE cdp = hb_cdpFindExt( pCP ? hb_itemGetCPtr(pCP) : "UTF8EX" );
+
+   if( pText )
+   {
+      HB_SIZE nLen = hb_itemGetCLen( pText );
+      char * pszBuffer = hb_cdpnDupUpper( cdp,
+                                          hb_itemGetCPtr( pText ), &nLen );
+      hb_retclen_buffer( pszBuffer, nLen );
+   }
+   else
+      hb_errRT_BASE_SubstR( EG_ARG, 1102, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+}
 
 HB_FUNC ( BIN2D )
 {

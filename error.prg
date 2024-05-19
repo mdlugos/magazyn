@@ -47,6 +47,7 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
   SET(_SET_LANGUAGE,'PL')
   REQUEST HB_CODEPAGE_PL852M
 //  REQUEST HB_CODEPAGE_PLMAZ //ramki
+  REQUEST HB_CODEPAGE_UTF8EX
   REQUEST HB_CODEPAGE_UTF8MD
   #ifdef PLWIN
    request hb_translate
