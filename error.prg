@@ -72,6 +72,7 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
    SET(_SET_CODEPAGE,'UTF8MD')
   #endif
    SET(_SET_DBCODEPAGE,PC852)
+   hb_SetTermCP( 'UTF8MD')
    //SET(_SET_DEBUG, .t.)
 #ifdef A_ADS
 #ifdef __PLATFORM__WINDOWS

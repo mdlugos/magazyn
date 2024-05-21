@@ -2258,8 +2258,9 @@ return ret
 HB_FUNC( UUPPER )
 {
    PHB_ITEM pText = hb_param( 1, HB_IT_STRING );
+   //PHB_CODEPAGE cdp = hb_vmCDP();
+  
    PHB_ITEM pCP   = hb_param( 2, HB_IT_STRING );
-   
    PHB_CODEPAGE cdp = hb_cdpFindExt( pCP ? hb_itemGetCPtr(pCP) : "UTF8EX" );
 
    if( pText )

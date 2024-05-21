@@ -44,7 +44,7 @@
  *
  */
 
-#define HB_UTF8EX_SORT
+//#define HB_UTF8EX_SORT
 
 #include "hbapi.h"
 #include "hbapicdp.h"

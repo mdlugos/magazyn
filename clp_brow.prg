@@ -1,7 +1,6 @@
 #include "inkey.ch"
-#ifdef __HARBOUR__
+#include "box.ch"
 #include "hbgtinfo.ch"
-#endif
 memvar _snorm,operator,_sramka
 field index,HASLO,HASLO_SPEC
 #ifdef A_OBR
@@ -49,26 +48,16 @@ if sequr
 else
    go top
 ENDIF
-  // frame window
-  @ nTop, nLeft, nBottom, nRight box UNICODE "╒═╕│╛═╘│"
 
-  // clear status row
-  @ nTop + 1, nLeft + 1 say Space(nRight - nLeft - 1)
-  @ nTop + 1, nRight - 27 say padl(plik,8)
+   hb_DispBox( nTop, nLeft, nBottom, nRight, HB_B_DOUBLE_SINGLE_UNI )
+   hb_DispOutAtBox( nTop + 3, nLeft, hb_UTF8ToStrBox( "╞" ) )
+   hb_DispOutAtBox( nTop + 3, nRight, hb_UTF8ToStrBox( "╡" ) )
+   hb_DispOutAt( nTop + 1, nLeft + 1, Space( nRight - nLeft - 1 ) )
 
-  // create a TBrowse object for a database
-  if ob=NIL
-  oB := TBrowseDB()
-  endif
-  oB:ntop:=nTop + 2
-  oB:nleft:=nLeft + 1
-  oB:nbottom:=nBottom - 1
-  oB:nright:= nRight - 1
-  @ nTop + 3, nLeft say "╞"
-  @ nTop + 3, nRight say "╡"
-  oB:headSep := "╤═"
-  oB:ColSep  := "│"
-  oB:skipBlock := {|x| Skipped(x, lAppend)}
+   oB := TBrowseDB( nTop + 2, nLeft + 1, nBottom - 1, nRight - 1 )
+   oB:HeadSep := " " + hb_UTF8ToStrBox( "═" )
+
+   oB:skipBlock := {|x| Skipped(x, lAppend)}
 
 
   // add one column for each field
