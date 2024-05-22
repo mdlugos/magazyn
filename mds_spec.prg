@@ -289,16 +289,16 @@ local i,j,pole,fi,txt,ars:=dbstruct()
    pole:=if(sel=select(),"",CHR(64+SELECT())+'->')+trim(ars[i,1])
    fi:=fieldget(i)
    do case
-   case ars[i,2]$"NB" .or. ars[i,2]=="DOUBLE"
-    txt:= "STR("+pole+")"
-   case ars[i,2]=="C" .and. ars[i,3]=8 .and. ars[i,1]="D_"
-    txt:= "STR(BIN2D("+pole+"))"
+   case ars[i,2]$"MW"
+    txt:= "PAD("+pole+",20)"
    case ars[i,2]=="C"
-    txt:= pole
-   case ars[i,2]=="L"
-    txt:= "IF("+pole+',"+","-")'
-   case ars[i,2]=="D"
-    txt:= "DTOC("+pole+")"
+//    if  ars[i,3]=8 .and. ars[i,1]="D_"
+//      txt:= "TRAN(BIN2D("+pole+"),)"
+//    else
+      txt:= pole
+//    endif
+   otherwise
+    txt:= "TRAN("+pole+",)"
    endcase
    aadd(archoice,txt)
    aadd(arskip,.t.)

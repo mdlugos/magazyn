@@ -3419,9 +3419,9 @@ if !dbseek(_spocz,,.t.)
    endif
 endif
 _sprompt:={|d,_s,t|tran(fieldget(1),if(empty(t),,"##########│########│################"))+"│"+tran(fieldget(2),)+"│"+tran(fieldget(3),)+"│"+tran(fieldget(4),)}
-_snagkol:=0//_scol1
 d:=dbstruct()
-_snagl:=padl(d[1,1],d[1,3],'─')+"┬"+pad(d[2,1],d[2,3],'─')+"┬"+pad(d[3,1],d[3,3],'─')+"┬"+d[4,1]
+_snagkol:=d[1,3]-len(d[1,1])
+_snagl:=d[1,1]+"┬"+pad(d[2,1],d[2,3],'─')+"┬"+pad(d[3,1],d[3,3],'─')+"┬"+d[4,1]
 _sbeg:=1
 _slth:=len(_spocz)
 if szukam(_s) .and. !eof()

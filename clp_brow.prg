@@ -255,10 +255,10 @@ ENDIF
          @ 16,5 say "Podaj poszukiwaną sekwencję znaków:"
 
          txt = &txt
-         @ 16,41 get txt picture '@KS34'
+         @ 16,41 get txt picture "@KS34"
          read
 
-         if TYPE('txt') = "C"
+         if TYPE("txt") = "C"
            txt = trim(txt)
          else
            (type("{||NIL}"))
@@ -527,7 +527,7 @@ local lFresh, nCursSave, mGetVar
   // create a corresponding GET with ambiguous set/get block
   oGet := GetNew(Row(), Col(),{|x| if(PCount() == 0, mGetVar, mGetVar := x)},"mGetVar",oCol:picture,oB:colorSpec)
 
-  if oCol:cargo=.t. .or. valtype(mGetVar)$"MC" .and. len(mGetVar) >= maxcol() - 1
+  if oCol:cargo=.t. .or. valtype(mGetVar)$"MWC" .and. len(mGetVar) >= maxcol() - 1
      oGet:picture:="@S"+ltrim(str(maxcol()-1,3))
      oGet:cargo:=oCol:cargo // expandable field
   endif
@@ -799,11 +799,15 @@ local b:=TBColumnNew(m[1],fb)
 #ifdef __HARBOUR__
     elseif m[2]=="B"
          m[3]:=12
-         b:picture:='@Z '+replicate('#',m[3]-5)+'.####'
+         if empty(m[4])
+          b:picture:='@Z '+replicate('#',m[3]-5)+'.####'
+         else
+          b:picture:='@Z '+replicate('#',m[3]-m[4]-1)+'.'+replicate('#',m[4])
+        endif
 #endif
     elseif m[1]="D_" .and. m[2]="C" .and. m[3]=8
          b:block:={|x|IF(x=NIL,,x:=D2BIN(x)),ROUND(BIN2D(eval(fb,x)),4)}
-    elseif m[2]=="M"
+    elseif m[2]$"MW"
          b:width:=maxcol()-1
          b:cargo:=.t.
          b:block:={|x,y|y:=eval(fb,x),if(x=NIL.and.y<>NIL.and.len(y)<maxcol(),padr(y,maxcol()-1),y)}
