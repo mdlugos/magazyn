@@ -100,7 +100,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
        _fl:=_fi:=_fj+1
        _fpos:=_fkey:=0
        while _fi<=_flp .and. _frow+_fskip*(_fi-_fj+1)<=maxrow()
-         @ _fskip*(_fi-_fj)+_frow,_fco1,_fskip*(_fi-_fj+1)+_frow,_fco2 BOX UNICODE IF( _flp<=_fi,'║ ║║╝═╚║ ','║ ║║╜─╙║ ') COLOR _sbkgr
+         @ _fskip*(_fi-_fj)+_frow,_fco1,_fskip*(_fi-_fj+1)+_frow,_fco2 BOX hb_UTF8ToStrBox(IF( _flp<=_fi,'║ ║║╝═╚║ ','║ ║║╜─╙║ ')) COLOR _sbkgr
          _fl:=_fi
          _fk:=_frow+_fskip*(_fi-_fj)
          job:=right(ltrim(str(_fi,6,0)),4)

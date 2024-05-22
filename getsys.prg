@@ -154,7 +154,7 @@ local NumFlag:=.f.,b,x,y,key,mfl,maxlth:=0
       b:=x:=y:=0
       MSHOW()
 #ifdef __HARBOUR__
-      do while (key:=INKey(0, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN ))>1000
+      do while (key:=INKey(0, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN ),key>=K_MINMOUSE .and. key<=K_MAXMOUSE)
          x:=mcol()
          y:=mrow()
          if key=1002
@@ -419,9 +419,9 @@ local bKeyBlock
 #endif
 
   otherwise
-
-    if (key >= 32 .and. key <= 255) .and. (cKey := Chr(key),.t.) .or. ;
-       (key == K_CTRL_Q) .and. get:type == "C" .and. setcursor(setcursor()+2)>0 .and. (cKey := chr(max(0,min(255,inkey(0)))))="" .and. setcursor(setcursor()-2)>=0
+    cKey := hb_keyChar(key)
+    if (key >= 32 .and. !ckey == "") .or. ;
+       (key == K_CTRL_Q) .and. get:type == "C" .and. setcursor(setcursor()+2)>0 .and. (cKey := Chr(inkey(0)))="" .and. setcursor(setcursor()-2)>=0
 
       if get:type == "N" .and. (cKey $ ".,")
          get:ToDecPos()
@@ -1346,7 +1346,7 @@ osk:=HB_SETKEYSAVE()
     k:=lastkey()
     if k=K_CTRL_K
        m:=message("PODAJ  (B,M,K,E,R,W);ROZKAZ:;... ")
-       k:=upper(chr(inkey(0)))
+       k:=upper(hb_keyChar(inkey(0)))
        if k$'RW'
          @ m[1]+1,m[2]+8 say "NAZWĘ: "
          n:=pad(defa,64)

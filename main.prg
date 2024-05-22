@@ -324,7 +324,7 @@ DO WHILE .T.
       setpos(row(),col()-1)
       loop
     endif
-    txt+=chr(i)
+    txt+=HB_KEYCHAR(i)
     ?? "♦"
   enddo
 

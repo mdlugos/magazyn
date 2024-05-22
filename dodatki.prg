@@ -1571,7 +1571,7 @@ field haslo_spec,magazyn,magazynier
       setpos(p,col()-1)
       loop
     endif
-    txt+=chr(m)
+    txt+=hb_keyChar(m)
     ?? "░"
   enddo
     set cursor off

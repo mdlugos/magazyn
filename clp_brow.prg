@@ -238,7 +238,7 @@ ENDIF
       txt=IndexkeY(i)
       scr_buf = SAVESCREEN(8, 1, 19, 78)
       scroll(8, 1, 19, 78, 0)
-      @ 9,3,18,76 BOX UNICODE "╒═╕│╛═╘│" COLOR "W+"
+      @ 9,3,18,76 BOX HB_B_DOUBLE_SINGLE_UNI COLOR "W+"
       @ 11,5 say "Podaj  numer  klucza  indeksowego  (Esc - bez indeksowania)"
       do while .not. empty(txt)
           @ 11+i,5 prompt str(i,1)+" - " + LEFT(txt, 66)
@@ -306,7 +306,7 @@ ENDIF
 
       scroll(8, 1, 19, 78, 0)
       set color to W+
-      @ 9,3,18,76 BOX UNICODE "╒═╕│╛═╘│"
+      @ 9,3,18,76 BOX UNICODE "╒═╕│╛═╘│" COLOR "W+"
       set color to W
       @ 11,5 say "Podaj  wyrażenie filtra            (Esc - rezygnacja)"
       @ 13,5 say 'Dostępne relacje: =,#,$,<,>,<=,>= '
@@ -391,6 +391,11 @@ ENDIF
         nKey := 24
         lGotKey := .t.
       end
+
+    CASE ! hb_keyChar( nKey ) == ""
+        hb_keyIns( nKey )
+        nKey := K_ENTER
+        lGotKey := .t.
 
     case ( nKey >= 32 .and. nKey <= 255 )
         // begin edit and supply the first character

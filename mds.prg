@@ -231,7 +231,7 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
         bx:=cx:=dx:=0
 #ifdef __HARBOUR__
         _skey:=INKey(_skey, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)
-        if _skey>1000
+        if _skey>=K_MINMOUSE .and. _skey<=K_MAXMOUSE
            if _skey=1002
               bx:=1
            else
@@ -1383,7 +1383,7 @@ do while eval(_swar,_spocz,_skon) .and. !BOF() .and. !EOF()
     endif
 #ifdef A_MYSZ
 #ifdef __HARBOUR__
-  elseif (k:=NEXTKEY(INKEY_KEYBOARD + INKEY_LDOWN+ INKEY_RDOWN))<1000 .and. k<>0 .and. k<>bl .or. k>1000 .and. (bl:=if(k=1002,1,2),k:=0,.t.)
+  elseif (k:=NEXTKEY(INKEY_KEYBOARD + INKEY_LDOWN+ INKEY_RDOWN),!hb_keyChar(k)=="") .and. k<>bl .or. k>=K_MINMOUSE .and. k<=K_MAXMOUSE .and. (bl:=if(k=1002,1,2),k:=0,.t.)
 #else
   elseif (k:=NEXTKEY())#0 .and. k#bl .or. bl=0 .and. (sysint(51,3,@bl),bl#0)
 #endif

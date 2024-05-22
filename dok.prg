@@ -3742,7 +3742,7 @@ else
 #ifdef __HARBOUR__
      _fkey:=inkey(2, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)
      bx:=cx:=dx:=0
-     if _fkey>1000
+     if _fkey>=K_MINMOUSE .and. _fkey<=K_MAXMOUSE
         if _fkey=1002
            bx:=1
         else
@@ -3790,7 +3790,7 @@ endif
 #ifdef __HARBOUR__
      _fkey:=inkey(0, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)
      bx:=cx:=dx:=0
-     if _fkey>1000
+     if _fkey>=K_MINMOUSE .and. _fkey<=K_MAXMOUSE
         if _fkey=1002
            bx:=1
         else

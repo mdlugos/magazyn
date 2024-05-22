@@ -605,6 +605,8 @@ return DTOV(d)
 ******************************
 FUNCTION KIBORD(txt)
 #ifdef __HARBOUR__
+  HB_KEYINS(txt)
+/*
 local a:={},b
 
 do while (b:=inkey(,INKEY_ALL))#0
@@ -619,6 +621,7 @@ else
 endif
 
 aeval(a,{|x|hb_keyput(x)})
+*/
 #else
 local k
 if valtype(txt)='A'
@@ -1175,7 +1178,7 @@ win:=window(i,j)
           x:=k
           k:=0
 
-          if x>0 .and. x<32 .and. c[x]#NIL .or. x>31 .and. x<256
+          if x>0 .and. x<32 .and. c[x]#NIL .or. !hb_keyChar(x)==""
              eval(c[if(x>31,K_ENTER,x)],b,a,i,c,n,p,v,w,@x)
              if x<0 .and. x>-31
                 k:=-x
@@ -1251,7 +1254,7 @@ endif
          MSHOW()
          b:=0
 #ifdef __HARBOUR__
-         do while (key:=inkey(0, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN + HB_INKEY_GTEVENT ))>1000
+         do while (key:=inkey(0, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN + HB_INKEY_GTEVENT ),key>=K_MINMOUSE .and. key<=K_MAXMOUSE )
              if key=1002
                 b:=1
              elseif key=1004 .or. key=HB_K_CLOSE

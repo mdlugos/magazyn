@@ -2379,12 +2379,12 @@ field spec_nr
             asize(asp,len(asp)-1)
          endif
 #ifdef A_OLZBY
-      elseif key=K_ENTER .or. key>31 .and. key<256
+      elseif key=K_ENTER .or. ! hb_keyChar( nKey ) == ""
 #else
       elseif b:colpos<b:colcount .and. (key=K_ENTER .or. key>31 .and. key<256)
 #endif
          if key#K_ENTER
-            kibord(chr(key))
+            kibord(key)
          endif
          j:=b:colpos
          key:=Set(_SET_EXIT,.t.)
@@ -2444,7 +2444,7 @@ field spec_nr
                if key=K_DOWN .and. i=len(asp)-1
                   b:home()
                endif
-               kibord(chr(key))
+               kibord(key)
             endif
          ENDIF
       elseif key>0 .and. key<32 .and. c[key]#NIL
