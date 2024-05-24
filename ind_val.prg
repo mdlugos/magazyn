@@ -68,9 +68,9 @@ zaznacz,info,data,pozycja
 stat FUNCTION JM(j_m,j_o,p,r)
    field jm
    local ret
-   J_M=UPPER(J_M)
+   J_M=upper(J_M)
    ret=ACZOJS(JMIAR,@j_m)
-   J_M:=LOWER(J_M)
+   J_M:=lower(J_M)
    if ret .and. j_m # jm
       j_o=upper(j_m)
       p=1

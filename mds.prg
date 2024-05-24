@@ -6,6 +6,7 @@
 //#define R1TO1(x) (x)
 *******
 request tranr
+request evaldb
 
 static function _stopka(s,m,t)
 local x:='',i,j:=0
@@ -107,7 +108,7 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
 
   if _sinfo=NIL
     _sinfo:={|k,s|_Sinfo(k,s)}
-  elseIF EVAL(_sinfo,0,_s)
+  elseIF eval(_sinfo,0,_s)
     set relation to
     SETCURSor(_scur)
     select (_selar)
@@ -316,7 +317,7 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
     if _si>0
       if _sbeg>0
         restscreen(_sm+_srow1-1,_scol1,_sm+_srow1-1,_scol2-1,hiattr(_sprpt))
-        @ _sm+_srow1-1,_scol1+_sbeg-1 SAY left(EVAL(_spform,_spocz,_slth),_scoln-_sbeg+1) COLOR _SEL
+        @ _sm+_srow1-1,_scol1+_sbeg-1 SAY left(eval(_spform,_spocz,_slth),_scoln-_sbeg+1) COLOR _SEL
       else
         ALTERNATE LINE _sm+_srow1-1 BUFFER _sprpt ATTRIB 119
       endif
@@ -522,7 +523,7 @@ func evakey(_skey,_s)
           EVAL(_stxt,procname(2),_s)
           return .f.
        else
-          return EVAL(_sinfo,_skey,_s)
+          return eval(_sinfo,_skey,_s)
        endif
     else
 
@@ -537,9 +538,9 @@ func evakey(_skey,_s)
      endif
    endif
 #ifdef A_MYSZ
-return EVAL(_stxt,_skey,_s,bx,cx,dx,job)
+return eval(_stxt,_skey,_s,bx,cx,dx,job)
 #else
-return EVAL(_stxt,_skey,_s)
+return eval(_stxt,_skey,_s)
 #endif
 ***********************************
 *OBSLUGA KLAWIATURY
@@ -554,7 +555,7 @@ FUNCTION _SDOL(_s,_skey)
       IF _si>0
         GO _srec[_si]
       ENDIF
-      IF _sef .and. !EVAL(_sinfo,_skey,_s)
+      IF _sef .and. !eval(_sinfo,_skey,_s)
         RETURN(.F.)
       ENDIF
       DO WHILE _skip(1,_skey,_s)
@@ -585,7 +586,7 @@ FUNCTION _sgora(_s,_skey)
       IF _si>0
         GO _srec[1]
       ENDIF
-      IF _sbf .and.! EVAL(_sinfo,_skey,_s)
+      IF _sbf .and.! eval(_sinfo,_skey,_s)
         RETURN(.F.)
       ENDIF
       DO WHILE _skip(-1,_skey,_s)
@@ -718,21 +719,8 @@ FUNCTION _sbot(_s)
         IF valtype(_spocz)$"MC" .and.ordnumber()#0
           IF ''=_spocz
             GO 0
-#ifdef UpP
-#ifdef __HARBOUR__
-          ELSEIF len(DbOrderInfo(DBOI_KEYVAL)) > len(_spocz)
-            SEEK _spocz+chr(if(DbOrderInfo(DBOI_ISDESC),0,255))
-#else
-          ELSEIF len(&(IndexkeY(0))) > len(_spocz)
-            SEEK _spocz+chr(255)
-#endif
-#endif
           ELSE
-#ifdef __HARBOUR__
-            SEEK LEFT(_spocz,len(_spocz)-1)+CHR(min(255,max(0,ASC(RIGHT(_spocz,1))+if(DbOrderInfo(DBOI_ISDESC),-1,1))))
-#else
-            SEEK LEFT(_spocz,len(_spocz)-1)+CHR(min(255,ASC(RIGHT(_spocz,1))+1))
-#endif
+            dbSEEK(_spocz,,.t.)// !DbOrderInfo(DBOI_ISDESC))
           ENDIF
          ELSE
           GO 0
@@ -780,23 +768,23 @@ return .f.
 FUNCTION _sznak(_s,_skey)
     local _scond:=.f.,x,l
 
-    if _scoln-_sbeg+1<len(EVAL(_spform,_spocz,_slth))
+    if _scoln-_sbeg+1<len(eval(_spform,_spocz,_slth))
       return .f.
     endif
     IF _si>0
       GO _srec[_sm]
     ENDIF
     if _sp2s<>NIL
-      _spocz:=eval(_sp2s,eval(_ss2p,_spocz,_slth)+CHR(_skey),_slth+1)
+      _spocz:=eval(_sp2s,eval(_ss2p,_spocz,_slth)+hb_keyChar(_skey),_slth+1)
     else
-      _spocz+=UpP(CHR(_skey))
+      _spocz+=UpP(hb_keyChar(_skey))
     endif
     ++_slth
     IF _si>0
-      _scond:=eval(_swar,_spocz,_skon)
+      _scond:=evaldb(_swar,_spocz,_skon)
     ENDIF
     if _scond
-      @ _sm+_srow1-1,_scol1+_sbeg-1 SAY left(EVAL(_spform,_spocz,_slth),_scoln-_sbeg) color _sel
+      @ _sm+_srow1-1,_scol1+_sbeg-1 SAY left(eval(_spform,_spocz,_slth),_scoln-_sbeg) color _sel
       IF NEXTKEY()<32
         CUT(_s)
       ENDIF
@@ -805,14 +793,14 @@ FUNCTION _sznak(_s,_skey)
       if l#0
          _sbf:=.t.
       elseif _si>0
-         l:=_scol1+_sbeg+len(EVAL(_spform,_spocz,_slth))-2
+         l:=_scol1+_sbeg+len(eval(_spform,_spocz,_slth))-2
          l:=UpP(getscrtxt(savescreen(_srow1,l,_srow1,l)))
-         l:=if(l=UpP(chr(_skey)),1,0)
+         l:=if(l=UpP(hb_keyChar(_skey)),1,0)
       endif
       if l#0
         RESTORE LINE _sm+_srow1-1
         SAVE LINE l+_srow1-1
-        x:=left(EVAL(_spform,_spocz,_slth),_scoln-_sbeg+1)
+        x:=left(eval(_spform,_spocz,_slth),_scoln-_sbeg+1)
         restscreen(l+_srow1-1,_scol1,l+_srow1-1,_scol2-1,hiattr(_sprpt))
         @ l+_srow1-1,_scol1+_sbeg-1 SAY x COLOR _SEL
         --l
@@ -860,7 +848,7 @@ FUNCTION _sznak(_s,_skey)
         _si:=0
         _sexpgd(-2,_s,.t.,.f.)
       ENDIF
-     ELSEif ! EVAL(_sinfo,_skey,_s)
+     ELSEif ! eval(_sinfo,_skey,_s)
       CLEAR TYPEAHEAD
       tone(130,3)
       _slth:=max(0,_slth-1)
@@ -877,9 +865,9 @@ IF _si>0
 
   GO _srec[_sm]
   wiele=.f.
-  sw:=len(eval(&("{||"+IndexkeY(0)+"}")))
+  sw:=len(evaldb(&("{||"+IndexkeY(0)+"}")))
   sl:=UpP(getscrtxt(_sprpt))
-  sp:=EVAL(_spform,_spocz,_slth)
+  sp:=eval(_spform,_spocz,_slth)
   do while _scoln-_sbeg+1>(l:=len(sp)) .and. len(_spocz)<sw
     spb:=_spocz
 
@@ -889,7 +877,7 @@ IF _si>0
       _spocz+=SUBSTR(sl,_sbeg+l,1)
     endif
     ++_slth
-    IF eval(_swar,_spocz,_skon)
+    IF evaldb(_swar,_spocz,_skon)
       @ _sm+_srow1-1,_scol1+_sbeg-1 SAY sp:=eval(_spform,_spocz,_slth) COLOR _SEL
       IF NEXTKEY()#_skey
         CUT(_s,,_skey)
@@ -917,11 +905,11 @@ local ltb,l,spb,spp,sp,sl,wiele,sw
 IF _si>0
   wiele:=.f.
   go _srec[_sm]
-  sw:=len(eval(&('{||'+IndexkeY(0)+'}')))
+  sw:=len(evaldb(&('{||'+IndexkeY(0)+'}')))
   sl:=UpP(getscrtxt(_sprpt))
   do while .t.
   ltb:=_slth
-  do while _scoln-_sbeg+1>(l:=len(sp:=EVAL(_spform,_spocz,_slth))).and.len(_spocz)<sw
+  do while _scoln-_sbeg+1>(l:=len(sp:=eval(_spform,_spocz,_slth))).and.len(_spocz)<sw
     spb:=_spocz
     spp:=SUBSTR(sl,_sbeg+l,1)
     if _sp2s<>NIL
@@ -930,12 +918,12 @@ IF _si>0
       _spocz+=spp
     endif
     ++_slth
-    IF !eval(_swar,_spocz,_skon)
+    IF !evaldb(_swar,_spocz,_skon)
       --_slth
       _spocz:=spb
       exit
     elseif spp=" "
-      sp:=EVAL(_spform,_spocz,_slth)
+      sp:=eval(_spform,_spocz,_slth)
       exit
     endif
   enddo
@@ -968,7 +956,7 @@ FUNCTION _slewo(_s,_skey)
     _spocz:=left(_spocz,len(_spocz)-1)
     //_sef=.F.
     //_sbf=.F.
-    l=len(EVAL(_spform,_spocz,_slth))+_sbeg-1
+    l=len(eval(_spform,_spocz,_slth))+_sbeg-1
     restscreen(_sm+_srow1-1,_scol1+l,_sm+_srow1-1,_scol2-1,hiattr(SUBSTR(_sprpt,l*D_REST+1)))
     setpos(_sm+_srow1-1,_scol1+l)
     if nextkey()#_skey .or. _slth=0 .OR. _si=0
@@ -1098,7 +1086,7 @@ endif
                   _spocz:=LEFT(_spocz,len(_spocz)-_slth)
                   _slth:=0
                   _sbf:=_sef:=.f.
-                  if eval(_swar,_spocz,_skon) .or. (_sef:=_skip(-1,,_s)) .or. (_sbf:=dbseek(_spocz))
+                  if evaldb(_swar,_spocz,_skon) .or. (_sef:=_skip(-1,,_s)) .or. (_sbf:=dbseek(_spocz))
                     crsr:=1
                     loop
                   endif
@@ -1164,7 +1152,7 @@ endif
         _srec[_si]=RECNO()
         @ _srow2-1,_scol1-1,_srow2,_scol2 BOX UNICODE '│ ││┘─└│' COLOR _SRAMKA
         @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
-        @ _srow2-1,_scol1 say padr(EVAL(_sprompt,1,_s),_scol2-COL())
+        @ _srow2-1,_scol1 say padr(eval(_sprompt,1,_s),_scol2-COL())
         oef:=.f.
       ENDDO
     ENDIF
@@ -1178,7 +1166,7 @@ endif
         obf:=.f.
         AINS(_srec,1)
         _srec[1]=RECNO()
-        @ _srow1,_scol1 say padr(EVAL(_sprompt,-1,_s),_scol2-COL())
+        @ _srow1,_scol1 say padr(eval(_sprompt,-1,_s),_scol2-COL())
         ++_si
       ENDDO
     endif
@@ -1195,7 +1183,7 @@ endif
             obf:=.f.
             AINS(_srec,1)
             _srec[1]=RECNO()
-            @ _srow1,_scol1 say padr(EVAL(_sprompt,-1,_s),_scol2-COL())
+            @ _srow1,_scol1 say padr(eval(_sprompt,-1,_s),_scol2-COL())
             ++_si
           ENDDO
         endif
@@ -1208,7 +1196,7 @@ endif
           SCROLL(_srow1-1,_scol1-1,_srow2-1,_scol2,1)
           @ _srow2-1,_scol1-1,_srow2,_scol2 BOX UNICODE '│ ││┘─└│' COLOR _SRAMKA
           @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
-          @ _srow2-1,_scol1 say padr(EVAL(_sprompt,1,_s),_scol2-COL())
+          @ _srow2-1,_scol1 say padr(eval(_sprompt,1,_s),_scol2-COL())
           oef:=.f.
         ENDDO
       ENDIF
@@ -1375,8 +1363,8 @@ ELSE
   skip p
 endif
 
-do while eval(_swar,_spocz,_skon) .and. !BOF() .and. !EOF()
-  if (_sfor=NIL.or.eval(_sfor)).and.(_sfilb=NIL.or.eval(_sfilb))
+do while evaldb(_swar,_spocz,_skon) .and. !BOF() .and. !EOF()
+  if (_sfor=NIL.or.evaldb(_sfor)).and.(_sfilb=NIL.or.evaldb(_sfilb))
     return .t.
   elseif bl=NIL
     if nextkey()=27

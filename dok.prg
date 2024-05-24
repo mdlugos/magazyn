@@ -1,7 +1,7 @@
 #include "dm_form.ch"
 #include "inkey.ch"
 #include "getexit.ch"
-#include "dbinfo.ch"
+//#include "dbinfo.ch"
 #ifndef A_MKNK
   //#define A_MKNK(x) eval({|y|mknk:=min(5,max(mknk,len(ltrim(str(y))))),pad(str(y,mknk),5)},x)
   #define A_MKNK(x) str(x,4)+' '

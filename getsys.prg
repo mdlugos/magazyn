@@ -967,7 +967,7 @@ return
 */
 static func GetReadVar(get)
 
-local name := Upper(get:name)
+local name := upper(get:name)
 
 
 //#ifdef SUBSCRIPT_IN_READVAR

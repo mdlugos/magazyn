@@ -2252,26 +2252,44 @@ return ret
 #pragma BEGINDUMP
 #include "hbapi.h"
 #include "hbapicdp.h"
+#include "hbapirdd.h"
 #include "hbapiitm.h"
 #include "hbapierr.h"
+#include "hbvm.h"
+#include "hbstack.h"
 
-HB_FUNC( UUPPER )
+HB_FUNC( EVALDB )
 {
-   PHB_ITEM pText = hb_param( 1, HB_IT_STRING );
-   //PHB_CODEPAGE cdp = hb_vmCDP();
-  
-   PHB_ITEM pCP   = hb_param( 2, HB_IT_STRING );
-   PHB_CODEPAGE cdp = hb_cdpFindExt( pCP ? hb_itemGetCPtr(pCP) : "UTF8EX" );
-
-   if( pText )
+   AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
+   if( pArea )
    {
-      HB_SIZE nLen = hb_itemGetCLen( pText );
-      char * pszBuffer = hb_cdpnDupUpper( cdp,
-                                          hb_itemGetCPtr( pText ), &nLen );
-      hb_retclen_buffer( pszBuffer, nLen );
+      PHB_ITEM pItem = hb_param( 1, HB_IT_BLOCK );
+      if( ! pItem )
+      {
+         hb_errRT_DBCMD( EG_ARG, EDBCMD_EVAL_BADPARAMETER, NULL, HB_ERR_FUNCNAME );
+         return;
+      }
+
+      int iParam;
+
+      hb_vmPushEvalSym();
+      hb_vmPush( pItem );
+#if 1
+      int iPCount = hb_pcount();
+      for( iParam = 2; iParam <= iPCount; iParam++ )
+         hb_vmPush( hb_stackItemFromBase( iParam ) );
+#else
+      PHB_ITEM pArray = hb_param( 2, HB_IT_ARRAY );
+      int iPCount = ( pArray ) ? hb_arrayLen( pArray ) : 0;
+      for( iParam = 1; iParam <= iPCount; iParam++ )
+         hb_vmPush( hb_arrayGetItemPtr( pArray, iParam ) );
+#endif
+      PHB_CODEPAGE cdpTmp = hb_cdpSelect( pArea->cdPage );
+      hb_vmSend( ( HB_USHORT ) ( iPCount - 1 ) );
+      hb_cdpSelect( cdpTmp );
    }
    else
-      hb_errRT_BASE_SubstR( EG_ARG, 1102, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+      hb_errRT_DBCMD( EG_NOTABLE, EDBCMD_NOTABLE, NULL, HB_ERR_FUNCNAME );
 }
 
 HB_FUNC ( BIN2D )
