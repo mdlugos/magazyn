@@ -332,7 +332,7 @@ DO WHILE .T.
 #endif
 
    XSELECT OBSLUGA READONLY
-       LOCATE FOR UpP(txt)==trim(A_DECRYPT(haslo))
+       LOCATE FOR EvaldB({|txt|UPPER(txt)==trim(A_DECRYPT(haslo))},txt)
        IF EOF()
           ? "złe hasło ..."
           set color to w
@@ -349,7 +349,7 @@ DO WHILE .T.
        afill(mlog,.f.)
        i:=0
        a:={}
-       EXEC {||mlog[txt]:=.t.,++i,mf:=mf.or.ascan(a,haslo)<>0,aadd(a,haslo)} ALL FOR Trim(operator)==Trim(magazynier) .and. (txt:=ascan(magazyny,magazyn))>0 .and. UpP(A_DECRYPT(haslo))=A_DECRYPT(haslo) .and. !mlog[txt]
+       EXEC {||mlog[txt]:=.t.,++i,mf:=mf.or.ascan(a,haslo)<>0,aadd(a,haslo)} ALL FOR EvaldB({|operator|Trim(operator)==Trim(magazynier) .and. (txt:=ascan(magazyny,magazyn))>0 .and. UPPER(A_DECRYPT(haslo))=A_DECRYPT(haslo) .and. !mlog[txt]},operator)
        if i<2
           mlog:=NIL
        endif

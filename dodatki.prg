@@ -1572,7 +1572,7 @@ field haslo_spec,magazyn,magazynier
       loop
     endif
     txt+=hb_keyChar(m)
-    ?? "░"
+    ?? "♦"
   enddo
     set cursor off
    select 0
@@ -1583,7 +1583,7 @@ field haslo_spec,magazyn,magazynier
 #endif
 
    XSELECT OBSLUGA READONLY
-       LOCATE FOR mag_biez==magazyn .and. Trim(operator)==Trim(magazynier) .and. lower(txt)==TRIM(A_DECRYPT(haslo_spec))
+       LOCATE FOR EvaldB({|txt,operator|mag_biez==magazyn .and. Trim(operator)==Trim(magazynier) .and. lower(txt)==TRIM(A_DECRYPT(haslo_spec))},txt,operator)
        IF EOF()
           ? "złe hasło ..."
       use

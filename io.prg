@@ -1,4 +1,5 @@
 //#define SIMPLE
+#include "dbinfo.ch"
 #include "inkey.ch"
 #include "set.ch"
 
@@ -156,10 +157,10 @@ local l,a,s:=sign(x)
   endif
 return x
 *******************************
-proc rel(arel) //{SKńD DOKńD TAMINDEX RELACJA}
+proc rel(arel) //{SKĄD DOKĄD TAMINDEX RELACJA}
 local s:=select()
 aeval(arel,{|a|sel(a[2],a[3]),sel(a[1])})
-aeval(arel,{|a|dbselectar(a[1]),dbsetrelat(a[2],compile('{||'+a[4]+'}'),expand(a[4]))})
+aeval(arel,{|a|dbselectar(a[1]),dbsetrelat(a[2],EvAlDb('{||'+a[4]+'}'),expand(a[4]))})
 select (s)
 return
 ******************************
@@ -355,17 +356,13 @@ s:=select(alias)
    endif
 return s
 *****************************
-#ifdef __HARBOUR__
 FUNC DSEEK(lE,cFieldList,...)
-#else
-FUNC DSEEK(lE,cFieldList,f1,f2,f3,f4,f5)
-#endif
 static ab:={}
 local txt:='{|'+if(cFieldList=NIL,'',UpP(cFieldList))+'|'+IndexkeY(0)+'}'
 local i:=ascan(ab,{|x|x[1]==txt})
 local b,r:=recno()
 if i=0
-   b:=&txt
+   b:=EvAlDb(txt)
    aadd(ab,{txt,b})
 else
    b:=ab[i,2]
@@ -376,11 +373,7 @@ endif
   if Le=.t.
     dbgoto(0)
   endif
-#ifdef __HARBOUR__
-  txt:=eval(b,...)
-#else
-  txt:=eval(b,f1,f2,f3,f4,f5)
-#endif
+  txt:=EvaldB(b,...)
   if Le=.t.
     dbgoto(r)
   endif
@@ -477,7 +470,7 @@ dbselectarea(i),;
 ordsetfocus(x[2]),;
 if(recno()<>x[3],dbgoto(x[3]),),;
 if(ascan(x[4],x[3])<>0.and.ascan(dbrlocklist(),x[3])=0,dbrlock(x[3]),),;
-aeval(x[1],{|x|dbsetrelation(x[1],&('{||'+x[2]+'}'),x[2])});
+aeval(x[1],{|x|dbsetrelation(x[1],EvAlDb('{||'+x[2]+'}'),x[2])});
 })
 select (array[1])
 return
@@ -491,7 +484,7 @@ aeval(array[2],{|x,i|dbselectarea(i),dbclearrelation()})
 aeval(array[2],{|x,i|;
 dbselectarea(i),;
 ordsetfocus(x[2]),;
-aeval(x[1],{|x|dbsetrelation(x[1],&('{||'+x[2]+'}'),x[2])});
+aeval(x[1],{|x|dbsetrelation(x[1],EvAlDb('{||'+x[2]+'}'),x[2])});
 })
 select (array[1])
 return
@@ -642,7 +635,7 @@ DO WHILE (k:=nextkey())#0
    endif
 ENDDO
 
-set typeahead to max(hb_blen(txt),set(_SET_TYPEAHEAD))
+set typeahead to max(len(txt),set(_SET_TYPEAHEAD))
 KEYBOARD txt
 #endif
 RETURN(.t.)

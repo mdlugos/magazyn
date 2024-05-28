@@ -1,6 +1,7 @@
 #include "inkey.ch"
 #include "box.ch"
 #include "hbgtinfo.ch"
+#include "dbinfo.ch"
 memvar _snorm,operator,_sramka
 field index,HASLO,HASLO_SPEC
 #ifdef A_OBR
@@ -254,7 +255,7 @@ ENDIF
          @ nTop + 1, nLeft + 2 say padr("Klejność wg: "+txt,nright-nleft-43)
          @ 16,5 say "Podaj poszukiwaną sekwencję znaków:"
 
-         txt = &txt
+         txt = EvAlDb(txt)
          @ 16,41 get txt picture "@KS34"
          read
 
@@ -325,8 +326,8 @@ ENDIF
       txt=STRTRAN(txt,".nie.","!")
       if ""#txt .and. ReadkeY()#K_ESC .and. !dbfilter()==txt
          begin sequence
-         a:=&('{||'+txt+'}')
-         nkey:=eval(a)
+         a:=EvAlDb('{||'+txt+'}')
+         nkey:=EvaldB(a)
          IF VALTYPE(NKEY)#'L'
             BREAK
          ENDIF
@@ -512,10 +513,10 @@ local lFresh, nCursSave, mGetVar
   nCursSave := SetCursor( if(Set(_SET_INSERT), 2, 1) )
 
   // get the controlling index key
-  cExpr := IndexkeY(0)
+  cExpr := IndexKey(0)
   if ( !Empty(cExpr) )
     // expand key expression for later comparison
-    xEval := &cExpr
+    xEval := EvAlDb(cExpr)
   end
 
   // get column object from browse
@@ -550,7 +551,7 @@ local lFresh, nCursSave, mGetVar
     Eval(oCol:block, mGetVar)
     // test for change in index order
     if ( !Empty(cExpr) .and. !lAppend )
-      if ( xEval != &cExpr )
+      if ( xEval != EvAlDb(cExpr) )
         // change in index key eval
         lFresh := .t.
       end
@@ -790,9 +791,9 @@ local b:=TBColumnNew(m[1],fb)
 
 #ifndef A_SX
     if m[1]=="HASLO"
-         B:block:={|X|IF(X=NIL,X:=L2BIN(FIELD->HASLO),FIELD->HASLO:=BIN2L(PADR(UpP(X),4))),X}
+         B:block:={|x|EvaldB({|X|IF(X=NIL,X:=L2BIN(FIELD->HASLO),FIELD->HASLO:=BIN2L(PADR(UPPER(X),4))),X},x)}
     elseif m[1]=="HASLO_SPEC"
-         B:block:={|X|IF(X=NIL,X:=L2BIN(FIELD->HASLO_SPEC),FIELD->HASLO_SPEC:=if(x="    ",0,BIN2L(PADR(lower(UpP(X)),4)))),X}
+         B:block:={|x|EvaldB({|X|IF(X=NIL,X:=L2BIN(FIELD->HASLO_SPEC),FIELD->HASLO_SPEC:=if(x="    ",0,BIN2L(PADR(lower(X),4)))),X},x)}
 #else
     if .f.
 #endif

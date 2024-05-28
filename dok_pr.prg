@@ -1,3 +1,4 @@
+#include "dbinfo.ch"
 #include "dm_form.ch"
 #include "inkey.ch"
 
@@ -358,7 +359,7 @@ endif
 #ifdef A_DMDATA
       if _skey=1 .and. stat_ord#2
               _slth:=0
-              _spocz:=if(UPPER(IndexkeY(_skey))='NR_MAG',nr_mag,'')
+              _spocz:=if(UPPER(IndexKey(_skey))='NR_MAG',nr_mag,'')
               _sbeg=1
       elseif _skey=2
               _slth:=0
@@ -372,7 +373,7 @@ endif
 #ifdef A_KHNUM
     elseif _skey=3
        _slth:=0
-       _spocz:=if(UPPER(IndexkeY(_skey))='NR_MAG',nr_mag,'')
+       _spocz:=if(UPPER(IndexKey(_skey))='NR_MAG',nr_mag,'')
        _spform:={|p,l|TranR(right(p,l),repl("X",A_NRLTH)+"|##.##")}
        _sbeg:=DBEG-A_NRLTH-1
 #ifdef A_KHNAZ
@@ -380,7 +381,7 @@ endif
               _slth:=0
               _spform:={|p,l|right(p,l)}
               _sbeg:=DBEG+A_KHNAZ
-              _spocz:=if(UPPER(IndexkeY(_skey))='NR_MAG',nr_mag,'')
+              _spocz:=if(UPPER(IndexKey(_skey))='NR_MAG',nr_mag,'')
 #ifdef A_DOKFAK
     elseif _skey=5
               _slth:=0
@@ -390,7 +391,7 @@ endif
 #else
               _sbeg:=DBEG+6
 #endif      
-              _spocz:=if(UPPER(IndexkeY(_skey))='NR_MAG',nr_mag,'')
+              _spocz:=if(UPPER(IndexKey(_skey))='NR_MAG',nr_mag,'')
 #endif
 #endif
 #endif
@@ -443,7 +444,7 @@ endif
       endif
       endif
       SET ORDER TO (_skey)
-      _swar=&('{|p|'+IndexkeY(0)+'=p'+'}')
+      _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
 
 return
 *************
@@ -542,7 +543,7 @@ DO CASE
 #ifdef A_F9
       if ent#NIL
       if ent=0
-         _spocz:=if(UPPER(IndexkeY(0))='NR_MAG',nr_mag,'')
+         _spocz:=if(UPPER(IndexKey(0))='NR_MAG',nr_mag,'')
 #ifdef A_KOB
          _spocz+='PW'
          _slth:=2

@@ -44,7 +44,7 @@
  *
  */
 
-//#define HB_UTF8EX_SORT
+#define HB_UTF8EX_SORT
 
 #include "hbapi.h"
 #include "hbapicdp.h"
@@ -54,11 +54,6 @@
 #ifdef HB_UTF8EX_SORT
 #  include "utf8sort.c"
 #endif
-
-
-
-
-
 
 static HB_CDP_GET_FUNC( UTF8_get )
 {
@@ -108,16 +103,20 @@ static HB_CDP_LEN_FUNC( UTF8_len )
    return hb_cdpUTF8CharSize( wc );
 }
 
-static const HB_UCHAR ub[0xbf] = "AAAAAAACEEEEIIIIDNOOOOO OUUUUY  AAAAAAACEEEEIIIIDNOOOOO OUUUUY YAAAAAACCCCCCCCDDDDEEEEEEEEEEGGGGGGGGHHHHIIIIIIIIIIIIJJKKKLLLLLLLLLLNNNNNNNNNOOOOOOOORRRRRRSSSSSSSSTTTTTTUUUUUUUUUUUUWWYYYZZZZZZ";
-
+static const HB_UCHAR ub[0x01F0] = "AAAAAAACEEEEIIIIDNOOOOO OUUUUY  AAAAAAACEEEEIIIIDNOOOOO OUUUUY YAAAAAACCCCCCCCDDDDEEEEEEEEEEGGGGGGGGHHHHIIIIIIIIIIIIJJKKKLLLLLLLLLLNNNNNNNNNOOOOOOOORRRRRRSSSSSSSSTTTTTTUUUUUUUUUUUUWWYYYZZZZZZSBBBBHHOCCDDDDDEEEFFGGHIIKKLLMNNOOOOOPPZSSSTTTTTUUVVYYZZZZZZ         DDDLLLNNNAAIIOOUUUUUUUUUUEAAAAAAGGGGKKOOOOZZJDDDGGH NNAAAAOOAAAAEEEEIIIIOOOORRRRUUUUSSTTYYHHNDOOZZAAEEOOOOOOOOYYLNTJDQACCLTSZ  BUVEEJJQQRRYYAAABOCDDEEEEEEEJGGGGGHHHIIILLLLMMNNNNOO  RRRRRRRRRSSJSSTTUUVVWYYZZZZ   C BEGHJKLQ  DDDTTTFLL  HH";
+//0C0-2AF                           ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħĨĩĪīĬĭĮįİıĲĳĴĵĶķĸĹĺĻļĽľĿŀŁłŃńŅņŇňŉŊŋŌōŎŏŐőŒœŔŕŖŗŘřŚśŜŝŞşŠšŢţŤťŦŧŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽžſƀƁƂƃƄƅƆƇƈƉƊƋƌƍƎƏƐƑƒƓƔƕƖƗƘƙƚƛƜƝƞƟƠơƢƣƤƥƦƧƨƩƪƫƬƭƮƯưƱƲƳƴƵƶƷƸƹƺƻƼƽƾƿǀǁǂǃǄǅǆǇǈǉǊǋǌǍǎǏǐǑǒǓǔǕǖǗǘǙǚǛǜǝǞǟǠǡǢǣǤǥǦǧǨǩǪǫǬǭǮǯǰǱǲǳǴǵǶǷǸǹǺǻǼǽǾǿȀȁȂȃȄȅȆȇȈȉȊȋȌȍȎȏȐȑȒȓȔȕȖȗȘșȚțȜȝȞȟȠȡȢȣȤȥȦȧȨȩȪȫȬȭȮȯȰȱȲȳȴȵȶȷȸȹȺȻȼȽȾȿɀɁɂɃɄɅɆɇɈɉɊɋɌɍɎɏɐɑɒɓɔɕɖɗɘəɚɛɜɝɞɟɠɡɢɣɤɥɦɧɨɩɪɫɬɭɮɯɰɱɲɳɴɵɶɷɸɹɺɻɼɽɾɿʀʁʂʃʄʅʆʇʈʉʊʋʌʍʎʏʐʑʒʓʔʕʖʗʘʙʚʛʜʝʞʟʠʡʢʣʤʥʦʧʨʩʪʫʬʭʮʯ
+static const HB_UCHAR uc[0x0100] = "AABBBBBBCCDDDDDDDDDDEEEEEEEEEEFFGGHHHHHHHHHHIIIIKKKKKKLLLLLLLLMMMMMMNNNNNNNNOOOOOOOOPPPPRRRRRRRRSSSSSSSSSSTTTTTTTTUUUUUUUUUUVVVVWWWWWWWWWWXXXXYYZZZZZZHTWYASSSSDAAAAAAAAAAAAAAAAAAAAAAAAEEEEEEEEEEEEEEEEIIIIOOOOOOOOOOOOOOOOOOOOOOOOUUUUUUUUUUUUUUYYYYYYYYLLVVYY";
+//1E00-1EFF                        
 static HB_CDP_UPPER_FUNC( UTF8_upper )
 {
    HB_WCHAR wcUP = 0x20; //space
 
    HB_SYMBOL_UNUSED( cdp );
 
-   if ((wc >= 0xC0) && (wc <= 0x17E))
-      wcUP = ub[wc - 0xC0];
+   if ((wc >= 0x00C0) && (wc <= 0x02AF))
+      wcUP = ub[wc - 0x00C0];
+   else if ((wc >= 0x1E00) && (wc <= 0x1EFF))
+      wcUP = uc[wc - 0x1E00];
 
    if (wcUP == 0x20)
       wcUP = s_uc_upper( wc );

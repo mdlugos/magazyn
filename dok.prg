@@ -1586,7 +1586,7 @@ memvar exp_od,exp_do
            unlock
 #endif
            else
-           i:=len(&(INDEXKEY(3)))-len(index)-A_NRLTH-10
+           i:=len(EvAlDb(IndexKey(3)))-len(index)-A_NRLTH-10
 #ifndef A_LAN
            replace nr_zlec with left(nr_zlec,i)+kh while KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu) for c==subs(nr_zlec,i+1,A_NRLTH)
 #else
@@ -1688,7 +1688,7 @@ begin sequence
 #else
        select main
        set order to tag MAIN_ZLE
-       a:=len(&(INDEXKEY()))-len(index)-10
+       a:=len(EvAlDb(IndexKey()))-len(index)-10
 #ifdef A_GOCZ
        for k:=1 to LEN(zamowienie[mag_poz])
           if zamowienie[mag_poz,k]<>'Z'
@@ -2069,7 +2069,7 @@ local txt,j,x,s:=0,si:='',gzl,y,z,a
       nz:=space(a)
 #endif
 #else
-      a:=LEN(&(INDEXKEY(3)))-10-len(index)
+      a:=LEN(EvAlDb(IndexKey(3)))-10-len(index)
 #endif
       il:=0
 #ifdef A_WA

@@ -1,8 +1,10 @@
 *.ppo
 *.bak
 *.exe
-ma
+*.
 *.txt
 *.json
 *.xml
 *.bat
+*.log
+test*

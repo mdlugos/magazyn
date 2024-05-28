@@ -1,5 +1,6 @@
 #include "inkey.ch"
 #include "dm_form.ch"
+#include "dbinfo.ch"
 #define R1TO4(x) _stopka(x,'─','┴')
 #define R1TO3(x) _stopka(x,'═','╧')
 #define R1TO2(x) STRTRAN(STRTRAN(x,'┬','╤'),'─','═')
@@ -178,30 +179,30 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
   IF _swar=NIL
     if _spocz#NIL
       * OBSZAR OGRANICZONY
+      _stxt:=IndexkeY(0)
       IF _skon#NIL
         * OGRANICZENIE NA PODSTAWIE AKTYWNEGO INDEKSU
-        _stxt:=IndexkeY(0)
-        _swar:=&('{|p,k|'+_stxt+'>=p.AND.k>'+_stxt+'}')
-       ELSE
+        _swar:=EvAlDb('{|p,k|'+_stxt+'>=p.AND.k>'+_stxt+'}')
+      ELSE
         * OGRANICZENIE NA PODSTAWIE AKTYWNEGO INDEKSU
-        _swar=&('{|p|'+IndexkeY(0)+'=p'+'}')
+        _swar:=EvAlDb('{|p|'+_stxt+'=p'+'}')
       ENDIF
     else
       _swar:={||.t.}
     endif
     set cursor on
-  endif
+  ENDIF
   if empty(_sbeg)
     set cursor off
-    _skproc[32]:=NIL
-    _skproc[4] :=NIL
-    _skproc[1] :=NIL
-    _skproc[19]:=NIL
-    _skproc[8] :=NIL
-    _skproc[6] :=NIL
+    _skproc[32]:=NIL //sznak
+    _skproc[4] :=NIL // K_RIGHT
+    _skproc[1] :=NIL // K_HOME
+    _skproc[19]:=NIL // K_LEFT
+    _skproc[8] :=NIL // K_BS
+    _skproc[6] :=NIL // K_END
     _spform  :=NIL
     _slth:=_sbeg:=0 //_slth - widoczny kawałek _spform od prawej,
-  ENDIF
+  endif
 
 *  DEZAKTYWACJA STANDARTOWYCH FUNKCJI OBSLUGI W ZALEZNOSCI OD PARAMETROW
 *  PO PIERWSZYM WYWOLANIU _SINFO, O ILE NIE ZOSTYALY ZMIENIONE
@@ -209,8 +210,8 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
 
   //if _si=0
      _skey:=nextkey()
-     IF _skey#1 .AND. _sKEY#30 .AND. _sKEY#31 .AND. _skey#29
-       kibord(chr(29))
+     IF _skey#K_HOME .AND. _skey#K_CTRL_PGDN .AND. _sKEY#K_CTRL_PGUP .AND. _skey#K_CTRL_HOME
+       kibord(K_CTRL_HOME)
      ENDIF
   //endif
 #ifdef A_MYSZ
@@ -392,7 +393,7 @@ elseif ( k=K_CTRL_LEFT .or. k=K_CTRL_RIGHT ) .and. ordnumber()<>0
         ord_1:=indexord()
       endif
    endif
-   _swar:=&('{|p|'+IndexkeY(0)+'=p'+'}')
+   _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
    _spocz:=left(_spocz,len(_spocz)-_slth)
    _slth:=0
    REFRESH(1,_s)
@@ -512,7 +513,7 @@ func evakey(_skey,_s)
 
 #endif
 
-    IF _skey<1 .or. _skey>255
+    IF _skey<1 .or. _skey>126 .and. hb_keyChar(_skey)==""
 #ifdef A_MYSZ
        myszflag=.f.
 #endif
@@ -781,7 +782,7 @@ FUNCTION _sznak(_s,_skey)
     endif
     ++_slth
     IF _si>0
-      _scond:=evaldb(_swar,_spocz,_skon)
+      _scond:=EvaldB(_swar,_spocz,_skon)
     ENDIF
     if _scond
       @ _sm+_srow1-1,_scol1+_sbeg-1 SAY left(eval(_spform,_spocz,_slth),_scoln-_sbeg) color _sel
@@ -865,7 +866,7 @@ IF _si>0
 
   GO _srec[_sm]
   wiele=.f.
-  sw:=len(evaldb(&("{||"+IndexkeY(0)+"}")))
+  sw:=len(EvAlDb(IndexKey(0)))
   sl:=UpP(getscrtxt(_sprpt))
   sp:=eval(_spform,_spocz,_slth)
   do while _scoln-_sbeg+1>(l:=len(sp)) .and. len(_spocz)<sw
@@ -877,7 +878,7 @@ IF _si>0
       _spocz+=SUBSTR(sl,_sbeg+l,1)
     endif
     ++_slth
-    IF evaldb(_swar,_spocz,_skon)
+    IF EvaldB(_swar,_spocz,_skon)
       @ _sm+_srow1-1,_scol1+_sbeg-1 SAY sp:=eval(_spform,_spocz,_slth) COLOR _SEL
       IF NEXTKEY()#_skey
         CUT(_s,,_skey)
@@ -905,7 +906,7 @@ local ltb,l,spb,spp,sp,sl,wiele,sw
 IF _si>0
   wiele:=.f.
   go _srec[_sm]
-  sw:=len(evaldb(&('{||'+IndexkeY(0)+'}')))
+  sw:=len(EvAlDb(IndexKey(0)))
   sl:=UpP(getscrtxt(_sprpt))
   do while .t.
   ltb:=_slth
@@ -918,7 +919,7 @@ IF _si>0
       _spocz+=spp
     endif
     ++_slth
-    IF !evaldb(_swar,_spocz,_skon)
+    IF !EvaldB(_swar,_spocz,_skon)
       --_slth
       _spocz:=spb
       exit
@@ -1086,7 +1087,7 @@ endif
                   _spocz:=LEFT(_spocz,len(_spocz)-_slth)
                   _slth:=0
                   _sbf:=_sef:=.f.
-                  if evaldb(_swar,_spocz,_skon) .or. (_sef:=_skip(-1,,_s)) .or. (_sbf:=dbseek(_spocz))
+                  if EvaldB(_swar,_spocz,_skon) .or. (_sef:=_skip(-1,,_s)) .or. (_sbf:=dbseek(_spocz))
                     crsr:=1
                     loop
                   endif
@@ -1363,8 +1364,8 @@ ELSE
   skip p
 endif
 
-do while evaldb(_swar,_spocz,_skon) .and. !BOF() .and. !EOF()
-  if (_sfor=NIL.or.evaldb(_sfor)).and.(_sfilb=NIL.or.evaldb(_sfilb))
+do while EvaldB(_swar,_spocz,_skon) .and. !BOF() .and. !EOF()
+  if (_sfor=NIL.or.eval(_sfor)).and.(_sfilb=NIL.or.eval(_sfilb))
     return .t.
   elseif bl=NIL
     if nextkey()=27

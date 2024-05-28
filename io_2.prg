@@ -2,6 +2,7 @@
 #include "getexit.ch"
 #include "inkey.ch"
 #include "set.ch"
+#include "dbinfo.ch"
 #ifdef SIMPLE
 #undef A_MYSZ
 #else
@@ -1785,7 +1786,7 @@ return get
 ***********************************
 function hex2N(as)
 local l,i
-as:=UpP(alltrim(as))
+as:=UPPER(alltrim(as))
 l:=0
 for i:=1 to len(as)
    l:=16*l+at(subs(as,i,1),'123456789ABCDEF')
@@ -2122,7 +2123,6 @@ return fread(x,@y,z)
 ************
 
 func shared()
-#include "dbinfo.ch"
 return dbinfo(DBI_SHARED)
 //return !set(_SET_EXCLUSIVE)
 ************
@@ -2249,49 +2249,96 @@ next i
 return ret
 #endif
 **************/
+func evaldb(...)
+   local b, r, cp, aParams:=hb_AParams()
+   if len(aParams)>=1
+      cp:=HB_CDPSELECT(iif(used(),dbinfo(DBI_CODEPAGE),set(_SET_DBCODEPAGE)))
+      aeval(aParams,{|x,i|if(valtype(x)=='C',aParams[i]:=HB_TRANSLATE(x,cp,),)})
+      b:=aParams[1]
+      if valtype(b)=='B'
+         adel(aParams,1,.t.)
+         r:=eval(b,hb_ArrayToParams( aParams ))
+      else
+         r:=&b
+      endif
+      if valtype(r)='C'
+         r:=HB_TRANSLATE(r,,cp)
+      endif
+      HB_CDPSELECT(cp)
+   endif
+return r
+*****************
 #pragma BEGINDUMP
 #include "hbapi.h"
-#include "hbapicdp.h"
-#include "hbapirdd.h"
 #include "hbapiitm.h"
 #include "hbapierr.h"
-#include "hbvm.h"
-#include "hbstack.h"
+#pragma ENDDUMP
 
-HB_FUNC( EVALDB )
-{
-   AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
-   if( pArea )
-   {
-      PHB_ITEM pItem = hb_param( 1, HB_IT_BLOCK );
-      if( ! pItem )
+#ifndef UpP
+#pragma BEGINDUMP
+#include "hbapicdp.h"
+
+static const char ub[0x01F0] = "AAAAAAACEEEEIIIIDNOOOOO OUUUUY  AAAAAAACEEEEIIIIDNOOOOO OUUUUY YAAAAAACCCCCCCCDDDDEEEEEEEEEEGGGGGGGGHHHHIIIIIIIIIIIIJJKKKLLLLLLLLLLNNNNNNNNNOOOOOOOORRRRRRSSSSSSSSTTTTTTUUUUUUUUUUUUWWYYYZZZZZZSBBBBHHOCCDDDDDEEEFFGGHIIKKLLMNNOOOOOPPZSSSTTTTTUUVVYYZZZZZZ         DDDLLLNNNAAIIOOUUUUUUUUUUEAAAAAAGGGGKKOOOOZZJDDDGGH NNAAAAOOAAAAEEEEIIIIOOOORRRRUUUUSSTTYYHHNDOOZZAAEEOOOOOOOOYYLNTJDQACCLTSZ  BUVEEJJQQRRYYAAABOCDDEEEEEEEJGGGGGHHHIIILLLLMMNNNNOO  RRRRRRRRRSSJSSTTUUVVWYYZZZZ   C BEGHJKLQ  DDDTTTFLL  HH";
+//0C0-2AF                       ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħĨĩĪīĬĭĮįİıĲĳĴĵĶķĸĹĺĻļĽľĿŀŁłŃńŅņŇňŉŊŋŌōŎŏŐőŒœŔŕŖŗŘřŚśŜŝŞşŠšŢţŤťŦŧŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽžſƀƁƂƃƄƅƆƇƈƉƊƋƌƍƎƏƐƑƒƓƔƕƖƗƘƙƚƛƜƝƞƟƠơƢƣƤƥƦƧƨƩƪƫƬƭƮƯưƱƲƳƴƵƶƷƸƹƺƻƼƽƾƿǀǁǂǃǄǅǆǇǈǉǊǋǌǍǎǏǐǑǒǓǔǕǖǗǘǙǚǛǜǝǞǟǠǡǢǣǤǥǦǧǨǩǪǫǬǭǮǯǰǱǲǳǴǵǶǷǸǹǺǻǼǽǾǿȀȁȂȃȄȅȆȇȈȉȊȋȌȍȎȏȐȑȒȓȔȕȖȗȘșȚțȜȝȞȟȠȡȢȣȤȥȦȧȨȩȪȫȬȭȮȯȰȱȲȳȴȵȶȷȸȹȺȻȼȽȾȿɀɁɂɃɄɅɆɇɈɉɊɋɌɍɎɏɐɑɒɓɔɕɖɗɘəɚɛɜɝɞɟɠɡɢɣɤɥɦɧɨɩɪɫɬɭɮɯɰɱɲɳɴɵɶɷɸɹɺɻɼɽɾɿʀʁʂʃʄʅʆʇʈʉʊʋʌʍʎʏʐʑʒʓʔʕʖʗʘʙʚʛʜʝʞʟʠʡʢʣʤʥʦʧʨʩʪʫʬʭʮʯ
+static const char uc[0x0100] = "AABBBBBBCCDDDDDDDDDDEEEEEEEEEEFFGGHHHHHHHHHHIIIIKKKKKKLLLLLLLLMMMMMMNNNNNNNNOOOOOOOOPPPPRRRRRRRRSSSSSSSSSSTTTTTTTTUUUUUUUUUUVVVVWWWWWWWWWWXXXXYYZZZZZZHTWYASSSSDAAAAAAAAAAAAAAAAAAAAAAAAEEEEEEEEEEEEEEEEIIIIOOOOOOOOOOOOOOOOOOOOOOOOUUUUUUUUUUUUUUYYYYYYYYLLVVYY";
+//1E00-1EFF
+
+HB_FUNC ( UPP )
       {
-         hb_errRT_DBCMD( EG_ARG, EDBCMD_EVAL_BADPARAMETER, NULL, HB_ERR_FUNCNAME );
-         return;
+         PHB_ITEM pText = hb_param( 1, HB_IT_STRING );
+
+         if( pText )
+         {
+            PHB_CODEPAGE cdp = hb_vmCDP();
+            const char * pszText = hb_itemGetCPtr( pText );
+            HB_SIZE nLen = hb_itemGetCLen( pText ), n;
+
+            char * pszBuffer = ( char * ) hb_xgrab( nLen + 1 );
+
+            if( cdp )
+            {
+               if( HB_CDP_ISCUSTOM( cdp ) && cdp->wcharUpper )
+               {
+                  HB_SIZE nS = 0, nD = 0, nSrc = nLen;
+                  HB_WCHAR wc;
+
+                  while( HB_CDPCHAR_GET( cdp, pszText, nSrc, &nS, &wc ) )
+                  {
+                     HB_WCHAR wcUP = 0x20;
+                     if ((wc >= 0x00C0) && (wc <= 0x02AF))
+                        wcUP = ub[wc - 0x00C0];
+                     else if ((wc >= 0x1E00) && (wc <= 0x1EFF))
+                        wcUP = uc[wc - 0x1E00];
+
+                     wc = (wcUP != 0x20) ? wcUP : HB_CDPCHAR_UPPER( cdp, wc );
+                     
+                     if( ! HB_CDPCHAR_PUT( cdp, pszBuffer, nLen, &nD, wc ) )
+                     {
+                        nLen += ( nSrc - nS + 2 );
+                        pszBuffer = ( char * ) hb_xrealloc( pszBuffer, nLen + 1 );
+                        if( ! HB_CDPCHAR_PUT( cdp, pszBuffer, nLen, &nD, wc ) )
+                           break;
+                     }
+                  }
+                  nLen = nD;
+               }
+               else
+                  for( n = 0; n < nLen; n++ )
+                     pszBuffer[ n ] = ( char ) cdp->upper[ ( HB_UCHAR ) pszText[ n ] ];
+            }
+            else
+               for( n = 0; n < nLen; n++ )
+                  pszBuffer[ n ] = HB_TOUPPER( pszText[ n ] );
+                  
+            pszBuffer[ nLen ] = '\0';
+            hb_retclen_buffer( pszBuffer, nLen );
+         }
+         else
+            hb_errRT_BASE_SubstR( EG_ARG, 1102, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
       }
-
-      int iParam;
-
-      hb_vmPushEvalSym();
-      hb_vmPush( pItem );
-#if 1
-      int iPCount = hb_pcount();
-      for( iParam = 2; iParam <= iPCount; iParam++ )
-         hb_vmPush( hb_stackItemFromBase( iParam ) );
-#else
-      PHB_ITEM pArray = hb_param( 2, HB_IT_ARRAY );
-      int iPCount = ( pArray ) ? hb_arrayLen( pArray ) : 0;
-      for( iParam = 1; iParam <= iPCount; iParam++ )
-         hb_vmPush( hb_arrayGetItemPtr( pArray, iParam ) );
+#pragma ENDDUMP
 #endif
-      PHB_CODEPAGE cdpTmp = hb_cdpSelect( pArea->cdPage );
-      hb_vmSend( ( HB_USHORT ) ( iPCount - 1 ) );
-      hb_cdpSelect( cdpTmp );
-   }
-   else
-      hb_errRT_DBCMD( EG_NOTABLE, EDBCMD_NOTABLE, NULL, HB_ERR_FUNCNAME );
-}
-
+#pragma BEGINDUMP
 HB_FUNC ( BIN2D )
 {
  if ( hb_parinfo( 1 ) == HB_IT_STRING )
@@ -2357,44 +2404,5 @@ HB_FUNC ( ALTATTR )
       }
 
 #pragma ENDDUMP
-
-#ifndef UpP
-#pragma BEGINDUMP
-HB_FUNC ( UPP )
-      {
-         char * s = (char *) hb_parc( 1 );
-         char * ret;
-         size_t l = hb_parclen( 1 ), i;
-#pragma ENDDUMP
-#ifndef PC852
-#pragma BEGINDUMP
-         const char * f = "ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~ÇüéâäůŃçłëSőSTZZĘęłôöĄľŚŚÖSŤSTZZć╝óLńAź┘ĘęSźČş«Z░▒▓L┤┤╣╗┐AS╗L╝LZRAAAALCCCEEEEIIDDNNOOOO╬RUUUUYT▀RAAAALCCCEEEEIIDDNNOOOO¸RUUUUYT ";
-#pragma ENDDUMP
-#else
-#pragma BEGINDUMP
-         const char * f = "ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~CUEAAUCCLEOOIZACELIOOLLSSOUTTLŚCAIOUAAZZEE¬ZCS«»░▒▓│┤AAES╣║╗╝ZZ┐└┴┬├─┼AA╚╔╩╦╠═╬┴DDDEDNIIE┘┌█▄TU▀OßONNNSSRURUYYT´­˝˛ˇ˘§÷¸°¨˙URR■ ";
-#pragma ENDDUMP
-#endif
-#pragma BEGINDUMP
-
-         if ( l > 0 )
-         {
-         ret = (char *) hb_xgrab(l);
-
-         for( i=0 ; (i < l) ; i++ )
-         {
-            if ( (unsigned char) s[i] >= 'a')
-            {
-               ret[i] = f[ (unsigned char) s[i] - 'a' ];
-            } else {
-               ret[i] = s[i];
-            }
-         }
-         hb_retclen( ret, i);
-         hb_xfree( ret );
-         } else { hb_retclen( s, l); }
-      }
-#pragma ENDDUMP
-#endif
 #endif
 ********************

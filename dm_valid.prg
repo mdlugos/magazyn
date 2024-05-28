@@ -1,3 +1,5 @@
+#include "dbinfo.ch"
+
 #ifdef A_WL
 #ifdef __PLATFORM__UNIX_
    #require "hbcurl"
@@ -317,7 +319,7 @@ do case
        _sbeg:=1
     endif
     _slth:=0
-    _swar:=&('{|p|'+IndexkeY(0)+'=p'+'}')
+    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     refresh(1,_s)
 #endif
 
@@ -1129,10 +1131,10 @@ DO CASE
       _spocz:=UpP(TRIM(_spocz))
       _slth:=LEN(_spocz)
       _spform:={|p|p}
-      _swar=&('{|p|'+ IndexkeY(0)+'=p'+'}')
+      _swar:=EvAlDb('{|p|'+ IndexkeY(0)+'=p'+'}')
       //_sfor:={||EMPTY(data_zamkn).or.data_zamkn>=dm->data}
       _sfor:={||empty(nr_mag).or.nr_mag=mag_biez}
-      if (eval(_swar,_spocz).or.dbseek(_spocz)).and._skip(0,,_s) .and. _spocz=UpP(trim(KONTO))
+      if (EvaldB(_swar,_spocz).or.dbseek(_spocz)).and._skip(0,,_s) .and. _spocz=UpP(trim(KONTO))
              getactive():varput(pad(KONTO+' '+opis_koszt,len(getactive():varget())))
              _sret=.T.
              RETURN .T.
@@ -1142,7 +1144,7 @@ DO CASE
          _slth:=LEN(_spocz)
          _sbeg:=8
          _spform:={|p|p}
-         _swar=&('{|p|'+IndexkeY(0)+'=p'+'}')
+         _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
          seek _spocz
       endif
       set cursor on
@@ -1171,7 +1173,7 @@ DO CASE
     if readkey()#27 .and. updated()
       _sbeg=1
       SET ORDER TO "KONT_NUM"
-      _swar=&('{|p|'+IndexkeY(0)+'=p'+'}')
+      _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
       _spocz:=""
       _slth:=0
       if empty(k)
@@ -1191,7 +1193,7 @@ DO CASE
    CASE _skey=2  // ^>
       _sbeg=8
       SET ORDER TO "KONT_NAZ"
-      _swar=&('{|p|'+IndexkeY(0)+'=p'+'}')
+      _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
       _spocz:=""
       _slth:=0
       refresh(1,_s)
@@ -1199,7 +1201,7 @@ DO CASE
    CASE _skey=26  // ^<
       _sbeg=1
       SET ORDER TO "KONT_NUM"
-      _swar=&('{|p|'+IndexkeY(0)+'=p'+'}')
+      _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
       _spocz:=""
       _slth:=0
       refresh(1,_s)
@@ -2575,7 +2577,7 @@ DO CASE
                set order to "DM_NAZ"
                re:=recno()
                begin sequence
-                  dbseek(txt:=if(upper(IndexkeY(0))='NR_MAG',mag_biez,'')+subs(_spocz,2))
+                  dbseek(txt:=if(upper(IndexKey(0))='NR_MAG',mag_biez,'')+subs(_spocz,2))
 
 
 #ifdef A_KB
@@ -2853,7 +2855,7 @@ DO CASE
         SET ORDER TO "FIRM_NUM"
 #endif
       endif
-      _swar=&('{|p|'+IndexkeY(0)+'=p'+'}')
+      _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
       _spocz:=""
       _slth:=0
       refresh(1,_s)
@@ -2884,7 +2886,7 @@ DO CASE
         SET ORDER TO "FIRM_NAZ"
 #endif
       endif
-      _swar=&('{|p|'+IndexkeY(0)+'=p'+'}')
+      _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
       _spocz:=""
       _slth:=0
       refresh(1,_s)

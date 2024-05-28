@@ -102,7 +102,7 @@ if k=0
    if val(_spocz)=0
       ordsetfocus('SUR_NAZ')
       _sbeg:=len(skladnik)+2
-      _swar=&('{|p|'+ordkey()+'=p'+'}')
+      _swar:=EvAlDb('{|p|'+ordkey()+'=p'+'}')
       if _slth>0
          dbseek(_spocz)
       endif
@@ -129,18 +129,18 @@ elseif k=K_ENTER
    return .t.
 elseif k=K_ESC
    return .t.
-elseif ISALPHA(UpP(chr(k))) .and. _sbeg=1
+elseif ISALPHA(UpP(hb_keyChar(k))) .and. _sbeg=1
    ordsetfocus('SUR_NAZ')
    _sbeg:=len(skladnik)+2
-   _spocz:=LEFT(_spocz,len(_spocz)-_slth)+UpP(CHR(K))
+   _spocz:=LEFT(_spocz,len(_spocz)-_slth)+UpP(hb_keyChar(K))
    _slth:=1
-   _swar:=&('{|p|'+ordkey()+'=p'+'}')
+   _swar:=EvAlDb('{|p|'+ordkey()+'=p'+'}')
    refresh(,_s)
    return .t.
 
 elseif k=K_CTRL_LEFT .and. _sbeg<>1
     ordsetfocus('SUR_KOD')
-    _swar:=&('{|p|'+INDEXKEY(0)+'=p'+'}')
+    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     _spocz:=LEFT(_spocz,len(_spocz)-_slth)
     _slth:=0
     _sbeg:=1
@@ -149,7 +149,7 @@ elseif k=K_CTRL_LEFT .and. _sbeg<>1
 
 elseif k=K_CTRL_RIGHT .and. _sbeg=1
     ordsetfocus('SUR_NAZ')
-    _swar:=&('{|p|'+INDEXKEY(0)+'=p'+'}')
+    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     _spocz:=LEFT(_spocz,len(_spocz)-_slth)
     _slth:=0
     _sbeg:=len(skladnik)+2

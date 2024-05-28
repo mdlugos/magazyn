@@ -118,7 +118,7 @@ endif
   setcancel(.f.)
   DBEval( {|t,l|scrltxt(),t:=trim(eval(txt,0,_s,.t.)),scrltxt(),qqout(strtran(left(t,l:=maxcol()-col()),"│","|")),;
     if(len(t)>l,(if(row()=maxrow(),(scrllf()/*,scroll(0,0,row(),maxcol(),1),setpos(row(),maxcol()-len(t)+l)*/),/*setpos(row()+1,maxcol()-len(t)+l)*/),qqout(subs(t,l+1))),),;
-    if(row()=maxrow(),scrllf(),),qout(),scrltxt()},lfor,{||scrltxt(), EVAL(_swar,_spocz,_skon).AND.inkey()#27},,, .T. )
+    if(row()=maxrow(),scrllf(),),qout(),scrltxt()},lfor,{||scrltxt(), EvaldB(_swar,_spocz,_skon).AND.inkey()#27},,, .T. )
   end sequence
   scrllf()
   setcancel(.t.)
@@ -142,7 +142,7 @@ RETURN .F.
 **************************
 FUNCTION _sfil(_s)
 local hwbuf,txt,sel,getlist:={},older,r,b
-  if VALTYPE(_s)='A' .and. _si=0 .and. !EVAL(_swar,_spocz,_skon)
+  if VALTYPE(_s)='A' .and. _si=0 .and. !EvaldB(_swar,_spocz,_skon)
      if !dbseek(_spocz)
         return .f.
      endif
@@ -235,7 +235,7 @@ ELSEIF valtype(_s)='A' .and. ReadkeY()#K_ESC .AND.! _sfilt==txt
     //_sef=.F.
     //_sbf=.F.
     tone(130,3)
-    if !EVAL(_swar,_spocz,_skon)
+    if !EvaldB(_swar,_spocz,_skon)
        seek _spocz
     ENDIF
     _sexpgd(3,_s,.f.,.f.)
@@ -381,7 +381,7 @@ stat func _srap(txt,_s)
 #endif
             tyt:=if(empty(tyt),,trim(strtran(tyt,";",nl)))
            setcancel(.t.)
-            __REPORTFORM(p+TXT,tak("LISTING NA DRUKARKĘ",0,,.F.,.F.),,.F.,lfor,{||scrltxt(),EVAL(_swar,_spocz,_skon).AND.inkey()#27},,,.T.,;
+            __REPORTFORM(p+TXT,tak("LISTING NA DRUKARKĘ",0,,.F.,.F.),,.F.,lfor,{||scrltxt(),EvaldB(_swar,_spocz,_skon).AND.inkey()#27},,,.T.,;
              tyt=NIL.and.!TAK("CZY PODZAŁ NA STRONY",0,,.t.),tyt,.F.,TAK("CZY TYLKO SUMY",0,,.F.))
            end
 #ifdef D_HWPRN

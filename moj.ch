@@ -1,3 +1,6 @@
+//#include "lan.ch"
+#include "mdstd.ch"
+
 #ifdef __PLATFORM__UNIX
 //  #define A_EXT cupsPrintFile,cupsGetDefault
 #endif
@@ -8,12 +11,12 @@
 #endif
 #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
 //#define A_ADS 1
-#define UpP(x) UPPER(x)
+#define UpP(x) upPer(x)
+#define EvAlDb(x) &(x)
+#define EvaldB eVal
 #define PC852 'PL852M'
 #define A_CDX DBFCDX
 //#define A_HBGET
-//#include "lan.ch"
-#include "mdstd.ch"
 //#include "md_add.ch"
 #define A_LPNUM 3
 #define A_LPKPR
