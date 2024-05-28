@@ -3,6 +3,8 @@ PRIVATE strona
 PRIVATE mieso:=.f.
 PRIVATE mtxt:=''
 PRIVATE duplikat:=dok_kop>5
+;_SET_OSCODEPAGE 115
+set(115,'PL852M')
 dok_kop:=dok_kop%5
 ;oprn:=.t.
 lpt:=""
@@ -13,7 +15,7 @@ oprn:BinNumber:=0
 ;JUMP X
 IF dok_kop<2 .or. !empty(FIELD->NR_KSEF) THEN X
 win:=Window(10,65,"W/BG,,,BG+/BG")
-DevPos(win[1],win[2]+3),DevOutPict("Wysyanie do KSeF",,"BG+/BG")
+DevPos(win[1],win[2]+3),DevOutPict("Wysyลanie do KSeF",,"BG+/BG")
 DevPos(win[1]+1,win[2]+3),DevOutPict("Tworzenie struktury:       ",,"W/BG")
 fa:=ksef_fah()
 HB_HAUTOADD(fa['Podmiot1','DaneKontaktowe',1])
@@ -42,7 +44,7 @@ IF(duplikat,wwout('       DUPLIKAT z dnia '+dtoc(dzisiaj)),)
 ? '   NIP: '+IF(smb_dow='FE','PL5480059756','548-005-97-56')
 ? 'konto: ING BSK O/CIESZYN 40 1050 1083 1000 0001 0087 9071'
 ;?? spec('&'+'a80C')+spec('(s14V')
-;?? IF(i=2,'ORYGINA','KOPIA')
+;?? IF(i=2,'ORYGINAล','KOPIA')
 ;?? spec('(s12V')
 ? '     tel. '+IF(smb_dow='FE','(0048)','')+'338514895'
 ?
@@ -71,8 +73,8 @@ IF EMPTY(a) THEN HPL
 ? a[1]
 aeval(a,{|x|wout(f,alltrim(x))},2)
 :HPL
-? '  patno:',f,if(przelewem+czekiem#0,if(czekiem<>0,'kartฅ','przelewem w terminie do dnia: '+dtoc(termin_p)),'gotขwkฅ')
-?? spec('&'+'a82C')+'Data sprzedaพy:',data_dost,IF(subs(smb_dow,2)#'K' .and. data>data_dost,'- '+dtoc(data),'')
+? '  pลatnoลฤ:',f,if(przelewem+czekiem#0,if(czekiem<>0,'kartฤ…','przelewem w terminie do dnia: '+dtoc(termin_p)),'gotรณwkฤ…')
+?? spec('&'+'a82C')+'Data sprzedaลผy:',data_dost,IF(subs(smb_dow,2)#'K' .and. data>data_dost,'- '+dtoc(data),'')
 IF subs(smb_dow,2)='K' THEN FK1X
 if(empty(nr_faktury),NIL,wout('Dok. wydania:',f,nr_faktury,{||spec(chr(10))}))
 JUMP HX
@@ -81,70 +83,70 @@ JUMP HX
 :HX
 ?
 ??  spec('(s0P')+spec('(s16.67H')+spec('(s10V')+spec(p_8lpi)
-?  'ฺออยอออออออออออออออออออออออออออออออออออออยออออออออออออยออออยอออออออยออออออหอออออออออหออออออออออหอออออออออป'
-?  'ณ  ณ                                     ณ   Symbol   ณ    ณ       ณ Cena บ Warto บ w tym VATบ Warto บ'
-?  'ณLpณ Nazwa towaru                        ณ   PKWiU    ณJ.m.ณ Ilo ณ'+if(DM->smb_dow#'FE','bruttoบbrutto','      บ      ')+' zบ % i kwotaบ netto   บ'
-?  'รออลอออออออออออออออออออออออออออออออออออออลออออออออออออลออออลอออออออลออออออฮอออออออออฮออออออออออฮอออออออออน'
+?  'โ”โ•โ•โ”ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ”ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ”ฌโ•โ•โ•โ•โ”ฌโ•โ•โ•โ•โ•โ•โ•โ”ฌโ•โ•โ•โ•โ•โ•โ•ฆโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฆโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฆโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•—'
+?  'โ”  โ”                                     โ”   Symbol   โ”    โ”       โ” Cena โ•‘ Wartoลฤ โ•‘ w tym VATโ•‘ Wartoลฤ โ•‘'
+?  'โ”Lpโ” Nazwa towaru                        โ”   PKWiU    โ”J.m.โ” Iloลฤ โ”'+if(DM->smb_dow#'FE','bruttoโ•‘brutto','      โ•‘      ')+' zลโ•‘ % i kwotaโ•‘ netto   โ•‘'
+?  'โ”โ•โ•โ”ผโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ”ผโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ”ผโ•โ•โ•โ•โ”ผโ•โ•โ•โ•โ•โ•โ•โ”ผโ•โ•โ•โ•โ•โ•โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฃ'
 a:={}
 POZYCJE
 IF prow()<69 THEN P2
-?  'ภฤฤมฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤมฤฤฤฤฤฤฤฤฤฤฤฤมฤฤฤฤมอออออออมออออออฮอออออออออฮออออออออออสอออออออออผ'
-? padl("Do przeniesienia:",74)+"บ"+strpic(wt/100-w,9,2,"@E ")+"บ c.d. na stronie:"+str(strona:=strona+1,2)
-? space(74)+'ศอออออออออผ'
+?  'โ””โ”€โ”€โ”ดโ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”ดโ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”ดโ”€โ”€โ”€โ”€โ”ดโ•โ•โ•โ•โ•โ•โ•โ”ดโ•โ•โ•โ•โ•โ•โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฉโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•'
+? padl("Do przeniesienia:",74)+"โ•‘"+strpic(wt/100-w,9,2,"@E ")+"โ•‘ c.d. na stronie:"+str(strona:=strona+1,2)
+? space(74)+'โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•'
 setprc(0,0)
 ?? spec(chr(13))+spec(chr(12))
 ?? firma_n,TRIM(subs(dok_naz,3)),ltrim(dm->nr_dowodu)+'/'+str(year(dm->data)%100,2),'Cieszyn, dn.',dm->data,'strona:'+str(strona,2)
-?  'ฺออยอออออออออออออออออออออออออออออออออออออยออออออออออออยออออยอออออออยออออออหอออออออออหออออออออออหอออออออออป'
-?  'ณ  ณ                                     ณ   Symbol   ณ    ณ       ณ Cena บ Warto บ w tym VATบ Warto บ'
-?  'ณLpณ Nazwa towaru                        ณ   PKWiU    ณJ.m.ณ Ilo ณ'+if(DM->smb_dow#'FE','bruttoบbrutto','      บ      ')+' zบ % i kwotaบ netto   บ'
-?  'รออลอออออออออออออออออออออออออออออออออออออลออออออออออออลออออลอออออออลออออออฮอออออออออฮออออออออออฮอออออออออน'
-?  'ณ  ณ-------------------------------------ณ            ณ   Z przeniesienia: '+strpic(wt/100-w,9,2,"@E ")+"บ c.d. ze strony:"+str(strona-1,2)+'  บ'
+?  'โ”โ•โ•โ”ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ”ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ”ฌโ•โ•โ•โ•โ”ฌโ•โ•โ•โ•โ•โ•โ•โ”ฌโ•โ•โ•โ•โ•โ•โ•ฆโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฆโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฆโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•—'
+?  'โ”  โ”                                     โ”   Symbol   โ”    โ”       โ” Cena โ•‘ Wartoลฤ โ•‘ w tym VATโ•‘ Wartoลฤ โ•‘'
+?  'โ”Lpโ” Nazwa towaru                        โ”   PKWiU    โ”J.m.โ” Iloลฤ โ”'+if(DM->smb_dow#'FE','bruttoโ•‘brutto','      โ•‘      ')+' zลโ•‘ % i kwotaโ•‘ netto   โ•‘'
+?  'โ”โ•โ•โ”ผโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ”ผโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ”ผโ•โ•โ•โ•โ”ผโ•โ•โ•โ•โ•โ•โ•โ”ผโ•โ•โ•โ•โ•โ•โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฃ'
+?  'โ”  โ”-------------------------------------โ”            โ”   Z przeniesienia: '+strpic(wt/100-w,9,2,"@E ")+"โ•‘ c.d. ze strony:"+str(strona-1,2)+'  โ•‘'
 :P2
-? 'ณ'+str(val(p),2)+'ณ'
+? 'โ”'+str(val(p),2)+'โ”'
 ?? spec(p_pon+"(s7.1V")+nazwa
-?? spec("(s10V")+spec(p_poff+chr(13))+'                                         ณ'
+?? spec("(s10V")+spec(p_poff+chr(13))+'                                         โ”'
 ?? cpad(c:=tranr(trim(sww),'@R ##.##.##-##.##'),12,17,1)
-?? 'ณ'+jm+'ณ'+str(il_f,7,IF(il_f%1#0,3,0))+'ณ'+padl(ltrim(strpic(ce,9,2,'@E ',.f.)),6)+'บ'+strpic(w,9,2,"@E ")+"บ"+pv+strpic(v,8,2,"@E ")+"บ"+strpic(w-v,9,2,"@E ")+'บ'
+?? 'โ”'+jm+'โ”'+str(il_f,7,IF(il_f%1#0,3,0))+'โ”'+padl(ltrim(strpic(ce,9,2,'@E ',.f.)),6)+'โ•‘'+strpic(w,9,2,"@E ")+"โ•‘"+pv+strpic(v,8,2,"@E ")+"โ•‘"+strpic(w-v,9,2,"@E ")+'โ•‘'
 IF empty(fa) THEN P6
 DevPos(win[1]+1,win[2]+24),DevOutPict(p,,"W/BG")
 aadd(fa['Fa','FaWiersz'],hb_hash('NrWierszaFa',val(p),'P_7',alltrim(na),'Indeks',trim(ean13(index)),'PKWiU',trim(c),'P_8A',trim(jm),'P_8B',il_f,'P_9B',ce,'P_11',w-v,'P_11A',w,'P_11Vat',v,'P_12',ltrim(pv)))
 :P6
 SUMA
-?  'ภฤฤมฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤมฤฤฤฤฤฤฤฤฤฤฤฤมฤฤฤฤมอออออออมออออออฮอออออออออฮออออออออออฮอออออออออน'
-? padl("RAZEM:",74)+"บ"+strpic(wt,9,2,"@E ")+"บ"+strpic(vt,10,2,"@E ")+"บ"
+?  'โ””โ”€โ”€โ”ดโ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”ดโ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”ดโ”€โ”€โ”€โ”€โ”ดโ•โ•โ•โ•โ•โ•โ•โ”ดโ•โ•โ•โ•โ•โ•โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฃ'
+? padl("RAZEM:",74)+"โ•‘"+strpic(wt,9,2,"@E ")+"โ•‘"+strpic(vt,10,2,"@E ")+"โ•‘"
 ?? spec("(s3B")
 ?? strpic(wt-vt,9,2,"@E ")
 ?? spec("(s0B")
-?? "บ"
+?? "โ•‘"
 IF prow()<63 THEN L2X
-?  "                    Ciฅg dalszy na stronie:"+str(strona:=strona+1,2)
-?? '                             ศอออออออออสออออออออออสอออออออออผ'
+?  "                    Ciฤ…g dalszy na stronie:"+str(strona:=strona+1,2)
+?? '                             โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฉโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฉโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•'
 setprc(0,0)
 ?? spec(chr(13))+spec(chr(12))
 ?? +firma_n,TRIM(subs(dok_naz,3)),ltrim(dm->nr_dowodu)+'/'+str(year(dm->data)%100,2),'Cieszyn, dn.',dm->data,'strona:'+str(strona,2)
-?  '                                                             Ciฅg dalszy ze strony:'+str(strona-1,2)
-?  'ฺอออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออหอออออออออหออออออออออหอออออออออป'
-?  'ณ                                                                         บ Warto บ w tym VATบ Warto บ'
-?  'ณ                                                                         บ'+if(DM->smb_dow#'FE','brutto','      ')+' zบ % i kwotaบ netto   บ'
-?  'ภฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฮอออออออออฮออออออออออฮอออออออออน'
-? padl("RAZEM:",74)+"บ"
+?  '                                                             Ciฤ…g dalszy ze strony:'+str(strona-1,2)
+?  'โ”โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฆโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฆโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฆโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•—'
+?  'โ”                                                                         โ•‘ Wartoลฤ โ•‘ w tym VATโ•‘ Wartoลฤ โ•‘'
+?  'โ”                                                                         โ•‘'+if(DM->smb_dow#'FE','brutto','      ')+' zลโ•‘ % i kwotaโ•‘ netto   โ•‘'
+?  'โ””โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฃ'
+? padl("RAZEM:",74)+"โ•‘"
 ?? spec("(s3B")
 ?? strpic(wt,9,2,"@E ")
 ?? spec("(s0B")
-?? "บ"+strpic(vt,10,2,"@E ")+"บ"+strpic(wt-vt,9,2,"@E ")+"บ"
+?? "โ•‘"+strpic(vt,10,2,"@E ")+"โ•‘"+strpic(wt-vt,9,2,"@E ")+"โ•‘"
 :L2X
-? space(74)+'ฬอออออออออฮออออออออออฮอออออออออน'
+? space(74)+'โ• โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฌโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฃ'
 ? padl("w tym: ",74)
 a:=0
 :LX
 a:=a+1
 IF a>len(was) THEN L1X
 IF was[a,2]=0 .and. was[a,3]=0 THEN LX
-?? 'บ'+strpic(was[a,2],9,2,"@E ")+"บ"+was[a,1]+strpic(was[a,3],8,2,"@E ")+"บ"+strpic(was[a,2]-was[a,3],9,2,"@E ")+'บ'
+?? 'โ•‘'+strpic(was[a,2],9,2,"@E ")+"โ•‘"+was[a,1]+strpic(was[a,3],8,2,"@E ")+"โ•‘"+strpic(was[a,2]-was[a,3],9,2,"@E ")+'โ•‘'
 ? space(74)
 JUMP LX
 :L1X
-?? 'ศอออออออออสออออออออออสอออออออออผ'
+?? 'โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฉโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•ฉโ•โ•โ•โ•โ•โ•โ•โ•โ•โ•'
 a:=0
 STOPKA
 ?? spec('(s10H')+spec(p_6lpi)
@@ -152,45 +154,45 @@ TEXT if(""=uwagi,'',strtran(';'+uwagi+';',";",chr(13)+chr(10)))
 IF subs(smb_dow,2)='K' THEN FK2X
 ?
 ?? spec('(s1P')+spec('(s3B')+spec('(s14V')
-?? 'DO ZAPATY:    ',tran(wt,"@E ####,###.##"),'z'
+?? 'DO ZAPลATY:    ',tran(wt,"@E ####,###.##"),'zล'
 ?
 ?? spec('(s0B')+spec('(s10V')
-? "sownie: ",slownie(wt)
+? "sลownie: ",slownie(wt)
 JUMP H1X
 :FK2X
-? padl('Kwota '+if(wt-vt>=0,'zwiฉkszenia','zmniejszenia')+' wartoci bez podatku:',40),tran(abs(wt-vt),"@E ####,###.##")
-? padl('Kwota '+if(vt>=0,'zwiฉkszenia','zmniejszenia')+' podatku naleพnego:',40),tran(abs(vt),"@E ####,###.##")
-? padl(if(wt>=0,'DO ZAPATY:','DO ZWROTU:'),40),tran(ABS(wt),"@E ####,###.##"),'z'
+? padl('Kwota '+if(wt-vt>=0,'zwiฤkszenia','zmniejszenia')+' wartoลci bez podatku:',40),tran(abs(wt-vt),"@E ####,###.##")
+? padl('Kwota '+if(vt>=0,'zwiฤkszenia','zmniejszenia')+' podatku naleลผnego:',40),tran(abs(vt),"@E ####,###.##")
+? padl(if(wt>=0,'DO ZAPลATY:','DO ZWROTU:'),40),tran(ABS(wt),"@E ####,###.##"),'zล'
 ?
 ?? spec('(s0B')+spec('(s10V')
-? "sownie: ",slownie(abs(wt))
+? "sลownie: ",slownie(abs(wt))
 :H1X
 ?
 ?? spec("(s0P")+spec("(s10H")
 IF przelewem+czekiem=0 .or. round(wartosc-przelewem-czekiem,2)=0 THEN H2X
-? "Zapata"
-if(round(wartosc-przelewem-czekiem,2)=0,NIL,wwout(" gotขwkฅ: "+tran(wartosc-przelewem-czekiem,"@E ####,###.##")))
+? "Zapลata"
+if(round(wartosc-przelewem-czekiem,2)=0,NIL,wwout(" gotรณwkฤ…: "+tran(wartosc-przelewem-czekiem,"@E ####,###.##")))
 if(przelewem#0,wout(padl("przelewem: ",17)+tran(przelewem,"@E ####,###.##")),NIL)
-if(czekiem#0,wout(padl("kartฅ: ",17)+tran(czekiem,"@E ####,###.##")+" Nr czeku: "+nr_czeku),NIL)
+if(czekiem#0,wout(padl("kartฤ…: ",17)+tran(czekiem,"@E ####,###.##")+" Nr czeku: "+nr_czeku),NIL)
 ?
 ?? spec('(s1P')+spec('(s12V')
 :H2X
-if(round(wartosc-przelewem-czekiem,2)=0,NIL,wout(if(termin_p#data,"zapata","zapacono")+" gotขwkฅ: "+tran(wartosc-przelewem-czekiem,"@E ####,###.##")))
+if(round(wartosc-przelewem-czekiem,2)=0,NIL,wout(if(termin_p#data,"zapata","zapลacono")+" gotรณwkฤ…: "+tran(wartosc-przelewem-czekiem,"@E ####,###.##")))
 IF empty(transport) THEN MX
 ?? spec(p_8lpi)+spec('(s0P')+spec('(s20H')
-? 'อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ'
-? 'Niniejsza Faktura stanowi jednoczenie Handlowy Dokument Identyfikacyjny'
-? '        Opis towaru: zgodny z fakturฅ, rodzaj opakowaไ: pojemnik plastikowy euro, waga, miejsce przeznaczenia: w/g faktury'
-? 'Pochodzenie surowca: Polska,              Data wysyki: data wystawienia,              NR rej. r. transportu: '+trim(transport)
-? '               Dane dotyczฅce procesu technologicznego: przechowywa w temp. +4 do +8๘C,  naleพy spoพy przed:..........'
+? 'โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•'
+? 'Niniejsza Faktura stanowi jednoczeลnie Handlowy Dokument Identyfikacyjny'
+? '        Opis towaru: zgodny z fakturฤ…, rodzaj opakowaล: pojemnik plastikowy euro, waga, miejsce przeznaczenia: w/g faktury'
+? 'Pochodzenie surowca: Polska,              Data wysyลki: data wystawienia,              NR rej. ลr. transportu: '+trim(transport)
+? '               Dane dotyczฤ…ce procesu technologicznego: przechowywaฤ w temp. +4 do +8ยฐC,  naleลผy spoลผyฤ przed:..........'
 ? ' podstawa prawna: Dziennik Ustaw Nr 33, Poz. 228, Art. 27, Pkt 4'
-? 'อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ'
+? 'โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•'
 :MX
 ?? spec('(s1P')+spec('(s10V')+spec(p_8lpi)
 ?
 ?? spec(repl(chr(10),70-prow()))
 ?? spec(p_6lpi)
-? "upowaพniony do odbioru:                                                                     upowaพniony do wystawienia:"
+? "upowaลผniony do odbioru:                                                                     upowaลผniony do wystawienia:"
 ?
 ?? spec('(s12V')+nazwisko
 ?? spec('&'+'a85C')+operator
@@ -215,7 +217,7 @@ DevPos(win[1]+5,win[2]+3),DevOutPict("Tworzenie dokumentu xml:",,"W/BG")
 a:=space(4096+512*val(p)),ksef_fa(fa,@a)
 FIELD->ksef:=a
 ;DevPos(win[1]+5,win[2]+30),DevOutPict(a,,"W/BG")
-DevPos(win[1]+6,win[2]+3),DevOutPict("Wysyka dokumentu xml:",,"W/BG")
+DevPos(win[1]+6,win[2]+3),DevOutPict("Wysyลka dokumentu xml:",,"W/BG")
 c:=ksef_sendfa(a,@b)
 IF c=NIL THEN S6
 DevPos(win[1]+6,win[2]+30),DevOutPict(c,,"W/BG")
@@ -225,7 +227,7 @@ DevPos(win[3]-1,win[2]+3),DevOutPict('Gotowe!',,"W/BG")
 ;INKEY(0)
 JUMP S7
 :S6
-DevPos(win[3]-1,win[2]+3),DevOutPict('Przedwczesne przerwanie transmisji, nacinij co',,'BR+/BG')
+DevPos(win[3]-1,win[2]+3),DevOutPict('Przedwczesne przerwanie transmisji, naciลnij coล',,'BR+/BG')
 fa:=.f.
 inkey(0)
 :S7
