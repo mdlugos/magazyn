@@ -1,0 +1,162 @@
+;oprn:=.t.
+;PRIVATE p_margin:={|x|oprn:LeftMargin:=oprn:PixelsPerInchX*x/10,''}
+PRIVATE fa,op,pr,fa_ksef,win
+;inirest('jpk.ini')
+IF dok_kop<2 .or. ""<>FIELD->KSEF THEN X
+win:=Window(10,65,"W/BG,,,BG+/BG")
+DevPos(win[1],win[2]+3),DevOutPict("Wysyłanie do KSeF",,"BG+/BG")
+DevPos(win[1]+1,win[2]+3),DevOutPict("Tworzenie struktury:       ",,"W/BG")
+fa:=ksef_fah()
+HB_HAUTOADD(fa['Podmiot1','DaneKontaktowe',1])
+fa['Podmiot1','DaneKontaktowe',1,'Telefon']:='338522553'
+aadd(fa['Podmiot1','DaneKontaktowe'],{'Telefon'=>'601842030'})
+;fa['Podmiot2','NrKlienta']:=ltrim(firmy->numer_kol)
+:X
+HEADER
+IF(fa=NIL,IF(op=NIL,,(oprn:=op,op:=NIL,set(23,pr))),(op:=oprn,oprn:=NIL,pr:=set(23,.f.)))
+?  spec(eval(p_margin,2))
+?  ' Sprzedawca: Firma Usług Informatycznych         Cieszyn, dnia',dtoc(data)
+?  '             Marek Długosz'
+?  '      Adres: 43-400 Cieszyn, ul. Równa 16'
+?  '        NIP: 548-000-80-32'
+?
+?  '    telefon: 338522553, 601842030'
+?  '     e-mail: m_dlugosz@live.com'
+?  '       Bank: ING BANK ŚLĄSKI'
+?  'Nr rachunku: 62 1050 1083 1000 0001 0087 7026'
+? spec(eval(p_margin,3))
+? spec(p_4xon)
+? trim(subs(dok_naz,3))+' '+smb_dow+ltrim(nr_dowodu)
+? spec(p_4xoff)
+?
+g:=hb_jsondecode(field->ksef)
+IF empty(g) THEN H3
+b:=MEMVAR->ksef_api+'web/verify/'+g['Nr']+'/'+URLENCODE(g['Base64'])
+?? 'Numer KSeF:',g['Nr'],'     '
+?? spec(P_12LPI)
+IF(valtype(oprn)='O',drawbarcode('QRCODE',b,0x200,oprn:PosX,oprn:PosY-oprn:pixelsperInchY*7/4,oprn:pixelsperInchX/32,oprn:pixelsperInchY/32),)
+? '            '
+?? ccpi(8)+b
+?? ccpi(4)+spec(P_6LPI)
+:H3
+;if(valtype(oprn)='O',h:={oprn:PosX,oprn:PosY},)
+?
+a:=strtran(firmy->longname,";",chr(13)+chr(10)+'            ')
+? '   Nabywca:',memoline(a,75,1,8,.t.)
+if(empty(b:=memoline(a,75,2,8,.t.)),,wout(b))
+if(empty(b:=memoline(a,75,3,8,.t.)),,wout(b))
+? '     Adres:',trim(firmy->adres)
+? '       NIP:',firmy->ident
+?
+TEXT strtran(firmy->uwagi,";",chr(13)+chr(10))
+IF data=data_dost .and. subs(smb_dow,2)#'K' THEN H1
+? '                     Data dostawy towaru lub wykonania usługi:',data_dost
+IF subs(smb_dow,2)#'K' THEN H1
+?
+? '   Dotyczy:',TRIM(IF(NR_FAKTURY=' 1',SUBS(NR_FAKTURY,3),nr_faktury)),'z dnia',data_dost
+TEXT strtran(uwagi,";",chr(13)+chr(10))
+:H1
+?  ccpi(5)
+?  '                                                       | Wartość | Podatek VAT|  Wartość'
+?  'Lp Nazwa towaru lub usługi        |Ilość|J.M.|  Cena zł| netto zł| %  kwota zł|brutto zł'
+? repl("-",88)
+:H2
+POZYCJE
+? subs(p,3)
+IF !EMPTY(uwagi) THEN P1
+?? '  '
+?? ccpi(9)+(c:=nazwa)
+?? spec(p_poff+ccpi(5)+chr(13))
+JUMP P2
+:P1
+a:=0
+:P3
+IF empty(b:=memoline(c:=uwagi,40,a:=a+1,8)) THEN P2
+IF a=1 THEN P4
+? ' '
+:P4
+?? space(33)+'           |         |         |            |'
+?? spec(chr(13))+space(2)
+?? ccpi(9)+b
+?? ccpi(5)+spec(chr(13))
+JUMP P3
+:P2
+?? space(34)+"|"+str(-b->ilosc_f,5)+"|"+jm+"|"+tran(b->cena,"@E ##,###.##")+"|"
+?? tran(w,"@E ##,###.##")+"|"+b->proc_VAT+'.'+tran(v,"@E ##,###.##")+"|"+tran(w+v,"@E ##,###.##")
+:P5
+IF empty(fa) THEN P6
+DevPos(win[1]+1,win[2]+24),DevOutPict(p,,"W/BG")
+aadd(fa['Fa','FaWiersz'],hb_hash('NrWierszaFa',p,'P_7',alltrim(c),'P_8A',trim(jm),'P_8B',-b->ilosc_f,'P_9A',b->cena,'P_11',w,'P_12',ltrim(b->proc_vat)))
+:P6
+SUMA
+? repl("=",88)
+? spec(p_bon)+padl("RAZEM:",56)+tran(wt,"@E ##,###.##")+"|   "+tran(vt,"@E ##,###.##")+"|"+tran(wt+vt,"@E ##,###.##")
+? spec(p_boff)+padl("w tym:",56)
+?? spec(chr(13))
+a:=0
+:L
+a:=a+1
+IF a>len(was) THEN L1
+?? space(56)+tran(was[a,2],"@E ##,###.##")+"|"+was[a,1]+'.'+tran(was[a,3],"@E ##,###.##")+"|"+tran(was[a,3]+was[a,2],"@E ##,###.##")
+?
+JUMP L
+:L1
+STOPKA
+?? ccpi(4)
+IF subs(smb_dow,2)#'K' THEN S1
+?? padl(if(wt>=0,'Kwota zwiększenia wartości bez podatku: ','Kwota zmniejszenia wartości bez podatku: '),42)+tran(abs(wt),"@E ##,###.##")
+? padl(if(vt>=0,'Kwota zwiększenia podatku należnego: ','Kwota zmniejszenia podatku należnego: '),42)+tran(abs(vt),"@E ##,###.##")
+? repl("-",54)
+? space(30)
+:S1
+?? spec(p_bon)+if(vt+wT>=0,'DO ZAPŁATY: ',' DO ZWROTU: ')+tran(ABS(wt+vt),"@E ##,###.##"),'zł'
+?? spec(p_boff)
+? "słownie złotych:"
+?? cpad(slownie(ABS(wt+vt)),54)
+?
+? "Zapłata"
+if(ROUND(wartosc+wart_vat-przelewem-czekiem,2)#0,wwout(" gotówką"+if(przelewem+czekiem#0,": "+tran(wartosc+wart_vat-przelewem-czekiem,"@E ##,###.## zł"),"")),":")
+if(przelewem#0,wout(padl("przelewem: ",17)+tran(przelewem,"@E ##,###.## zł")),NIL)
+if(czekiem#0,wout(padl("czekiem: ",17)+tran(czekiem,"@E ##,###.## zł")+" Nr czeku: "+nr_czeku),NIL)
+?
+IF(PRZELEWEM#0 .or. termin_p#data,wout("Termin płatności upływa dnia: "+dtoc(termin_p)),NIL)
+?
+TEXT strtran(uwagi,";",chr(13)+chr(10))
+?? spec(repl(chr(10),50-prow()))
+? "Upoważniony do odbioru                        Upoważniony do wystawienia"
+?
+? space(50)+operator
+IF empty(fa) THEN S7
+DevPos(win[1]+1,win[2]+30),DevOutPict('Suma.',,"W/BG")
+fa["Fa","Platnosc"]:=hb_hash('Zaplacono',if(termin_p=data,1,),'DataZaplaty',if(termin_p=data,hb_dtoc(termin_p,'YYYY-MM-DD'),),'TerminPlatnosci',if(termin_p=data,,hb_hash('Termin',hb_dtoc(termin_p,'YYYY-MM-DD'))),'FormaPlatnosci',if(PRZELEWEM#0,6,1),'RachunekBankowy',if(PRZELEWEM#0,hb_hash('NrRB','62105010831000000100877026'),))
+fa["Fa","P_1"]:=hb_dtoc(data,'YYYY-MM-DD')
+fa["Fa","P_2"]:=smb_dow+alltrim(nr_dowodu)
+fa["Fa","P_13_1"]:=wartosc
+fa["Fa","P_14_1"]:=wart_vat
+fa["Fa","P_15"]:=wartosc+wart_vat
+DevPos(win[1]+3,win[2]+3),DevOutPict("Uzyskiwanie tokenu sesyjnego:",,"W/BG")
+a:=NIL,b:=ksef_initsession()
+DevPos(win[1]+4,win[2]+2),DevOutPict(b,,"W/BG")
+IF EMPTY(b) THEN S6
+DevPos(win[1]+5,win[2]+3),DevOutPict("Tworzenie dokumentu xml:",,"W/BG")
+ksef_fa(fa,,@a)
+DevPos(win[1]+5,win[2]+30),DevOutPict(a,,"W/BG")
+DevPos(win[1]+6,win[2]+3),DevOutPict("Wysyłka dokumentu xml:",,"W/BG")
+c:=ksef_sendfa(defa+a,@b)
+DevPos(win[1]+6,win[2]+30),DevOutPict(c,,"W/BG")
+IF c=NIL THEN S6
+DevPos(win[1]+7,win[2]+3),DevOutPict("Generuję link weryfikacyjny:",,"W/BG")
+Field->nr_ksef:=FIELD->nr_faktury:=c
+e:=b['invoiceHash','hashSHA','value'],MEMVAR->ksef_api+'web/verify/'+c+'/'+URLENCODE(e)
+|x|DevPos(win[1]+7,win[2]+3),DevOutPict(left(x,64),,"W/BG"),DevPos(win[1]+8,win[2]+3),DevOutPict(subs(x,65),,"W/BG"),FIELD->ksef:=hb_jsonencode({'Nr'=>c,'Plik'=>a,'Base64'=>e,'Url'=>x,'Fa'=>fa},.t.)
+fa:=NIL
+DevPos(win[3]-1,win[2]+3),DevOutPict('Gotowe!',,"W/BG")
+;INKEY(0)
+JUMP S7
+:S6
+fa:=NIL
+DevPos(win[3]-1,win[2]+3),DevOutPict('Przedwczesne przerwanie transmisji, naciśnij coś',,'BR+/BG')
+inkey(0)
+:S7
+if(win=NIL,,window(win))
+win:=NIL

@@ -1336,10 +1336,6 @@ osk:=HB_SETKEYSAVE()
   //RESET KEY K_ALT_E
   RESET KEY GE_WRITE
 
-  if "utf-8"$lower(left(txt,80))
-      //txt:=hb_translate(txt,'UTF8',)
-      // todo	FIX UTF8
-  endif
   do while .t.
     //txt=MEMOEDIT(txt,r1+1,c1+1,r2-1,c2-1,.T.,"gufunc",c2-c1-3,8,l,c,cl,cc)
     txt=MEMOEDIT(txt,r1+1,c1+1,r2-1,c2-1,.T.,"gufunc",ll,2,l,c,cl,cc)
@@ -1358,17 +1354,8 @@ osk:=HB_SETKEYSAVE()
            n:=defa+n
           endif
           txt:=memoread(n)
-          if "utf-8"$lower(left(txt,80))
-            //txt:=hb_translate(txt,'UTF8',)
-	    // todo	FIX UTF8
-          endif
          else
           k:=strtran(txt,chr(141)+chr(10))
-          if "utf-8"$lower(left(k,80))
-            //k:=hb_translate(k,,'UTF8')
-      // todo	FIX UTF8
-
-          endif
           HB_MEMOWRIT(n,k,.f.)
          endif
        elseif k$"BX"
@@ -1454,10 +1441,6 @@ osk:=HB_SETKEYSAVE()
 #endif
   if k=GE_WRITE
         k:=strtran(txt,chr(141)+chr(10))
-        if "utf-8"$lower(left(txt,80))
-          //k:=hb_translate(k,,'UTF8')
-      // todo	FIX UTF8
-        endif
         if expandable
            k:=trim(k)
            m:=val(subs(get:picture,1+at("S",get:picture)))
