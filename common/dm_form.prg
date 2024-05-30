@@ -1,5 +1,5 @@
-#include "dm_form.ch"
-#include "getexit.ch"
+#include "./dm_form.ch"
+#include "./getexit.ch"
 #include "inkey.ch"
 
 

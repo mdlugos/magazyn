@@ -1,5 +1,5 @@
 #include "inkey.ch"
-#include "getexit.ch"
+#include "../common/getexit.ch"
 #ifndef A_FA
 #ifdef A_WA
 #define cenA_zaK cena_przy

@@ -1,7 +1,7 @@
 #include "dbinfo.ch"
 #include "dm_form.ch"
 #include "inkey.ch"
-#include "getexit.ch"
+#include "../common/getexit.ch"
 #ifdef A_ZAGRODA
   #define A_KASA
   #define D_KODY 55

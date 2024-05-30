@@ -1,6 +1,6 @@
 #include "set.ch"
 #include "inkey.ch"
-#include "getexit.ch"
+#include "./getexit.ch"
 #ifdef __HARBOUR__
 #include "hbgtinfo.ch"
 #endif

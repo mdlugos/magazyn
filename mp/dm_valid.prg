@@ -8,7 +8,7 @@
 
 #include "dm_form.ch"
 #include "inkey.ch"
-#include "getexit.ch"
+#include "../common/getexit.ch"
 #ifdef A_F9
 #ifndef A_FK
 #define A_FK

@@ -1,5 +1,5 @@
 //#define SIMPLE
-#include "getexit.ch"
+#include "./getexit.ch"
 #include "inkey.ch"
 #include "set.ch"
 #include "dbinfo.ch"
