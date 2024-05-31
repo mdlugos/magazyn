@@ -19,7 +19,7 @@ memvar strona,stawki,stawkizby,it_zesmnu,oprn,defa
 #define bin2D(x) (100*(x))
 #endif
 #ifdef A_DF
-#define wartosC (bin2d(field->d_wartosc))
+#define wartosC (bin2d(bingieldget('d_wartosc')))
 #endif
 
 #ifdef A_JMTOT
@@ -1688,7 +1688,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
     go j
     do while !eof().and.EvaldB(ok)<=txt + dtos(DO)
       was:={}
-      aeval(stawkizby,{|x|if(val(x)#0,aadd(was,{x,0,bin2D(fieldget(fieldpos(D_NVAT+ltrim(x))))}),)})
+      aeval(stawkizby,{|x|if(val(x)#0,aadd(was,{x,0,bin2D(binfieldget(D_NVAT+ltrim(x)))}),)})
       SELECT MAIN
       SEEK dm->(KEY_DOK+nr_dowodu)
       WHILE dm->(KEY_DOK+nr_dowodu)=KEY_DOK+nr_dowodu
@@ -2128,7 +2128,7 @@ ELSE
               loop
             endif
           was:={}
-          aeval(stawkizby,{|x|if(val(x)#0,aadd(was,{x,0,bin2D(fieldget(fieldpos(D_NVAT+ltrim(x))))}),)})
+          aeval(stawkizby,{|x|if(val(x)#0,aadd(was,{x,0,bin2D(binfieldget(D_NVAT+ltrim(x)))}),)})
           SELECT MAIN
           SEEK dm->(KEY_DOK+nr_dowodu)
           WHILE dm->(KEY_DOK+nr_dowodu)=KEY_DOK+nr_dowodu
@@ -2533,7 +2533,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
     go j
     do while !eof().and.EvaldB(ok)<=txt + dtos(DO)
       was:={}
-      aeval(stawki,{|x|if(val(x)#0,aadd(was,{x,0,bin2D(fieldget(fieldpos(D_NVAT+ltrim(x))))}),)})
+      aeval(stawki,{|x|if(val(x)#0,aadd(was,{x,0,bin2D(binfieldget(D_NVAT+ltrim(x)))}),)})
       SELECT MAIN
       SEEK dm->(KEY_DOK+nr_dowodu)
       WHILE dm->(KEY_DOK+nr_dowodu)=KEY_DOK+nr_dowodu
@@ -2902,7 +2902,7 @@ ELSE
               loop
             endif
             was:={}
-            aeval(stawki,{|x|if(val(x)#0,aadd(was,{x,0,bin2D(fieldget(fieldpos(D_NVAT+ltrim(x))))}),)})
+            aeval(stawki,{|x|if(val(x)#0,aadd(was,{x,0,bin2D(binfieldget(D_NVAT+ltrim(x)))}),)})
           SELECT MAIN
           SEEK dm->(KEY_DOK+nr_dowodu)
           WHILE dm->(KEY_DOK+nr_dowodu)=KEY_DOK+nr_dowodu

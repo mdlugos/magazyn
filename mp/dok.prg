@@ -127,7 +127,7 @@ field  data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,numer_kol,;
 #endif
 #ifdef A_DF
 #command REPLACE [DM->]WARTOSC WITH <x> => field2bin('d_wartosc',DM->wartosc:=<x>,1)
-#define wartosC (bin2d(field->d_wartosc))
+#define wartosC (bin2d(binfieldget('d_wartosc')))
 #endif
 
 ****************************************************************************
@@ -637,7 +637,7 @@ procedure dok1(_f)
       data_dost:=dd
 #ifdef A_KSEF
       nr_ksef:=n_ksef
-      ksef:=xml_ksef
+      binfieldput('KSEF',xml_ksef)
 #endif
       wtoT:=0
 #ifdef A_SUBDOK
@@ -691,7 +691,7 @@ procedure dok1(_f)
       n_f:=nr_faktury
 #ifdef A_KSEF
       n_ksef:=nr_ksef
-      xml_ksef:=ksef
+      xml_ksef:=BINFIELDGET('KSEF')
 #endif
 #ifdef A_DATAVAT
       dv:=data_vat
@@ -1062,7 +1062,7 @@ procedure dok11(_f)
 #endif
 #ifdef A_KSEF
     @ _frow-1,11 SAY nr_ksef
-    @ _frow-1,50 SAY ksef picture "@S28"
+    @ _frow-1,50 SAY binfieldget('KSEF') picture "@S28"
 #endif
     @ _frow,2 say pad(uwagi,76)
     return
@@ -1101,7 +1101,7 @@ procedure dok11(_f)
 #endif
 #ifdef A_KSEF
     @ _frow-2,11 SAY nr_ksef
-    @ _frow-2,50 SAY ksef picture "@S28"
+    @ _frow-2,50 SAY binfieldget('KSEF') picture "@S28"
 #endif
     @  _frow,73 say nk  PICTURE "XXXXX"
 
@@ -1498,7 +1498,7 @@ memvar exp_od,exp_do
     nr_faktury := n_f
 #ifdef A_KSEF
     nr_ksef := n_ksef
-    ksef := xml_ksef
+    BINFIELDPUT('KSEF',xml_ksef)
 #endif
 #ifdef A_OLZA
     konto_kosz:=kk
@@ -4288,12 +4288,12 @@ next i
 #ifdef A_CENVAT
 if dok_p_r="F" .and. !dok_df
    x:=vat(,)
-   dm->wartosc:=bin2d(dm->d_wartosc)-x+dm->wart_vat
+   dm->wartosc:=bin2d(DM->(binfieldget('d_wartosc')))-x+dm->wart_vat
    field2bin('d_wartosc',dm->wartosc-dm->wart_vat+x,1)
 #else
 if dok_df
    x:=vat(,)
-   dm->wartosc:=bin2d(dm->d_wartosc)+x-dm->wart_vat
+   dm->wartosc:=bin2d(DM->(binfieldget('d_wartosc')))+x-dm->wart_vat
    field2bin('d_wartosc',dm->wartosc+dm->wart_vat-x,1)
 #endif
 endif
@@ -4318,7 +4318,7 @@ for i:=1 to l
     if val(x)#0
        y:=dm->(fieldpos(D_NVAT+ltrim(x)))
        IF y<>0
-          v:=bin2D(dm->(fieldget(y)))
+          v:=bin2D(dm->(binfieldget(y)))
        ENDIF
     endif
     vat(x,v,n)

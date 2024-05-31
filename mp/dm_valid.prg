@@ -60,7 +60,7 @@
 #endif
 #ifdef A_DF
 #command REPLACE [DM->]WARTOSC WITH <x> => field2bin('d_wartosc',DM->wartosc:=<x>,1)
-#define wartosC (bin2d(field->d_wartosc))
+#define wartosC (bin2d(binfieldget('D_WARTOSC')))
 #endif
 
 #ifdef A_LAN

@@ -1807,13 +1807,10 @@ proc field2bin(f,d,a)
    elseif valtype(a)='C'
       a:=select(a)
    endif
-   if valtype(f)='C'
-      f:=(a)->(fieldpos(f))
-   endif
-   if valtype((a)->(fieldget(f)))='C'
+   if valtype((a)->(hb_fieldget(f)))='C'
       d:=d2bin(d)
    endif
-   (a)->(fieldput(f,d))
+   (a)->(binfieldput(f,d))
 
 return
 ************************************
@@ -2268,6 +2265,30 @@ func evaldb(...)
    endif
 return r
 *****************
+func binfieldput(f,x)
+   local t,b
+   if valtype(x)='C'
+      t:=hb_FieldType(f)
+      if !(left(t,1) $ 'PWG' .or. 'B' $ subs(t,3))
+         x:=hb_translate(x,dbinfo(DBI_CODEPAGE),)  //odwrotne tłumacznie do tego co przy zapisie
+         // przy tłumaczeniu z powrotem się skróci, ale i tak będzie przyciasno
+      endif
+   endif
+return HB_FieldPut(f,x)
+
+func binfieldget(f)
+   local x := hb_fieldget(f),t
+   if valtype(x)='C'
+      t:=hb_FieldType(f)
+      if !(left(t,1) $ 'PWG' .or. 'B' $ SubStr(t,2))
+         x := hb_translate(x,,dbinfo(DBI_CODEPAGE)) //odwrotne tłumacznie do tego co przy odczycie
+      endif
+      if t = 'C'
+         x := x + space(hb_FieldLen(f) - len(x))
+      endif
+   endif
+return x
+*****************
 #pragma BEGINDUMP
 #include "hbapi.h"
 #include "hbapiitm.h"
@@ -2278,10 +2299,10 @@ return r
 #pragma BEGINDUMP
 #include "hbapicdp.h"
 
-static const char ub[0x01F0] = "AAAAAAACEEEEIIIIDNOOOOO OUUUUY  AAAAAAACEEEEIIIIDNOOOOO OUUUUY YAAAAAACCCCCCCCDDDDEEEEEEEEEEGGGGGGGGHHHHIIIIIIIIIIIIJJKKKLLLLLLLLLLNNNNNNNNNOOOOOOOORRRRRRSSSSSSSSTTTTTTUUUUUUUUUUUUWWYYYZZZZZZSBBBBHHOCCDDDDDEEEFFGGHIIKKLLMNNOOOOOPPZSSSTTTTTUUVVYYZZZZZZ         DDDLLLNNNAAIIOOUUUUUUUUUUEAAAAAAGGGGKKOOOOZZJDDDGGH NNAAAAOOAAAAEEEEIIIIOOOORRRRUUUUSSTTYYHHNDOOZZAAEEOOOOOOOOYYLNTJDQACCLTSZ  BUVEEJJQQRRYYAAABOCDDEEEEEEEJGGGGGHHHIIILLLLMMNNNNOO  RRRRRRRRRSSJSSTTUUVVWYYZZZZ   C BEGHJKLQ  DDDTTTFLL  HH";
+static const char ub[0x01F0] = "AAAAAAACEEEEIIIIDNOOOOO OUUUUYPSAAAAAAACEEEEIIIIDNOOOOO OUUUUYPYAAAAAACCCCCCCCDDDDEEEEEEEEEEGGGGGGGGHHHHIIIIIIIIIIIIJJKKKLLLLLLLLLLNNNNNNNNNOOOOOOOORRRRRRSSSSSSSSTTTTTTUUUUUUUUUUUUWWYYYZZZZZZSBBBBHHOCCDDDDDEEEFFGGHIIKKLLMNNOOOOOPPZSSSTTTTTUUVVYYZZZZZZ         DDDLLLNNNAAIIOOUUUUUUUUUUEAAAAAAGGGGKKOOOOZZJDDDGGH NNAAAAOOAAAAEEEEIIIIOOOORRRRUUUUSSTTYYHHNDOOZZAAEEOOOOOOOOYYLNTJDQACCLTSZ  BUVEEJJQQRRYYAAABOCDDEEEEEEEJGGGGGHHHIIILLLLMMNNNNOO  RRRRRRRRRSSJSSTTUUVVWYYZZZZ   C BEGHJKLQ  DDDTTTFLL  HH";
 //0C0-2AF                       ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħĨĩĪīĬĭĮįİıĲĳĴĵĶķĸĹĺĻļĽľĿŀŁłŃńŅņŇňŉŊŋŌōŎŏŐőŒœŔŕŖŗŘřŚśŜŝŞşŠšŢţŤťŦŧŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽžſƀƁƂƃƄƅƆƇƈƉƊƋƌƍƎƏƐƑƒƓƔƕƖƗƘƙƚƛƜƝƞƟƠơƢƣƤƥƦƧƨƩƪƫƬƭƮƯưƱƲƳƴƵƶƷƸƹƺƻƼƽƾƿǀǁǂǃǄǅǆǇǈǉǊǋǌǍǎǏǐǑǒǓǔǕǖǗǘǙǚǛǜǝǞǟǠǡǢǣǤǥǦǧǨǩǪǫǬǭǮǯǰǱǲǳǴǵǶǷǸǹǺǻǼǽǾǿȀȁȂȃȄȅȆȇȈȉȊȋȌȍȎȏȐȑȒȓȔȕȖȗȘșȚțȜȝȞȟȠȡȢȣȤȥȦȧȨȩȪȫȬȭȮȯȰȱȲȳȴȵȶȷȸȹȺȻȼȽȾȿɀɁɂɃɄɅɆɇɈɉɊɋɌɍɎɏɐɑɒɓɔɕɖɗɘəɚɛɜɝɞɟɠɡɢɣɤɥɦɧɨɩɪɫɬɭɮɯɰɱɲɳɴɵɶɷɸɹɺɻɼɽɾɿʀʁʂʃʄʅʆʇʈʉʊʋʌʍʎʏʐʑʒʓʔʕʖʗʘʙʚʛʜʝʞʟʠʡʢʣʤʥʦʧʨʩʪʫʬʭʮʯ
 static const char uc[0x0100] = "AABBBBBBCCDDDDDDDDDDEEEEEEEEEEFFGGHHHHHHHHHHIIIIKKKKKKLLLLLLLLMMMMMMNNNNNNNNOOOOOOOOPPPPRRRRRRRRSSSSSSSSSSTTTTTTTTUUUUUUUUUUVVVVWWWWWWWWWWXXXXYYZZZZZZHTWYASSSSDAAAAAAAAAAAAAAAAAAAAAAAAEEEEEEEEEEEEEEEEIIIIOOOOOOOOOOOOOOOOOOOOOOOOUUUUUUUUUUUUUUYYYYYYYYLLVVYY";
-//1E00-1EFF
+//1E00-1EFF                     ḀḁḂḃḄḅḆḇḈḉḊḋḌḍḎḏḐḑḒḓḔḕḖḗḘḙḚḛḜḝḞḟḠḡḢḣḤḥḦḧḨḩḪḫḬḭḮḯḰḱḲḳḴḵḶḷḸḹḺḻḼḽḾḿṀṁṂṃṄṅṆṇṈṉṊṋṌṍṎṏṐṑṒṓṔṕṖṗṘṙṚṛṜṝṞṟṠṡṢṣṤṥṦṧṨṩṪṫṬṭṮṯṰṱṲṳṴṵṶṷṸṹṺṻṼṽṾṿẀẁẂẃẄẅẆẇẈẉẊẋẌẍẎẏẐẑẒẓẔẕẖẗẘẙẚẛẜẝẞẟẠạẢảẤấẦầẨẩẪẫẬậẮắẰằẲẳẴẵẶặẸẹẺẻẼẽẾếỀềỂểỄễỆệỈỉỊịỌọỎỏỐốỒồỔổỖỗỘộỚớỜờỞởỠỡỢợỤụỦủỨứỪừỬửỮữỰựỲỳỴỵỶỷỸỹỺỻỼỽỾỿ
 
 HB_FUNC ( UPP )
       {
@@ -2339,6 +2360,10 @@ HB_FUNC ( UPP )
 #pragma ENDDUMP
 #endif
 #pragma BEGINDUMP
+
+#include "hbapirdd.h"
+//HB_FUNC_TRANSLATE( BIN2D, BIN2F )
+//HB_FUNC_TRANSLATE( D2BIN, F2BIN )
 HB_FUNC ( BIN2D )
 {
  if ( hb_parinfo( 1 ) == HB_IT_STRING )
@@ -2346,8 +2371,9 @@ HB_FUNC ( BIN2D )
    hb_retnd (  * (double*) hb_parc(1) );
  } else {
    hb_retnd ( hb_parnd( 1 ) );
- };
+ }
 }
+
 
 HB_FUNC ( D2BIN )
 {

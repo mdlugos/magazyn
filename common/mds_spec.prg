@@ -259,7 +259,7 @@ local i,j,pole,fi,txt,ars:=dbstruct()
    case ars[i,2]$"NB"
     txt:= pole+"="+ltrim(str(fi))
    case ars[i,2]=="C" .and. ars[i,3]=8 .and. ars[i,1]="D_"
-    txt:= "BIN2D("+pole+")="+ltrim(str(bin2d(fi)))
+    txt:= "BIN2D(BINFIELDGET("+pole+"))="+ltrim(str(bin2d(BINFIELDGET(i))))
    case ars[i,2]=="C"
     txt:= pole+'="'+left(fi,10)+'"'
    case ars[i,2]=="L"
@@ -292,11 +292,11 @@ local i,j,pole,fi,txt,ars:=dbstruct()
    case ars[i,2]$"MW"
     txt:= "PAD("+pole+",20)"
    case ars[i,2]=="C"
-//    if  ars[i,3]=8 .and. ars[i,1]="D_"
-//      txt:= "TRAN(BIN2D("+pole+"),)"
-//    else
+    if  ars[i,3]=8 .and. ars[i,1]="D_"
+      txt:= "TRAN(BIN2D(BINFIELDGET("+pole+")),)"
+    else
       txt:= pole
-//    endif
+    endif
    otherwise
     txt:= "TRAN("+pole+",)"
    endcase

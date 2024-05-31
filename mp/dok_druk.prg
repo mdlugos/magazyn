@@ -1010,11 +1010,11 @@ private gt
                 if val(stawki[k])#0 .and. (n:=fieldpos(D_NVAT+ltrim(stawki[k])))#0
                    x:=ascan(was,{|x|x[1]=stawki[k]})
                    if x=0
-                      if bin2D(fieldget(n))#0
-                         aadd(was,{stawki[k],0,bin2D(fieldget(n))})
+                      if bin2D(binfieldget(n))#0
+                         aadd(was,{stawki[k],0,bin2D(binfieldget(n))})
                       endif
                    else
-                      was[x,3]:=bin2D(fieldget(n))
+                      was[x,3]:=bin2D(binfieldget(n))
                    endif
                 endif
              next k
@@ -2900,11 +2900,11 @@ oprn:=D_HWPRN
                 if val(stawki[k])#0 .and. (n:=fieldpos(D_NVAT+ltrim(stawki[k])))#0
                    x:=ascan(was,{|x|x[1]=stawki[k]})
                    if x=0
-                      if bin2D(fieldget(n))#0
-                         aadd(was,{stawki[k],0,bin2D(fieldget(n))})
+                      if bin2D(binfieldget(n))#0
+                         aadd(was,{stawki[k],0,bin2D(binfieldget(n))})
                       endif
                    else
-                      was[x,3]:=bin2D(fieldget(n))
+                      was[x,3]:=bin2D(binfieldget(n))
                    endif
                 endif
              next k
@@ -3443,11 +3443,11 @@ wp17:=0
                 if val(stawki[k])#0 .and. (n:=fieldpos(D_NVAT+ltrim(stawki[k])))#0
                    x:=ascan(was,{|x|x[1]=stawki[k]})
                    if x=0
-                      if bin2D(fieldget(n))#0
-                         aadd(was,{stawki[k],0,bin2D(fieldget(n))})
+                      if bin2D(binfieldget(n))#0
+                         aadd(was,{stawki[k],0,bin2D(binfieldget(n))})
                       endif
                    else
-                      was[x,3]:=bin2D(fieldget(n))
+                      was[x,3]:=bin2D(binfieldget(n))
                    endif
                 endif
              next k

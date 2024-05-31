@@ -807,6 +807,7 @@ local b:=TBColumnNew(m[1],fb)
         endif
 #endif
     elseif m[1]="D_" .and. m[2]="C" .and. m[3]=8
+         fb:={|x|if(x=NIL,binfieldget(m[1]),binfieldput(m[1],x))} 
          b:block:={|x|IF(x=NIL,,x:=D2BIN(x)),ROUND(BIN2D(eval(fb,x)),4)}
     elseif m[2]$"MW"
          b:width:=maxcol()-1
