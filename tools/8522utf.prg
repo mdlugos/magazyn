@@ -1,8 +1,9 @@
+//hbmk2 -i../common -dSIMPLE -u+../mp/head/moj.ch -gtnul 8522utf ../common/error ../common/io_2 ../common/io ../common/cppl852m.c ../common/cp_utf8m.c 
 #include "simpleio.ch"
 #include "set.ch"
 #include "dbinfo.ch"
 PROCEDURE oem2utf(DB)
-
+/* bo załadowane 
 REQUEST HB_LANG_PL
 HB_LANGSELECT('PL')
 request HB_CODEPAGE_PL852
@@ -11,12 +12,13 @@ HB_CDPSELECT('UTF8EX')
 SET(_SET_DBCODEPAGE,'PL852')
 
 request DBFCDX
+*/
 IF empty(db)
    db:=''
 ENDIF
 SET DELETED ON
-SET DEFAULT TO (LEFT(DB,RAT('\',DB)))
-db:=subs(db,RAT('\',DB)+1)
+SET DEFAULT TO (LEFT(DB,RAT(hb_ps(),DB)))
+db:=subs(db,RAT(hb_ps(),DB)+1)
 AEVAL(DIRECTORY(SET(_SET_DEFAULT)+DB+"*.dbf"),{|X|CHGDAT(X[1])})
 ?
 ********************
@@ -40,16 +42,22 @@ st:=dbstruct()
 ? DB+":"
 i:=0
 f:=.f.
-do while (i:=ascan(st,{|x|x[2]="M"},++i))>0
-  ?? " "+st[i,1]
-  st[i,2]:='W'
-  f:=.t.
+do while (i:=ascan(st,{|x|x[2]$"MC"},++i))>0
+   if st[i,3]>36
+      ?? " "+st[i,1]
+      st[i,2]:='Q:B'
+      st[i,3]:=min(st[i,3]*2,254)
+      f:=.t.
+   elseif st[i,2]='M'
+      st[i,2]:='M:B'
+      f:=.t.
+   endif
 enddo
 if f
    dbcreate("tmp",st)
    use tmp NEW
    select 1
-   dbeval({||tmp->(dbappend(),aeval(st,{|x,i|fieldput(i,A->(fieldget(i)))}))})
+   dbeval({||tmp->(dbappend(),aeval(st,{|x,i,y|y:=A->(fieldget(i)),if(':B'$x[2],binfieldput(i,trim(y)),fieldput(i,y))}))})
    close databases
    erase (set(_SET_DEFAULT)+db+".dbf")
    erase (set(_SET_DEFAULT)+db+".dbt")

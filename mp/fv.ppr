@@ -71,7 +71,7 @@ JUMP P2
 :P1
 a:=0
 :P3
-IF empty(b:=memoline(c:=uwagi,40,a:=a+1,8)) THEN P2
+IF empty(b:=trim(memoline(c:=uwagi,40,a:=a+1,8))) THEN P2
 IF a=1 THEN P4
 ? ' '
 :P4
