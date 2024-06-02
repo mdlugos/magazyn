@@ -789,6 +789,10 @@ func mkcolumn(m)
 local fb:=fieldblock(m[1])
 local b:=TBColumnNew(m[1],fb)
 
+if 'B'$subs(m[2],3) .or. (m[1]="D_" .and. m[2]="C" .and. m[3]=8)
+   b:block:=fb:={|x,y|if(x=NIL,x:=binfieldget(m[1]),binfieldput(m[1],x))} 
+endif
+
 #ifndef A_SX
     if m[1]=="HASLO"
          B:block:={|x|EvaldB({|X|IF(X=NIL,X:=L2BIN(FIELD->HASLO),FIELD->HASLO:=BIN2L(PADR(UPPER(X),4))),X},x)}
@@ -798,7 +802,7 @@ local b:=TBColumnNew(m[1],fb)
     if .f.
 #endif
 #ifdef __HARBOUR__
-    elseif m[2]=="B"
+    elseif m[2]="B"
          m[3]:=12
          if empty(m[4])
           b:picture:='@Z '+replicate('#',m[3]-5)+'.####'
@@ -807,14 +811,14 @@ local b:=TBColumnNew(m[1],fb)
         endif
 #endif
     elseif m[1]="D_" .and. m[2]="C" .and. m[3]=8
-         fb:={|x|if(x=NIL,binfieldget(m[1]),binfieldput(m[1],x))} 
          b:block:={|x|IF(x=NIL,,x:=D2BIN(x)),ROUND(BIN2D(eval(fb,x)),4)}
-    elseif m[2]$"MW"
+    elseif left(m[2],1)$"PWGM"
          b:width:=maxcol()-1
          b:cargo:=.t.
          b:block:={|x,y|y:=eval(fb,x),if(x=NIL.and.y<>NIL.and.len(y)<maxcol(),padr(y,maxcol()-1),y)}
-    elseif m[2]=="C" .and. m[3]>maxcol()-3
-         b:width:=maxcol()-1
+    elseif left(m[2],1)$"CQ"
+         b:block:={|x,y|if(x<>NIL,x:=eval(fb,trim(x)),x:=eval(fb)),y:=len(x),if(y<m[3],x+=space(m[3]-y),x)} 
+         b:width:=min(m[3],maxcol()-1)
     endif
 
 return b

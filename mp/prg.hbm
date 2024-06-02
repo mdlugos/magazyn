@@ -1,14 +1,23 @@
 -oma -w1 -m -n
 #-gui -gtwvt
+-gtwin
 -lhbwin hbwin.hbc
 #-lelzabdr
 -lhbzebra hbzebra.hbc
+
 -lhbmxml hbmxml.hbc
-#-lhbcurl hbcurl.hbc
-#sddmy.hbc
-mlcfunc.c
-cppl852m.c
-cp_utf8m.c
-main io error help io_2 clp_brow mds mds_spec frmrun getsys
-ind_val dok dm_valid dm_form dok_druk dok_pr dodatki druk_zes indeksy
-jpk
+-i../common
+../common/mlcfunc.c ../common/cppl852m.c ../common/cp_utf8m.c
+main ind_val dok dm_valid dok_druk dok_pr dodatki druk_zes indeksy
+../../harbour/contrib/rddmisc/vfpcdx.prg
+../common/dm_form
+../common/io
+../common/error
+../common/help
+../common/io_2
+../common/clp_brow
+../common/mds
+../common/mds_spec
+../common/frmrun
+../common/getsys
+../common/jpk

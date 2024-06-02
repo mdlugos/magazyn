@@ -3,6 +3,7 @@
 -gttrm
 #-lhbcups hbcups.hbc 
 #-lhbhpdf hbhpdf.hbc
+
 -lhbmxml hbmxml.hbc
 -i../common
 ../common/mlcfunc.c ../common/cppl852m.c ../common/cp_utf8m.c

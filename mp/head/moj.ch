@@ -15,7 +15,7 @@
 #define EvAlDb(x) &(x)
 #define EvaldB eVal
 #define PC852 'PL852M'
-//#define A_CDX DBFCDX
+#define A_CDX VFPCDX
 //#define A_HBGET
 //#include "md_add.ch"
 #define A_LPNUM 3

@@ -82,36 +82,34 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
 #endif
    //SET(_SET_DEBUG, .t.)
 #ifdef A_ADS
-#ifdef __PLATFORM__WINDOWS
+   #ifdef __PLATFORM__WINDOWS
       #include "ads.ch"
-#endif
+   #endif
       REQUEST ADS
       RddRegister( "ADS", 1 )
       rddsetdefault("ADS")
 
-#ifdef A_CDX
+   #ifdef A_CDX
       SET FILETYPE TO CDX
-#else
+   #else
       SET FILETYPE TO NTX
-#endif
+   #endif
       AdsSetServerType( A_ADS )
       //  /* ADS_LOCAL_SERVER + */ ADS_REMOTE_SERVER )
       SET AXS LOCKING ON
-#ifdef PC852
-#ifndef __PLATFORM__UNIX
-      AdsSetCharType(ADS_OEM,.t.)
-#endif
-#endif
+   #ifdef PC852
+      #ifndef __PLATFORM__UNIX
+         AdsSetCharType(ADS_OEM,.t.)
+      #endif
+   #endif
 #else
-      REQUEST _DBF
-#ifdef A_CDX
+   #ifdef A_CDX
       REQUEST A_CDX
       SET RDD DEFAULT TO A_CDX
-#else
+   #else
       REQUEST DBFNTX
       SET RDD DEFAULT TO DBFNTX
-#endif
-      REQUEST DBFFPT
+   #endif
 #endif
    SET HARDCOMMIT ON
 #else
@@ -231,6 +229,7 @@ func DefError(e)
 local i, cMessage:="", aOptions:={}, nChoice,r,t,n,bk,h,f,a,b,c,d
 field nazwa,baza,klucz,path,plik,for,unique,descend
 static s:=0,ee:=NIL
+
 #ifdef __HARBOUR__
     #ifdef PC852
      HB_CDPSELECT('UTF8MD')
@@ -450,8 +449,8 @@ static s:=0,ee:=NIL
     return .f.
 
 #else
-
-  elseif e:subsystem = 'DB' .and. (e:subcode=1050 .or. lower(right(e:filename,1))="x" .and. ( e:subcode = 1003 .or. e:subcode = 1012 )) .and. file("indeks.dbf")
+  
+  elseif (e:subsystem = 'DB' .or. e:subsystem = 'VFP') .and. (e:subcode=1050 .or. lower(right(e:filename,1))="x" .and. ( e:subcode = 1003 .or. e:subcode = 1012 )) .and. file("indeks.dbf")
     if !e:canRetry.and.!e:candefault.and.lower(right(e:filename,1))="x"
         CLOSE DATABASES
         if ferase(e:filename)=0

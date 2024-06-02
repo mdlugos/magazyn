@@ -646,7 +646,7 @@ HB_FUNC( HB_MLEVAL )
                nBlankCol = nCol;
                nBlankDst = nDst;
                ch = ' ';
-               pszLine[ nDst - 1 ] = ch;
+               pszLine[ nDst - 1 ] = ( char ) ch;
             }
 
             

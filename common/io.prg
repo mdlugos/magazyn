@@ -19,7 +19,7 @@ request errorsys
 
 
 
-ANNOUNCE RDDSYS
+//ANNOUNCE RDDSYS
 
 static cdpstack:={},cdpptr:=0
 static _a:={}
@@ -271,7 +271,7 @@ s:=select(alias)
             if empty(ordbagname(order))
               c:=errornew()
               c:filename:=a+ordbagext()
-              c:subsystem:='DBF'
+              c:subsystem:=rddSetDefault()
               c:subcode:=1003
               c:candefault:=.t.
               eval(errorblock(),c)

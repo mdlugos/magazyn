@@ -13,6 +13,8 @@ SET(_SET_DBCODEPAGE,'PL852')
 
 request DBFCDX
 */
+request VFPCDX
+rddSetDefault('VFPCDX')
 IF empty(db)
    db:=''
 ENDIF
@@ -26,17 +28,12 @@ PROCEDURE CHGDAT(DB)
 
 LOCAL I:=0,st,f
 
+erase (set(_SET_DEFAULT)+db+".cdx")
 i:=fopen(set(_SET_DEFAULT)+db,64)
 st:=space(1)
 fread(i,@st,1)
 fclose(i)
 db:=left(db,rat('.',db)-1)
-if HB_BCODE(st)==0xf5
-   rddSetDefault('DBFCDX')
-endif
-if rddSetDefault()=='DBFCDX'
-   erase (set(_SET_DEFAULT)+db+".cdx")
-endif
 USE (DB)
 st:=dbstruct()
 ? DB+":"
@@ -54,7 +51,7 @@ do while (i:=ascan(st,{|x|x[2]$"MC"},++i))>0
    endif
 enddo
 if f
-   dbcreate("tmp",st)
+   dbcreate("tmp",st) //,'VFPCDX')
    use tmp NEW
    select 1
    dbeval({||tmp->(dbappend(),aeval(st,{|x,i,y|y:=A->(fieldget(i)),if(':B'$x[2],binfieldput(i,trim(y)),fieldput(i,y))}))})
