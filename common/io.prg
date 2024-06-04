@@ -257,10 +257,9 @@ s:=select(alias)
          s:=select()
          if !empty(order) .and. empty(ordbagname(order)) .and. select("indeks")#0 .and. indeks->(found())
             select indeks
-            c:=pad(c,len(baza))
             if valtype(order)='C'
-              b:=pad(upper(order),len(nazwa))
-              locate while baza==c for nazwa==b
+              b:=upper(order)
+              locate while trim(baza)==c for trim(nazwa)==b
             else
               skip (order-1)
             endif

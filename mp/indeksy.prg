@@ -229,6 +229,10 @@ memvar pm,dok_di
  #endif
 #endif
 
+#ifndef nazwA
+   #define nazwA (pad(nazwa,HB_FIELDLEN('NAZWA')))
+#endif
+
 #ifndef STANY
  #ifdef A_OBR
   #define LARTXT left(if(polka=" ",if(nr_rys=" ",nazwA,left(nazwA,37)+if(len(trim(nazwA))>37,chr(26)," ")+nr_rys),if(nr_rys=" ",left(nazwA,38)+;

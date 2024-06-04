@@ -1,4 +1,4 @@
-//hbmk2 -i../common -dSIMPLE -u+../mp/head/moj.ch -gtnul 8522utf ../common/error ../common/io_2 ../common/io ../common/cppl852m.c ../common/cp_utf8m.c 
+//hbmk2 -debug -inc -rebuild -i../common -dSIMPLE -u+../mp/head/moj.ch -gtnul 8522utf ../../harbour/contrib/rddmisc/vfpcdx.prg ../common/error ../common/io_2 ../common/io ../common/cppl852m.c ../common/cp_utf8m.c
 #include "simpleio.ch"
 #include "set.ch"
 #include "dbinfo.ch"
@@ -13,8 +13,8 @@ SET(_SET_DBCODEPAGE,'PL852')
 
 request DBFCDX
 */
-request VFPCDX
-rddSetDefault('VFPCDX')
+//SET(_SET_CODEPAGE,'PL852M')
+
 IF empty(db)
    db:=''
 ENDIF
@@ -42,8 +42,8 @@ f:=.f.
 do while (i:=ascan(st,{|x|x[2]$"MC"},++i))>0
    if st[i,3]>36
       ?? " "+st[i,1]
-      st[i,2]:='Q:B'
-      st[i,3]:=min(st[i,3]*2,254)
+      st[i,2]:='C:B'
+      //st[i,3]:=min(st[i,3]*2,240)
       f:=.t.
    elseif st[i,2]='M'
       st[i,2]:='M:B'
@@ -54,7 +54,7 @@ if f
    dbcreate("tmp",st) //,'VFPCDX')
    use tmp NEW
    select 1
-   dbeval({||tmp->(dbappend(),aeval(st,{|x,i,y|y:=A->(fieldget(i)),if(':B'$x[2],binfieldput(i,trim(y)),fieldput(i,y))}))})
+   dbeval({||tmp->(dbappend(),aeval(st,{|x,i,y|y:=A->(fieldget(i)),if('B'$subs(x[2],3),binfieldput(i,trim(y)),fieldput(i,y))}))})
    close databases
    erase (set(_SET_DEFAULT)+db+".dbf")
    erase (set(_SET_DEFAULT)+db+".dbt")

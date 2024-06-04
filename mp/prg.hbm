@@ -1,4 +1,5 @@
 -oma -w1 -m -n
+#-debug -inc -rebuild
 #-gui -gtwvt
 -gtwin
 -lhbwin hbwin.hbc

@@ -445,9 +445,7 @@ local b:=lower(alias()),c
   if empty(ordbagname(n))
      sel("INDEKS")
      Locate FOR {||c:=trim(baza), lower(expand(c))==b}
-     n:=pad(n,len(nazwa))
-     c:=pad(c,len(baza))
-     Locate FOR nazwa==n WHILE baza==c
+     Locate FOR trim(nazwa)==n WHILE trim(baza)==c
      IF ! FOUND()
        skip -1
        insrec()
@@ -499,7 +497,7 @@ static func DoGet(oB, lAppend)
 
 local lScoreSave, lExitSave
 local oCol, oGet, nKey, cExpr, xEval
-local lFresh, nCursSave, mGetVar
+local lFresh, nCursSave, mGetVar, nLen
 
   // make sure the display is correct
   oB:hitTop := .f.
@@ -523,12 +521,18 @@ local lFresh, nCursSave, mGetVar
   oCol := oB:getColumn(oB:colPos)
 
   // use temp for safety
-    mGetVar := Eval(oCol:block)
+  mGetVar := Eval(oCol:block)
+
+  nLen:=hb_fieldlen(oCol:heading)
+  
+  if valtype(mGetVar)='C'
+    mGetVar+=space(nLen - Len(mGetVar))
+  endif
 
   // create a corresponding GET with ambiguous set/get block
   oGet := GetNew(Row(), Col(),{|x| if(PCount() == 0, mGetVar, mGetVar := x)},"mGetVar",oCol:picture,oB:colorSpec)
 
-  if oCol:cargo=.t. .or. valtype(mGetVar)$"MWC" .and. len(mGetVar) >= maxcol() - 1
+  if oCol:cargo=.t. .or. hb_fieldlen(oCol:heading) >= maxcol() - 1
      oGet:picture:="@S"+ltrim(str(maxcol()-1,3))
      oGet:cargo:=oCol:cargo // expandable field
   endif
@@ -544,8 +548,8 @@ local lFresh, nCursSave, mGetVar
       // new record confirmed
       APPEND BLANK
     end
-  if ocol:cargo=.t.
-    mgetvar:=trim(mgetvar)
+  if valtype(mgetvar)='C' .or. ocol:cargo=.t.
+    mGetVar:=trim(mgetvar)
   endif
     // replace with new data
     Eval(oCol:block, mGetVar)
@@ -786,36 +790,32 @@ PROCEDURE POWR_GET
  RETURN
 ************
 func mkcolumn(m)
-local fb:=fieldblock(m[1])
+local fb:=fieldblock(m[1]:=trim(m[1]))
 local b:=TBColumnNew(m[1],fb)
 
-if 'B'$subs(m[2],3) .or. (m[1]="D_" .and. m[2]="C" .and. m[3]=8)
-   b:block:=fb:={|x,y|if(x=NIL,x:=binfieldget(m[1]),binfieldput(m[1],x))} 
-endif
-
+    if 'B'$m[2]  // flaga albo double
+       b:block:=fb:={|x,y|if(x=NIL,x:=binfieldget(m[1]),binfieldput(m[1],x))} 
+    endif
+    if m[2]='B' .or. (m[2]="C" .and. m[1]="D_" .and. m[3]=8)
+        if m[2]="C"
+           b:block:={|x|IF(x=NIL,,x:=D2BIN(x)),ROUND(BIN2D(eval(fb,x)),4)}
+        endif
+        b:width:=m[3]:=12
+        if empty(m[4])
+         b:picture:='@Z '+replicate('#',m[3]-5)+'.####'
+        else
+         b:picture:='@Z '+replicate('#',m[3]-m[4]-1)+'.'+replicate('#',m[4])
+        endif
 #ifndef A_SX
-    if m[1]=="HASLO"
+    elseif m[1]=="HASLO"
          B:block:={|x|EvaldB({|X|IF(X=NIL,X:=L2BIN(FIELD->HASLO),FIELD->HASLO:=BIN2L(PADR(UPPER(X),4))),X},x)}
     elseif m[1]=="HASLO_SPEC"
          B:block:={|x|EvaldB({|X|IF(X=NIL,X:=L2BIN(FIELD->HASLO_SPEC),FIELD->HASLO_SPEC:=if(x="    ",0,BIN2L(PADR(lower(X),4)))),X},x)}
-#else
-    if .f.
 #endif
-#ifdef __HARBOUR__
-    elseif m[2]="B"
-         m[3]:=12
-         if empty(m[4])
-          b:picture:='@Z '+replicate('#',m[3]-5)+'.####'
-         else
-          b:picture:='@Z '+replicate('#',m[3]-m[4]-1)+'.'+replicate('#',m[4])
-        endif
-#endif
-    elseif m[1]="D_" .and. m[2]="C" .and. m[3]=8
-         b:block:={|x|IF(x=NIL,,x:=D2BIN(x)),ROUND(BIN2D(eval(fb,x)),4)}
     elseif left(m[2],1)$"PWGM"
          b:width:=maxcol()-1
          b:cargo:=.t.
-         b:block:={|x,y|y:=eval(fb,x),if(x=NIL.and.y<>NIL.and.len(y)<maxcol(),padr(y,maxcol()-1),y)}
+         b:block:={|x,y|if(x<>NIL,eval(fb,trim(x)),eval(fb))}
     elseif left(m[2],1)$"CQ"
          b:block:={|x,y|if(x<>NIL,x:=eval(fb,trim(x)),x:=eval(fb)),y:=len(x),if(y<m[3],x+=space(m[3]-y),x)} 
          b:width:=min(m[3],maxcol()-1)

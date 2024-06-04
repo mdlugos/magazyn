@@ -608,10 +608,8 @@ begin sequence
 end sequence
    enddo
 
-
    select 0
-
-XSELECT J_MIARY READONLY; EXECUTE aadd(JMIAR,nazwa)
+XSELECT J_MIARY READONLY ; EXECUTE aadd(JMIAR,nazwa)
 #command MAKE ARRAY <ar> WITH <exp> => make_arr(<ar>,<{exp}>)
 #ifdef A_HLINK
 #define D_HLINK ,if(!empty(path),aadd(mag_link,{numer+" "+trim(nazwa)+" "+trim(adres),trim(path),czy_hurt}),)

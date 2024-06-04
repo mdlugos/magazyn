@@ -11,11 +11,11 @@
 #endif
 #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
 //#define A_ADS 1
-#define UpP(x) upPer(x)
+//#define UpP(x) uPp(x,'UTF8MD')
 #define EvAlDb(x) &(x)
 #define EvaldB eVal
 #define PC852 'PL852M'
-#define A_CDX VFPCDX
+//#define A_CDX VFPCDX
 //#define A_HBGET
 //#include "md_add.ch"
 #define A_LPNUM 3

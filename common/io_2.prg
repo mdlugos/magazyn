@@ -2269,6 +2269,7 @@ func binfieldput(f,x)
    local t,b
    if valtype(x)='C'
       t:=hb_FieldType(f)
+      x:=trim(x)
       if !(left(t,1) $ 'PWG' .or. 'B' $ subs(t,3))
          x:=hb_translate(x,dbinfo(DBI_CODEPAGE),)  //odwrotne tłumacznie do tego co przy zapisie
          // przy tłumaczeniu z powrotem się skróci, ale i tak będzie przyciasno
@@ -2280,12 +2281,11 @@ func binfieldget(f)
    local x := hb_fieldget(f),t
    if valtype(x)='C'
       t:=hb_FieldType(f)
-      if !(left(t,1) $ 'PWG' .or. 'B' $ SubStr(t,2))
+      if !(left(t,1) $ 'PWG' .or. 'B' $ SubStr(t,3))
          x := hb_translate(x,,dbinfo(DBI_CODEPAGE)) //odwrotne tłumacznie do tego co przy odczycie
       endif
-      if t = 'C'
-         x := x + space(hb_FieldLen(f) - len(x))
-      endif
+      // to działa zależy jaka aktualna strona kodowa
+      x := x + space(hb_FieldLen(f) - len(x))
    endif
 return x
 *****************
@@ -2310,12 +2310,14 @@ HB_FUNC ( UPP )
 
          if( pText )
          {
-            PHB_CODEPAGE cdp = hb_vmCDP();
             const char * pszText = hb_itemGetCPtr( pText );
             HB_SIZE nLen = hb_itemGetCLen( pText ), n;
-
             char * pszBuffer = ( char * ) hb_xgrab( nLen + 1 );
 
+            const char * id = hb_parc( 2 ) ?: "UTF8MD" ;
+            PHB_CODEPAGE oldcp = hb_vmCDP();
+            PHB_CODEPAGE cdp = hb_cdpFind( id ) ?: oldcp;
+            
             if( cdp )
             {
                if( HB_CDP_ISCUSTOM( cdp ) && cdp->wcharUpper )
@@ -2341,6 +2343,13 @@ HB_FUNC ( UPP )
                            break;
                      }
                   }
+
+                  if( oldcp != cdp ) 
+                  // nie skracam wyniku, dokładam spacje
+                  // bo jestem po stronie CP bazy danych
+                  for( ; nD < nSrc; nD++ )
+                     pszBuffer[ nD ] = 0x20;
+
                   nLen = nD;
                }
                else

@@ -256,10 +256,10 @@ if doc_opcja
          _snagl:=STDTOP2
 #ifdef A_KHSEP
 #define D_KH kontrahent
-#define D_KH1 dost_odb
+#define D_KH1 pad(dost_odb,HB_FIELDLEN('DOST_ODB'))
 #else
 #define D_KH left(dost_odb,A_NRLTH)
-#define D_KH1 if(val(dost_odb)=0,dost_odb,subs(dost_odb,A_NRLTH+2))
+#define D_KH1 pad(if(val(dost_odb)=0,dost_odb,subs(dost_odb,A_NRLTH+2)),HB_FIELDLEN('DOST_ODB'))
 #endif
 #ifdef A_KHNUM
 #define D_KH2 D_KH+'│'
@@ -332,7 +332,7 @@ else
          _sprompt:={|lam,il|lam:=i_lam(data),STDPOZ1+'│'+;
       DTOV(data)+'│'+smiaR(ilosc*if(KEY_DOK$dok_rozch,-1,1),ILPIC)+'│'+;
       imiaR((lam)->jm,(lam)->jm_opcja)+'│'+STDZLE+'│'+nr_mag+'│'+tran(index,"@R "+ INDEXPIC )+;
-      if(alias(lam)#"INDX_MAT",'|','│')+(lam)->nazwA}
+      if(alias(lam)#"INDX_MAT",'|','│')+(lam)->(pad(nazwA,HB_FIELDLEN('NAZWA')))}
 
 #undef imiaR
 #undef smiaR
