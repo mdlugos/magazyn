@@ -2,9 +2,9 @@
 #include "set.ch"
 
 //#ifdef __PLATFORM__UNIX
-//#define nl chr(10)
+//#define nl HB_BCHAR(10)
 //#else
-#define nl chr(13)+chr(10)
+#define nl HB_BCHAR(13)+HB_BCHAR(10)
 //#endif
 
 #define D_TIMEOUT 5000
@@ -68,9 +68,9 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,wart_vat,;
 #else
 #define D_LP0 '0'
 #define D_LP1 '1'
-#define D_LPVAL(x) (asc(x)-48)
+#define D_LPVAL(x) (HB_BCODE(x)-48)
 #define D_LPSTR(x) str(D_LPVAL(x),3)
-#define D_LPPUT(x) chr(x+48)
+#define D_LPPUT(x) HB_BCHAR(x+48)
 #endif
 
 #ifdef A_HPDF
@@ -282,7 +282,7 @@ private gt
 #else
   #define D_DF (wartosc+wart_vat)
 #endif
-    private df:=dok_p_r='F' .and. dok_df .and. kto_pisal=HB_UTF8CHR(0x00A0)+chr(0), df_ver:=-1, aux, komunikat//,numerp,datap
+    private df:=dok_p_r='F' .and. dok_df .and. kto_pisal=HB_UTF8CHR(0x00A0)+HB_BCHAR(0), df_ver:=-1, aux, komunikat//,numerp,datap
 #ifdef A_WP
     IF wart_par#0.and.(round(D_DF-wart_par,2)#0.or.round(vat_par-wart_vat,2)#0)
         alarm("WARTOŚĆ WYDRUKOWANEGO PARAGONU WYNOSI:;"+ltrim(tran(wart_par,"@E"))+" ZŁ, w tym "+ltrim(tran(vat_par,"@E"))+" podatku VAT.;NIE MOŻNA DRUKOWAĆ RACHUNKU O WARTOŚCI INNEJ NIŻ PARAGON.")
@@ -367,7 +367,7 @@ private gt
  #ifdef A_POSNET
          x:='\'
   #ifdef A_THERMAL
-         df:=rswrite(aux,chr(24))=1 .and. dfprint('0$e',' ') .and. dfprint('#s',@x)
+         df:=rswrite(aux,HB_BCHAR(24))=1 .and. dfprint('0$e',' ') .and. dfprint('#s',@x)
          if df
             k:=getlines(x,'/')
             was:=array((len(k)-5)/2)
@@ -376,7 +376,7 @@ private gt
   #else
         df:=dfprint('vatget',@x)
         if df
-            k:=getlines(x,chr(9))
+            k:=getlines(x,HB_BCHAR(9))
             was:=array(len(k))
             for x:=1 to len(was)
               y:=subs(k[x],3)
@@ -423,12 +423,12 @@ private gt
        ELSE
  #ifdef A_POSNET
    #ifdef A_THERMAL
-          rswrite(aux,chr(27)+'P2$d'+chr(12)+'RAZEM:'+strpic(D_DF-czekiem-przelewem,10,2,"@E ",.f.)+chr(27)+'\')
+          rswrite(aux,HB_BCHAR(27)+'P2$d'+HB_BCHAR(12)+'RAZEM:'+strpic(D_DF-czekiem-przelewem,10,2,"@E ",.f.)+HB_BCHAR(27)+'\')
    #else
           dfprint({'dsptxtline','id0','no1','lnRAZEM:'+strpic(D_DF-czekiem-przelewem,10,2,"@E ",.f.)})
    #endif
  #else
-          dfprint(chr(27)+"R"+str(D_DF-czekiem-przelewem,9,2)+chr(10)+chr(27)+'S',chr(6))
+          dfprint(HB_BCHAR(27)+"R"+str(D_DF-czekiem-przelewem,9,2)+HB_BCHAR(10)+HB_BCHAR(27)+'S',HB_BCHAR(6))
  #endif
           rsclose(aux)
           aux:=NIL
@@ -443,7 +443,7 @@ private gt
 #ifdef A_DEMO
 #ifdef A_FA
     if dok_p_r="F"
-       ?? padl(left(firma_a,1+at(", ",firma_a))+dtoc(data),80)+chr(13)
+       ?? padl(left(firma_a,1+at(", ",firma_a))+dtoc(data),80)+HB_BCHAR(13)
   else
 #endif
        ?? padr(firma_n,51),padl(cdow(dM->data),12),"dnia",dM->data
@@ -458,12 +458,12 @@ private gt
     l:=j+1
 #ifdef A_DF
     IF dok_df
-     if kto_pisal=HB_UTF8CHR(0x00A0)+chr(0)
+     if kto_pisal=HB_UTF8CHR(0x00A0)+HB_BCHAR(0)
        changed:=.t.
-       kto_pisal:=chr(0)+operator
+       kto_pisal:=HB_BCHAR(0)+operator
      elseif kto_pisal=HB_UTF8CHR(0x00A0)
        changed:=.t.
-       kto_pisal:=chr(1)+operator
+       kto_pisal:=HB_BCHAR(1)+operator
      endif
     ELSEIF KTO_PISAL=HB_UTF8CHR(0x00A0)
 #else
@@ -483,7 +483,7 @@ private gt
       df := df .and. dfprint({'trinit','bm1','dm1'})
  #endif
 #else
-      df := df .and. dfprint(chr(27)+" "+l2bin(ROUND(D_DF*100,0)),chr(6))
+      df := df .and. dfprint(HB_BCHAR(27)+" "+l2bin(ROUND(D_DF*100,0)),HB_BCHAR(6))
 #endif
  #undef D_DF
 #endif
@@ -779,7 +779,7 @@ private gt
         if was[k,1]=='zw'
            k:=0
         endif
-        df := dfprint(D_LPSTR(p)+'$l'+trim(left(na,40))+chr(13)+str(il_f,11,3)+chr(13)+chr(k+64)+'/'+str(WDFGR(1,ce,val(pv),.t.)/100,10,2)+'/'+str(D_DF,10,2)+'/')
+        df := dfprint(D_LPSTR(p)+'$l'+trim(left(na,40))+HB_BCHAR(13)+str(il_f,11,3)+HB_BCHAR(13)+HB_BCHAR(k+64)+'/'+str(WDFGR(1,ce,val(pv),.t.)/100,10,2)+'/'+str(D_DF,10,2)+'/')
    #else
         x:={'trline','na'+trim(na),'vt'+str(k-1,1),'pr'+ltrim(str(WDFGR(1,ce,val(pv),.t.),10))}
         if il_f<>1
@@ -802,15 +802,15 @@ private gt
         elseif k>4
            ++k
         endif
-        df := df .and. dfprint(chr(27)+chr(if(df_ver=7,5,6))+IF(y<0,"-"," ")+PAD(if(len(trim(na))<10,PAD(trim(na),10,'.'),na),if(df_ver=7,40,28))+komunikat+l2bin(abs(y))+chr(x)+' '+left((s)->jm,3)+l2bin(WzVATGR(1,ce,val(pv),.t.)));
-          .and. dfprint(chr(27)+chr(k+64)+l2bin(abs(ROUND(D_DF*100,0))))
+        df := df .and. dfprint(HB_BCHAR(27)+HB_BCHAR(if(df_ver=7,5,6))+IF(y<0,"-"," ")+PAD(if(len(trim(na))<10,PAD(trim(na),10,'.'),na),if(df_ver=7,40,28))+komunikat+l2bin(abs(y))+HB_BCHAR(x)+' '+left((s)->jm,3)+l2bin(WzVATGR(1,ce,val(pv),.t.)));
+          .and. dfprint(HB_BCHAR(27)+HB_BCHAR(k+64)+l2bin(abs(ROUND(D_DF*100,0))))
 /*
         if df_ver=7
           x  := i2bin(6)
-          df := df .and. dfprint(chr(27)+chr(0x50),@x) .and. x == i2bin(6)
+          df := df .and. dfprint(HB_BCHAR(27)+HB_BCHAR(0x50),@x) .and. x == i2bin(6)
         else
-          x  := chr(0)
-          df := df .and. dfprint(chr(27)+chr(0x95),@x) .and. asc(x) %32 < 16
+          x  := HB_BCHAR(0)
+          df := df .and. dfprint(HB_BCHAR(27)+HB_BCHAR(0x95),@x) .and. HB_BCODE(x) %32 < 16
         endif
 */
  #endif
@@ -1067,13 +1067,13 @@ private gt
      message(1)
 #ifdef A_DFP
  #ifndef A_POSNET
-    df := df .and. dfprint(chr(27)+chr(7),"") // nie próbuje czytać
+    df := df .and. dfprint(HB_BCHAR(27)+HB_BCHAR(7),"") // nie próbuje czytać
  #endif
 #endif
 
     EVLINE(dok,"RETURN",linecount)
     if prow()>0
-       specout(chr(13)+chr(12))
+       specout(HB_BCHAR(13)+HB_BCHAR(12))
        setprc(0,0)
     endif
 
@@ -1118,21 +1118,21 @@ private gt
  #ifdef A_POSNET
          endif
   #ifdef A_THERMAL
-         if df .and. (k:=' ',dfprint('1;0;1;0$e1'+left(operator,1)+subs(operator,1+at(' ',operator),1)+chr(13)+"#"+nr_mag+smb_dow+nr_dowodu+chr(13)+str(x,10,2)+'/'+str(D_DF,10,2)+'/',@k).and.asc(k)%8=5)
+         if df .and. (k:=' ',dfprint('1;0;1;0$e1'+left(operator,1)+subs(operator,1+at(' ',operator),1)+HB_BCHAR(13)+"#"+nr_mag+smb_dow+nr_dowodu+HB_BCHAR(13)+str(x,10,2)+'/'+str(D_DF,10,2)+'/',@k).and.HB_BCODE(k)%8=5)
   #else
          if df .and. (x=0 .or. dfprint({'trpayment','ty0','wa'+ltrim(str(x*100,10))})) .and. dfprint({'trend','to'+ltrim(str(D_DF*100,10))})
   #endif
  #else
             if x#0
-              df:=DF .AND. dfprint(chr(27)+chr(9)+'0'+strpic(x,26,2,'@E ',.f.)+chr(10))
+              df:=DF .AND. dfprint(HB_BCHAR(27)+HB_BCHAR(9)+'0'+strpic(x,26,2,'@E ',.f.)+HB_BCHAR(10))
   #ifdef A_CENVAT
-              df:=DF .AND. dfprint(chr(27)+chr(9)+'1'+strpic(x-wt,29,2,'@E ',.f.)+chr(10))
+              df:=DF .AND. dfprint(HB_BCHAR(27)+HB_BCHAR(9)+'1'+strpic(x-wt,29,2,'@E ',.f.)+HB_BCHAR(10))
   #else
-              df:=DF .AND. dfprint(chr(27)+chr(9)+'1'+strpic(x-wt-vt,29,2,'@E ',.f.)+chr(10))
+              df:=DF .AND. dfprint(HB_BCHAR(27)+HB_BCHAR(9)+'1'+strpic(x-wt-vt,29,2,'@E ',.f.)+HB_BCHAR(10))
   #endif
             endif
          endif
-         if df .and. dfprint(chr(27)+"$",chr(6))
+         if df .and. dfprint(HB_BCHAR(27)+"$",HB_BCHAR(6))
  #endif
 
             kto_pisal:=operator
@@ -1144,7 +1144,7 @@ private gt
          else
  #ifdef A_POSNET
    #ifdef A_THERMAL
-            rswrite(aux,chr(24))
+            rswrite(aux,HB_BCHAR(24))
             dfprint('0$e')
    #else
             dfprint('trcancel')
@@ -1152,7 +1152,7 @@ private gt
             alarm("WYDRUK PARAGONU ZOSTAŁ ANULOWANY!",,,3)
  #else
             if !df
-               dfprint(chr(27)+"#",chr(6),"PARAGON NIE ZOSTAŁ WYDRUKOWANY PRAWIDŁOWO!;") //unieważnienie paragonu i test przy okazji
+               dfprint(HB_BCHAR(27)+"#",HB_BCHAR(6),"PARAGON NIE ZOSTAŁ WYDRUKOWANY PRAWIDŁOWO!;") //unieważnienie paragonu i test przy okazji
             endif
  #endif
          endif
@@ -1186,14 +1186,14 @@ endif
   if aux#NIL
 #ifdef A_POSNET
    #ifdef A_THERMAL
-            rswrite(aux,chr(24))
+            rswrite(aux,HB_BCHAR(24))
             dfprint('0$e')
    #else
             dfprint('trcancel')
    #endif
      alarm("WYDRUK PARAGONU ZOSTAŁ ANULOWANY!",,,3)
 #else
-     dfprint(chr(27)+"#",chr(6),"PARAGON NIE ZOSTAŁ WYDRUKOWANY PRAWIDŁOWO!;") //unieważnienie paragonu i test przy okazji
+     dfprint(HB_BCHAR(27)+"#",HB_BCHAR(6),"PARAGON NIE ZOSTAŁ WYDRUKOWANY PRAWIDŁOWO!;") //unieważnienie paragonu i test przy okazji
 #endif
      rsclose(aux)
   endif
@@ -1313,7 +1313,7 @@ function rsopen(x)
 RETURN -1
 *****************************
 function rsread(n,x,y)
-local c:=chr(0), i:=0
+local c:=HB_BCHAR(0), i:=0
 if valtype(x)<>'C' .or. !empty(y) .and. hb_blen(x)<y
    x:=space(y)
 endif
@@ -1321,7 +1321,7 @@ if empty(y)
    y:=hb_blen(x)
 endif
 while hb_comRecv( n, @c, 1 , D_TIMEOUT ) = 1
-   x:=binstuff(x,++i,1,c)
+   x:=hb_bstuff(x,++i,1,c)
    if i=y
       exit
    endif
@@ -1357,23 +1357,23 @@ if valtype(aux)<>'N'
 endif
   if hb_blen(ft)>0
      ft:=chgmaz(ft)
-     ret:=rswrite(aux,chr(27)+'P'+ft+poscheck(ft)+chr(27)+'\')=hb_blen(ft)+6
+     ret:=rswrite(aux,HB_BCHAR(27)+'P'+ft+poscheck(ft)+HB_BCHAR(27)+'\')=hb_blen(ft)+6
   endif
 if ret .and. b#NIL
    if b='\'
      b:=''
-     c:=chr(0)
+     c:=HB_BCHAR(0)
      while hb_comRecv( aux, @c, 1 , D_TIMEOUT ) = 1
        b+=c
-       if ret:=right(b,2)==chr(27)+'\'
+       if ret:=hb_bright(b,2)==HB_BCHAR(27)+'\'
           exit
        endif
      enddo
    else
      hb_comFlush( aux, 1 )
-     rswrite(aux,chr(5))
+     rswrite(aux,HB_BCHAR(5))
      do while .t.
-       b:=chr(0)
+       b:=HB_BCHAR(0)
        if inkey()=27 .or. hb_comRecv(aux,@b,1, D_TIMEOUT)=1 .and. b>='`'.and. b<='o'
           exit
        endif
@@ -1488,11 +1488,11 @@ if empty(y)
 endif
 
   if j>0
-     k:=HB_BAT(chr(3),HB_BLEFT(spare,j))
+     k:=HB_BAT(HB_BCHAR(3),HB_BLEFT(spare,j))
      if k>0
         j:=k
      endif
-     x:=binstuff(@x,i+1,j,HB_BLEFT(spare,j))
+     x:=hb_bstuff(@x,i+1,j,HB_BLEFT(spare,j))
      spare:=hb_bsubstr(spare,j+1)
      i+=j
      if k>0
@@ -1508,12 +1508,12 @@ endif
 
   if valtype(n)='P'
    while (j:=hb_inetRecv( n, @c, y-i )) > 0
-     k:=HB_BAT(chr(3),HB_BLEFT(c,j))
+     k:=HB_BAT(HB_BCHAR(3),HB_BLEFT(c,j))
      if k>0
         spare:=hb_bsubstr(c,k+1,j-k)
         j:=k
      endif
-     x:=binstuff(@x,i+1,j,left(c,j))
+     x:=hb_bstuff(@x,i+1,j,left(c,j))
      i+=j
      if y<=i .or. k>0
         exit
@@ -1524,12 +1524,12 @@ endif
   endif
 
 while (j:=hb_comRecv( n, @c, y-i , D_TIMEOUT )) > 0
-   k:=HB_BAT(chr(3),HB_BLEFT(c,j))
+   k:=HB_BAT(HB_BCHAR(3),HB_BLEFT(c,j))
    if k>0
       spare:=hb_bsubstr(c,k+1,j-k)
       j:=k
    endif
-   x:=binstuff(@x,i+1,j,left(c,j))
+   x:=hb_bstuff(@x,i+1,j,left(c,j))
    i+=j
    if i>=y .or. k>0
       exit
@@ -1622,32 +1622,32 @@ endif
   if Len(ft)>0
      if valtype(ft)='A'
        c:=''
-       aeval(ft,{|x|c+=x+chr(9)})
+       aeval(ft,{|x|c+=x+HB_BCHAR(9)})
        ft:=c
-     elseif binright(ft,1)<>chr(9)
-       ft+=chr(9)
+     elseif binright(ft,1)<>HB_BCHAR(9)
+       ft+=HB_BCHAR(9)
      endif
      ft:=chgmaz(ft)
-     ret:=rswrite(aux,chr(2)+ft+'#'+poscheck(ft)+chr(3))=hb_blen(ft)+7
+     ret:=rswrite(aux,HB_BCHAR(2)+ft+'#'+poscheck(ft)+HB_BCHAR(3))=hb_blen(ft)+7
   endif
 if ret
-   //b:=left(ft,at(chr(9),ft))
-   //b:=chr(2)+b+'#'+poscheck(b)+chr(3)
+   //b:=left(ft,at(HB_BCHAR(9),ft))
+   //b:=HB_BCHAR(2)+b+'#'+poscheck(b)+HB_BCHAR(3)
    b:=''
    ret:=.f.
    c:=rsread(aux,@b,1024)
    b:=HB_BLEFT(b,c)
    if c>5
-      if binright(b,5) == poscheck(hb_bsubstr(b,2,hb_blen(b)-7))+chr(3)
-           c:=HB_BLEFT(ft,HB_BAT(chr(9),ft))
-           if b=chr(2)+c
-              if b=chr(2)+c +'?'
+      if binright(b,5) == poscheck(hb_bsubstr(b,2,hb_blen(b)-7))+HB_BCHAR(3)
+           c:=HB_BLEFT(ft,HB_BAT(HB_BCHAR(9),ft))
+           if b=HB_BCHAR(2)+c
+              if b=HB_BCHAR(2)+c +'?'
                  message('Drukarka odesłała numer błędu: '+str(val(hb_bsubstr(b,hb_blen(c)+3))))
               else
                  b:=hb_bsubstr(b,hb_blen(c)+2,hb_blen(b)-hb_blen(c)-7)
                  ret:=.t.
               endif
-           elseif b=chr(2)+'ERR'
+           elseif b=HB_BCHAR(2)+'ERR'
               message('Drukarka zgłasza błąd ramki: '+b)
            else
               message('Niedorzeczna odpowiedź drukarki: '+b)
@@ -1697,7 +1697,7 @@ RETURN n
 func dfprint(rtr,ack,l)
 local s:=' ',ret,disp,x,kod
 
-     if rtr<>chr(27)
+     if rtr<>HB_BCHAR(27)
         return .t.
      endif
 
@@ -1717,7 +1717,7 @@ local s:=' ',ret,disp,x,kod
         disp:=""#l
         s:=space(hb_blen(ack))
         if RS_SEND(kod,@s,rtr)=0
-           if ack=='' .or. s<>chr(21)
+           if ack=='' .or. s<>HB_BCHAR(21)
               ret:=.t.
            endif
            //ack:=pad(s,hb_blen(ack))
@@ -1731,7 +1731,7 @@ local s:=' ',ret,disp,x,kod
 
      begin sequence
      s:=' '
-     if RS_SEND(148,@s,'')<>0 .or. S>=chr(0x80)
+     if RS_SEND(148,@s,'')<>0 .or. HB_BCODE(S)>=0x80
         break
      endif
      S:=HB_BCODE(S)
@@ -1776,7 +1776,7 @@ local s:=' ',ret,disp,x,kod
         disp:=.t.
      endif
      s:=' '
-     if RS_SEND(149,@s,'')<>0 .or. S>=chr(0x80)
+     if RS_SEND(149,@s,'')<>0 .or. HB_BCODE(S)>=0x80
         break
      endif
      S:=HB_BCODE(S)
@@ -1815,7 +1815,7 @@ local s:=' ',ret,disp,x,kod
         if "DO WYDR" $ l
            tone(130,3)
            if 1=alarm("BŁĄD DRUKARKI PARAGONÓW!"+l+";CZY PRÓBOWAĆ JESZCZE RAZ?",{"TAK","NIE"})
-              if RS_SEND(42,@s,'')<>0 .and. s=chr(6)
+              if RS_SEND(42,@s,'')<>0 .and. HB_BCODE(S)=6
                  alarm("PONAWIAM WYDRUK!")
               endif
               l:=""
@@ -1826,7 +1826,7 @@ local s:=' ',ret,disp,x,kod
         if "RAPORT D" $ l
            tone(130,3)
            if 1=alarm("BŁĄD DRUKARKI PARAGONÓW!"+l+";CZY PRÓBOWAĆ JESZCZE RAZ?",{"TAK","NIE"})
-              if RS_SEND(37,@s,'')<>0 .and. s=chr(6)
+              if RS_SEND(37,@s,'')<>0 .and. HB_BCODE(S)=6
                  alarm("DRUKUJĘ ZALEGŁY RAPORT DOBOWY!")
               endif
               l:=""
@@ -1986,7 +1986,7 @@ local p,i
 RETURN -1
 ***********************
 function rsread(n,x,y)
-local c:=chr(0), i:=0 , j
+local c:=HB_BCHAR(0), i:=0 , j
 if valtype(x)<>'C' .or. !empty(y) .and. hb_blen(x)<y
    x:=space(y)
 endif
@@ -2024,30 +2024,30 @@ return i
 ***********************
 func rs_stawki( l, stawki )
 local s := space(14),i
-   i:=chr(6)+chr(0)
-   dfprint(chr(27)+chr(0xFF),@i)
-   i:=asc(subs(i,2))
+   i:=HB_BCHAR(6)+HB_BCHAR(0)
+   dfprint(HB_BCHAR(27)+HB_BCHAR(0xFF),@i)
+   i:=HB_BCODE(hb_bsubstr(i,2))
    if i=0x2c
      l := 7
-     s:=chr(6)+space(l * 2)
-     i:=dfprint(chr(27)+chr(0xd1),@s)
+     s:=HB_BCHAR(6)+space(l * 2)
+     i:=dfprint(HB_BCHAR(27)+HB_BCHAR(0xd1),@s)
    elseif i=0x11
      l := 6
-     s:=chr(6)+space(l * 2)
-     i:=dfprint(chr(27)+chr(0xd0),@s)
+     s:=HB_BCHAR(6)+space(l * 2)
+     i:=dfprint(HB_BCHAR(27)+HB_BCHAR(0xd0),@s)
    else
      l := 4
-     s:=chr(6)+space(l)
-     i:=dfprint(chr(27)+'p',@s)
+     s:=HB_BCHAR(6)+space(l)
+     i:=dfprint(HB_BCHAR(27)+'p',@s)
    endif
    if i
      if l>4
        for i:=1 To l
-         stawki[i]:=(asc(subs(s,2*i,1))*256+asc(subs(s,2*i+1,1)))
+         stawki[i]:=(HB_BCODE(HB_Bsubstr(s,2*i,1))*256+HB_BCODE(HB_Bsubstr(s,2*i+1,1)))
        next
      else
        for i:=1 to l
-         stawki[i]:=asc(subs(s,i+1,1))*100
+         stawki[i]:=HB_BCODE(HB_Bsubstr(s,i+1,1))*100
        next
      endif
      return 0
@@ -2077,7 +2077,7 @@ memvar aux,df_ver
      if empty(l)
         l:=''
      endif
-     lack := ( ack = chr(6) )
+     lack := ( ack = HB_BCHAR(6) )
      ret:=.f.
      x:=seconds()
      DO WHILE .T.
@@ -2100,9 +2100,9 @@ memvar aux,df_ver
         s:=''
         if len(ack)>0
            ret := rswrite( 3, rtr, 2 ) == 2
-           s:=chr(0)
-           ret := ret .and. ( rsread( 3, @s, 1) == 1 ) .and. (!lack .or. asc(s) = 6)
-           //( hb_comRecv( 3, @s, 1, D_TIMEOUT ) == 1 ) .and. (!lack .or. asc(s) = 6)
+           s:=HB_BCHAR(0)
+           ret := ret .and. ( rsread( 3, @s, 1) == 1 ) .and. (!lack .or. HB_BCODE(s) = 6)
+           //( hb_comRecv( 3, @s, 1, D_TIMEOUT ) == 1 ) .and. (!lack .or. HB_BCODE(s) = 6)
            ack := stuff( ack ,1, 1, s)
            rtr := subs( rtr, 3 )
         endif
@@ -2130,10 +2130,10 @@ memvar aux,df_ver
      l+=rtr+';'+ack
 
      begin sequence
-     if rswrite(3,chr(27)+chr(0x94))#2 .or. rsread(3,@s,1)#1 .OR. asc(S)>=0x80
+     if rswrite(3,HB_BCHAR(27)+HB_BCHAR(0x94))#2 .or. rsread(3,@s,1)#1 .OR. HB_BCODE(S)>=0x80
         break
      endif
-     S:=ASC(S)
+     S:=HB_BCODE(S)
      if s%128>=64
         l+=";BRAK WYŚWIETLACZA KLIJENTA."
         disp:=.t.
@@ -2164,19 +2164,19 @@ memvar aux,df_ver
         rtr:=NIL
         disp:=.t.
      endif
-     if rswrite(3,chr(27)+chr(0x9b))#2 .or. rsread(3,@s,1)#1
+     if rswrite(3,HB_BCHAR(27)+HB_BCHAR(0x9b))#2 .or. rsread(3,@s,1)#1
         break
      endif
-     S:=ASC(S)
+     S:=HB_BCODE(S)
      if s%8>=4
         l+=';MODUŁ FISKALNY W TRYBIE "TYLKO ODCZYT"!'
         rtr:=NIL
         disp:=.t.
      endif
-     if rswrite(3,chr(27)+chr(149))#2 .or. rsread(3,@s,1)#1 .OR. S>=chr(0x80)
+     if rswrite(3,HB_BCHAR(27)+HB_BCHAR(149))#2 .or. rsread(3,@s,1)#1 .OR. HB_BCODE(S)>=0x80
         break
      endif
-     S:=ASC(S)
+     S:=HB_BCODE(S)
      if s%128>=64
         l+=";WYDRUK PARAGONU ZATRZYMANY Z POWODU BRAKU PAPIERU."
         disp:=.t.
@@ -2213,7 +2213,7 @@ memvar aux,df_ver
            tone(130,3)
            if 1=alarm("BŁĄD DRUKARKI PARAGONÓW!"+l+";CZY PRÓBOWAĆ JESZCZE RAZ?",{"TAK","NIE"})
               s:=' '
-              if rswrite(3,chr(27)+"*")=2 .and. rsread(3,@s,1)=1 .and. s=chr(6)
+              if rswrite(3,HB_BCHAR(27)+"*")=2 .and. rsread(3,@s,1)=1 .and. s=HB_BCHAR(6)
                  alarm("PONAWIAM WYDRUK!")
               endif
               l:=""
@@ -2225,7 +2225,7 @@ memvar aux,df_ver
         if "RAPORT D" $ l
            tone(130,3)
            if 1=alarm("BŁĄD DRUKARKI PARAGONÓW!"+l+";CZY PRÓBOWAĆ JESZCZE RAZ?",{"TAK","NIE"})
-              if rswrite(3,chr(27)+"%")=2 .and. rsread(3,@s,1)=1 .and. s=chr(6)
+              if rswrite(3,HB_BCHAR(27)+"%")=2 .and. rsread(3,@s,1)=1 .and. s=HB_BCHAR(6)
                  alarm("DRUKUJĘ ZALEGŁY RAPORT DOBOWY!")
               endif
               l:=""
@@ -2311,7 +2311,7 @@ if it_zesmnu#NIL
    goto it_Zesmnu
 endif
 setpos(row()+recno(),col())
-if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+pad(nazwa,hb_fieldlen('NAZWA'))}})
+if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
    it_zesmnu:=recno()
    ap:=getlines(POLA)
    l:=len(ap)
@@ -2479,7 +2479,7 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+pad(nazwa,hb_fieldlen('NAZW
          endif
          
 
-         ?? spec(chr(13)+chr(12))
+         ?? spec(HB_BCHAR(13)+HB_BCHAR(12))
          setprc(0,0)
 
       enddo
@@ -2535,22 +2535,22 @@ memvar p_4xon,p_4xoff,p_coln,p_bon,p_boff,p_uon,p_uoff,p_halfpage
 #define P_HALFPAGE eval(p_halfpage,24)
 #else
 #ifdef A_PCL
-#define P_4XON  chr(27)+'(s24v5H'
-#define P_4XOFF chr(27)+'(s12v10H'
+#define P_4XON  HB_BCHAR(27)+'(s24v5H'
+#define P_4XOFF HB_BCHAR(27)+'(s12v10H'
 #define P_COLN  78
-#define P_BON   chr(27)+"(s3B"
-#define P_BOFF  chr(27)+"(s0B"
-#define P_UON   chr(27)+"&"+"d0D"
-#define P_UOFF  chr(27)+"&"+"d@"
+#define P_BON   HB_BCHAR(27)+"(s3B"
+#define P_BOFF  HB_BCHAR(27)+"(s0B"
+#define P_UON   HB_BCHAR(27)+"&"+"d0D"
+#define P_UOFF  HB_BCHAR(27)+"&"+"d@"
 #else
-#define P_4XON  chr(27)+'w1'+chr(27)+'W1'
-#define P_4XOFF chr(27)+'w0'+chr(27)+'W0'
+#define P_4XON  HB_BCHAR(27)+'w1'+HB_BCHAR(27)+'W1'
+#define P_4XOFF HB_BCHAR(27)+'w0'+HB_BCHAR(27)+'W0'
 #define P_COLN  80
-#define P_BON   chr(27)+'G'
-#define P_BOFF  chr(27)+'H'
-#define P_UON   chr(27)+'-1'
-#define P_UOFF  chr(27)+'-0'
-#define P_HALFPAGE chr(27)+"C"+chr(24)
+#define P_BON   HB_BCHAR(27)+'G'
+#define P_BOFF  HB_BCHAR(27)+'H'
+#define P_UON   HB_BCHAR(27)+'-1'
+#define P_UOFF  HB_BCHAR(27)+'-0'
+#define P_HALFPAGE HB_BCHAR(27)+"C"+HB_BCHAR(24)
 #endif
 #endif
 
@@ -2802,13 +2802,13 @@ oprn:=D_HWPRN
 #ifdef A_SWW
       ? str(D_LPVAL(p),2)+"|",cpad((s)->NAZWA,42,@cpi)
       if cpi#17
-         ?? spec(chr(13)),space(45)
+         ?? spec(HB_BCHAR(13)),space(45)
       endif
       ?? "|"+(s)->sww+"|"+tran(index,"@R "+ INDEXPIC )+"|"
 #else
       ? str(D_LPVAL(p),2)+"|",cpad((s)->NAZWA,46,@cpi)
       if cpi#17
-         ?? spec(chr(13)),space(49)
+         ?? spec(HB_BCHAR(13)),space(49)
       endif
 #ifdef A_SWWKTM
       ?? "|"+(s)->sww+"|"
@@ -2941,7 +2941,7 @@ oprn:=D_HWPRN
       ENDIF
       if p>D_LP1
 #ifdef A_GRAM
-        ?? "WAGA: "+ltrim(str(gt,10,2))+" kg",spec(chr(13))
+        ?? "WAGA: "+ltrim(str(gt,10,2))+" kg",spec(HB_BCHAR(13))
 #endif
         ?? ccpi(7)+space(wp17-11),spec(P_BON),cpad("RAZEM:",11,17,1),spec(P_BOFF)
         if len(was)>1
@@ -3060,7 +3060,7 @@ oprn:=D_HWPRN
          ?
          ?
       else
-         ?? spec(chr(13))
+         ?? spec(HB_BCHAR(13))
       endif
       if przelewem#0
          ?? "        przelewem: "+strpic(przelewem,15,A_ZAOKR,"@E "),"zł."
@@ -3080,7 +3080,7 @@ oprn:=D_HWPRN
       endif
 #endif
       TEXT if(dok_fot="&:",&(trim(subs(dok_fot,3))),dok_fot)
-      ?? spec(chr(13)+chr(12))
+      ?? spec(HB_BCHAR(13)+HB_BCHAR(12))
     else
 #endif
 
@@ -3310,7 +3310,7 @@ wp17:=0
         cpi:=10
         ? str(D_LPVAL(p),2)+"|",cpad((s)->NAZWA,27,@cpi)
         if cpi#10
-           ?? spec(chr(13)+space(30))
+           ?? spec(HB_BCHAR(13)+space(30))
         endif
       endif
       ?? "|"+index+"|"
@@ -3322,7 +3322,7 @@ wp17:=0
       cpi:=10
       ? str(D_LPVAL(p),2)+"|",cpad((s)->NAZWA,27,@cpi)
       if cpi#10
-         ?? spec(chr(13)),space(30)+"|"
+         ?? spec(HB_BCHAR(13)),space(30)+"|"
       else
          ?? "|"
       endif
@@ -3349,7 +3349,7 @@ wp17:=0
       cpi:=10
       ? p+"|",cpad((s)->NAZWA,27,@cpi)
       if cpi#10
-         ?? spec(chr(13)),space(29)
+         ?? spec(HB_BCHAR(13)),space(29)
       endif
       ?? ccpi(5)+"|"+tran(index,"@R "+ INDEXPIC )+"|"
 #ifdef A_OBR
@@ -3362,7 +3362,7 @@ wp17:=0
         cpi:=10
         ? str(D_LPVAL(p),2)+"|",cpad((s)->NAZWA,27,@cpi)
         if cpi#10
-           ?? SPEC(chr(13)),space(30)
+           ?? SPEC(HB_BCHAR(13)),space(30)
         endif
       ?? "|",ccpi(5)+tran(index,"@R "+ INDEXPIC )+"|"
       if ""#dok_kon
@@ -3374,14 +3374,14 @@ wp17:=0
         cpi:=10
         ? str(D_LPVAL(p),2)+"|",cpad((s)->NAZWA,27,@cpi)
         if cpi#10
-           ?? spec(chr(13)+space(30))
+           ?? spec(HB_BCHAR(13)+space(30))
         endif
       ?? ccpi(5),"|"+(s)->sww+"|"+tran(index,"@R "+ INDEXPIC )+"|"+if(""#dok_kon,nr_zlec+"|","")+STRpic(ceNA,D_CENLTH,A_ZAOKR,"@E ",.t.)
 #else
         cpi:=10
         ? str(D_LPVAL(p),2)+"|",cpad((s)->NAZWA,27,@cpi)
         if cpi#10
-           ?? spec(chr(13)+space(30))
+           ?? spec(HB_BCHAR(13)+space(30))
         endif
       ?? "|",ccpi(5),tran(index,"@R "+ INDEXPIC )+"|"+if(""#dok_kon,nr_zlec+"|","")+STRpic(ceNA,D_CENLTH,A_ZAOKR,"@E ",.t.)
 #endif
@@ -3397,11 +3397,11 @@ wp17:=0
 #ifdef A_KOMOR
       if was#NIL
       if index#was .or. KEY_DOK+NR_DOWODU#dM->(KEY_DOK+NR_DOWODU)
-        ?? spec(chr(13)),str(D_LPVAL(p),2)+"|",cpad(v,20,10,1),spec(P_BON),strtran(str(ilj,7,3),".000",".   "),spec(P_BOFF)
+        ?? spec(HB_BCHAR(13)),str(D_LPVAL(p),2)+"|",cpad(v,20,10,1),spec(P_BON),strtran(str(ilj,7,3),".000",".   "),spec(P_BOFF)
         was:=index
         ilj:=0
       else
-        ?? spec(chr(13)),str(D_LPVAL(p),2)+"|",cpad(v,27,10,2)
+        ?? spec(HB_BCHAR(13)),str(D_LPVAL(p),2)+"|",cpad(v,27,10,2)
       endif
       endif
 #endif
@@ -3409,7 +3409,7 @@ wp17:=0
     message(1)
     skip -1
   SELECT dM
-      ?? spec(chr(13)+P_UON),space(wp10+wp12/1.2+wp17/1.66)
+      ?? spec(HB_BCHAR(13)+P_UON),space(wp10+wp12/1.2+wp17/1.66)
       ? spec(P_UOFF)
 #ifdef A_WE
       if ROUND(warT_ewiD-pm*ut,A_ZAOKR)#0
@@ -3478,7 +3478,7 @@ wp17:=0
    if dok_war#"-"
     if p>D_LP1
 #ifdef A_GRAM
-      ?? "WAGA: "+ltrim(str(gt,10,2))+" kg",spec(chr(13))
+      ?? "WAGA: "+ltrim(str(gt,10,2))+" kg",spec(HB_BCHAR(13))
 #endif
       ?? ccpi(7)+space(wp17),ccpi(5)+space(wp12),ccpi(4)+space(wp10-15)+strpic(ut,15,A_ZAOKR,"@E ")
       ?
@@ -3499,7 +3499,7 @@ wp17:=0
       TEXT dok_fot
       ? kto_pisal
       endif
-      ?? spec(chr(13)+chr(12))
+      ?? spec(HB_BCHAR(13)+HB_BCHAR(12))
 **************
 #ifdef A_FA
       endif

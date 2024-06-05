@@ -332,7 +332,7 @@ DO WHILE .T.
 #endif
 
    XSELECT OBSLUGA READONLY
-       LOCATE FOR EvaldB({|txt|UPPER(txt)==trim(A_DECRYPT(haslo))},txt)
+       LOCATE FOR UpP(txt)==trim(A_DECRYPT(haslo))
        IF EOF()
           ? "złe hasło ..."
           set color to w
@@ -349,7 +349,7 @@ DO WHILE .T.
        afill(mlog,.f.)
        i:=0
        a:={}
-       EXEC {||mlog[txt]:=.t.,++i,mf:=mf.or.ascan(a,haslo)<>0,aadd(a,haslo)} ALL FOR EvaldB({|operator|Trim(operator)==Trim(magazynier) .and. (txt:=ascan(magazyny,magazyn))>0 .and. UPPER(A_DECRYPT(haslo))=A_DECRYPT(haslo) .and. !mlog[txt]},operator)
+       EXEC {||mlog[txt]:=.t.,++i,mf:=mf.or.ascan(a,haslo)<>0,aadd(a,haslo)} ALL FOR Trim(operator)==Trim(magazynier) .and. (txt:=ascan(magazyny,magazyn))>0 .and. UpP(A_DECRYPT(haslo))=A_DECRYPT(haslo) .and. !mlog[txt]
        if i<2
           mlog:=NIL
        endif
@@ -608,7 +608,9 @@ begin sequence
 end sequence
    enddo
 
+
    select 0
+
 XSELECT J_MIARY READONLY ; EXECUTE aadd(JMIAR,nazwa)
 #command MAKE ARRAY <ar> WITH <exp> => make_arr(<ar>,<{exp}>)
 #ifdef A_HLINK

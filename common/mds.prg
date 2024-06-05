@@ -118,11 +118,11 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
 
   if _sprompt=NIL
     job:=dbstruct()
-    _sprompt:={||pad(tran(fieldget(1),),job[1,3])+"|"+pad(tran(fieldget(2),),job[2,3])}
+    _sprompt:={||tran(fieldget(1),)+"|"+tran(fieldget(2),)}
     //+"|"+tran(fieldget(3),)}
     if _snagl=NIL
       _snagkol:=job[1,3]-len(job[1,1])
-      _snagl:=job[1,1]+/*"┬"+pad(d[2,1],d[2,3],'─')+*/"┬"+job[3,1]
+      _snagl:=job[1,1]+"┬"+job[2,1]
     endif
   endif
 

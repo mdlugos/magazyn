@@ -9,7 +9,6 @@
 #ifdef A_LPNUM
 #define D_LP0 str(0,A_LPNUM) //'  0'
 #define D_LP1 str(1,A_LPNUM) //'  1'
-#define D_LPPUT(x) str(x,A_LPNUM)
 #define D_LPVAL(x) val(x)
 #define D_LPSTR(x) str(D_LPVAL(x),3)
 #else
@@ -17,7 +16,6 @@
 #define D_LP1 '1'
 #define D_LPVAL(x) (HB_BCODE(x)-48)
 #define D_LPSTR(x) str(D_LPVAL(x),3)
-#define D_LPPUT(x) chr(x+48)
 #endif
 
 #ifdef A_ADS

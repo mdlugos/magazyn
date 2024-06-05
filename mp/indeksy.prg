@@ -1,7 +1,7 @@
 #include "dbinfo.ch"
 #include "dm_form.ch"
 #include "inkey.ch"
-#include "../common/getexit.ch"
+#include "getexitm.ch"
 #ifdef A_ZAGRODA
   #define A_KASA
   #define D_KODY 55
@@ -227,10 +227,6 @@ memvar pm,dok_di
   #undef cenA
   #define cenA (if((D_ST)=0,STANY->cena_przy, D_WA / D_ST))
  #endif
-#endif
-
-#ifndef nazwA
-   #define nazwA (pad(nazwa,HB_FIELDLEN('NAZWA')))
 #endif
 
 #ifndef STANY
@@ -531,7 +527,7 @@ DO CASE
         SET ORDER TO TAG INDX_NUM
     endif
 #endif
-    _slth:=len(txt)
+    _slth:=LEN(txt)
     DO CASE
       CASE ""=txt
 #ifdef A_ENAZ
@@ -696,8 +692,8 @@ DO CASE
       _sbeg:=D_KODY
     elseif _sbeg=if(_skey=2,1,D_KODY) // ^>
   #else
-      _sbeg:=len( INDEXPIC )+D_KODY-len(KoD)
-    elseif _sbeg=if(_skey=2,1,len( INDEXPIC )+D_KODY-len(KoD)) // ^>
+      _sbeg:=len( INDEXPIC )+D_KODY-Len(KoD)
+    elseif _sbeg=if(_skey=2,1,len( INDEXPIC )+D_KODY-Len(KoD)) // ^>
   #endif
 #endif
 
@@ -846,7 +842,7 @@ DO CASE
          _sm:=1
       endif
       _slth=_slth-1
-      _spocz=left(_spocz,len(_spocz)-1)
+      _spocz=left(_spocz,LEN(_spocz)-1)
       goto _srec[_sm]
       KIM_EDIT(_s,FIRMY->numer_kol+right(dm->nr_dowodu,3))
       return .t.
@@ -857,7 +853,7 @@ DO CASE
          _sm:=1
       endif
       _slth:=_slth-1
-      _spocz:=left(_spocz,len(_spocz)-1)
+      _spocz:=left(_spocz,LEN(_spocz)-1)
       goto _srec[_sm]
       KIM_EDIT(_s,.t.)
       return .t.

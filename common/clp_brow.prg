@@ -397,11 +397,11 @@ ENDIF
         hb_keyIns( nKey )
         nKey := K_ENTER
         lGotKey := .t.
-
+/*
     case ( nKey >= 32 .and. nKey <= 255 )
         // begin edit and supply the first character
         keyboard Chr(13) + Chr(nKey)
-
+*/
     case (i:=setkey(nkey))#NIL
         eval(i,procname(),procline())
     end

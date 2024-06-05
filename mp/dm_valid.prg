@@ -8,7 +8,7 @@
 
 #include "dm_form.ch"
 #include "inkey.ch"
-#include "../common/getexit.ch"
+#include "getexitm.ch"
 #ifdef A_F9
 #ifndef A_FK
 #define A_FK
@@ -60,7 +60,7 @@
 #endif
 #ifdef A_DF
 #command REPLACE [DM->]WARTOSC WITH <x> => field2bin('d_wartosc',DM->wartosc:=<x>,1)
-#define wartosC (bin2d(binfieldget('D_WARTOSC')))
+#define wartosC (bin2d(binfieldget([D_WARTOSC])))
 #endif
 
 #ifdef A_LAN
@@ -126,7 +126,7 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,ilosc_f,dost_odb,kontrahent
 #define D_LP1 '1'
 #define D_LPVAL(x) (HB_BCODE(x)-48)
 #define D_LPSTR(x) str(D_LPVAL(x),3)
-#define D_LPPUT(x) chr(x+48)
+#define D_LPPUT(x) HB_BCHAR(x+48)
 #endif
 #ifdef A_FA
   field proc_VAT
@@ -175,8 +175,8 @@ DO WHILE .T.
 #define D_KH kontrahent
 #define D_KH1 dost_odb
 #else
-#define D_KH pad(dost_odb,A_NRLTH)
-#define D_KH1 pad(if(val(dost_odb)=0,dost_odb,subs(dost_odb,A_NRLTH+2)),HB_FIELDLEN('DOST_ODB'))
+#define D_KH hb_bleft(dost_odb,A_NRLTH)
+#define D_KH1 if(val(dost_odb)=0,dost_odb,hb_bsubstr(dost_odb,A_NRLTH+2))
 #endif
      rf:=firMy->(recno())
      set order to 1
@@ -2514,12 +2514,12 @@ DO CASE
       SET ORDER TO TAG FIRM_NUM
       sel('KH','KH')
       SET RELATION TO str(N1,A_NRLTH) INTO FIRMY
-      _sprompt:={||str(n1,A_NRLTH)+if(""=uwagi,"│","*")+n15+"│"+pad(longname,HB_FIELDLEN('LONGNAME'))}
+      _sprompt:={||str(n1,A_NRLTH)+if(""=uwagi,"│","*")+n15+"│"+longname}
 #else
 #ifdef A_FFULL
-      _sprompt:={||numer_kol+if(""=uwagi,"│","*")+nazwa+"│"+pad(longname,HB_FIELDLEN('LONGNAME'))}
+      _sprompt:={||numer_kol+if(""=uwagi,"│","*")+nazwa+"│"+longname}
 #else
-      _sprompt:={||numer_kol+if(""=uwagi,"│","*")+pad(nazwa,HB_FIELDLEN('NAZWA'))}
+      _sprompt:={||numer_kol+if(""=uwagi,"│","*")+nazwa}
 #endif
 #endif
       _spocz:=UpP(_spocz)
@@ -2577,7 +2577,7 @@ DO CASE
                set order to "DM_NAZ"
                re:=recno()
                begin sequence
-                  dbseek(txt:=if(upper(IndexKey(0))='NR_MAG',mag_biez,'')+subs(_spocz,2))
+                  dbseek(txt:=if(upper(IndexkeY(0))='NR_MAG',mag_biez,'')+subs(_spocz,2))
 
 
 #ifdef A_KB
@@ -2687,14 +2687,14 @@ DO CASE
                      _slth:=0
                      _sfilt:='['+txt+']$UPPER(longname)'
                      _sfilb:={||txt$UPPER(longname)}
-                     _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"│","*")+nazwa+"│"+pad(longname,HB_FIELDLEN('LONGNAME')),if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+                     _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"│","*")+nazwa+"│"+longname,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
                   endif
 #else
                   _spocz:=''
                   _slth:=0
                   _sfilt:='['+txt+']$UPPER(naZwa)'
                   _sfilb:={||txt$UPPER(naZwa)}
-                  _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"│","*")+pad(nazwa,HB_FIELDLEN('NAZWA')),if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+                  _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"│","*")+nazwa,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
 #endif
                endif
       ENDCASE

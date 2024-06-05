@@ -1,5 +1,5 @@
 //#define SIMPLE
-#include "./getexit.ch"
+#include "getexitm.ch"
 #include "inkey.ch"
 #include "set.ch"
 #include "dbinfo.ch"
@@ -2170,14 +2170,14 @@ endif
 j:=1 
 
 do while .t.
-  i:=hb_at(delim,txt,j)
+  i:=hb_bat(delim,txt,j)
   if i>0
-    aadd(a,substr(txt,j,i-j))
-    j:=i+len(delim)
+    aadd(a,hb_bsubstr(txt,j,i-j))
+    j:=i+hb_blen(delim)
     loop
   endif
-  if j<=len(txt)
-    aadd(a,substr(txt,j))
+  if j<=hb_blen(txt)
+    aadd(a,hb_bsubstr(txt,j))
   endif
   exit
 enddo
@@ -2299,9 +2299,9 @@ return x
 #pragma BEGINDUMP
 #include "hbapicdp.h"
 
-static const char ub[0x01F0] = "AAAAAAACEEEEIIIIDNOOOOO OUUUUYPSAAAAAAACEEEEIIIIDNOOOOO OUUUUYPYAAAAAACCCCCCCCDDDDEEEEEEEEEEGGGGGGGGHHHHIIIIIIIIIIIIJJKKKLLLLLLLLLLNNNNNNNNNOOOOOOOORRRRRRSSSSSSSSTTTTTTUUUUUUUUUUUUWWYYYZZZZZZSBBBBHHOCCDDDDDEEEFFGGHIIKKLLMNNOOOOOPPZSSSTTTTTUUVVYYZZZZZZ         DDDLLLNNNAAIIOOUUUUUUUUUUEAAAAAAGGGGKKOOOOZZJDDDGGH NNAAAAOOAAAAEEEEIIIIOOOORRRRUUUUSSTTYYHHNDOOZZAAEEOOOOOOOOYYLNTJDQACCLTSZ  BUVEEJJQQRRYYAAABOCDDEEEEEEEJGGGGGHHHIIILLLLMMNNNNOO  RRRRRRRRRSSJSSTTUUVVWYYZZZZ   C BEGHJKLQ  DDDTTTFLL  HH";
+static const char ub[0x01F0 + 1] = "AAAAAAACEEEEIIIIDNOOOOO OUUUUYPSAAAAAAACEEEEIIIIDNOOOOO OUUUUYPYAAAAAACCCCCCCCDDDDEEEEEEEEEEGGGGGGGGHHHHIIIIIIIIIIIIJJKKKLLLLLLLLLLNNNNNNNNNOOOOOOOORRRRRRSSSSSSSSTTTTTTUUUUUUUUUUUUWWYYYZZZZZZSBBBBHHOCCDDDDDEEEFFGGHIIKKLLMNNOOOOOPPZSSSTTTTTUUVVYYZZZZZZ         DDDLLLNNNAAIIOOUUUUUUUUUUEAAAAAAGGGGKKOOOOZZJDDDGGH NNAAAAOOAAAAEEEEIIIIOOOORRRRUUUUSSTTYYHHNDOOZZAAEEOOOOOOOOYYLNTJDQACCLTSZ  BUVEEJJQQRRYYAAABOCDDEEEEEEEJGGGGGHHHIIILLLLMMNNNNOO  RRRRRRRRRSSJSSTTUUVVWYYZZZZ   C BEGHJKLQ  DDDTTTFLL  HH";
 //0C0-2AF                       ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħĨĩĪīĬĭĮįİıĲĳĴĵĶķĸĹĺĻļĽľĿŀŁłŃńŅņŇňŉŊŋŌōŎŏŐőŒœŔŕŖŗŘřŚśŜŝŞşŠšŢţŤťŦŧŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽžſƀƁƂƃƄƅƆƇƈƉƊƋƌƍƎƏƐƑƒƓƔƕƖƗƘƙƚƛƜƝƞƟƠơƢƣƤƥƦƧƨƩƪƫƬƭƮƯưƱƲƳƴƵƶƷƸƹƺƻƼƽƾƿǀǁǂǃǄǅǆǇǈǉǊǋǌǍǎǏǐǑǒǓǔǕǖǗǘǙǚǛǜǝǞǟǠǡǢǣǤǥǦǧǨǩǪǫǬǭǮǯǰǱǲǳǴǵǶǷǸǹǺǻǼǽǾǿȀȁȂȃȄȅȆȇȈȉȊȋȌȍȎȏȐȑȒȓȔȕȖȗȘșȚțȜȝȞȟȠȡȢȣȤȥȦȧȨȩȪȫȬȭȮȯȰȱȲȳȴȵȶȷȸȹȺȻȼȽȾȿɀɁɂɃɄɅɆɇɈɉɊɋɌɍɎɏɐɑɒɓɔɕɖɗɘəɚɛɜɝɞɟɠɡɢɣɤɥɦɧɨɩɪɫɬɭɮɯɰɱɲɳɴɵɶɷɸɹɺɻɼɽɾɿʀʁʂʃʄʅʆʇʈʉʊʋʌʍʎʏʐʑʒʓʔʕʖʗʘʙʚʛʜʝʞʟʠʡʢʣʤʥʦʧʨʩʪʫʬʭʮʯ
-static const char uc[0x0100] = "AABBBBBBCCDDDDDDDDDDEEEEEEEEEEFFGGHHHHHHHHHHIIIIKKKKKKLLLLLLLLMMMMMMNNNNNNNNOOOOOOOOPPPPRRRRRRRRSSSSSSSSSSTTTTTTTTUUUUUUUUUUVVVVWWWWWWWWWWXXXXYYZZZZZZHTWYASSSSDAAAAAAAAAAAAAAAAAAAAAAAAEEEEEEEEEEEEEEEEIIIIOOOOOOOOOOOOOOOOOOOOOOOOUUUUUUUUUUUUUUYYYYYYYYLLVVYY";
+static const char uc[0x0100 + 1] = "AABBBBBBCCDDDDDDDDDDEEEEEEEEEEFFGGHHHHHHHHHHIIIIKKKKKKLLLLLLLLMMMMMMNNNNNNNNOOOOOOOOPPPPRRRRRRRRSSSSSSSSSSTTTTTTTTUUUUUUUUUUVVVVWWWWWWWWWWXXXXYYZZZZZZHTWYASSSSDAAAAAAAAAAAAAAAAAAAAAAAAEEEEEEEEEEEEEEEEIIIIOOOOOOOOOOOOOOOOOOOOOOOOUUUUUUUUUUUUUUYYYYYYYYLLVVYY";
 //1E00-1EFF                     ḀḁḂḃḄḅḆḇḈḉḊḋḌḍḎḏḐḑḒḓḔḕḖḗḘḙḚḛḜḝḞḟḠḡḢḣḤḥḦḧḨḩḪḫḬḭḮḯḰḱḲḳḴḵḶḷḸḹḺḻḼḽḾḿṀṁṂṃṄṅṆṇṈṉṊṋṌṍṎṏṐṑṒṓṔṕṖṗṘṙṚṛṜṝṞṟṠṡṢṣṤṥṦṧṨṩṪṫṬṭṮṯṰṱṲṳṴṵṶṷṸṹṺṻṼṽṾṿẀẁẂẃẄẅẆẇẈẉẊẋẌẍẎẏẐẑẒẓẔẕẖẗẘẙẚẛẜẝẞẟẠạẢảẤấẦầẨẩẪẫẬậẮắẰằẲẳẴẵẶặẸẹẺẻẼẽẾếỀềỂểỄễỆệỈỉỊịỌọỎỏỐốỒồỔổỖỗỘộỚớỜờỞởỠỡỢợỤụỦủỨứỪừỬửỮữỰựỲỳỴỵỶỷỸỹỺỻỼỽỾỿ
 
 HB_FUNC ( UPP )
@@ -2314,9 +2314,14 @@ HB_FUNC ( UPP )
             HB_SIZE nLen = hb_itemGetCLen( pText ), n;
             char * pszBuffer = ( char * ) hb_xgrab( nLen + 1 );
 
-            const char * id = hb_parc( 2 ) ?: "UTF8MD" ;
+            const char * id = hb_parc( 2 );
+            if (!id)
+               id = "UTF8MD" ;
+
             PHB_CODEPAGE oldcp = hb_vmCDP();
-            PHB_CODEPAGE cdp = hb_cdpFind( id ) ?: oldcp;
+            PHB_CODEPAGE cdp = hb_cdpFind( id );
+            if (!cdp)
+               cdp = oldcp;
             
             if( cdp )
             {

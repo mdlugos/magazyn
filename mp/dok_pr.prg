@@ -102,17 +102,15 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,dost_odb,rodz_opak,gram,;
 #ifdef A_LPNUM
 #define D_LP0 str(0,A_LPNUM) //'  0'
 #define D_LP1 str(1,A_LPNUM) //'  1'
-#define D_LPPUT(x) str(x,A_LPNUM)
 #define D_LPVAL(x) val(x)
 #define D_LPSTR(x) str(D_LPVAL(x),3)
 #define D_LPSTR1(x) str(D_LPVAL(x),1)
 #else
 #define D_LP0 '0'
 #define D_LP1 '1'
-#define D_LPVAL(x) (HB_BCODE(x)-48)
+#define D_LPVAL(x) (HB_BCODE(binfieldget([x]))-48)
 #define D_LPSTR(x) str(D_LPVAL(x),3)
 #define D_LPSTR1(x) x
-#define D_LPPUT(x) chr(x+48)
 #endif
 
 #ifdef A_OLZA
@@ -256,10 +254,10 @@ if doc_opcja
          _snagl:=STDTOP2
 #ifdef A_KHSEP
 #define D_KH kontrahent
-#define D_KH1 pad(dost_odb,HB_FIELDLEN('DOST_ODB'))
+#define D_KH1 dost_odb
 #else
 #define D_KH left(dost_odb,A_NRLTH)
-#define D_KH1 pad(if(val(dost_odb)=0,dost_odb,subs(dost_odb,A_NRLTH+2)),HB_FIELDLEN('DOST_ODB'))
+#define D_KH1 if(val(dost_odb)=0,dost_odb,subs(dost_odb,A_NRLTH+2))
 #endif
 #ifdef A_KHNUM
 #define D_KH2 D_KH+'│'
@@ -332,7 +330,7 @@ else
          _sprompt:={|lam,il|lam:=i_lam(data),STDPOZ1+'│'+;
       DTOV(data)+'│'+smiaR(ilosc*if(KEY_DOK$dok_rozch,-1,1),ILPIC)+'│'+;
       imiaR((lam)->jm,(lam)->jm_opcja)+'│'+STDZLE+'│'+nr_mag+'│'+tran(index,"@R "+ INDEXPIC )+;
-      if(alias(lam)#"INDX_MAT",'|','│')+(lam)->(pad(nazwA,HB_FIELDLEN('NAZWA')))}
+      if(alias(lam)#"INDX_MAT",'|','│')+(lam)->nazwA}
 
 #undef imiaR
 #undef smiaR
@@ -359,7 +357,7 @@ endif
 #ifdef A_DMDATA
       if _skey=1 .and. stat_ord#2
               _slth:=0
-              _spocz:=if(UPPER(IndexKey(_skey))='NR_MAG',nr_mag,'')
+              _spocz:=if(UPPER(IndexkeY(_skey))='NR_MAG',nr_mag,'')
               _sbeg=1
       elseif _skey=2
               _slth:=0
@@ -373,7 +371,7 @@ endif
 #ifdef A_KHNUM
     elseif _skey=3
        _slth:=0
-       _spocz:=if(UPPER(IndexKey(_skey))='NR_MAG',nr_mag,'')
+       _spocz:=if(UPPER(IndexkeY(_skey))='NR_MAG',nr_mag,'')
        _spform:={|p,l|TranR(right(p,l),repl("X",A_NRLTH)+"|##.##")}
        _sbeg:=DBEG-A_NRLTH-1
 #ifdef A_KHNAZ
@@ -381,7 +379,7 @@ endif
               _slth:=0
               _spform:={|p,l|right(p,l)}
               _sbeg:=DBEG+A_KHNAZ
-              _spocz:=if(UPPER(IndexKey(_skey))='NR_MAG',nr_mag,'')
+              _spocz:=if(UPPER(IndexkeY(_skey))='NR_MAG',nr_mag,'')
 #ifdef A_DOKFAK
     elseif _skey=5
               _slth:=0
@@ -391,7 +389,7 @@ endif
 #else
               _sbeg:=DBEG+6
 #endif      
-              _spocz:=if(UPPER(IndexKey(_skey))='NR_MAG',nr_mag,'')
+              _spocz:=if(UPPER(IndexkeY(_skey))='NR_MAG',nr_mag,'')
 #endif
 #endif
 #endif
@@ -543,7 +541,7 @@ DO CASE
 #ifdef A_F9
       if ent#NIL
       if ent=0
-         _spocz:=if(UPPER(IndexKey(0))='NR_MAG',nr_mag,'')
+         _spocz:=if(UPPER(IndexkeY(0))='NR_MAG',nr_mag,'')
 #ifdef A_KOB
          _spocz+='PW'
          _slth:=2

@@ -1,6 +1,5 @@
-#include "dbinfo.ch"
-
 //#define FIXDOK
+#include "dbinfo.ch"
 memvar strona,stawki,stawkizby,it_zesmnu,oprn,defa
 #ifdef A_KHSEP
 #define D_KH kontrahent
@@ -19,7 +18,7 @@ memvar strona,stawki,stawkizby,it_zesmnu,oprn,defa
 #define bin2D(x) (100*(x))
 #endif
 #ifdef A_DF
-#define wartosC (bin2d(bingieldget('d_wartosc')))
+#define wartosC (bin2d(binfieldget('d_wartosc')))
 #endif
 
 #ifdef A_JMTOT
@@ -59,25 +58,25 @@ memvar P_12LPI,P_6LPI,P_SUPON,P_SUPOFF,P_UON,P_UOFF,p_rown,p_coln,p_rownl,p_coln
 #ifdef A_PCL
 #undef P_ROWN
 #undef P_COLN
-#define P_MARGIN {|x,y|chr(0x1B)+'&'+'a'+ltrim(str(x,3))+'L'}
-#define P_LAND {|x|if((landscape:=x),'',chr(0x1B)+"&"+"l"+IF(x,"1","0")+"O")}
+#define P_MARGIN {|x,y|HB_BCHAR(0x1B)+'&'+'a'+ltrim(str(x,3))+'L'}
+#define P_LAND {|x|if((landscape:=x),'',HB_BCHAR(0x1B)+"&"+"l"+IF(x,"1","0")+"O")}
 #define P_ROWN if(landscape,42,58)
 #define P_COLN if(landscape,113,78)
-#define P_12LPI chr(0x1B)+'&l12D'
-#define P_6LPI  chr(0x1B)+'&l6D'
-#define P_SUPON chr(0x1B)+'(s8V'
-#define P_SUPOFF chr(0x1B)+'(s12V'
-#define P_UON   chr(0x1B)+'&d0D'
-#define P_UOFF   chr(0x1B)+'&d@'
+#define P_12LPI HB_BCHAR(0x1B)+'&l12D'
+#define P_6LPI  HB_BCHAR(0x1B)+'&l6D'
+#define P_SUPON HB_BCHAR(0x1B)+'(s8V'
+#define P_SUPOFF HB_BCHAR(0x1B)+'(s12V'
+#define P_UON   HB_BCHAR(0x1B)+'&d0D'
+#define P_UOFF   HB_BCHAR(0x1B)+'&d@'
 #else
 #define P_ROWN  60
 #define P_COLN  80
-#define P_12LPI chr(0x1B)+'3'+chr(0x12)
-#define P_6LPI  chr(0x1B)+'2'
-#define P_SUPON chr(0x1B)+'S1'
-#define P_SUPOFF chr(0x1B)+'T'
-#define P_UON   chr(0x1B)+'-1'
-#define P_UOFF   chr(0x1B)+'-0'
+#define P_12LPI HB_BCHAR(0x1B)+'3'+HB_BCHAR(0x12)
+#define P_6LPI  HB_BCHAR(0x1B)+'2'
+#define P_SUPON HB_BCHAR(0x1B)+'S1'
+#define P_SUPOFF HB_BCHAR(0x1B)+'T'
+#define P_UON   HB_BCHAR(0x1B)+'-1'
+#define P_UOFF   HB_BCHAR(0x1B)+'-0'
 #endif
 #endif
 
@@ -131,17 +130,15 @@ FIELD WARTOSC,ILOSC,DATA,INDEX,nr_mag,smb_dow,nr_dowodu,pozycja,nr_zlec,dost_odb
 #ifdef A_LPNUM
 #define D_LP0 str(0,A_LPNUM) //'  0'
 #define D_LP1 str(1,A_LPNUM) //'  1'
-#define D_LPPUT(x) str(x,A_LPNUM)
 #define D_LPVAL(x) val(x)
 #define D_LPSTR(x) str(D_LPVAL(x),3)
 #define D_LPSTR1(x) str(D_LPVAL(x),1)
 #else
 #define D_LP0 '0'
 #define D_LP1 '1'
-#define D_LPVAL(x) (HB_BCODE(x)-48)
-#define D_LPSTR(x) str(HB_BCODE(x)-48,3)
+#define D_LPVAL(x) (HB_BCODE(binfieldget([x]))-48)
+#define D_LPSTR(x) str(HB_BCODE(binfieldget([x]))-48,3)
 #define D_LPSTR1(x) x
-#define D_LPPUT(x) chr(x+48)
 #endif
 
 #ifdef A_KAMIX
@@ -171,8 +168,8 @@ local a:={},r,f2,f3,f4,f5,f6,x
    if _menu=NIL
       _menu:=menuzest
       setpos(6,maxcol()/2+1)
-      SETKEY(4,{||KIBORD(CHR(27)+CHR(24)+CHR(13))})
-      SETKEY(19,{||KIBORD(CHR(27)+CHR(5)+CHR(13))})
+      SETKEY(4,{||KIBORD(HB_BCHAR(27)+HB_BCHAR(24)+HB_BCHAR(13))})
+      SETKEY(19,{||KIBORD(HB_BCHAR(27)+HB_BCHAR(5)+HB_BCHAR(13))})
 #ifndef A_NOMZ
           a:={'R ZESTAWIENIE ROZCHODÓW WEDŁUG KONT',;
               'P ZESTAWIENIE PRZYCHODÓW WEDŁUG KONT'}
@@ -265,9 +262,9 @@ SELECT MAIN
 r:=.t.
 
 #ifdef __PLATFORM__UNIX
-#define nl chr(10)
+#define nl HB_BCHAR(10)
 #else
-#define nl chr(13)+chr(10)
+#define nl HB_BCHAR(13)+HB_BCHAR(10)
 #endif
 #ifdef A_HPDF
   #define D_HWPRN A_HPDF
@@ -329,14 +326,14 @@ IF STRONA>0
 ? A_WADO
 //'Sporządził:                                             Zatwierdził:'
 #endif
-   ?? speC(chr(13)+chr(12))
+   ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
 #ifdef A_PCL
 /**********
 if landscape
-   ?? speC(eval(P_LAND,.f.)) //chr(0x1B)+'&l0O')
+   ?? speC(eval(P_LAND,.f.)) //HB_BCHAR(0x1B)+'&l0O')
 endif
 ********/
-//   ?? speC("E")
+//   ?? speC(HB_BCHAR(0x1B)+"E")
 
 //   landscape:=.f.
 #endif
@@ -527,7 +524,7 @@ I_DO=UpP(TRIM(I_DO))
 a:=len(EvAlDb(INDEXKEY()))-10-len(index)
 
 return({od,do,i_od,i_do,i_gr,bkey,bpic,1,"ZESTAWIENIE PRZYCHODÓW W/G KONT",{||NIL},{||;
-  FIRMY->(IF(i_gr>=a.and.DBSEEK(subs(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),chr(13)+replicate('_',78)}})
+  FIRMY->(IF(i_gr>=a.and.DBSEEK(subs(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),HB_BCHAR(13)+replicate('_',78)}})
 #endif
 ****************
 FUNCTION PRZYCH(n)
@@ -815,7 +812,7 @@ DO WHILE EvaldB(bkey)<=I_DO .AND. !EOF()
   IF prow()+3>P_ROWN
 #endif
     IF STRONA>0
-       specout(ccpi(4)+chr(0x0D)+chr(0x0C))
+       specout(ccpi(4)+HB_BCHAR(0x0D)+HB_BCHAR(0x0C))
        setprc(0,0)
     else
        print()
@@ -957,7 +954,7 @@ endif
 #ifndef D_GRAM
   if len(gri)>1
 #endif
-     ? padr("   W TYM:",25),spec(chr(13))
+     ? padr("   W TYM:",25),spec(HB_BCHAR(13))
      for i=1 to len(gri)
       if 0=(j:=ascan(grt,{|x|x[1]=gri[i,1]}))
           aadd(grt,gri[i])
@@ -1026,7 +1023,7 @@ if strona>0 .and. i_mul>1
 #ifndef D_GRAM
   if len(grt)>1
 #endif
-     ? padr("   W TYM:",25),spec(chr(13))
+     ? padr("   W TYM:",25),spec(HB_BCHAR(13))
      for i=1 to len(grt)
        ? space(25)+str(grt[i,2],10,ILDEC),' ',grt[i,1],' ',TrAN(grt[i,3],"@E ",A_ZAOKR,15)
 #ifdef A_FA
@@ -1092,7 +1089,7 @@ DO WHILE EvaldB(bkey)<=I_DO .AND. !EOF()
   IF prow()+5>P_ROWN
 #endif
       IF STRONA>0
-         specout(ccpi(4)+chr(0x0D)+chr(0x0C))
+         specout(ccpi(4)+HB_BCHAR(0x0D)+HB_BCHAR(0x0C))
          setprc(0,0)
       else
          print()
@@ -1179,7 +1176,7 @@ endif
      ENDIF
      ++multiflag
      IF prow()+1>P_ROWN
-        ?? speC(CHR(13)+P_UON+SPACE(96))
+        ?? speC(HB_BCHAR(13)+P_UON+SPACE(96))
         ?? SPEC(P_UOFF)
 if wa_flag
         ? "DO PRZENIESIENIA   |          |"+TrAN(W,"@E ",A_ZAOKR,15)
@@ -1200,7 +1197,7 @@ if wa_flag
         endif
 #endif
 endif
-        specout(ccpi(4)+chr(0x0D)+chr(0x0C))
+        specout(ccpi(4)+HB_BCHAR(0x0D)+HB_BCHAR(0x0C))
         setprc(0,0)
         ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
         ?
@@ -1290,7 +1287,7 @@ endif
       endif
 #endif
 if wa_flag
-      ? ccpi(7)+SMB_DOW+NR_DOWODU+"/"+str(D_LPVAL(POZYCJA),2)+"|"+DTOV(DATA)+"|"+strpic(D_CENA,10,A_ZAOKR,"@E ",.t.),speC(ccpi(5)+chr(13)+space(19)),"|"
+      ? ccpi(7)+SMB_DOW+NR_DOWODU+"/"+str(D_LPVAL(POZYCJA),2)+"|"+DTOV(DATA)+"|"+strpic(D_CENA,10,A_ZAOKR,"@E ",.t.),speC(ccpi(5)+HB_BCHAR(13)+space(19)),"|"
       setprc(prow(),20)
 else
       ? SMB_DOW+NR_DOWODU+"/"+str(D_LPVAL(POZYCJA),2)+"|"+DTOV(DATA)+"|"
@@ -1369,7 +1366,7 @@ endif
       ?? CPAD((sel)->NAZWA,(P_COLN-pcol())*ccpi()*.1,,0)
   enddo
   wtot+=w
-  ?? speC(CHR(13)+P_UON+SPACE(96))
+  ?? speC(HB_BCHAR(13)+P_UON+SPACE(96))
   ?? SPEC(P_UOFF)
   ? padr("RAZEM GRUPA "+TranR(left(txt,I_gr),bpic),D_POS-1)+":"
   ++i_mul
@@ -1406,7 +1403,7 @@ endif
 #ifndef D_GRAM
   if len(gri)>1
 #endif
-     ? padr("   W TYM:",D_POS),spec(chr(13))
+     ? padr("   W TYM:",D_POS),spec(HB_BCHAR(13))
      for i=1 to len(gri)
       if 0=(j:=ascan(grt,{|x|x[1]=gri[i,1]}))
           aadd(grt,gri[i])
@@ -1488,7 +1485,7 @@ endif
 #ifndef D_GRAM
   if len(grt)>1
 #endif
-     ? padr("   W TYM:",D_POS),spec(chr(13))
+     ? padr("   W TYM:",D_POS),spec(HB_BCHAR(13))
      for i=1 to len(grt)
 if wa_flag
        ? space(D_POS)+str(grt[i,2],10,ILDEC),' ',grt[i,1],' ',TrAN(grt[i,3],"@E ",A_ZAOKR,15)
@@ -1652,7 +1649,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
 
     IF prow()+12>P_ROWN
       IF STRONA>0
-         ?? speC(chr(0x0D)+chr(0x0C))
+         ?? speC(HB_BCHAR(0x0D)+HB_BCHAR(0x0C))
          setprc(0,0)
       else
          print()
@@ -1699,7 +1696,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
          j:=ascan(was,{|x|x[1]=proc_vat})
          if j=0
            if ascan(stawkizby,proc_vat)=0
-              ? "BŁĄD STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
+              ? "BŁĄD STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(HB_BCHAR(7),4)
               ?
            endif
            aadd(was,{proc_vat,w,0})
@@ -1772,7 +1769,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
                 unlock
 #else
 #ifndef A_PLUDRY
-                ? "BŁĄD WARTOŚCI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
+                ? "BŁĄD WARTOŚCI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(HB_BCHAR(7),4)
                 ?
 #endif
 #endif
@@ -1783,7 +1780,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
                 wart_vat:=v
                 unlock
 #else
-                ? "BŁĄD WARTOŚCI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
+                ? "BŁĄD WARTOŚCI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(HB_BCHAR(7),4)
                 ?
 #endif
       endif
@@ -1840,7 +1837,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
   ENDDO
     IF STRONA>0
       IF prow()+12>P_ROWN
-      ?? speC(chr(0x0D)+chr(0x0C))
+      ?? speC(HB_BCHAR(0x0D)+HB_BCHAR(0x0C))
       setprc(0,0)
       ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
       ?
@@ -1980,7 +1977,7 @@ ELSE
     DO WHILE !eof().and.EvaldB(ok)<=txt + dtos(DO)
       if prow()+10>P_ROWN
         IF STRONA>0
-         ?? speC(chr(0x0D)+chr(0x0C))
+         ?? speC(HB_BCHAR(0x0D)+HB_BCHAR(0x0C))
          setprc(0,0)
         else
 #ifdef D_HWPRN
@@ -2136,7 +2133,7 @@ ELSE
              j:=ascan(was,{|x|x[1]=proc_vat})
              if j=0
                if ascan(stawkizby,proc_vat)=0
-                ? "BŁĄD STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
+                ? "BŁĄD STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(HB_BCHAR(7),4)
                 ?
                endif
                aadd(was,{proc_vat,w,0})
@@ -2215,7 +2212,7 @@ ELSE
                 unlock
 #else
 #ifndef A_PLUDRY
-                ? "BŁĄD WARTOŚCI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
+                ? "BŁĄD WARTOŚCI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(HB_BCHAR(7),4)
                 ?
 #endif
 #endif
@@ -2226,7 +2223,7 @@ ELSE
                 wart_vat:=v
                 unlock
 #else
-                ? "BŁĄD WARTOŚCI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
+                ? "BŁĄD WARTOŚCI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(HB_BCHAR(7),4)
                 ?
 #endif
       endif
@@ -2493,7 +2490,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
 
     IF prow()+12>P_ROWN
        IF STRONA>0
-         ?? speC(chr(13)+chr(12))
+         ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
          setprc(0,0)
       else
          print()
@@ -2540,7 +2537,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
          j:=ascan(was,{|x|x[1]=proc_vat})
          if j=0
            if ascan(stawki,proc_vat)=0 //.and. val(proc_vat)#0
-              ? "BŁĄD STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
+              ? "BŁĄD STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(HB_BCHAR(7),4)
               ?
            endif
            aadd(was,{proc_vat,cena,0})
@@ -2570,7 +2567,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
                 unlock
 #else
 #ifndef A_PLUDRY
-                ? "BŁĄD WARTOŚCI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
+                ? "BŁĄD WARTOŚCI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(HB_BCHAR(7),4)
                 ?
 #endif
 #endif
@@ -2581,7 +2578,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
                 wart_vat:=v
                 unlock
 #else
-                ? "BŁĄD WARTOŚCI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
+                ? "BŁĄD WARTOŚCI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(HB_BCHAR(7),4)
                 ?
 #endif
       endif
@@ -2615,7 +2612,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
   ENDDO
     IF STRONA>0
       IF prow()+12>P_ROWN
-         ?? speC(chr(13)+chr(12))
+         ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
       setprc(0,0)
       ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
       ?
@@ -2730,7 +2727,7 @@ ELSE
     do while !eof().and.EvaldB(ok)<=txt + dtos(DO)
       if prow()+10>P_ROWN
         IF STRONA>0
-         ?? speC(chr(13)+chr(12))
+         ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
         setprc(0,0)
       else
 #ifdef D_HWPRN
@@ -2909,7 +2906,7 @@ ELSE
              j:=ascan(was,{|x|x[1]=proc_vat})
              if j=0
                if ascan(stawki,proc_vat)=0 //.and. val(proc_vat)#0
-                ? "BŁĄD STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
+                ? "BŁĄD STAWKI VAT DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(HB_BCHAR(7),4)
                 ?
                endif
                aadd(was,{proc_vat,cena,0})
@@ -2946,7 +2943,7 @@ ELSE
                 unlock
 #else
 #ifndef A_PLUDRY
-                ? "BŁĄD WARTOŚCI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
+                ? "BŁĄD WARTOŚCI DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(HB_BCHAR(7),4)
                 ?
 #endif
 #endif
@@ -2957,7 +2954,7 @@ ELSE
                 wart_vat:=v
                 unlock
 #else
-                ? "BŁĄD WARTOŚCI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(chr(7),4)
+                ? "BŁĄD WARTOŚCI PODATKU DOKUMENTU: ",nr_mag+'/'+smb_dow+' '+nr_dowodu+'/'+pozycja," !!!"+replicate(HB_BCHAR(7),4)
                 ?
 #endif
       endif
@@ -3433,7 +3430,7 @@ endif
     if strona>0
        if i_gr#2 .or. mag_biez=STANY->nr_mag
        if wa_flag
-          ?? speC(CHR(13)+P_UON+SPACE(136))
+          ?? speC(HB_BCHAR(13)+P_UON+SPACE(136))
           ?? speC(P_UOFF)
           ? HEADER_1+TrAN(SPTOT,"@E ",D_A_ZAOKR,22)+"|"+TrAN(PTOT,"@E ",D_A_ZAOKR,22)+"|"+TrAN(RTOT,"@E ",D_A_ZAOKR,22)+"|"+TrAN(SKTOT,"@E ",D_A_ZAOKR,22)+"|    |"
           IF STANY->NR_MAG#MAG_BIEZ
@@ -3442,7 +3439,7 @@ endif
             ?? " ... DO PRZENIESIENIA .."
           ENDIF
        else
-          ?? speC(CHR(13)+P_UON+SPACE(90))
+          ?? speC(HB_BCHAR(13)+P_UON+SPACE(90))
           ?? SPEC(P_UOFF)
        endif
        endif
@@ -3451,7 +3448,7 @@ endif
           mag_poz:=max(1,ascan(magazyny,mag_biez))
           SPTOT:=PTOT:=RTOT:=SKTOT:=0
        endif
-       ?? speC(chr(13)+chr(12))
+       ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
        setprc(0,0)
     else
          print()
@@ -3645,7 +3642,7 @@ njob:=D_PCL-pcol()
 #ifndef D_JMTOT
      if !t_gr
 #endif
-       ?? speC(CHR(13)+P_UON+SPACE(136))
+       ?? speC(HB_BCHAR(13)+P_UON+SPACE(136))
        ?? spec(P_UOFF)
 #ifdef D_JMTOT
        ? HEADER_1+TraN(gri[1,2],"######"+ILPIC)+"|"+TrAN(spgr,"@E ",D_A_ZAOKR,11)+"|"+;
@@ -3671,7 +3668,7 @@ njob:=D_PCL-pcol()
       TrAN(SKgr,"@E ",D_A_ZAOKR,22)+"|    |"+if(i_gr=2,"RAZEM MAGAZYN ","RAZEM GRUPA ")+TranR(last_gr,"##/"+ INDEXPIC )
 #endif
   else
-       ?? speC(CHR(13)+P_UON+SPACE(90))
+       ?? speC(HB_BCHAR(13)+P_UON+SPACE(90))
        ?? spec(P_UOFF)
   endif
      if !t_gr
@@ -3684,7 +3681,7 @@ njob:=D_PCL-pcol()
 ENDDO
 if strona>0
    if wa_flag
-   ?? speC(CHR(13)+P_UON+SPACE(136))
+   ?? speC(HB_BCHAR(13)+P_UON+SPACE(136))
    ?? spec(P_UOFF)
    IF t_GR
      ? Tran(SUBS(EvaldB(BKEY),3),"@R "+ INDEXPIC )+"|"
@@ -3703,7 +3700,7 @@ if strona>0
    TrAN(RT,"@E ",D_A_ZAOKR,22)+"|"+;
    TrAN(SKT,"@E ",D_A_ZAOKR,22)+"|    | ..... RAZEM ......."
    else
-       ?? speC(CHR(13)+P_UON+SPACE(90))
+       ?? speC(HB_BCHAR(13)+P_UON+SPACE(90))
        ?? spec(P_UOFF)
    endif
 endif
@@ -3835,7 +3832,7 @@ DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
     IF prow()+5>P_ROWN .OR. STANY->NR_MAG#MAG_BIEZ
       IF STRONA>0
       IF STANY->NR_MAG#MAG_BIEZ
-        ?? speC(CHR(13)+P_UON+SPACE(91))
+        ?? speC(HB_BCHAR(13)+P_UON+SPACE(91))
         ?? spec(P_UOFF)
         if od>do
 #ifdef D_GRAM
@@ -3853,7 +3850,7 @@ DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
         RT+=RTOT
         PTOT:=RTOT:=SKTOT:=0
       ELSEIF od>do
-          ?? speC(CHR(13)+P_UON+SPACE(115))
+          ?? speC(HB_BCHAR(13)+P_UON+SPACE(115))
           ?? spec(P_UOFF)
 #ifdef D_GRAM
           ? " Do przeniesienia....                 "+TraN(rtot,"#### ### ###.##")+"|"+TraN(i_gr,"@Z ## ### ### ### ###"+ILPIC)+"|"+TrAN(sktot,"@E ",A_ZAOKR,16)
@@ -3861,7 +3858,7 @@ DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
           ? " Do przeniesienia....                                |"+TraN(i_gr,"@Z ## ### ### ### ###"+ILPIC)+" "+TrAN(sktot,"@E ",A_ZAOKR,16)
 #endif
       ENDIF
-        specout(ccpi(4)+chr(13)+chr(12))
+        specout(ccpi(4)+HB_BCHAR(13)+HB_BCHAR(12))
         setprc(0,0)
       else
          print()
@@ -3913,7 +3910,7 @@ DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
 #else
           ? "  Z przeniesienia....                                |"+TraN(i_gr,"@Z ## ### ### ### ###"+ILPIC)+" "+TrAN(sktot,"@E ",A_ZAOKR,16)
 #endif
-          ?? speC(CHR(13)+P_UON+SPACE(93))
+          ?? speC(HB_BCHAR(13)+P_UON+SPACE(93))
           ?? spec(P_UOFF)
       endif
       endif
@@ -3928,19 +3925,19 @@ DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
 #ifdef D_GRAM
           rtot+=wag:=s*(sel)->gram/1000
           ?? cpad((SEL)->NAZWA,40-pcol(),12,0)
-          ?? spec(chr(13)+space(41))+"|"+Tran(waG,"#### ###.##")+"|"+TrAN(if(round(s,ILDEC)=0,0,w/s),"@E ",A_ZAOKR,11)+"|"+izreS(S,(sel)->przel)+" "+(SEL)->jM+"|"+TrAN(w,"@E ",A_ZAOKR,11)
+          ?? spec(HB_BCHAR(13)+space(41))+"|"+Tran(waG,"#### ###.##")+"|"+TrAN(if(round(s,ILDEC)=0,0,w/s),"@E ",A_ZAOKR,11)+"|"+izreS(S,(sel)->przel)+" "+(SEL)->jM+"|"+TrAN(w,"@E ",A_ZAOKR,11)
 #else
           ?? cpad((SEL)->NAZWA,52-pcol(),12,0)
-          ?? spec(chr(13)+space(53))+"|"+TrAN(if(round(s,ILDEC)=0,0,w/s),"@E ",A_ZAOKR,11)+"|"+izreS(S,(sel)->przel)+" "+(SEL)->jM+"|"+TrAN(w,"@E ",A_ZAOKR,11)
+          ?? spec(HB_BCHAR(13)+space(53))+"|"+TrAN(if(round(s,ILDEC)=0,0,w/s),"@E ",A_ZAOKR,11)+"|"+izreS(S,(sel)->przel)+" "+(SEL)->jM+"|"+TrAN(w,"@E ",A_ZAOKR,11)
 #endif
        else
           ?? (SEL)->NAZWA
-          ?? spec(chr(13)+space(77))+(sel)->jm+"|"+izreS(S,(sel)->przel)+"|"+TrAN(if(round(s,ILDEC)=0,0,w/s),"@E ",A_ZAOKR,10)+"|"+TrAN(w,"@E ",A_ZAOKR,11)+"|"
+          ?? spec(HB_BCHAR(13)+space(77))+(sel)->jm+"|"+izreS(S,(sel)->przel)+"|"+TrAN(if(round(s,ILDEC)=0,0,w/s),"@E ",A_ZAOKR,10)+"|"+TrAN(w,"@E ",A_ZAOKR,11)+"|"
        endif
        exit
     endif
     ?? (SEL)->NAZWA
-    ?? spec(chr(13)+space(77))+(sel)->jm+"|"+izreS(S,(sel)->przel)+"|"+TrAN(if(round(s,ILDEC)=0,0,w/s),"@E ",A_ZAOKR,10)+"|"+TrAN(w,"@E ",A_ZAOKR,11)+"|"
+    ?? spec(HB_BCHAR(13)+space(77))+(sel)->jm+"|"+izreS(S,(sel)->przel)+"|"+TrAN(if(round(s,ILDEC)=0,0,w/s),"@E ",A_ZAOKR,10)+"|"+TrAN(w,"@E ",A_ZAOKR,11)+"|"
     do while NR_MAG+INDEX+DTOS(DATA)<=STANY->(NR_MAG+index)+DTOS(DO) .AND. !EOF()
       lam:=(sel:=i_lam(data))->(recno())
     // .and. sel=i_lam(data) .and. lam=(sel)->(recno())
@@ -3986,10 +3983,10 @@ DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
       WR+=rozch(ws)
       skip
       IF prow()+1>P_ROWN .and. NR_MAG+INDEX+DTOS(DATA)<=STANY->(NR_MAG+index)+DTOS(DO) .AND. !EOF()
-        ?? speC(CHR(13)+P_UON+SPACE(94+22))
+        ?? speC(HB_BCHAR(13)+P_UON+SPACE(94+22))
         ?? spec(P_UOFF)
         ? " DO PRZENIESIENIA .....            |"+izreS(Sp,(sel)->przel)+"|"+TrAN(wP,"@E ",A_ZAOKR,11)+"|"+izreS(Sr,(sel)->przel)+"|"+TrAN(wR,"@E ",A_ZAOKR,11)+"|"+izreS(s,(sel)->przel)+"|"+TrAN(if(round(s,ILDEC)=0,0,w/s),"@E ",A_ZAOKR,10)+"|"+TrAN(w,"@E ",A_ZAOKR,11)+"|"
-        specout(ccpi(4)+chr(13)+chr(12))
+        specout(ccpi(4)+HB_BCHAR(13)+HB_BCHAR(12))
         setprc(0,0)
         ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
         ?
@@ -4010,14 +4007,14 @@ DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
         ?? speC(P_UON)
         ? "           |     |      |          |  ILOŚĆ   |  "+WANAZ+"  |  ILOŚĆ   |  "+WANAZ+"  |   ILOŚĆ  |   CENA   |  "+WANAZ+"  |"
         ? " ... KONTYNUACJA "+Tran((SEL)->INDEX,"@R "+ INDEXPIC )+" "+(SEL)->NAZWA
-        ?? speC(chr(13)+P_UON+space(77)),(SEL)->jM+"|"+izreS(S,(sel)->przel)+"|"+TrAN(if(round(s,ILDEC)=0,0,w/s),"@E ",A_ZAOKR,10)+"|"+TrAN(w,"@E ",A_ZAOKR,11)+"|"
+        ?? speC(HB_BCHAR(13)+P_UON+space(77)),(SEL)->jM+"|"+izreS(S,(sel)->przel)+"|"+TrAN(if(round(s,ILDEC)=0,0,w/s),"@E ",A_ZAOKR,10)+"|"+TrAN(w,"@E ",A_ZAOKR,11)+"|"
         ?? speC(P_UOFF)
       ENDIF
     enddo
     PTOT+=WP
     RTOT+=WR
     (sel)->(dbgoto(lam))
-    ?? speC(CHR(13)+P_UON+SPACE(94+22))
+    ?? speC(HB_BCHAR(13)+P_UON+SPACE(94+22))
     ?? spec(P_UOFF)
     //if nr_mag+INDEX+DTOS(DATA)>STANY->(nr_mag+index)+DTOS(DO) .or. eof()
 #ifndef A_WA
@@ -4048,7 +4045,7 @@ PT+=PTOT
 RT+=RTOT
 SKT+=SKTOT
 if od>do
-?? speC(chr(13)+P_UON+SPACE(94))
+?? speC(HB_BCHAR(13)+P_UON+SPACE(94))
 ?? spec(P_UOFF)
 #ifdef D_GRAM
      ? " RAZEM MAGAZYN ",mag_biez," ....                "+TraN(rtot,"#### ### ###.##")+"|"+TraN(i_gr,"@Z ## ### ### ### ###"+ILPIC)+"|"+TrAN(sktot,"@E ",A_ZAOKR,16)
@@ -4064,7 +4061,7 @@ IF PT#PTOT .OR. RT#RTOT .OR. SKT # SKTOT
 #endif
 endif
 else
-?? speC(chr(13)+P_UON+SPACE(94+22))
+?? speC(HB_BCHAR(13)+P_UON+SPACE(94+22))
 ?? spec(P_UOFF)
 ? " RAZEM MAGAZYN ",mag_biez,"....              |"+TrAN(PTOT,"@E ",A_ZAOKR,22)+"|"+TrAN(RTOT,"@E ",A_ZAOKR,22)+"|"+TrAN(sktot,"@E ",A_ZAOKR,33)
 IF PT#PTOT .OR. RT#RTOT .OR. SKT # SKTOT
@@ -4173,7 +4170,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.F.,.F.)
 
     IF prow()+1>P_ROWN
        IF STRONA>0
-         ?? speC(chr(13)+chr(12))
+         ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
          setprc(0,0)
       else
          print()
@@ -4361,7 +4358,7 @@ ELSE
     DO WHILE TXT=KEY_DOK
       if prow()+if(main_flag,D_LPVAL(pozycja)+3,3)>P_ROWN .and. prow()>15
         IF STRONA>0
-         ?? speC(chr(13)+chr(12))
+         ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
          setprc(0,0)
         else
          print()
@@ -4550,7 +4547,7 @@ ELSE
             WV+=warT_vaT
 #ifdef A_FA
             if ROUND(wd-wartosC,A_ZAOKR)#0// .or. ROUND(warT_vaT-vd,A_ZAOKR)#0
-               ? "NIE ZGADZA SIĘ SUMA WSZYSTKICH POZYCJI !!!"+replicate(chr(7),4)
+               ? "NIE ZGADZA SIĘ SUMA WSZYSTKICH POZYCJI !!!"+replicate(HB_BCHAR(7),4)
             endif
             wd:=wartoSC
 #endif
@@ -4560,7 +4557,7 @@ ELSE
           if dok_f
 #ifndef A_DF
             if ROUND(wd-wartosC,A_ZAOKR)#0// .or. ROUND(warT_vaT-vd,A_ZAOKR)#0
-               ? "NIE ZGADZA SIĘ SUMA WSZYSTKICH POZYCJI !!!"+replicate(chr(7),4)
+               ? "NIE ZGADZA SIĘ SUMA WSZYSTKICH POZYCJI !!!"+replicate(HB_BCHAR(7),4)
             endif
 #endif
             wd:=wartoSC
@@ -4573,7 +4570,7 @@ ELSE
           if !zby_flag
 #endif
             if ROUND(pm*wd-warT_ewiD,A_ZAOKR)#0
-               ? "NIE ZGADZA SIĘ SUMA WSZYSTKICH POZYCJI !!!"+replicate(chr(7),4)
+               ? "NIE ZGADZA SIĘ SUMA WSZYSTKICH POZYCJI !!!"+replicate(HB_BCHAR(7),4)
                ?? 'DOKONANO KOREKTY Z',pm*warT_ewiD,'NA',wd
                //wd:=pm*warT_ewiD
                LOCK
@@ -4947,7 +4944,7 @@ ELSE
 #else
       ? "└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┘"
 #endif
-      speCout(ccpi(4)+chr(13)+chr(12))
+      speCout(ccpi(4)+HB_BCHAR(13)+HB_BCHAR(12))
       setprc(0,0)
       endif
       if data>dm
@@ -5213,7 +5210,7 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
    endif
    IF prow()>P_ROWN
       IF STRONA>0
-         ?? speC(chr(13)+chr(12))
+         ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
          setprc(0,0)
       else
      print()
@@ -5255,7 +5252,7 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
    W:=0
    IF MAIN_FLAG .AND. D_LPVAL(pozycja)+4+prow()>P_ROWN .or. prow()+4>P_ROWN
       IF STRONA>0
-         ?? speC(chr(13)+chr(12))
+         ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
          setprc(0,0)
       else
      print()
@@ -5292,11 +5289,11 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
   iw:=0
   do while nr_mag+smb_dow+konto_kosz=txt .AND. data<=do
      IF MAIN_FLAG .AND. D_LPVAL(pozycja)+1+prow()>P_ROWN .or. prow()+1>P_ROWN
-        ?? speC(CHR(13)+P_UON+SPACE(80))
+        ?? speC(HB_BCHAR(13)+P_UON+SPACE(80))
         ?? spec(P_UOFF)
         ? "DO PRZENIESIENIA |"+TrAN(W,"@E ",A_ZAOKR,18)+"|                                           "
         ?? speC(P_UOFF)
-        ?? speC(chr(13)+chr(12))
+        ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
         setprc(0,0)
         ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
         ?
@@ -5352,7 +5349,7 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
   if nr_mag+smb_dow+konto_kosz=txt
      seek txt+"@"
   endif
-  ?? speC(CHR(13)+P_UON+SPACE(80))
+  ?? speC(HB_BCHAR(13)+P_UON+SPACE(80))
   ?? spec(P_UOFF)
   ? " RAZEM "+TranR(txt,"XX-XX-XXXXX")+"|"+TrAN(W,"@E ",A_ZAOKR,18)+"|  NARASTAJĄCO: "+TrAN(Wtot+=w,"@E ",A_ZAOKR,18)
 ENDDO
@@ -5406,7 +5403,7 @@ DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
    endif
    IF prow()>P_ROWN
       IF STRONA>0
-         ?? speC(chr(13)+chr(12))
+         ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
          setprc(0,0)
       else
      print()
@@ -5448,7 +5445,7 @@ DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
    W:=0
    IF MAIN_FLAG .AND. D_LPVAL(pozycja)+4+prow()>P_ROWN .or. prow()+4>P_ROWN
       IF STRONA>0
-         ?? speC(chr(13)+chr(12))
+         ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
          setprc(0,0)
       else
      print()
@@ -5485,11 +5482,11 @@ DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
   iw:=0
   do while nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)=txt .AND. data<=do
      IF MAIN_FLAG .AND. D_LPVAL(pozycja)+1+prow()>P_ROWN .or. prow()+1>P_ROWN
-        ?? speC(CHR(13)+P_UON+SPACE(80))
+        ?? speC(HB_BCHAR(13)+P_UON+SPACE(80))
         ?? spec(P_UOFF)
         ? "DO PRZENIESIENIA |"+TrAN(W,"@E ",A_ZAOKR,17)+"|                                           "
         ?? speC(P_UOFF)
-        ?? speC(chr(13)+chr(12))
+        ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
         setprc(0,0)
         ?? padr(firma_n,P_COLN-16)," dnia ",dtoc(DatE())
         ?
@@ -5545,7 +5542,7 @@ DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
   if nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)=txt
      seek txt+"@"
   endif
-  ?? speC(CHR(13)+P_UON+SPACE(80))
+  ?? speC(HB_BCHAR(13)+P_UON+SPACE(80))
   ?? spec(P_UOFF)
   ? "RAZEM "+TranR(txt,"XX-XX-XXXXXX/X")+"|"+TrAN(W,"@E ",A_ZAOKR,17)+"|  NARASTAJĄCO: "+TrAN(Wtot+=w,"@E ",A_ZAOKR,17)
 ENDDO

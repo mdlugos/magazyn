@@ -1,5 +1,5 @@
 #include "inkey.ch"
-#include "../common/getexit.ch"
+#include "getexitm.ch"
 #ifndef A_FA
 #ifdef A_WA
 #define cenA_zaK cena_przy
@@ -68,9 +68,9 @@ zaznacz,info,data,pozycja
 stat FUNCTION JM(j_m,j_o,p,r)
    field jm
    local ret
-   J_M=upper(J_M)
+   J_M=UPPER(J_M)
    ret=ACZOJS(JMIAR,@j_m)
-   J_M:=lower(J_M)
+   J_M:=LOWER(J_M)
    if ret .and. j_m # jm
       j_o=upper(j_m)
       p=1
@@ -499,7 +499,7 @@ endif
     IF empty(stos)
       @ 10,5 say "        "
     else
-      @ 10,5 SAY "Lamus:"+str(len(STOS),2)
+      @ 10,5 SAY "Lamus:"+str(LEN(STOS),2)
     endif
     @ 10,61 SAY "Symbol"
     @ 11,3  say dp
@@ -1265,6 +1265,7 @@ endif
         #endif
         readmodal(txt,@i);txt:=NIL
 
+        //i:=alarm("Zmiana obowiązuje od:;Esc - rezygnacja z poprawy;(stara data  data zakupu  nowa data)",{dtoc(DP),dtoc(max(dp,STANY->data_przy)),dtoc(da)})
         if readkey()#K_ESC
 #ifdef A_HBGET
            //i:=__GetListLast():ReadStats( 14 ) // GetListPos()

@@ -1,6 +1,6 @@
 #include "dm_form.ch"
 #include "inkey.ch"
-#include "../common/getexit.ch"
+#include "getexitm.ch"
 //#include "dbinfo.ch"
 #ifndef A_MKNK
   //#define A_MKNK(x) eval({|y|mknk:=min(5,max(mknk,len(ltrim(str(y))))),pad(str(y,mknk),5)},x)
@@ -637,7 +637,7 @@ procedure dok1(_f)
       data_dost:=dd
 #ifdef A_KSEF
       nr_ksef:=n_ksef
-      binfieldput('KSEF',xml_ksef)
+      ksef:=xml_ksef
 #endif
       wtoT:=0
 #ifdef A_SUBDOK
@@ -691,7 +691,7 @@ procedure dok1(_f)
       n_f:=nr_faktury
 #ifdef A_KSEF
       n_ksef:=nr_ksef
-      xml_ksef:=BINFIELDGET('KSEF')
+      xml_ksef:=ksef
 #endif
 #ifdef A_DATAVAT
       dv:=data_vat
@@ -1062,7 +1062,7 @@ procedure dok11(_f)
 #endif
 #ifdef A_KSEF
     @ _frow-1,11 SAY nr_ksef
-    @ _frow-1,50 SAY binfieldget('KSEF') picture "@S28"
+    @ _frow-1,50 SAY KSEF picture "@S28"
 #endif
     @ _frow,2 say pad(uwagi,76)
     return
@@ -1101,7 +1101,7 @@ procedure dok11(_f)
 #endif
 #ifdef A_KSEF
     @ _frow-2,11 SAY nr_ksef
-    @ _frow-2,50 SAY binfieldget('KSEF') picture "@S28"
+    @ _frow-2,50 SAY KSEF picture "@S28"
 #endif
     @  _frow,73 say nk  PICTURE "XXXXX"
 
@@ -1498,7 +1498,7 @@ memvar exp_od,exp_do
     nr_faktury := n_f
 #ifdef A_KSEF
     nr_ksef := n_ksef
-    BINFIELDPUT('KSEF',xml_ksef)
+    ksef := xml_ksef
 #endif
 #ifdef A_OLZA
     konto_kosz:=kk
@@ -4288,13 +4288,13 @@ next i
 #ifdef A_CENVAT
 if dok_p_r="F" .and. !dok_df
    x:=vat(,)
-   dm->wartosc:=bin2d(DM->(binfieldget('d_wartosc')))-x+dm->wart_vat
-   field2bin('d_wartosc',dm->wartosc-dm->wart_vat+x,1)
+   dm->wartosc:=bin2d(DM->(binfieldget([d_wartosc])))-x+dm->wart_vat
+   field2bin([d_wartosc],dm->wartosc-dm->wart_vat+x,1)
 #else
 if dok_df
    x:=vat(,)
-   dm->wartosc:=bin2d(DM->(binfieldget('d_wartosc')))+x-dm->wart_vat
-   field2bin('d_wartosc',dm->wartosc+dm->wart_vat-x,1)
+   dm->wartosc:=bin2d(DM->(binfieldget([d_wartosc])))+x-dm->wart_vat
+   field2bin([d_wartosc],dm->wartosc+dm->wart_vat-x,1)
 #endif
 endif
 #endif
