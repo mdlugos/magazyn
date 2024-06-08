@@ -1,4 +1,5 @@
 dbu.prg
+cppl852m.c cp_utf8m.c
 dbucopy.prg
 dbuedit.prg
 dbuhelp.prg

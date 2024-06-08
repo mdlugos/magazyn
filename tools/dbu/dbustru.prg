@@ -15,10 +15,12 @@
 *
 *	create or modify the structure of a database file
 ******
+#include "dbstrux.prg"
+
 PROCEDURE modi_stru
 local saveColor
 PRIVATE filename,fill_row,cur_row,rec1,m_item,i,n,f_name,f_type,f_len,f_dec,;
-		prev_rec,field_id,stru_ok,is_insert,is_append,altered,type_n,;
+		prev_rec,field_id,stru_ok,is_insert,is_append,altered,/*type_n,*/;
 		empty_row,not_empty,old_help,chg_name,len_temp,stru_name,;
 		wstru_buff
 
@@ -32,8 +34,8 @@ wstru_buff = SAVESCREEN(8, 20, 23, 59)
 * local arrays..constant values
 DECLARE ffield[4]
 DECLARE field_col[4]
-DECLARE data_type[5]
-DECLARE l_usr[5]
+//DECLARE data_type[5]
+//DECLARE l_usr[5]
 
 * field list for structure file
 ffield[1] = "field_name"
@@ -47,7 +49,7 @@ field_col[2] = 35
 field_col[3] = 48
 field_col[4] = 55
 
-* data types as character strings
+/* data types as character strings
 data_type[1] = "Character"
 data_type[2] = "Numeric  "
 data_type[3] = "Date     "
@@ -60,9 +62,9 @@ l_usr[2] = 4			&& numeric - variable len and dec
 l_usr[3] = 2			&& date - fixed len - 8
 l_usr[4] = 2			&& logical - fixed len - 1
 l_usr[5] = 2			&& memo - fixed len - 10
-
+*/
 * initialize local variables
-type_n = 1				&& index into data types
+//type_n = 1				&& index into data types
 altered = .F.			&& any changes?
 chg_name = .T.			&& possible to change field names?
 prev_rec = 0			&& detect record movement
@@ -192,11 +194,11 @@ DO WHILE .NOT. q_check()
 		CASE keystroke = 13 .OR. isdata(keystroke)
 			* enter/select something
 
-			IF n = 2
+			/*IF n = 2
 				* field_type gets special treatment
 				type_n = AT(field_type, "CNDLM")
 
-			ELSE
+			ELSE*/
 				* turn on cursor for GET
 				SET CURSOR ON
 
@@ -205,7 +207,7 @@ DO WHILE .NOT. q_check()
 					KEYBOARD CHR(keystroke)
 
 				ENDIF
-			ENDIF
+			//ENDIF
 
 			* get descriptor fieldname to normal variable for macro expansion
 			field_id = ffield[n]
@@ -220,14 +222,15 @@ DO WHILE .NOT. q_check()
 
 			DO CASE
 
-				CASE n = 1
+				CASE n < 3 //= 1
 					* get is for field_name..force all caps
 					SetColor(M->color1)
-					@ cur_row,field_col[1] GET field_name PICTURE "@!K"
+//					@ cur_row,field_col[1] GET field_name PICTURE "@!K"
+					@ cur_row,field_col[n] GET &field_id PICTURE "@!K"
 					READ
 					SetColor(M->color7)
 					keystroke = LASTKEY()
-
+/*
 				CASE n = 2
 					* special treatment for field_type
 
@@ -296,7 +299,7 @@ DO WHILE .NOT. q_check()
 
 						ENDIF
 					ENDIF new type
-
+*/
 				CASE n = 3
 					* get is for field_len
 
@@ -488,7 +491,7 @@ DO WHILE .NOT. q_check()
 		CASE keystroke = 4
 			* right arrow
 
-			IF n < l_usr[AT(field_type, "CNDLM")]
+			IF n < 4 //l_usr[AT(field_type, "CNDLM")]
 				n = n + 1
 
 			ENDIF
@@ -658,7 +661,7 @@ DO WHILE .NOT. q_check()
 		CASE keystroke = 6 .OR. keystroke = 23
 			* end or ^end
 			keystroke = 0
-			n = l_usr[AT(field_type, "CNDLM")]
+			n = 4 //l_usr[AT(field_type, "CNDLM")]
 
 		CASE keystroke = 1 .OR. keystroke = 29
 			* home or ^home
@@ -790,9 +793,9 @@ DO WHILE .NOT. q_check()
 			* update field/record number on screen
 			@ 9,field_col[1] + 26 SAY "Field " + pad(LTRIM(STR(RECNO())), 5)
 
-			IF n > l_usr[AT(field_type, "CNDLM")]
+			IF n > 4 //l_usr[AT(field_type, "CNDLM")]
 				* check for n out of range
-				n = l_usr[AT(field_type, "CNDLM")]
+				n = 4 //l_usr[AT(field_type, "CNDLM")]
 
 			ENDIF
 
@@ -904,7 +907,8 @@ FUNCTION stru_row
 PARAMETERS fill_row
 
 @ fill_row,field_col[1];
-SAY field_name + hb_UTF8ToStr( " │ " ) + data_type[AT(field_type, "CNDLM")] + hb_UTF8ToStr( " │ " )
+SAY field_name + hb_UTF8ToStr( " │ " ) + pad(field_type,9)+ hb_UTF8ToStr( " │ " )
+//SAY field_name + hb_UTF8ToStr( " │ " ) + data_type[AT(field_type, "CNDLM")] + hb_UTF8ToStr( " │ " )
 
 IF field_type = "C"
 	* display Clipper extended field length
@@ -940,7 +944,8 @@ DO CASE
 
 	CASE n = 2
 		* display field_type as character string
-		@ cur_row,field_col[2] SAY data_type[AT(field_type, "CNDLM")]
+//		@ cur_row,field_col[2] SAY data_type[AT(field_type, "CNDLM")]
+		@ cur_row,field_col[2] SAY pad(field_type,9)
 
 	CASE n = 3
 

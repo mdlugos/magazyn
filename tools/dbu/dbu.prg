@@ -56,7 +56,7 @@ PROCEDURE Dbu( param1, param2, param3 )
    ENDIF
 
    // Combine all the command line params together
-   param1 := UPPER( param1 + "~" + param2 + "~" + param3 + "~" )
+   param1 := param1 + "~" + param2 + "~" + param3 + "~"
 
    // Process the command line parameters where com_line will contain the
    // view/file name to open and param2 will contain the color directive
@@ -75,10 +75,10 @@ PROCEDURE Dbu( param1, param2, param3 )
       rddsetdefault( "DBFCDX" )
    ENDIF
 
-   hb_cdpSelect( "UTF8EX" )
-   hb_gtInfo( HB_GTI_BOXCP, "UTF8EX" )
+   hb_cdpSelect( "UTF8MD" )
+   hb_gtInfo( HB_GTI_BOXCP, "UTF8MD" )
 
-   Set( _SET_DBCODEPAGE,"PL852")
+   Set( _SET_DBCODEPAGE,"PL852M")
 
    SetKey( K_ALT_V, {|| hb_gtInfo( HB_GTI_CLIPBOARDPASTE, .T. ) } )
 
@@ -774,10 +774,10 @@ FUNCTION ParseCommLine( cStr )
     cStr   := SUBSTR( cStr, ++nPos )
 
     DO CASE
-    CASE ( cToken == "/E" )
+    CASE ( UPPER(cToken) == "/E" )
        NetMode( .F. )
 
-    CASE ( cToken $ "/C/M" )
+    CASE ( UPPER(cToken) $ "/C/M" )
        aRet[2] := cToken
 
     CASE !( cToken == "" )
