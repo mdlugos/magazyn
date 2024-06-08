@@ -637,7 +637,7 @@ procedure dok1(_f)
       data_dost:=dd
 #ifdef A_KSEF
       nr_ksef:=n_ksef
-      ksef:=xml_ksef
+      binfieldput('KSEF',xml_ksef)
 #endif
       wtoT:=0
 #ifdef A_SUBDOK
@@ -691,7 +691,7 @@ procedure dok1(_f)
       n_f:=nr_faktury
 #ifdef A_KSEF
       n_ksef:=nr_ksef
-      xml_ksef:=ksef
+      xml_ksef:=BINFIELDGET('KSEF')
 #endif
 #ifdef A_DATAVAT
       dv:=data_vat
@@ -1062,7 +1062,7 @@ procedure dok11(_f)
 #endif
 #ifdef A_KSEF
     @ _frow-1,11 SAY nr_ksef
-    @ _frow-1,50 SAY KSEF picture "@S28"
+    @ _frow-1,50 SAY binfieldget('KSEF') picture "@S28"
 #endif
     @ _frow,2 say pad(uwagi,76)
     return
@@ -1101,7 +1101,7 @@ procedure dok11(_f)
 #endif
 #ifdef A_KSEF
     @ _frow-2,11 SAY nr_ksef
-    @ _frow-2,50 SAY KSEF picture "@S28"
+    @ _frow-2,50 SAY binfieldget('KSEF') picture "@S28"
 #endif
     @  _frow,73 say nk  PICTURE "XXXXX"
 
@@ -1498,7 +1498,7 @@ memvar exp_od,exp_do
     nr_faktury := n_f
 #ifdef A_KSEF
     nr_ksef := n_ksef
-    ksef := xml_ksef
+    BINFIELDPUT('KSEF',xml_ksef)
 #endif
 #ifdef A_OLZA
     konto_kosz:=kk

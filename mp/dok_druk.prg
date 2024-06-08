@@ -2311,7 +2311,7 @@ if it_zesmnu#NIL
    goto it_Zesmnu
 endif
 setpos(row()+recno(),col())
-if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
+if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+pad(nazwa,hb_fieldlen('NAZWA'))}})
    it_zesmnu:=recno()
    ap:=getlines(POLA)
    l:=len(ap)

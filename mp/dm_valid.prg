@@ -173,10 +173,10 @@ DO WHILE .T.
 
 #ifdef A_KHSEP
 #define D_KH kontrahent
-#define D_KH1 dost_odb
+#define D_KH1 pad(dost_odb,HB_FIELDLEN('DOST_ODB'))
 #else
 #define D_KH hb_bleft(dost_odb,A_NRLTH)
-#define D_KH1 if(val(dost_odb)=0,dost_odb,hb_bsubstr(dost_odb,A_NRLTH+2))
+#define D_KH1 pad(if(val(dost_odb)=0,dost_odb,hb_bsubstr(dost_odb,A_NRLTH+2)),HB_FIELDLEN('DOST_ODB'))
 #endif
      rf:=firMy->(recno())
      set order to 1
@@ -2514,12 +2514,12 @@ DO CASE
       SET ORDER TO TAG FIRM_NUM
       sel('KH','KH')
       SET RELATION TO str(N1,A_NRLTH) INTO FIRMY
-      _sprompt:={||str(n1,A_NRLTH)+if(""=uwagi,"│","*")+n15+"│"+longname}
+      _sprompt:={||str(n1,A_NRLTH)+if(""=uwagi,"│","*")+n15+"│"+pad(longname,HB_FIELDLEN('LONGNAME'))}
 #else
 #ifdef A_FFULL
-      _sprompt:={||numer_kol+if(""=uwagi,"│","*")+nazwa+"│"+longname}
+      _sprompt:={||numer_kol+if(""=uwagi,"│","*")+nazwa+"│"+pad(longname,HB_FIELDLEN('LONGNAME'))}
 #else
-      _sprompt:={||numer_kol+if(""=uwagi,"│","*")+nazwa}
+      _sprompt:={||numer_kol+if(""=uwagi,"│","*")+pad(nazwa,HB_FIELDLEN('NAZWA'))}
 #endif
 #endif
       _spocz:=UpP(_spocz)
@@ -2687,14 +2687,14 @@ DO CASE
                      _slth:=0
                      _sfilt:='['+txt+']$UPPER(longname)'
                      _sfilb:={||txt$UPPER(longname)}
-                     _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"│","*")+nazwa+"│"+longname,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+                     _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"│","*")+nazwa+"│"+pad(longname,HB_FIELDLEN('LONGNAME')),if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
                   endif
 #else
                   _spocz:=''
                   _slth:=0
                   _sfilt:='['+txt+']$UPPER(naZwa)'
                   _sfilb:={||txt$UPPER(naZwa)}
-                  _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"│","*")+nazwa,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+                  _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,"│","*")+pad(nazwa,HB_FIELDLEN('NAZWA')),if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
 #endif
                endif
       ENDCASE

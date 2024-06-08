@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../harbour"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.ch": "c"
+		}
+	}
+}

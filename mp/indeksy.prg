@@ -29,11 +29,11 @@
 #endif
 
 #ifdef A_ANKER
- #define nazwA (field->nazwa+strpic(field->cenA,11,2,"@E ")+" zł "+field->proc_vat+"%")
+ #define nazwA (pad(nazwa,hb_fieldlen([nazwa]))+strpic(field->cenA,11,2,"@E ")+" zł "+field->proc_vat+"%")
 #endif
 
 #ifdef A_FP600
- #define nazwA (field->nazwa+strpic(field->cenA,11,2,"@E ")+" zł "+field->proc_vat+"%")
+ #define nazwA (pad(nazwa,hb_fieldlen([nazwa]))+strpic(field->cenA,11,2,"@E ")+" zł "+field->proc_vat+"%")
 #endif
 
 #ifndef STANY
@@ -234,7 +234,7 @@ memvar pm,dok_di
   #define LARTXT left(if(polka=" ",if(nr_rys=" ",nazwA,left(nazwA,37)+if(len(trim(nazwA))>37,chr(26)," ")+nr_rys),if(nr_rys=" ",left(nazwA,38)+;
 if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26)," ")+left(nr_rys,7)+" ")+polka) ,45) + if(""=INDX_MAT->UWAGI,RET,"&")+subs(STANY->NR_MAG,2)
  #else
-  #define LARTXT left(nazwA,44)+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
+  #define LARTXT pad(nazwA,44)+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
  #endif
   RET:=IF(ALIAS(sel:=I_LAM(STANY->(if(il=NIL.and.da>data_zmian.and.stan#0,data_zmian,da))))="IND_LAM","┼","│")
   if _sbeg=1
@@ -244,9 +244,9 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
   ENDIF
 #else
  #ifdef A_KODY
-  #define LARTXT left(nazwA,45-len(KoD))+ret+INDX_MAT->KoD
+  #define LARTXT pad(nazwA,45-len(KoD))+ret+INDX_MAT->KoD
  #else
-  #define LARTXT nazwA
+  #define LARTXT pad(nazwA,HB_FIELDLEN([NAZWA]))
  #endif
   RET:=IF(ALIAS(sel:=I_LAM(if(il=NIL.and.da>STANY->data_zmian.and.STANY->stan#0,STANY->data_zmian,da)))="IND_LAM","┼","│")
 #endif
@@ -278,9 +278,9 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
  #define INDEXPIC "XXXXXXX"
  #undef LARTXT
  #ifdef STANY
-  #define LARTXT left(nazwA,46)
+  #define LARTXT pad(nazwA,46)
  #else
-  #define LARTXT left(nazwA,43)+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
+  #define LARTXT pad(nazwA,43)+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
  #endif
 #endif
 
@@ -322,9 +322,9 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
   #ifdef A_VIEWCZAK
    #undef LARTXT
    #ifndef STANY
-    #define LARTXT left(nazwA,34)+ret+str(da-STANY->data_przy,3)+ret+strpic(STANY->cenA_zaK D_CF8,6,CEOKR,"@E ",.t.)+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
+    #define LARTXT pad(nazwA,34)+ret+str(da-STANY->data_przy,3)+ret+strpic(STANY->cenA_zaK D_CF8,6,CEOKR,"@E ",.t.)+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
    #else
-    #define LARTXT left(nazwA,37)+IF(""=INDX_MAT->UWAGI,ret,"&")+strpic(STANY->cenA_zaK D_CF8,8,CEOKR,"@E ",.t.)
+    #define LARTXT pad(nazwA,37)+IF(""=INDX_MAT->UWAGI,ret,"&")+strpic(STANY->cenA_zaK D_CF8,8,CEOKR,"@E ",.t.)
    #endif
   #else
    #ifdef A_VIEWVAT
@@ -338,7 +338,7 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
   #endif
   #ifdef A_SHARP
    #undef LARTXT
-   #define LARTXT left(nazwA,42)+IF(""=INDX_MAT->UWAGI,ret,"&")+strpic(STANY->kasa_shift+STANY->kasa_klaw*.01,4,2,"@E ",.t.)
+   #define LARTXT pad(nazwA,42)+IF(""=INDX_MAT->UWAGI,ret,"&")+strpic(STANY->kasa_shift+STANY->kasa_klaw*.01,4,2,"@E ",.t.)
   #endif
  #else
   #ifdef A_ANKER
@@ -348,18 +348,18 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
    #define ILDEC 2
    #ifdef A_VIEWVAT
     #define OBRTXT 10
-    #define LARTXT left(nazwA,33)+IF(""=INDX_MAT->UWAGI,{"0","│","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+KoD+ret+INDX_MAT->proc_vat
+    #define LARTXT pad(nazwA,33)+IF(""=INDX_MAT->UWAGI,{"0","│","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+KoD+ret+INDX_MAT->proc_vat
    #else
     #define OBRTXT 7
     #ifdef A_VIEWCZAK
-     #define LARTXT left(nazwA,33)+IF(""=INDX_MAT->UWAGI,{"0","│","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+KoD+ret+strpic(STANY->cenA_zaK D_CF8,5,CEOKR,"@E ")
+     #define LARTXT pad(nazwA,33)+IF(""=INDX_MAT->UWAGI,{"0","│","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+KoD+ret+strpic(STANY->cenA_zaK D_CF8,5,CEOKR,"@E ")
     #else
      #undef nazwA
-     #define nazwA (nazwa+'│'+left(indx_mat->shortname,10))
+     #define nazwA (pad(nazwa,hb_fieldlen([nazwa]))+'│'+left(indx_mat->shortname,10))
      #ifndef STANY
-      #define LARTXT nazwA+IF(""=INDX_MAT->UWAGI,{"0","│","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
+      #define LARTXT pad(nazwA,hb_fieldlen([nazwa]))+IF(""=INDX_MAT->UWAGI,{"0","│","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
      #else
-      #define LARTXT nazwA+IF(""=INDX_MAT->UWAGI,{"0","│","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD
+      #define LARTXT pad(nazwA,hb_fieldlen([nazwa]))+IF(""=INDX_MAT->UWAGI,{"0","│","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD
       //+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
      #endif
     #endif
@@ -369,7 +369,7 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
    #ifdef A_7
     #ifdef A_KODY
      #undef LARTXT
-     #define LARTXT left(nazwA,54-len(KoD))+ret+INDX_MAT->KoD
+     #define LARTXT pad(nazwA,54-len(KoD))+ret+INDX_MAT->KoD
      #define SHORTTXT
     #else
      #ifdef A_FA
