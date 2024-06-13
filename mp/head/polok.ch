@@ -5,11 +5,13 @@
     #define A_EXT hb_hextonum, hb_numtohex, curdir
     #define A_WIN_PRN .f.
   #endif
-#define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usˆug Informatycznych Marek Dˆugosz, 43-400 Cieszyn, ul. R¢wna 16'
+#define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma UsÅ‚ug Informatycznych Marek DÅ‚ugosz, 43-400 Cieszyn, ul. RÃ³wna 16'
 #define A_BACKUP MEMVAR->backup
 #define A_VIEWCZAK
 //#define A_VIEWVAT
 #define A_WL
+#define EvAlDb(x) &(x)
+#define EvaldB eVal
 #define UpP(x) UPPER(x)
 #define PC852 "PL852M"
 #include "lan.ch"
@@ -48,10 +50,10 @@
 #define A_SWWKTM
 #define A_PKWiU
 #define STANY indx_mat
-#define A_SUMK   -36559898384
+#define A_SUMK   -30134572416
 #define A_KOMU_N "FH AMIPOL Sp.J. Polok & Polok"
 #define A_KOMU_A "Cieszyn, ul. Filasiewicza 3"
-#define A_AUTOR  "A.D. 1995-2012, Marek Dˆugosz, Cieszyn, ul. R¢wna 16, tel. 338522553"
+#define A_AUTOR  "A.D. 1995-2024, Marek DÅ‚ugosz, Cieszyn, ul. RÃ³wna 16, tel. 338522553"
 #define A_FILELIMIT '41'
 #define A_NAZBEG 7 //5
 #define A_NRLTH 5 //3
