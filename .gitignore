@@ -8,3 +8,5 @@
 *.bat
 *.log
 test*
+obj/
+.hbmk/
