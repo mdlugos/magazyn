@@ -16,6 +16,7 @@
 *	create or modify the structure of a database file
 ******
 #include "dbstrux.prg"
+#define hb_UTF8ToStr(x) x
 
 PROCEDURE modi_stru
 local saveColor
@@ -919,11 +920,11 @@ ELSE
 	* normal field length
 	@ fill_row,field_col[3] SAY STR(field_len, 4) + hb_UTF8ToStr( " │    " )
 
-	IF field_type = "N"
+//	IF field_type = "N"
 		* display decimals for numeric field
 		@ fill_row,field_col[4] SAY field_dec
 
-	ENDIF
+//	ENDIF
 ENDIF
 
 RETURN 0
@@ -1165,7 +1166,7 @@ FUNCTION do_modstru
 
 LOCAL cAlias
 PRIVATE stru_done, i, is_open, new_name, name_temp, add_name,;
-		dbt_spec, dbt_temp, rec1
+		dbt_spec, dbt_temp, dbt_ext ,rec1
 
 DO CASE
 
@@ -1242,10 +1243,10 @@ DO CASE
 			* establish temp filespec and dbt specs in same directory
 			name_temp = SUBSTR(filename, 1, RAT(hb_ps(), filename)) +;
 						"ddbbuuuu.tmp"
-			dbt_spec = SUBSTR(filename, 1, RAT(".", filename)) +;
-					   "dbt"
-			dbt_temp = SUBSTR(name_temp, 1, RAT(".", name_temp)) +;
-					   "dbt"
+			dbt_ext  = SUBSTR(RDDINFO( RDDI_MEMOEXT ),2)
+
+			dbt_spec = SUBSTR(filename, 1, RAT(".", filename)) + dbt_ext
+			dbt_temp = SUBSTR(name_temp, 1, RAT(".", name_temp)) + dbt_ext
 
 			IF FILE(dbt_spec)
 				* data file contains memo fields

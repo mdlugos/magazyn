@@ -9,6 +9,8 @@
 *
 */
 
+#define INDEXEXT() strtran(lower(indexext()),".cdx",".idx")
+#define hb_UTF8ToStr(x) x
 
 ******
 *	set_view

@@ -1,5 +1,11 @@
+#-lrddads -lace32 rddads.hbc
+-static
+#-gui -gtwvt
+#-gttrm
+-i../../common
 dbu.prg
-cppl852m.c cp_utf8m.c
+../../common/cppl852m.c
+../../common/cp_utf8m.c
 dbucopy.prg
 dbuedit.prg
 dbuhelp.prg

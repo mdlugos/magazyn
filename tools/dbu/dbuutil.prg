@@ -9,6 +9,8 @@
 *
 */
 
+#define INDEXEXT() strtran(lower(indexext()),".cdx",".idx")
+#define hb_UTF8ToStr(x) x
 
 ******
 *	setup()
@@ -2152,13 +2154,13 @@ k = ""
 IF FILE(M->filename)
 	* only if the file exists
 
-	IF Lower( INDEXEXT() ) = ".ntx"
+	IF INDEXEXT() = ".ntx"
 		* Clipper index file format
 		k_pos = 23
 
-	ELSE
+	ELSE //idx
 		* .NDX..dBASE index file format
-		k_pos = 25
+		k_pos = 512
 
 	ENDIF
 
@@ -2167,10 +2169,10 @@ IF FILE(M->filename)
 
 	IF FERROR() = 0
 		* allocate 512 byte buffer
-		buffer = SPACE(512)
+		buffer = SPACE(1024)
 
 		* read the index file header into memory
-		FREAD(M->handle, @buffer, 512)
+		FREAD(M->handle, @buffer, 1024)
 
 		* discard all bytes before the key expression
 		k = HB_BSUBSTR(M->buffer, M->k_pos)

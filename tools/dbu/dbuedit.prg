@@ -13,6 +13,7 @@
 #include "memoedit.ch"
 
 #define TB_REFRESH_RATE    5     // Wait 5 seconds between tbrowse refreshes
+#define hb_UTF8ToStr(x) x
 
 
 /***
@@ -112,7 +113,7 @@ memvar keystroke,help_code,func_sel,cur_area,cur_dbf,field_list,frame,;
       /* determine workarea/alias stuff */
       cEditField := &cFieldArray[i]
       if ( "->" $ cEditField )
-         cAlias := Substr(cEditField, 1, At("->", cEditField) + 1)
+         cAlias := Substr(cEditField, 1, At("->", cEditField) - 1)
          cFieldName := Substr(cEditField, At("->", cEditField) + 2)
          cHead := cAlias + ";" + cFieldName
          nWa := Select(cAlias)

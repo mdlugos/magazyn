@@ -8,7 +8,7 @@
 *  All rights reserved.
 *
 */
-
+#define INDEXEXT() strtran(lower(indexext()),".cdx",".idx")
 
 ******
 *	make_ntx
@@ -240,7 +240,7 @@ DO CASE
 		INDEX ON &k_exp TO &filename
 		CLOSE INDEX
 
-		IF AT(Lower( INDEXEXT() ), Lower( M->filename )) = LEN(M->filename) - 3 .AND.;
+		IF AT( INDEXEXT(), Lower( M->filename )) = LEN(M->filename) - 3 .AND.;
 		   FILE(name(M->filename) + INDEXEXT()) .AND. M->add_name
 			* add only .ntx files in the current directory
 

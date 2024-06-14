@@ -14,8 +14,12 @@
 #include "inkey.ch"
 #include "set.ch"
 
+REQUEST DBFCDX
+
 // Uncomment to update the obsolete declaration:
 #xtranslate DECLARE => PRIVATE
+#define INDEXEXT() strtran(lower(indexext()),".cdx",".idx")
+#define hb_UTF8ToStr(x) x
 
 PROCEDURE Dbu( param1, param2, param3 )
 
@@ -64,23 +68,29 @@ PROCEDURE Dbu( param1, param2, param3 )
    com_line := param3[1]
    param2   := param3[2]
 
+   IF "-cdx" $ Lower( hb_cmdLine() )
+      rddsetdefault( "DBFCDX" )
+   ELSE
+      rddsetdefault( "DBFNTX" )
+   ENDIF
+
+   REQUEST HB_CODEPAGE_PL852M
+   REQUEST HB_CODEPAGE_UTF8MD
+   HB_LANGSELECT('PL')
+   hb_cdpSelect( "UTF8MD" )
+   hb_gtInfo( HB_GTI_BOXCP, "UTF8MD" )
+   ! CHCP 65001 > NUL
+   Set( _SET_DBCODEPAGE,"PL852M")
+   
+   SetKey( K_ALT_V, {|| hb_gtInfo( HB_GTI_CLIPBOARDPASTE, .T. ) } )
+   hb_gtInfo( HB_GTI_COMPATBUFFER, .F. ) //before save screen
+
    SET CURSOR OFF                                && cursors are for gets
    SAVE SCREEN                                   && the screen you save...
    SET SCOREBOARD OFF                            && who's keeping score, anyhow
    SET KEY 28 TO                                 && some folks need help
 
    Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
-
-   IF "-cdx" $ Lower( hb_cmdLine() )
-      rddsetdefault( "DBFCDX" )
-   ENDIF
-
-   hb_cdpSelect( "UTF8MD" )
-   hb_gtInfo( HB_GTI_BOXCP, "UTF8MD" )
-
-   Set( _SET_DBCODEPAGE,"PL852M")
-
-   SetKey( K_ALT_V, {|| hb_gtInfo( HB_GTI_CLIPBOARDPASTE, .T. ) } )
 
    IF (ISCOLOR() .OR. "/C" $ UPPER(param2)) .AND. .NOT. "/M" $ UPPER(param2)
       * make it pretty
