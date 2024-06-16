@@ -861,7 +861,7 @@ static i,b,lth
            if hb_bsubstr(b,r+l,1)=chr(13)
               --l
            endif
-           if hb_blen(a)>lth
+           if len(a)>lth
               ++lth
               ++i
            else
