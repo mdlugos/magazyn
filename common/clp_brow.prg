@@ -824,7 +824,7 @@ local b:=TBColumnNew(m[1],fb)
 return b
 ***************************
 stat func sk(x,a,h)
-#define D_BLEN 512
+#define D_BLEN 1024
 local p,r,k,l,n,o,eol
 //#ifdef __PLATFORM__UNIX
 // #define nl chr(10)
