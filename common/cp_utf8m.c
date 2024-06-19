@@ -290,7 +290,7 @@ static void hb_cp_init( PHB_CODEPAGE cdp )
 
 #define HB_CP_ID              UTF8MD
 #define HB_CP_INFO            "UTF-8 extended by MD"
-#define HB_CP_UNITB           HB_UNITB_437
+#define HB_CP_UNITB           HB_UNITB_852
 
 /* use character indexes instead of bytes ones */
 #define HB_CP_CHARIDX

@@ -1,5 +1,4 @@
 #-lrddads -lace32 rddads.hbc
--static
 #-gui -gtwvt
 #-gttrm
 -i../../common

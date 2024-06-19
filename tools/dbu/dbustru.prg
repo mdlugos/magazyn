@@ -15,6 +15,7 @@
 *
 *	create or modify the structure of a database file
 ******
+#include "dbinfo.ch"
 #include "dbstrux.prg"
 #define hb_UTF8ToStr(x) x
 
