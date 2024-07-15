@@ -266,12 +266,14 @@ reuse()
 
 #ifdef A_XPRN
    p_reset()
+/*   
    txt:="xprn.ini"
    do while inirest(@txt)
    begin sequence
    (&txt,txt:=NIL)
    end sequence
    enddo
+*/   
 #endif
 
 txt:={}

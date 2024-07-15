@@ -2237,6 +2237,7 @@ field spec_nr
              lock
           endif
           aeval(asp[i],{|x,y|fieldput(y+1,x)})
+          unlock
           skip
       next i
 #ifdef A_LAN
@@ -3409,6 +3410,7 @@ if len(d)=0
   alarm('Brak faktur w podanym zakresie:'+HB_EOL()+hb_jsonencode(s,.t.))
 else
   aeval(d,{|x|if(dbseek(x['ksefReferenceNumber']),,(dbappend(),field->nr_ksef:=x['ksefReferenceNumber'],field->nr_faktury:=x['invoiceReferenceNumber'],field->typ:=x['invoiceType'],field->netto:=val(x['net']),field->vat:=val(x['vat']),field->nazwa:=x['subjectBy','issuedByName','fullName']))})
+  unlock
 endif
 endif
 _s:=array(_sLEN)
