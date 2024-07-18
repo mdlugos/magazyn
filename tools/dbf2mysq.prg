@@ -14,13 +14,12 @@ STATIC oServer, lCreateTable := .F.
 PROCEDURE Main( ... )
 
    LOCAL cTok
-   LOCAL cHostName := ""//"evo"
-   LOCAL cUser := ""//"SYSDBA"
-   LOCAL cPassWord := ""//"masterkey"
+   LOCAL cHostName := ""
+   LOCAL cUser := ""
+   LOCAL cPassWord := ""
    LOCAL cDataBase, cTable, cFile, oBrowser, oTable
    LOCAL i
 
-   altd()
    Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
    SET DELETED ON
 
@@ -29,12 +28,7 @@ PROCEDURE Main( ... )
    REQUEST HB_CODEPAGE_UTF8MD
    REQUEST HB_CODEPAGE_PL852M
    HB_CDPSELECT('UTF8MD')
-//   hb_SetTermCP('UTF8MD')
 
-   //SET(_SET_DBCODEPAGE,'PL852M')
- 
-   // At present time (2000-10-23) DBFCDX is default RDD and DBFNTX is
-   // now DBF (I mean the one able to handle .dbt-s :-))
    rddSetDefault( "DBFNTX" )
 
    IF PCount() < 4
@@ -42,7 +36,7 @@ PROCEDURE Main( ... )
       QUIT
    ENDIF
 
-//   hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
+   hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
 
    i := 1
    // Scan parameters and setup workings
@@ -84,15 +78,14 @@ PROCEDURE Main( ... )
       QUIT
    ENDIF
 
-   //oServer:Query("SET CHARACTER SET = utf8mb3")
-   //IF oServer:NetErr()
-   //   ? oServer:Error()
-   //   QUIT
-   //ENDIF
-   //mysql_set_character_set(oServer:nSocket,'cp852')
+   oServer:Query("SET CHARACTER SET utf8mb4")
+   IF oServer:NetErr()
+      ? oServer:Error()
+      QUIT
+   ENDIF
 
    //oServer:Query("SET sql_mode = 'PAD_CHAR_TO_FULL_LENGTH'")
-   oServer:Query("CREATE DATABASE IF NOT EXISTS "+cDataBase+" COLLATE utf8mb3_polish_ci")
+   oServer:Query("CREATE DATABASE IF NOT EXISTS "+cDataBase+" COLLATE utf8mb4_0900_ai_ci")
    IF oServer:NetErr()
       ? oServer:Error()
       QUIT
@@ -147,22 +140,25 @@ static proc chgdat(cFile, cTable, lCreateTable)
       cTable:= lower(Alias())
    end if
 
-   begin sequence
-      IF lCreateTable
-         IF hb_AScan( oServer:ListTables(), cTable,,, .T. ) > 0
-            oServer:DeleteTable( cTable )
-            IF oServer:NetErr()
-               ? oServer:Error()
-               break
-            ENDIF
-         ENDIF
-         aeval(aDbfStruct,{|x,y|x[2]:=left(x[2],1)})
-         oServer:CreateTable( cTable, aDbfStruct )
+   IF lCreateTable
+      IF hb_AScan( oServer:ListTables(), cTable,,, .T. ) > 0
+         oServer:DeleteTable( cTable )
          IF oServer:NetErr()
             ? oServer:Error()
             break
          ENDIF
       ENDIF
+      aeval(aDbfStruct,{|x,y|x[2]:=left(x[2],1)})
+      oServer:CreateTable( cTable, aDbfStruct )
+      IF oServer:NetErr()
+         ? oServer:Error()
+         break
+      ENDIF
+      dbCloseArea()
+      RETURN
+   ENDIF
+
+   begin sequence
 
       oTable := oServer:Query( "SELECT `deleted` FROM `" + cTable + "` LIMIT 1" )
       IF oTable:NetErr()
