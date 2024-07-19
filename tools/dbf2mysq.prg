@@ -8,6 +8,7 @@ REQUEST DBFCDX
 
 #include "inkey.ch"
 #include "hbgtinfo.ch"
+#include "set.ch"
 
 STATIC oServer, lCreateTable := .F.
 
@@ -175,25 +176,25 @@ static proc chgdat(cFile, cTable, lCreateTable)
          break
       ENDIF
 
-      DO WHILE ! Eof() .AND. Inkey() != K_ESC
+      oRecord := oTable:GetBlankRow()
+      asize(oRecord:aRow ,FCount())
 
-         oRecord := oTable:GetBlankRow()
+      DO WHILE ! Eof() .AND. Inkey() != K_ESC
+         if !set(_SET_DELETED)
+            oRecord:FieldPut('deleted',deleted())
+         endif
 
          FOR i := 1 TO FCount()
-            oRecord:FieldPut( i, FieldGet( i ) )
+            oRecord:FieldPut( FieldName( i ), FieldGet( i ) )
          NEXT
+   
+         dbSkip()
 
-         if deleted()
-            oRecord:FieldPut('deleted',1)
-         endif
-         
-         oTable:Append( oRecord )
+         oTable:Append( oRecord, .f. )
          IF oTable:NetErr()
             Alert( oTable:Error() )
             break
          ENDIF
-
-         dbSkip()
 
          DevPos( Row(), 1 )
          IF ( RecNo() % 100 ) == 0
