@@ -146,6 +146,7 @@ static proc chgdat(cFile, cTable, lCreateTable)
          oServer:DeleteTable( cTable )
          IF oServer:NetErr()
             ? oServer:Error()
+            ?
             break
          ENDIF
       ENDIF
@@ -153,6 +154,7 @@ static proc chgdat(cFile, cTable, lCreateTable)
       oServer:CreateTable( cTable, aDbfStruct )
       IF oServer:NetErr()
          ? oServer:Error()
+         ?
          break
       ENDIF
       dbCloseArea()
@@ -162,24 +164,22 @@ static proc chgdat(cFile, cTable, lCreateTable)
    begin sequence
 
       oTable := oServer:Query( "SELECT `deleted` FROM `" + cTable + "` LIMIT 1" )
-      IF oTable:NetErr()
-         SET DELETED ON
-      else
-         SET DELETED OFF
-      ENDIF
+      set(_SET_DELETED,oTable:NetErr())
       GO TOP
 
       // Initialize MySQL table
       oTable := oServer:Query( "SELECT * FROM `" + cTable + "` LIMIT 1" )
       IF oTable:NetErr()
-         Alert( oTable:Error() )
+         ? oTable:Error()
+         ? 
          break
       ENDIF
 
       oRecord := oTable:GetBlankRow()
-      asize(oRecord:aRow ,FCount())
+      asize(oRecord:aRow ,if(set(_SET_DELETED),FCount(),FCount()+1))
 
       DO WHILE ! Eof() .AND. Inkey() != K_ESC
+
          if !set(_SET_DELETED)
             oRecord:FieldPut('deleted',deleted())
          endif
@@ -190,12 +190,16 @@ static proc chgdat(cFile, cTable, lCreateTable)
    
          dbSkip()
 
-         oTable:Append( oRecord, .f. )
-         IF oTable:NetErr()
-            Alert( oTable:Error() )
-            break
-         ENDIF
-
+         begin sequence
+            oTable:Append( oRecord, .f. )
+            IF oTable:NetErr()
+               ? oTable:Error()
+               ? 
+               break
+            ENDIF
+         recover
+         end
+   
          DevPos( Row(), 1 )
          IF ( RecNo() % 100 ) == 0
             DevOut( "imported recs: " + hb_ntos( RecNo() ) )
