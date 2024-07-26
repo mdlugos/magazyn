@@ -1323,7 +1323,7 @@ METHOD CreateTable( cTable, aStruct, cPrimaryKey, cUniqueKey, cAuto ) CLASS TMyS
          EXIT
 
       CASE "M"
-         ::cCreateQuery += " mediumtext " + Eval( cNN, aStruct[ i ] ) + ","
+         ::cCreateQuery += " text " + Eval( cNN, aStruct[ i ] ) + ","
          EXIT
 
       CASE "L"

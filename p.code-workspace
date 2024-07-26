@@ -9,7 +9,9 @@
 	],
 	"settings": {
 		"files.associations": {
-			"*.ch": "c"
+			"*.ch": "c",
+			"mysql.h": "c",
+			"iberror.h": "c"
 		}
 	}
 }
