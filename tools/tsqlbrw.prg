@@ -50,7 +50,7 @@
 #include "inkey.ch"
 #include "dbstruct.ch"
 
-#include "mysql.ch"
+//#include "mysql.ch"
 
 /* NOTE:
 

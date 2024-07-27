@@ -15,9 +15,9 @@ STATIC oServer, lCreateTable := .F.
 PROCEDURE Main( ... )
 
    LOCAL cTok
-   LOCAL cHostName := ""
-   LOCAL cUser := ""
-   LOCAL cPassWord := ""
+   LOCAL cHostName := "localhost:"
+   LOCAL cUser := "SYSDBA"
+   LOCAL cPassWord := "masterkey"
    LOCAL cDataBase, cTable, cFile, oBrowser, oTable
    LOCAL i
 
@@ -48,9 +48,11 @@ PROCEDURE Main( ... )
       DO CASE
       CASE cTok == "-h"
          cHostName := hb_PValue( i++ )
+         cDatabase := ':'
 
       CASE cTok == "-d"
          cDataBase := Lower(hb_PValue( i++ ))
+         cDatabase := '/db/' + cDatabase + '.fdb'
 
       CASE cTok == "-t"
          cTable := Lower(hb_PValue( i++ ))
@@ -72,32 +74,26 @@ PROCEDURE Main( ... )
          QUIT
       ENDCASE
    ENDDO
-
-   oServer := TFbServer():New( cHostName, cUser, cPassWord, 3 ) //, cDataBase )
-   IF oServer:NetErr()
-      ? oServer:ErrorNo(), oServer:Error()
-      QUIT
-   ENDIF
-
-   oServer:Query("SET CHARACTER SET utf8mb4")
-   IF oServer:NetErr()
-      ? oServer:ErrorNo(), oServer:Error()
-      QUIT
-   ENDIF
-
-   //oServer:Query("SET sql_mode = 'PAD_CHAR_TO_FULL_LENGTH'")
-   oServer:Query("CREATE DATABASE IF NOT EXISTS "+cDataBase+" COLLATE utf8mb4_0900_ai_ci")
-   IF oServer:NetErr()
-      ? oServer:ErrorNo(), oServer:Error()
-      QUIT
-   ENDIF
-
-   oServer:SelectDB( cDataBase )
-   IF oServer:NetErr()
-      ? oServer:ErrorNo(), oServer:Error()
-      QUIT
-   ENDIF
+   altd()
+   if lCreateTable
+      
+      IF hb_FileExists( cDatabase )
+         FErase( cDatabase )
+      ENDIF
+      // jak za krótkie indeksy to zwiększyć page size
+      oServer := FBCreateDB( cHostName + cDatabase, cUser, cPassWord, 4096/*4096|8192|16384*/, 'UTF8', 3, 'UNICODE_CI_AI')
+      IF oServer <> 1
+         ? procline(),oServer
+         QUIT
+      ENDIF
+   endif
    
+   oServer := TFbServer():New( cHostName + cDatabase, cUser, cPassWord, 3 ) //, cDataBase )
+   IF oServer:NetErr()
+      ? procline(),oServer:ErrorNo(), oServer:Error()
+      QUIT
+   ENDIF
+
    if empty(cFile)
       oTable := oServer:Query('SELECT * FROM "'+cTable+'"')
       oBrowser := TBrowseSQL():New( 1, 1, maxrow() -1 , maxcol() - 1, oServer, oTable, cTable )
@@ -123,9 +119,47 @@ PROCEDURE Main( ... )
 
    RETURN
 
-static proc chgdat(cFile, cTable, lCreateTable)
-   LOCAL oTable, oRecord, aDbfStruct, i
+static function fielddef(fStruct)
+   local f:='"'+trim(fStruct[1])+ '" ' 
+   switch left(fStruct[2],1)
+      case 'C'
+         if fStruct[3]>36
+            f+='VAR'
+         endif
+         f+='CHAR('+hb_ntos(fStruct[3])+')'
+         exit
+      case 'M'
+         f+='BLOB SUB_TYPE 1'
+         exit
+      case 'D'
+         f+='DATE'
+         exit
+      case 'T'
+         f+='TIME'
+         exit
+      case '@'
+         f+='TIMESTAMP'
+         exit
+      case 'B'
+         f+='DOUBLE PRECISION'
+         exit
+      case 'N'
+         f+='NUMERIC('
+         if fStruct[4]=0
+            f+=hb_ntos(fStruct[3])+')'
+         else
+            f+=hb_ntos(fStruct[3]-1)+', '+hb_ntos(fStruct[4])+')'
+         endif
+         exit
+      case 'L'
+         f+='BOOLEAN'
+         exit
+      endswitch
+return f
 
+static procedure chgdat(cFile, cTable, lCreateTable)
+   LOCAL oTable, oRecord, aDbfStruct, i, cQuery
+   ? cFile
    IF File(strtran(cFile,subs(cFile,-3),'fpt'))
      i:='DBFCDX'
    ENDIF
@@ -138,22 +172,30 @@ static proc chgdat(cFile, cTable, lCreateTable)
    aDbfStruct := dbStruct()
 
    if empty(cTable)
-      cTable:= lower(Alias())
+      cTable:= Alias()
    end if
+
+   ?? '',cTable
 
    IF lCreateTable
       IF hb_AScan( oServer:ListTables(), cTable,,, .T. ) > 0
          oServer:DeleteTable( cTable )
          IF oServer:NetErr()
-            ? oServer:ErrorNo(), oServer:Error()
+            ? procline(),oServer:ErrorNo(), oServer:Error()
             ?
             break
          ENDIF
       ENDIF
-      aeval(aDbfStruct,{|x,y|x[2]:=left(x[2],1)})
-      oServer:CreateTable( cTable, aDbfStruct )
+
+      cQuery := 'CREATE TABLE "'+cTable+'"'+hb_eol()+' ( '
+      aeval(aDbfStruct,{|x,y|cQuery += fielddef(x) + ', '})
+
+      cQuery := left(cQuery,len(cQuery)-2)+hb_eol()+')'
+      ? cQuery
+      ?
+      oServer:Execute( cQuery )
       IF oServer:NetErr()
-         ? oServer:ErrorNo(), oServer:Error()
+         ? procline(),oServer:ErrorNo(), oServer:Error()
          ?
          break
       ENDIF
@@ -163,14 +205,14 @@ static proc chgdat(cFile, cTable, lCreateTable)
 
    begin sequence
 
-      oTable := oServer:Query( 'SELECT "deleted" FROM "' + cTable + ' FETCH FIRST 1 ROW ONLY' )
+      oTable := oServer:Query( 'SELECT "DELETED" FROM "' + cTable + '" FETCH FIRST 1 ROW ONLY' )
       set(_SET_DELETED,oTable:NetErr())
       GO TOP
 
       // Initialize MySQL table
       oTable := oServer:Query( 'SELECT * FROM "' + cTable + '" FETCH FIRST 1 ROW ONLY' )
       IF oTable:NetErr()
-         ? oTable:ErrorNo(), oTable:Error()
+         ? procline(),oTable:ErrorNo(), oTable:Error()
          ? 
          break
       ENDIF
@@ -193,7 +235,7 @@ static proc chgdat(cFile, cTable, lCreateTable)
          begin sequence
             oTable:Append( oRecord, .f. )
             IF oTable:NetErr()
-               ? oTable:Error()
+               ? procline(),oTable:ErrorNo(),oTable:Error()
                ? 
                break
             ENDIF
