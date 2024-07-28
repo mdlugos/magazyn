@@ -963,7 +963,7 @@ STATIC FUNCTION StructConvert( aStru, db, dialect )
    LOCAL cQuery
    LOCAL aDomains := {}
    LOCAL nVal
-
+#if 0
    LOCAL xTables := ""
    LOCAL xFields := ""
 
@@ -998,82 +998,82 @@ STATIC FUNCTION StructConvert( aStru, db, dialect )
       ENDDO
 
       FBFree( qry )
-
-      FOR i := 1 TO Len( aStru )
-         cField := RTrim( aStru[ i ][ 7 ] )
-         nType := aStru[ i ][ 2 ]
-         nSize := aStru[ i ][ 3 ]
-         nDec := aStru[ i ][ 4 ] * -1
-         cTable := RTrim( aStru[ i ][ 5 ] )
-
-         nVal := AScan( aDomains, {| x | RTrim( x[ 1 ] ) == cTable .AND. RTrim( x[ 2 ] ) == cField } )
-
-         IF nVal != 0
-            cDomain := aDomains[ nVal, 3 ]
-         ELSE
-            cDomain := ""
-         ENDIF
-
-         SWITCH nType
-         CASE SQL_TEXT
-            cType := "C"
-            EXIT
-         CASE SQL_VARYING
-            cType := "C"
-            EXIT
-         CASE SQL_SHORT
-            /* Firebird doesn't have boolean field, so if you define domain with BOOL then i will consider logical, ex:
-               create domain boolean_field as smallint default 0 not null check (value in (0,1)) */
-
-            IF "BOOL" $ cDomain
-               cType := "L"
-               nSize := 1
-               nDec := 0
-            ELSE
-               cType := "N"
-               nSize := 5
-            ENDIF
-            EXIT
-         CASE SQL_LONG
-            cType := "N"
-            nSize := 9
-            EXIT
-         CASE SQL_INT64
-            cType := "N"
-            nSize := 9
-            EXIT
-         CASE SQL_FLOAT
-            cType := "N"
-            nSize := 15
-            EXIT
-         CASE SQL_DOUBLE
-            cType := "N"
-            nSize := 15
-            EXIT
-         CASE SQL_TIMESTAMP
-            cType := "T"
-            nSize := 8
-            EXIT
-         CASE SQL_TYPE_DATE
-            cType := "D"
-            nSize := 8
-            EXIT
-         CASE SQL_TYPE_TIME
-            cType := "C"
-            nSize := 8
-            EXIT
-         CASE SQL_BLOB
-            cType := "M"
-            nSize := 10
-            EXIT
-         OTHERWISE
-            cType := "C"
-            nDec := 0
-         ENDSWITCH
-
-         AAdd( aNew, { cField, cType, nSize, nDec, cTable, cDomain } )
-      NEXT
    ENDIF
+#endif
+   FOR i := 1 TO Len( aStru )
+      cField := RTrim( aStru[ i ][ 7 ] )
+      nType := aStru[ i ][ 2 ]
+      nSize := aStru[ i ][ 3 ]
+      nDec := aStru[ i ][ 4 ] * -1
+      cTable := RTrim( aStru[ i ][ 5 ] )
+
+      nVal := AScan( aDomains, {| x | RTrim( x[ 1 ] ) == cTable .AND. RTrim( x[ 2 ] ) == cField } )
+
+      IF nVal != 0
+         cDomain := aDomains[ nVal, 3 ]
+      ELSE
+         cDomain := ""
+      ENDIF
+
+      SWITCH nType
+      CASE SQL_TEXT
+         cType := "C"
+         EXIT
+      CASE SQL_VARYING
+         cType := "C"
+         EXIT
+      CASE SQL_SHORT
+         /* Firebird doesn't have boolean field, so if you define domain with BOOL then i will consider logical, ex:
+            create domain boolean_field as smallint default 0 not null check (value in (0,1)) */
+
+         IF "BOOL" $ cDomain
+            cType := "L"
+            nSize := 1
+            nDec := 0
+         ELSE
+            cType := "N"
+            nSize := 5
+         ENDIF
+         EXIT
+      CASE SQL_LONG
+         cType := "N"
+         nSize := 9
+         EXIT
+      CASE SQL_INT64
+         cType := "N"
+         nSize := 9
+         EXIT
+      CASE SQL_FLOAT
+         cType := "N"
+         nSize := 15
+         EXIT
+      CASE SQL_DOUBLE
+         cType := "N"
+         nSize := 15
+         EXIT
+      CASE SQL_TIMESTAMP
+         cType := "T"
+         nSize := 8
+         EXIT
+      CASE SQL_TYPE_DATE
+         cType := "D"
+         nSize := 8
+         EXIT
+      CASE SQL_TYPE_TIME
+         cType := "C"
+         nSize := 8
+         EXIT
+      CASE SQL_BLOB
+         cType := "M"
+         nSize := 10
+         EXIT
+      OTHERWISE
+         cType := "C"
+         nDec := 0
+      ENDSWITCH
+
+      AAdd( aNew, { cField, cType, nSize, nDec, cTable, cDomain } )
+   NEXT
 
    RETURN aNew
 
