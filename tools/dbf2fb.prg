@@ -1,4 +1,4 @@
-//hbmk2 dbf2fb hbfbird.hbc ../common/cppl852m.c ../common/cp_utf8m.c 
+//hbmk2 -gtnul dbf2fb tfirebrd hbfbird.hbc ../common/cppl852m.c ../common/cp_utf8m.c 
 
 #command DEFAULT <x> TO <y> => IF (<x>)=NIL;<x>:=<y>;ENDIF
 
@@ -6,8 +6,8 @@
 
 REQUEST DBFCDX
 
+#include "simpleio.ch"
 #include "inkey.ch"
-#include "hbgtinfo.ch"
 #include "set.ch"
 
 STATIC oServer, lCreateTable := .F.
@@ -37,7 +37,7 @@ PROCEDURE Main( ... )
       QUIT
    ENDIF
 
-   hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
+   //hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
 
    i := 1
    // Scan parameters and setup workings
@@ -74,7 +74,7 @@ PROCEDURE Main( ... )
          QUIT
       ENDCASE
    ENDDO
-   altd()
+
    if lCreateTable
       
       IF hb_FileExists( cDatabase )
@@ -95,15 +95,18 @@ PROCEDURE Main( ... )
    ENDIF
 
    if empty(cFile)
-      oTable := oServer:Query('SELECT * FROM "'+cTable+'"')
-      oBrowser := TBrowseSQL():New( 1, 1, maxrow() -1 , maxcol() - 1, oServer, oTable, cTable )
-      @ 0, 0, maxrow(), maxcol() box hb_UTF8ToStrBox("╒═╕│╛═╘│")
-      @ 2, 0 say "╞"
-      @ 2, maxcol() say "╡"
-      oBrowser:headSep := hb_UTF8ToStrBox(" ═")
-      oBrowser:BrowseTable(.t.)
-      oBrowser := NIL
-      //oTable:sql_Commit()
+      oTable := oServer:Query('SELECT * FROM '+cTable+' FETCH FIRST 100 ROWS ONLY')
+      IF oTable:NetErr()
+         ? procline(),oTable:ErrorNo(), oTable:Error()
+         QUIT
+      ENDIF
+      DO WHILE oTable:Fetch()
+         ?
+         FOR i := 1 TO oTable:FCount()
+            ?? oTable:FieldGet( i ),', '
+         NEXT
+      ENDDO
+
       oTable := NIL
 
 
@@ -163,7 +166,7 @@ static procedure chgdat(cFile, cTable, lCreateTable)
    IF File(strtran(cFile,subs(cFile,-3),'fpt'))
      i:='DBFCDX'
    ENDIF
-   dbUseArea( .f., i, cFile,,.F., .T. ,'PL852M')
+   dbUseArea( .f., i, cFile, cTable,.F., .T. ,'PL852M')
    if indexord()<>0
       SET ORDER TO 0
       GO TOP
@@ -192,7 +195,6 @@ static procedure chgdat(cFile, cTable, lCreateTable)
 
       cQuery := left(cQuery,len(cQuery)-2)+hb_eol()+')'
       ? cQuery
-      ?
       oServer:Execute( cQuery )
       IF oServer:NetErr()
          ? procline(),oServer:ErrorNo(), oServer:Error()
@@ -202,6 +204,7 @@ static procedure chgdat(cFile, cTable, lCreateTable)
       dbCloseArea()
       RETURN
    ENDIF
+   ?
 
    begin sequence
 
@@ -212,6 +215,7 @@ static procedure chgdat(cFile, cTable, lCreateTable)
       // Initialize MySQL table
       oTable := oServer:Query( 'SELECT * FROM "' + cTable + '" FETCH FIRST 1 ROW ONLY' )
       IF oTable:NetErr()
+         ?
          ? procline(),oTable:ErrorNo(), oTable:Error()
          ? 
          break
@@ -233,9 +237,10 @@ static procedure chgdat(cFile, cTable, lCreateTable)
          dbSkip()
 
          begin sequence
-            oTable:Append( oRecord, .f. )
-            IF oTable:NetErr()
-               ? procline(),oTable:ErrorNo(),oTable:Error()
+            oServer:Append( oRecord, .f. )
+            IF oServer:NetErr()
+               ?
+               ? procline(),oServer:ErrorNo(),oServer:Error()
                ? 
                break
             ENDIF

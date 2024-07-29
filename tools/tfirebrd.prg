@@ -46,21 +46,25 @@
 
 #include "hbclass.ch"
 
-#define SQL_TEXT            452
-#define SQL_VARYING         448
-#define SQL_SHORT           500
-#define SQL_LONG            496
-#define SQL_FLOAT           482
-#define SQL_DOUBLE          480
-#define SQL_D_FLOAT         530
-#define SQL_TIMESTAMP       510
-#define SQL_BLOB            520
-#define SQL_ARRAY           540
-#define SQL_QUAD            550
-#define SQL_TYPE_TIME       560
-#define SQL_TYPE_DATE       570
-#define SQL_INT64           580
-#define SQL_DATE                        SQL_TIMESTAMP
+#define SQL_TEXT                           452
+#define SQL_VARYING                        448
+#define SQL_SHORT                          500
+#define SQL_LONG                           496
+#define SQL_FLOAT                          482
+#define SQL_DOUBLE                         480
+#define SQL_D_FLOAT                        530
+#define SQL_TIMESTAMP                      510
+#define SQL_BLOB                           520
+#define SQL_ARRAY                          540
+#define SQL_QUAD                           550
+#define SQL_TYPE_TIME                      560
+#define SQL_TYPE_DATE                      570
+#define SQL_INT64                          580
+#define SQL_BOOLEAN                      32764
+#define SQL_NULL                         32766
+
+/* Historical alias for pre v6 code */
+#define SQL_DATE                           SQL_TIMESTAMP
 
 CREATE CLASS TFbServer
 
@@ -98,7 +102,7 @@ ENDCLASS
 
 METHOD New( cServer, cUser, cPassword, nDialect ) CLASS TFbServer
 
-   hb_default( @nDialect, 1 )
+   hb_default( @nDialect, 3 )
 
    ::lError := .F.
    ::nError := 0
@@ -393,11 +397,11 @@ METHOD Append( oRow ) CLASS TFbServer
    IF ! HB_ISNUMERIC( ::db ) .AND. Len( aTables ) == 1
       // Can insert only one table, not in joined tables
 
-      cQuery := 'INSERT INTO ' + aTables[ 1 ] + '('
+      cQuery := 'INSERT INTO "' + aTables[ 1 ] + '"('
       FOR i := 1 TO oRow:FCount()
          IF oRow:Changed( i )
             // Send only changed field
-            cQuery += oRow:FieldName( i ) + ","
+            cQuery += '"'+oRow:FieldName( i ) + '",'
          ENDIF
       NEXT
 
@@ -442,10 +446,10 @@ METHOD Update( oRow, cWhere ) CLASS TFbServer
          NEXT
       ENDIF
 
-      cQuery := "UPDATE " + aTables[ 1 ] + " SET "
+      cQuery := 'UPDATE "' + aTables[ 1 ] + '" SET '
       FOR i := 1 TO oRow:FCount()
          IF oRow:Changed( i )
-            cQuery += oRow:FieldName( i ) + " = " + DataToSql( oRow:FieldGet( i ) ) + ","
+            cQuery += '"'+oRow:FieldName( i ) + '" = ' + DataToSql( oRow:FieldGet( i ) ) + ","
          ENDIF
       NEXT
 
@@ -682,11 +686,15 @@ METHOD FieldGet( nField ) CLASS TFbQuery
 
          IF result != NIL
             aBlob := FBGetBlob( ::db, result )
-
             result := ""
-            FOR i := 1 TO Len( aBlob )
-               result += aBlob[ i ]
-            NEXT
+            IF valtype(aBlob)="A"
+               FOR i := 1 TO Len( aBlob )
+                  result += aBlob[ i ]
+               NEXT
+            ELSEIF aBlob<>-901
+               ::lError := .T.
+               ::nError := aBlob
+            ENDIF
 
             // result := FBGetBlob( ::db, result )
          ELSE
@@ -700,16 +708,23 @@ METHOD FieldGet( nField ) CLASS TFbQuery
             result := 0
          ENDIF
 
+      ELSEIF cType == "T"
+         IF result != NIL
+            result := hb_SToT( result )
+         ELSE
+            result := hb_SToT()
+         ENDIF
+
       ELSEIF cType == "D"
          IF result != NIL
-            result := hb_SToD( Left( result, 4 ) + SubStr( result, 5, 2 ) + SubStr( result, 7, 2 ) )
+            result := hb_SToD( result )
          ELSE
             result := hb_SToD()
          ENDIF
 
       ELSEIF cType == "L"
          IF result != NIL
-            result := ( Val( result ) == 1 )
+            result := "true"
          ELSE
             result := .F.
          ENDIF
@@ -758,6 +773,9 @@ METHOD GetBlankRow() CLASS TFbQuery
             EXIT
          CASE "L"
             aRow[ i ] := .F.
+            EXIT
+         CASE "T"
+            aRow[ i ] := hb_StoT()
             EXIT
          CASE "D"
             aRow[ i ] := hb_SToD()
@@ -838,6 +856,10 @@ METHOD FieldPut( nField, Value ) CLASS TFbRow
 
    LOCAL result
 
+   IF valtype(nField)=="C"
+      nField := ::FieldPos(nField)
+   ENDIF
+
    IF nField >= 1 .AND. nField <= Len( ::aRow )
       ::aChanged[ nField ] := .T.
       result := ::aRow[ nField ] := Value
@@ -914,7 +936,7 @@ STATIC FUNCTION KeyField( aTables, db, dialect )
       cQuery += '   rdb$relation_constraints b                '
       cQuery += ' where                                       '
       cQuery += '   a.rdb$index_name = b.rdb$index_name and   '
-      cQuery += '   b.rdb$constraint_type = "PRIMARY KEY" and '
+      cQuery += "   b.rdb$constraint_type = 'PRIMARY KEY' and "
       cQuery += '   b.rdb$relation_name = ' + DataToSql( cTable )
       cQuery += ' order by                                    '
       cQuery += '   b.rdb$relation_name,                      '
@@ -937,13 +959,15 @@ STATIC FUNCTION DataToSql( xField )
 
    SWITCH ValType( xField )
    CASE "C"
-      RETURN '"' + StrTran( xField, '"', ' ' ) + '"'
+      RETURN "'" + StrTran( xField, "'", "''" ) + "'"
    CASE "D"
-      RETURN '"' + StrZero( Month( xField ), 2 ) + "/" + StrZero( Day( xField ), 2 ) + "/" + StrZero( Year( xField ), 4 ) + '"'
+   CASE "T"
+      RETURN "'" + HB_TSTOSTR( xField, .t. ) + "'"
+      //RETURN "'" + StrZero( Month( xField ), 2 ) + "/" + StrZero( Day( xField ), 2 ) + "/" + StrZero( Year( xField ), 4 ) + "'"
    CASE "N"
-      RETURN Str( xField )
+      RETURN hb_ntos( xField )
    CASE "L"
-      RETURN iif( xField, "1", "0" )
+      RETURN iif( xField, "TRUE", "FALSE" )
    ENDSWITCH
 
    RETURN NIL
@@ -963,7 +987,7 @@ STATIC FUNCTION StructConvert( aStru, db, dialect )
    LOCAL cQuery
    LOCAL aDomains := {}
    LOCAL nVal
-#if 0
+
    LOCAL xTables := ""
    LOCAL xFields := ""
 
@@ -982,7 +1006,7 @@ STATIC FUNCTION StructConvert( aStru, db, dialect )
    /* Look for domains */
    cQuery := 'select rdb$relation_name, rdb$field_name, rdb$field_source '
    cQuery += '  from rdb$relation_fields '
-   cQuery += ' where rdb$field_name not like "RDB$%" '
+   cQuery += " where rdb$field_name not like 'RDB$%' "
    cQuery += '   and rdb$relation_name in (' + xtables + ')'
    cQuery += '   and rdb$field_name in (' + xfields + ')'
 
@@ -999,7 +1023,7 @@ STATIC FUNCTION StructConvert( aStru, db, dialect )
 
       FBFree( qry )
    ENDIF
-#endif
+
    FOR i := 1 TO Len( aStru )
       cField := RTrim( aStru[ i ][ 7 ] )
       nType := aStru[ i ][ 2 ]
@@ -1017,50 +1041,35 @@ STATIC FUNCTION StructConvert( aStru, db, dialect )
 
       SWITCH nType
       CASE SQL_TEXT
-         cType := "C"
-         EXIT
       CASE SQL_VARYING
          cType := "C"
          EXIT
+      CASE SQL_BOOLEAN
+         cType := "L"
+         nSize := 1
+         nDec := 0
+         EXIT
       CASE SQL_SHORT
-         /* Firebird doesn't have boolean field, so if you define domain with BOOL then i will consider logical, ex:
-            create domain boolean_field as smallint default 0 not null check (value in (0,1)) */
-
-         IF "BOOL" $ cDomain
-            cType := "L"
-            nSize := 1
-            nDec := 0
-         ELSE
-            cType := "N"
-            nSize := 5
-         ENDIF
+         cType := "N"
+         nSize := 5
          EXIT
       CASE SQL_LONG
          cType := "N"
          nSize := 9
          EXIT
-      CASE SQL_INT64
-         cType := "N"
-         nSize := 9
-         EXIT
       CASE SQL_FLOAT
-         cType := "N"
-         nSize := 15
-         EXIT
+      CASE SQL_INT64
       CASE SQL_DOUBLE
          cType := "N"
          nSize := 15
-         EXIT
-      CASE SQL_TIMESTAMP
-         cType := "T"
-         nSize := 8
          EXIT
       CASE SQL_TYPE_DATE
          cType := "D"
          nSize := 8
          EXIT
+      CASE SQL_TIMESTAMP
       CASE SQL_TYPE_TIME
-         cType := "C"
+         cType := "T"
          nSize := 8
          EXIT
       CASE SQL_BLOB
