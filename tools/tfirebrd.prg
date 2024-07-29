@@ -701,6 +701,9 @@ METHOD FieldGet( nField ) CLASS TFbQuery
             result := ""
          ENDIF
 
+      ELSEIF cType == "C"
+         result := hb_utf8Left( result, ::aStruct[ nField ][ 3 ] )
+
       ELSEIF cType == "N"
          IF result != NIL
             result := Val( result )
@@ -1043,6 +1046,7 @@ STATIC FUNCTION StructConvert( aStru, db, dialect )
       CASE SQL_TEXT
       CASE SQL_VARYING
          cType := "C"
+         nSize /= 4
          EXIT
       CASE SQL_BOOLEAN
          cType := "L"

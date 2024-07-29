@@ -7,6 +7,7 @@
 REQUEST DBFCDX
 
 #include "simpleio.ch"
+//#include "hbgtinfo.ch"
 #include "inkey.ch"
 #include "set.ch"
 
@@ -18,8 +19,7 @@ PROCEDURE Main( ... )
    LOCAL cHostName := "localhost:"
    LOCAL cUser := "SYSDBA"
    LOCAL cPassWord := "masterkey"
-   LOCAL cDataBase, cTable, cFile, oBrowser, oTable
-   LOCAL i
+   LOCAL cDataBase, cTable, cFile, oBrowser, oTable, oRecord, i
 
    Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
    SET DELETED ON
@@ -74,7 +74,7 @@ PROCEDURE Main( ... )
          QUIT
       ENDCASE
    ENDDO
-
+   altd()
    if lCreateTable
       
       IF hb_FileExists( cDatabase )
@@ -101,12 +101,13 @@ PROCEDURE Main( ... )
          QUIT
       ENDIF
       DO WHILE oTable:Fetch()
+         oRecord := oTable:GetRow()
          ?
-         FOR i := 1 TO oTable:FCount()
-            ?? oTable:FieldGet( i ),', '
+         FOR i := 1 TO oRecord:FCount()
+            ?? oRecord:FieldGet( i ),', '
          NEXT
       ENDDO
-
+      oRecord := NIL
       oTable := NIL
 
 
@@ -246,11 +247,7 @@ static procedure chgdat(cFile, cTable, lCreateTable)
             ENDIF
          recover
          end
-   
-         DevPos( Row(), 1 )
-         IF ( RecNo() % 100 ) == 0
-            DevOut( "imported recs: " + hb_ntos( RecNo() ) )
-         ENDIF
+         
       ENDDO
    recover
    end
