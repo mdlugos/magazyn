@@ -13,6 +13,16 @@ REQUEST DBFCDX
 
 STATIC oServer, lCreateTable := .F.
 
+#pragma BEGINDUMP
+#include "signal.h"
+#include "hbapi.h"
+
+HB_FUNC ( CDBG )
+{
+   raise(SIGTRAP);
+}
+#pragma ENDDUMP   
+
 PROCEDURE Main( ... )
 
    LOCAL cTok
@@ -75,6 +85,7 @@ PROCEDURE Main( ... )
       ENDCASE
    ENDDO
    altd()
+   cdbg()
    if lCreateTable
       
       IF hb_FileExists( cDatabase )
