@@ -2,26 +2,16 @@
 
 #command DEFAULT <x> TO <y> => IF (<x>)=NIL;<x>:=<y>;ENDIF
 
-#require "hbfbird"
+//#require "hbfbird"
 
 REQUEST DBFCDX
 
-#include "simpleio.ch"
+//#include "simpleio.ch"
 //#include "hbgtinfo.ch"
 #include "inkey.ch"
 #include "set.ch"
 
 STATIC oServer, lCreateTable := .F.
-
-#pragma BEGINDUMP
-#include "signal.h"
-#include "hbapi.h"
-
-HB_FUNC ( CDBG )
-{
-   raise(SIGTRAP);
-}
-#pragma ENDDUMP   
 
 PROCEDURE Main( ... )
 
@@ -29,7 +19,7 @@ PROCEDURE Main( ... )
    LOCAL cHostName := "localhost:"
    LOCAL cUser := "SYSDBA"
    LOCAL cPassWord := "masterkey"
-   LOCAL cDataBase, cTable, cFile, oBrowser, oTable, oRecord, i
+   LOCAL cDataBase, cTable, cFile, oTable, oRecord, i
 
    Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
    SET DELETED ON
@@ -86,11 +76,9 @@ PROCEDURE Main( ... )
    ENDDO
    altd()
    cdbg()
-   if lCreateTable
-      
-      IF hb_FileExists( cDatabase )
-         FErase( cDatabase )
-      ENDIF
+
+   if lCreateTable .and. .not. hb_FileExists( cDatabase )
+      FErase( cDatabase )
       // jak za krótkie indeksy to zwiększyć page size
       oServer := FBCreateDB( cHostName + cDatabase, cUser, cPassWord, 4096/*4096|8192|16384*/, 'UTF8', 3, 'UNICODE_CI_AI')
       IF oServer <> 1
@@ -122,12 +110,16 @@ PROCEDURE Main( ... )
       oTable := NIL
 
 
-   elseif lower(right(cFile,4))<>'.dbf'
+   elseif hb_FileExists(cFile)
+      CHGDAT(cFile,cTable,lCreateTable)
+   else
       i:=RAT(HB_PS(),cfile)
       SET DEFAULT TO (LEFT(cfile,i))
-      AEVAL(DIRECTORY(cfile+"*.dbf"),{|X|CHGDAT(X[1],,lCreateTable)})
-   else
-      CHGDAT(cFile,cTable,lCreateTable)
+      if lower(right(cFile,4))<>'.dbf'
+         cFile+="*.dbf"
+      endif
+      
+      AEVAL(DIRECTORY(cfile),{|X|CHGDAT(X[1],,lCreateTable)})
    end if
    
    oServer:Destroy()
@@ -156,7 +148,7 @@ static function fielddef(fStruct)
          f+='TIMESTAMP'
          exit
       case 'B'
-         f+='DOUBLE PRECISION'
+         f+='DOUBLE'
          exit
       case 'N'
          f+='NUMERIC('
@@ -203,7 +195,7 @@ static procedure chgdat(cFile, cTable, lCreateTable)
       ENDIF
 
       cQuery := 'CREATE TABLE "'+cTable+'"'+hb_eol()+' ( '
-      aeval(aDbfStruct,{|x,y|cQuery += fielddef(x) + ', '})
+      aeval(aDbfStruct,{|x|cQuery += fielddef(x) + ', '})
 
       cQuery := left(cQuery,len(cQuery)-2)+hb_eol()+')'
       ? cQuery
@@ -280,3 +272,14 @@ PROCEDURE Help()
    ? ""
 
    RETURN
+
+   #pragma BEGINDUMP
+   #include "signal.h"
+   #include "hbapi.h"
+   
+   HB_FUNC ( CDBG )
+   {
+   //   raise(SIGTRAP);
+   }
+   #pragma ENDDUMP   
+   

@@ -700,15 +700,14 @@ METHOD FieldGet( nField ) CLASS TFbQuery
          ELSE
             result := ""
          ENDIF
-
       ELSEIF cType == "C"
          result := hb_utf8Left( result, ::aStruct[ nField ][ 3 ] )
 
       ELSEIF cType == "N"
-         IF result != NIL
-            result := Val( result )
-         ELSE
+         IF result == NIL
             result := 0
+         ELSEIF valtype(result) == "C"
+            result := Val( result )
          ENDIF
 
       ELSEIF cType == "T"
@@ -724,14 +723,16 @@ METHOD FieldGet( nField ) CLASS TFbQuery
          ELSE
             result := hb_SToD()
          ENDIF
-
+/*
       ELSEIF cType == "L"
          IF result != NIL
-            result := "true"
+            result := .T.
          ELSE
             result := .F.
          ENDIF
+*/         
       ENDIF
+
    ENDIF
 
    RETURN result

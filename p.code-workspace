@@ -12,7 +12,8 @@
 			"*.ch": "c",
 			"mysql.h": "c",
 			"iberror.h": "c",
-			"ibase.h": "c"
+			"ibase.h": "c",
+			"hbapi.h": "c"
 		}
 	}
 }
