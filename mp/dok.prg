@@ -1145,7 +1145,7 @@ procedure dok2(_f,getlist)
 #endif
 
     if subs(dok,2)="K"
-      @ 4,2 GET n_f PICTURE "@K!S13" valid {|x|x:=recno(),empty(n_f).and.szukam({1,1,maxrow(),,1,0,'DOKUMENTY',{||smb_dow+nr_dowodu+"│"+dtoc(data)+"│"+dost_odb},{|_skey,_s|(_sret:=_skey=13).or._skey=27.or._skey=0.and.(if(val(d_o)=0,,_sfor:={||dost_odb=left(d_o,A_NRLTH)}),dbseek(D_MM "■"),.f.)},D_MM ''}).and.(dd:=data,n_f:=pad(KEY_DOK+nr_dowodu,len(n_f)),updated(.t.),.t.),dbgoto(x),.t.}
+      @ 4,2 GET n_f PICTURE "@K!S13" valid {|x|x:=recno(),empty(n_f).and.szukam({1,1,maxrow(),,1,0,'DOKUMENTY',{||smb_dow+nr_dowodu+"│"+dtoc(data)+"│"+dost_odb},{|_skey,_s|(_sret:=_skey=13).or._skey=27.or._skey=0.and.(if(val(d_o)=0,,_sfor:={||dost_odb=left(d_o,A_NRLTH)}),dbseek(D_MM "~"),.f.)},D_MM ''}).and.(dd:=data,n_f:=pad(KEY_DOK+nr_dowodu,len(n_f)),updated(.t.),.t.),dbgoto(x),.t.}
       @ 4,16 GET dd
 //#ifndef A_NVAT
       iv:=ascan(avat,{|y|y[2]#0})

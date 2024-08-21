@@ -2313,13 +2313,16 @@ HB_FUNC ( UPP )
             const char * pszText = hb_itemGetCPtr( pText );
             HB_SIZE nLen = hb_itemGetCLen( pText ), n;
             char * pszBuffer = ( char * ) hb_xgrab( nLen + 1 );
-
             const char * id = hb_parc( 2 );
+            PHB_CODEPAGE oldcp;
+            PHB_CODEPAGE cdp;
+
             if (!id)
                id = "UTF8MD" ;
 
-            PHB_CODEPAGE oldcp = hb_vmCDP();
-            PHB_CODEPAGE cdp = hb_cdpFind( id );
+            oldcp = hb_vmCDP();
+            cdp = hb_cdpFind( id );
+
             if (!cdp)
                cdp = oldcp;
             

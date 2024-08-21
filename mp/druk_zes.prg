@@ -573,7 +573,7 @@ DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
 SELECT STANY
   bkey:={||nr_mag+index}
   bpic:="XX/"+ INDEXPIC
-  SEEK MAG_BIEZ+"■"
+  SEEK MAG_BIEZ+"~"
   SKIP -1
   I_DO:=MAG_BIEZ+INDEX
   SEEK MAG_BIEZ
@@ -1621,7 +1621,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
        EXIT
 #else
        if mag_biez=D_MM
-          seek D_MM+"■"
+          seek D_MM+"~"
        endif
        if eof()
           EXIT
@@ -1946,7 +1946,7 @@ ELSE
        EXIT
 #else
        if mag_biez=D_MM
-          seek mag_biez+"■"
+          seek mag_biez+"~"
        endif
        if eof()
           EXIT
@@ -2462,7 +2462,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
        EXIT
 #else
        if mag_biez=nr_mag
-          seek mag_biez+"■"
+          seek mag_biez+"~"
        endif
        if eof()
           EXIT
@@ -2696,7 +2696,7 @@ ELSE
      EXIT
 #else
        if mag_biez=nr_mag
-          seek mag_biez+"■"
+          seek mag_biez+"~"
        endif
        if eof()
           EXIT
@@ -3179,7 +3179,7 @@ if pcount()<5
 IF tak("CZY KOJEJNOŚĆ W/G NAZW",20,,.F.,.F.)
    set order to 1
    bkey:=EvAlDb('{||'+IndexkeY(0)+'}')
-   SEEK MAG_BIEZ+"■"
+   SEEK MAG_BIEZ+"~"
    SKIP -1
    I_DO:=MAG_BIEZ+subs(EvaldB(bkey),3)
    SEEK MAG_BIEZ
@@ -3189,7 +3189,7 @@ IF tak("CZY KOJEJNOŚĆ W/G NAZW",20,,.F.,.F.)
 ELSE
 #endif
    bkey:=EvAlDb('{||'+IndexkeY(0)+'}')
-    SEEK MAG_BIEZ+"■"
+    SEEK MAG_BIEZ+"~"
     SKIP -1
     I_DO:=MAG_BIEZ+subs(EvaldB(bkey),3)
     SEEK MAG_BIEZ
@@ -3742,7 +3742,7 @@ ENDCASE
 
 DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
 
-   TXT:=NR_MAG+INDEX+DTOS(d_g)+"■"
+   TXT:=NR_MAG+INDEX+DTOS(d_g)+"~"
 #ifdef A_WA
 #ifdef A_JMALTTOT
    if jm_o
