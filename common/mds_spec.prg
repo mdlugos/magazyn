@@ -271,7 +271,7 @@ local i,j,pole,fi,txt,ars:=dbstruct()
    case ars[i,2]=="D"
     txt:= "DTOS("+pole+')="'+left(dtos(fi),6)+'"'
    otherwise
-    txt:= "EMPTY("+pole+')
+    txt:= "EMPTY("+pole+')'
     if !Empty(fi)
       txt:='!'+txt
     endif
