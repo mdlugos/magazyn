@@ -622,11 +622,11 @@ endif
  #endif
  #ifdef A_CENVAT
     sayl "Cena zbytu:" get ce picture WAPIC
-    sayl "Procent VAT:" get pv picture "@K XX" valid {|g|pv:=lower(pv),if(pv<"@",pv:=str(val(pv),2),),(ascan(stawkizby,pv)#0 .or. alarm('NIEWŁAŚCIWY PROCENT VAT!',,3,3)=NIL).and.(!g:changed.or.(kibord(chr(5)+chr(24)),.t.))}
+    sayl "Procent VAT:" get pv picture "@K XX" valid {|g|pv:=lower(pv),if(pv<="9",pv:=str(val(pv),2),),(ascan(stawkizby,pv)#0 .or. alarm('NIEWŁAŚCIWY PROCENT VAT!',,3,3)=NIL).and.(!g:changed.or.(kibord(chr(5)+chr(24)),.t.))}
  #else
 #define D_BPOS (setpos(row(),53),devout(tran(WzVAT(1,ce,val(pv),.f.),WAPICT)),.t.)
     sayl "Cena zbytu:" get ce picture WAPIC valid D_BPOS
-    sayl "Procent VAT:" get pv picture "@K XX" valid {|g|pv:=lower(pv),if(pv<"@",pv:=str(val(pv),2),),(ascan(stawkizby,pv)#0 .or. alarm('NIEWŁAŚCIWY PROCENT VAT!',,3,3)=NIL).and.D_BPOS}
+    sayl "Procent VAT:" get pv picture "@K XX" valid {|g|pv:=lower(pv),if(pv<="9",pv:=str(val(pv),2),),(ascan(stawkizby,pv)#0 .or. alarm('NIEWŁAŚCIWY PROCENT VAT!',,3,3)=NIL).and.D_BPOS}
     sayl "Brutto:"
     #undef D_BPOS
     @ row(),53 SAY tran(WzVAT(1,ce,val(pv),.f.),WAPICT)
@@ -890,7 +890,8 @@ endif
     go top
     txt=nr_mag
     do while !eof() .and. !dbseek(txt+indx_mat->index)
-      seek txt+"~"
+      seek txt last
+      skip
       txt=nr_mag
     enddo
     if !eof()
@@ -982,7 +983,8 @@ endif
     go top
     txt=nr_mag
     do while !eof() .and. !dbseek(txt+indx_mat->index)
-      seek txt+"~"
+      seek txt last
+      skip
       txt=nr_mag
     enddo
     if !eof()
@@ -1059,7 +1061,8 @@ endif
 #ifndef STANY
         txt:=nr_mag
         do while !eof() .and. !dbseek(txt+indx_mat->index)
-           seek txt+"~"
+           seek txt last
+           skip
            txt=nr_mag
         enddo
         if eof()
@@ -1743,7 +1746,7 @@ field data
         if x=NIL
            _spocz:=STANY->nr_mag+STANY->index
            set order to tag main_ind
-           seek _spocz+"@"
+           seek _spocz+"Z"
            _sbf:=.f.
            //dg:=stod(left(dtos(data),4)+'0101')-1
            return .t.

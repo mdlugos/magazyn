@@ -554,8 +554,7 @@ DO CASE
          _slth:=A_NRLTH
 #endif
 #endif
-         seek _spocz+'@'
-         skip -1
+         seek _spocz LAST
       else
          _spocz:=KEY_DOK+nr_dowodu
          _slth:=7

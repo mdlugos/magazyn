@@ -1249,9 +1249,9 @@ endif
  #endif
 #endif
 #ifdef A_OLZA
-    szukam({1,max(0,maxcol()-79),maxrow(),maxcol(),0,0,"Data┬─Dokument┬Zlecenie─┬─Przychód┬──Rozchód┬───"+WANAZ+"┬"+smiaR+"┬"+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"~",NR_MAG+INDEX+"@"})
+    szukam({1,max(0,maxcol()-79),maxrow(),maxcol(),0,0,"Data┬─Dokument┬Zlecenie─┬─Przychód┬──Rozchód┬───"+WANAZ+"┬"+smiaR+"┬"+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"Z",NR_MAG+INDEX+"Z"})
 #else
-    szukam({1,max(0,maxcol()-77),maxrow(),maxcol(),0,0,"Data┬──Dokument┬Koszty┬─Przychód┬─Rozchód─┬───"+WANAZ+"┬"+smiaR+"┬"+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"~",NR_MAG+INDEX+"@"})
+    szukam({1,max(0,maxcol()-77),maxrow(),maxcol(),0,0,"Data┬──Dokument┬Koszty┬─Przychód┬─Rozchód─┬───"+WANAZ+"┬"+smiaR+"┬"+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"Z",NR_MAG+INDEX+"Z"})
 #endif
 #undef smiaR
     set filter to

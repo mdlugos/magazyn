@@ -485,8 +485,7 @@ procedure dok1(_f)
   @ 0,0 say trim(magazyny[mag_poz])+" "+adres_mag[mag_poz]
   IF NOWYDM
     IF KEY_DOK<>KEY_PAR
-      dbseek(KEY_PAR+"~")
-      skip -1
+      seek KEY_PAR LAST
     endif
     while !BOF() .and. KEY_DOK=KEY_PAR .and. pozycja=D_LP0 D_WAR D_LAN //jak blokada to zajęty
       skip -1
@@ -517,7 +516,8 @@ procedure dok1(_f)
                 if s<>' '
                   exit
                 endif
-                seek KEY_PAR+left(nr_dowodU,x)+"~"
+                seek KEY_PAR+left(nr_dowodU,x) LAST 
+                skip
                 while KEY_DOK=KEY_PAR .and. pozycja=D_LP0 D_WAR D_LAN
                   skip
                 ENDDO
@@ -529,8 +529,7 @@ procedure dok1(_f)
               endif
             next x
           goto p
-          seek KEY_PAR+left(nr_dowodU,x)+"~"
-          skip -1
+          seek KEY_PAR+left(nr_dowodU,x) LAST
 
           while !BOF() .and. KEY_DOK=KEY_PAR .and. pozycja=D_LP0 D_WAR D_LAN
             skip -1
@@ -610,8 +609,7 @@ procedure dok1(_f)
          kh:=space(A_NRLTH)
       endif
       IF KEY_DOK=KEY_PAR
-          dbseek(KEY_PAR+"~")
-          skip -1
+          seek KEY_PAR LAST
           while !BOF() .and. KEY_DOK=KEY_PAR .and. pozycja=D_LP0 D_WAR D_LAN
              skip -1
           enddo
@@ -1145,7 +1143,7 @@ procedure dok2(_f,getlist)
 #endif
 
     if subs(dok,2)="K"
-      @ 4,2 GET n_f PICTURE "@K!S13" valid {|x|x:=recno(),empty(n_f).and.szukam({1,1,maxrow(),,1,0,'DOKUMENTY',{||smb_dow+nr_dowodu+"│"+dtoc(data)+"│"+dost_odb},{|_skey,_s|(_sret:=_skey=13).or._skey=27.or._skey=0.and.(if(val(d_o)=0,,_sfor:={||dost_odb=left(d_o,A_NRLTH)}),dbseek(D_MM "~"),.f.)},D_MM ''}).and.(dd:=data,n_f:=pad(KEY_DOK+nr_dowodu,len(n_f)),updated(.t.),.t.),dbgoto(x),.t.}
+      @ 4,2 GET n_f PICTURE "@K!S13" valid {|x|x:=recno(),empty(n_f).and.szukam({1,1,maxrow(),,1,0,'DOKUMENTY',{||smb_dow+nr_dowodu+"│"+dtoc(data)+"│"+dost_odb},{|_skey,_s|(_sret:=_skey=13).or._skey=27.or._skey=0.and.(if(val(d_o)=0,,_sfor:={||dost_odb=left(d_o,A_NRLTH)}),dbseek(D_MM '',,.t.),dbskip(),.f.)},D_MM ''}).and.(dd:=data,n_f:=pad(KEY_DOK+nr_dowodu,len(n_f)),updated(.t.),.t.),dbgoto(x),.t.}
       @ 4,16 GET dd
 //#ifndef A_NVAT
       iv:=ascan(avat,{|y|y[2]#0})
@@ -1723,7 +1721,8 @@ begin sequence
           endif
           enddo
           if left(nr_zlec,a)+nr_mag+index=txt
-             seek txt+"@"
+             seek txt LAST
+             skip
           endif
        enddo
        next k
@@ -1756,7 +1755,8 @@ begin sequence
           endif
           enddo
           if left(nr_zlec,a)+nr_mag+index=txt
-             seek txt+"@"
+             seek txt LAST
+             skip
           endif
        enddo
 #endif
@@ -2554,7 +2554,7 @@ endif
 #endif
 #ifndef A_NOPV
          if dok_zew$"UV"
-         @ _fk,49 get pv picture "@K XX" valid {||pv:=lower(pv),if(pv<"@",pv:=str(val(pv),2),),(ascan(stawki,pv)#0 .or. alarm('NIEWŁAŚCIWY PROCENT VAT!',,3,3)=NIL) .and. showvat(_f)}
+         @ _fk,49 get pv picture "@K XX" valid {||pv:=lower(pv),if(pv<="9",pv:=str(val(pv),2),),(ascan(stawki,pv)#0 .or. alarm('NIEWŁAŚCIWY PROCENT VAT!',,3,3)=NIL) .and. showvat(_f)}
          endif
 #endif
          j:=getnew(_fk,53,{|x|if(pcount()=0,cz,cz:=x)},"cz",WAPIC)
@@ -2571,7 +2571,7 @@ endif
 #endif
 #ifdef A_WEBRUT
 //#ifndef A_NOPV
-           getlist[len(getlist)-2]:postblock:={|g|pv:=lower(pv),if(pv<"@",pv:=str(val(pv),2),),(ascan(stawki,pv)#0 .or. alarm('NIEWŁAŚCIWY PROCENT VAT!',,3,3)=NIL) .and. (!g:changed .or. cenpz(_f,getlist)) }
+           getlist[len(getlist)-2]:postblock:={|g|pv:=lower(pv),if(pv<="9",pv:=str(val(pv),2),),(ascan(stawki,pv)#0 .or. alarm('NIEWŁAŚCIWY PROCENT VAT!',,3,3)=NIL) .and. (!g:changed .or. cenpz(_f,getlist)) }
 //#endif
 #endif
            j:postblock:={|g|!g:changed.or.(wz:=WPZ(pm*il*cz),cenpz(_f,getlist))}
@@ -4029,7 +4029,7 @@ func add_faget(_f,getlist)
    local get,x
 #ifndef A_NOPV
    if dok_zew$"UV"
-      @ _fk,49 get pv picture "@K XX" valid {||pv:=lower(pv),if(pv<"@",pv:=str(val(pv),2),),(ascan(stawkizby,pv)#0 .or. alarm('NIEWŁAŚCIWY PROCENT VAT!',,3,3)=NIL) .and. (wz:=W(pm*il,cz,val(pv),dok_df),showfak(_f,_sunsel))}
+      @ _fk,49 get pv picture "@K XX" valid {||pv:=lower(pv),if(pv<="9",pv:=str(val(pv),2),),(ascan(stawkizby,pv)#0 .or. alarm('NIEWŁAŚCIWY PROCENT VAT!',,3,3)=NIL) .and. (wz:=W(pm*il,cz,val(pv),dok_df),showfak(_f,_sunsel))}
    endif
 #endif
     get:=getnew(_fk,53,{|x|if(pcount()=0,cz,cz:=x)},"cz",WAPIC)

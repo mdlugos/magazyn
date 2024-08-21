@@ -605,11 +605,10 @@ endif
          set order to tag MAIN_IND
          rcrd:=recno()
          z:=select()
-         seek STANY->nr_mag+STANY->index+"~"
+         seek STANY->nr_mag+STANY->index LAST
 #ifdef A_LIFO
          a:=b:=c:=d:=0
          do while .t.
-             skip -1
 //----------------------------
              if (bof() .or. STANY->nr_mag+STANY->index>nr_mag+index) .and. round(a+il,3)<0
                y:=str(year(if(empty(data),da,data))-1,4)
@@ -660,7 +659,7 @@ endif
                endif
                if x=NIL
                  set order to tag main_ind
-                 seek STANY->nr_mag+STANY->index+'@'
+                 seek STANY->nr_mag+STANY->index LAST
                  loop
                endif
              endif
@@ -685,11 +684,13 @@ endif
              if select()=z .and. recno()=rcrd .and. !nowy
                 c:=ILOSC //stanX
                 d:=WARTOSC
+                skip -1 
                 loop
              endif
              a+=ilosc
              b+=wartosc
              if ilosc<0 .or. wartosc=0 .and. ilosc=0 .or. il>0 .and. (wartosc=0 .or. ilosc=0 .or. round(a,3)<=0)
+                skip -1 
                 loop
              endif
              if f .and. round(a+c,3)>0
@@ -703,6 +704,7 @@ endif
              if round(a,3)>0
                 if data>da
                   a:=b:=0
+                  skip -1
                   loop
                 endif
                 if valtype(ames)='A'
@@ -721,12 +723,12 @@ endif
                 endif
                 exit
              endif
+             skip -1 
           enddo
           select (z)
 #else
           c:=a;d:=b
           do while .t.
-             skip -1
 //----------------------------
              if (bof() .or. STANY->nr_mag+STANY->index>nr_mag+index) .and. round(a+il,3)>0 //rozchod nie bierze całego stanu pocz
                y:=str(year(if(empty(data),da,data))-1,4)
@@ -777,7 +779,7 @@ endif
                endif
                if x=NIL
                  set order to tag main_ind
-                 seek STANY->nr_mag+STANY->index+'@'
+                 seek STANY->nr_mag+STANY->index LAST
                  loop
                endif
              endif
@@ -800,11 +802,13 @@ endif
                 exit
              endif
              if select()=z .and. recno()=rcrd
+                skip -1
                 loop
              endif
              //e-=ilosc
              //f-=wartosc  // f,e - stan biezacy  d,c - stan koncowy
              if nr_mag+smb_dow$dok_rozch .or. (ilosc=0 .and. wartosc=0) //ilosc<=0
+                skip -1
                 loop
              endif
              if f .and. round(a-ilosc,3)<=0
@@ -819,6 +823,7 @@ endif
              if data>da
                 a:=e  // a,b - stan od ktorego ck zresetowany po PZ które po rozchodzie
                 b:=f
+                skip -1
                 loop
              endif
              */
@@ -837,6 +842,7 @@ endif
                 endif
                 exit
              endif
+             skip -1
           enddo
           select (z)
           if ck>0 .and. d>=0 .and. c>0 .and. d+ck*il<0 .and. c+il>=0

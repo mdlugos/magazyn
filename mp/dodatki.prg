@@ -532,13 +532,13 @@ DO WHILE !(EOF() .and. STANY->(eof()))
 #endif
     ?
     ?
-    SEEK NR_MAG+INDEX+"@" // nastepny indeks (SOFTSEEK IS ON)
+    SEEK NR_MAG+INDEX + "Z" // nastepny indeks (SOFTSEEK IS ON)
       LOOP
 #ifndef STANY
     endif
 #endif
    ENDIF
-   SEEK STANY->NR_MAG+STANY->index+dtos(dz3)+"@"
+   SEEK STANY->NR_MAG+STANY->index+dtos(dz3) + "Z"
    if dz3=DatY->d_z_rok
      S:=STANY->ZAMKN_roku
 #ifdef A_WA
@@ -1516,8 +1516,7 @@ function ostp(DOP)
 field index,smb_dow,nr_dowodu,nr_mag,pozycja
 
 select main
-seek STANY->NR_MAG+STANY->index+"@"
-skip -1
+seek STANY->NR_MAG+STANY->index LAST
 do while STANY->NR_MAG+STANY->index = NR_MAG+index .AND..NOT. BOF()
    if !nr_mag+smb_dow$dok_rozch
       dop:=smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)
@@ -1536,8 +1535,7 @@ field index,smb_dow,nr_dowodu,nr_mag,pozycja
 
 select main
 
-seek STANY->NR_MAG+STANY->index+"@"
-skip -1
+seek STANY->NR_MAG+STANY->index LAST
 do while STANY->NR_MAG+STANY->index = NR_MAG+index .and..not. bof()
    if nr_mag+smb_dow$dok_rozch
       dor:=smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)

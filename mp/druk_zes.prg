@@ -573,8 +573,7 @@ DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
 SELECT STANY
   bkey:={||nr_mag+index}
   bpic:="XX/"+ INDEXPIC
-  SEEK MAG_BIEZ+"~"
-  SKIP -1
+  SEEK MAG_BIEZ LAST
   I_DO:=MAG_BIEZ+INDEX
   SEEK MAG_BIEZ
   I_OD:=MAG_BIEZ+INDEX
@@ -789,7 +788,7 @@ DO WHILE EvaldB(bkey)<=I_DO .AND. !EOF()
   seek TXT+DTOS(od)
   IF EvaldB(bkey)+DTOS(DATA)>TXT+DTOS(do) .OR. EOF()
      IF EvaldB(bkey)=txt
-        seek TXT+"@"
+        seek TXT+"Z"
      ENDIF
      LOOP
   ENDIF
@@ -861,7 +860,7 @@ DO WHILE EvaldB(bkey)<=I_DO .AND. !EOF()
   do while txt=left(EvaldB(bkey),i_gr) .and. EvaldB(bkey)<=i_do .and. !EOF()
      IF EvaldB(bkey)+DTOS(DATA)>TXT+DTOS(do)
         IF EvaldB(bkey)=txt
-           seek TXT+"@"
+           seek TXT+"Z"
         ENDIF
         IF txt=left(EvaldB(bkey),i_gr)
            txt:=EvaldB(bkey)
@@ -1071,7 +1070,7 @@ DO WHILE EvaldB(bkey)<=I_DO .AND. !EOF()
   seek TXT+DTOS(od)
   IF EvaldB(bkey)+DTOS(DATA)>TXT+DTOS(do) .OR. EOF()
      IF EvaldB(bkey)=txt
-        seek TXT+"@"
+        seek TXT+"Z"
      ENDIF
      LOOP
   ENDIF
@@ -1162,7 +1161,7 @@ endif
   do while txt=left(EvaldB(bkey),i_gr) .and. EvaldB(bkey)<=i_do .and. !EOF()
      IF EvaldB(bkey)+DTOS(DATA)>TXT+DTOS(do)
         IF EvaldB(bkey)=txt
-           seek TXT+"@"
+           seek TXT+"Z"
         ENDIF
         IF txt=left(EvaldB(bkey),i_gr)
            txt:=EvaldB(bkey)
@@ -1621,7 +1620,8 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
        EXIT
 #else
        if mag_biez=D_MM
-          seek D_MM+"~"
+          seek D_MM LAST
+          SKIP
        endif
        if eof()
           EXIT
@@ -1946,7 +1946,8 @@ ELSE
        EXIT
 #else
        if mag_biez=D_MM
-          seek mag_biez+"~"
+          seek mag_biez LAST
+          skip
        endif
        if eof()
           EXIT
@@ -2462,7 +2463,8 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
        EXIT
 #else
        if mag_biez=nr_mag
-          seek mag_biez+"~"
+          seek mag_biez last
+          skip
        endif
        if eof()
           EXIT
@@ -2696,7 +2698,8 @@ ELSE
      EXIT
 #else
        if mag_biez=nr_mag
-          seek mag_biez+"~"
+          seek mag_biez LAST
+          SKIP
        endif
        if eof()
           EXIT
@@ -3179,8 +3182,7 @@ if pcount()<5
 IF tak("CZY KOJEJNOŚĆ W/G NAZW",20,,.F.,.F.)
    set order to 1
    bkey:=EvAlDb('{||'+IndexkeY(0)+'}')
-   SEEK MAG_BIEZ+"~"
-   SKIP -1
+   SEEK MAG_BIEZ LAST
    I_DO:=MAG_BIEZ+subs(EvaldB(bkey),3)
    SEEK MAG_BIEZ
    I_OD:=MAG_BIEZ+subs(EvaldB(bkey),3)
@@ -3189,8 +3191,7 @@ IF tak("CZY KOJEJNOŚĆ W/G NAZW",20,,.F.,.F.)
 ELSE
 #endif
    bkey:=EvAlDb('{||'+IndexkeY(0)+'}')
-    SEEK MAG_BIEZ+"~"
-    SKIP -1
+    SEEK MAG_BIEZ LAST
     I_DO:=MAG_BIEZ+subs(EvaldB(bkey),3)
     SEEK MAG_BIEZ
     I_OD:=MAG_BIEZ+subs(EvaldB(bkey),3)
@@ -3360,7 +3361,7 @@ endif
 
   SELECT MAIN
 
-    seek TXT+DTOS(D_G)+"@"
+    seek TXT+DTOS(D_G)+"Z"
 #ifdef D_JMO
 #define F_JMO sel:=i_lam(data),
 #define jM (if(jm_o,jm_opcja,jm))
@@ -3742,7 +3743,7 @@ ENDCASE
 
 DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
 
-   TXT:=NR_MAG+INDEX+DTOS(d_g)+"~"
+   TXT:=NR_MAG+INDEX+DTOS(d_g)+"Z"
 #ifdef A_WA
 #ifdef A_JMALTTOT
    if jm_o
@@ -5203,7 +5204,8 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
    seek TXT+DTOS(od)
    sum -warT_ewiD to w rest while data<=do .and. nr_mag+smb_dow+konto_kosz=txt
    if nr_mag+smb_dow+konto_kosz=txt
-      seek txt+"@"
+      seek txt last
+      skip
    endif
    if w=0
       loop
@@ -5245,7 +5247,8 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
    seek TXT+DTOS(od)
    IF nr_mag+smb_dow+konto_kosz+DTOS(DATA)>TXT+DTOS(DO) .OR. EOF()
       IF nr_mag+smb_dow+konto_kosz=txt
-         seek TXT+"@"
+         seek TXT last
+         skip
       ENDIF
       LOOP
    ENDIF
@@ -5347,7 +5350,8 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
     skip
   enddo
   if nr_mag+smb_dow+konto_kosz=txt
-     seek txt+"@"
+     seek txt last
+     skip
   endif
   ?? speC(HB_BCHAR(13)+P_UON+SPACE(80))
   ?? spec(P_UOFF)
@@ -5396,7 +5400,8 @@ DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
    seek TXT+DTOS(od)
    sum -warT_ewiD to w rest while data<=do .and. nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)=txt
    if nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)=txt
-      seek txt+"@"
+      seek txt last
+      skip
    endif
    if w=0
       loop
@@ -5438,7 +5443,8 @@ DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
    seek TXT+DTOS(od)
    IF nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)+DTOS(DATA)>TXT+DTOS(DO) .OR. EOF()
       IF nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)=txt
-         seek TXT+"@"
+         seek TXT last
+         skip
       ENDIF
       LOOP
    ENDIF
@@ -5540,7 +5546,8 @@ DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
     skip
   enddo
   if nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)=txt
-     seek txt+"@"
+     seek txt last
+     skip
   endif
   ?? speC(HB_BCHAR(13)+P_UON+SPACE(80))
   ?? spec(P_UOFF)
