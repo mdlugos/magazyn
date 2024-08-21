@@ -793,11 +793,9 @@ func mkcolumn(m)
 local fb:=fieldblock(m[1]:=trim(m[1]))
 local b:=TBColumnNew(m[1],fb)
 
-    if 'B'$m[2]  // flaga albo double
-       b:block:=fb:={|x,y|if(x=NIL,x:=binfieldget(m[1]),binfieldput(m[1],x))} 
-    endif
     if m[2]='B' .or. (m[2]="C" .and. m[1]="D_" .and. m[3]=8)
         if m[2]="C"
+           fb:={|x,y|if(x=NIL,x:=binfieldget(m[1]),binfieldput(m[1],x))} 
            b:block:={|x|IF(x=NIL,,x:=D2BIN(x)),ROUND(BIN2D(eval(fb,x)),4)}
         endif
         b:width:=m[3]:=12

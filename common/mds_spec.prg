@@ -256,20 +256,25 @@ local i,j,pole,fi,txt,ars:=dbstruct()
    pole:=if(sel=select(),"",CHR(64+SELECT())+'->')+trim(ars[i,1])
    fi:=fieldget(i)
    do case
-   case ars[i,2]$"NB"
+   case left(ars[i,2],1)$"NB"
     txt:= pole+"="+ltrim(str(fi))
-   case ars[i,2]=="C" .and. ars[i,3]=8 .and. ars[i,1]="D_"
+   case left(ars[i,2],1)=="C" .and. ars[i,3]=8 .and. ars[i,1]="D_"
     txt:= "BIN2D(BINFIELDGET(["+trim(ars[i,1])+"]))"
     IF sel!=select()
        txt:=CHR(64+SELECT())+'->('+txt+')'
     ENDIF
     txt += "="+ltrim(str(bin2d(BINFIELDGET(i))))
-   case ars[i,2]=="C"
+   case left(ars[i,2],1)$"CQMW"
     txt:= pole+'="'+left(fi,10)+'"'
    case ars[i,2]=="L"
     txt:= pole
    case ars[i,2]=="D"
     txt:= "DTOS("+pole+')="'+left(dtos(fi),6)+'"'
+   otherwise
+    txt:= "EMPTY("+pole+')
+    if !Empty(fi)
+      txt:='!'+txt
+    endif
    endcase
    aadd(archoice,txt)
    aadd(arskip,.t.)
@@ -293,9 +298,9 @@ local i,j,pole,fi,txt,ars:=dbstruct()
    pole:=if(sel=select(),"",CHR(64+SELECT())+'->')+trim(ars[i,1])
    fi:=fieldget(i)
    do case
-   case ars[i,2]$"MW"
+   case Left(ars[i,2],1)$"MW"
     txt:= "PAD("+pole+",20)"
-   case ars[i,2]=="C"
+   case Left(ars[i,2],1)$"CQ"
     if  ars[i,3]=8 .and. ars[i,1]="D_"
       txt:= "BINFIELDGET(["+trim(ars[i,1])+"])"
       IF sel!=select()

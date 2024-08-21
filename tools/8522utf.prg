@@ -39,13 +39,13 @@ st:=dbstruct()
 ? DB+":"
 i:=0
 f:=.f.
-do while (i:=ascan(st,{|x|x[2]$"MC"},++i))>0
+do while (i:=ascan(st,{|x|x[2]$"WMC"},++i))>0
    if st[i,3]>36 //nr ksef
-      ?? " "+st[i,1]
-      st[i,2]:='C:B'
-      st[i,3]:=min(st[i,3] + 0x10, 0xF0) //stały współczynnik rozszerzenia czyli +16
+      ?? "",st[i,1],st[i,2]
+      st[i,2]:='C:U'
       f:=.t.
-   elseif st[i,2]='M'
+   elseif left(st[i,2],1)$'MW'
+      ?? "",st[i,1],st[i,2]
       st[i,2]:='M:B'
       f:=.t.
    endif
@@ -54,7 +54,7 @@ if f
    dbcreate("tmp",st) //,'VFPCDX')
    use tmp NEW
    select 1
-   dbeval({||tmp->(dbappend(),aeval(st,{|x,i,y|y:=A->(fieldget(i)),if('B'$subs(x[2],3),binfieldput(i,trim(y)),fieldput(i,y))}))})
+   dbeval({||tmp->(dbappend(),aeval(st,{|x,i,y|fieldput(i,A->(fieldget(i)))}))})
    close databases
    erase (set(_SET_DEFAULT)+db+".dbf")
    erase (set(_SET_DEFAULT)+db+".dbt")

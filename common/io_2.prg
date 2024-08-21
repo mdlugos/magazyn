@@ -2270,7 +2270,7 @@ func binfieldput(f,x)
    if valtype(x)='C'
       t:=hb_FieldType(f)
       x:=trim(x)
-      if !(left(t,1) $ 'PWG' .or. 'B' $ subs(t,3))
+      if !(left(t,1) $ 'PWG' .or. subs(t,3,1) $ 'UB')
          x:=hb_translate(x,dbinfo(DBI_CODEPAGE),)  //odwrotne tłumacznie do tego co przy zapisie
          // przy tłumaczeniu z powrotem się skróci, ale i tak będzie przyciasno
       endif
@@ -2281,7 +2281,7 @@ func binfieldget(f)
    local x := hb_fieldget(f),t
    if valtype(x)='C'
       t:=hb_FieldType(f)
-      if !(left(t,1) $ 'PWG' .or. 'B' $ SubStr(t,3))
+      if !(left(t,1) $ 'PWG' .or. subs(t,3,1) $ 'UB')
          x := hb_translate(x,,dbinfo(DBI_CODEPAGE)) //odwrotne tłumacznie do tego co przy odczycie
       endif
       // to działa zależy jaka aktualna strona kodowa
