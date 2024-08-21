@@ -516,8 +516,7 @@ procedure dok1(_f)
                 if s<>' '
                   exit
                 endif
-                seek KEY_PAR+left(nr_dowodU,x) LAST 
-                skip
+                seek KEY_PAR+left(nr_dowodU,x) + HB_UTF8CHR(0x00A0) 
                 while KEY_DOK=KEY_PAR .and. pozycja=D_LP0 D_WAR D_LAN
                   skip
                 ENDDO
@@ -1721,8 +1720,7 @@ begin sequence
           endif
           enddo
           if left(nr_zlec,a)+nr_mag+index=txt
-             seek txt LAST
-             skip
+             seek txt + HB_UTF8CHR(0x00A0)
           endif
        enddo
        next k
@@ -1755,8 +1753,7 @@ begin sequence
           endif
           enddo
           if left(nr_zlec,a)+nr_mag+index=txt
-             seek txt LAST
-             skip
+             seek txt + HB_UTF8CHR(0x00A0)
           endif
        enddo
 #endif
