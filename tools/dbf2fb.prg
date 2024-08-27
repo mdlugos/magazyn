@@ -168,7 +168,7 @@ static function fielddef(fStruct)
 return f
 
 static procedure chgdat(cFile, cTable, lCreateTable)
-   LOCAL oTable, oRecord, aDbfStruct, i, cQuery
+   LOCAL oTable, oRecord, aDbfStruct, i, cQuery, v, t
    ? cFile
    IF File(strtran(cFile,subs(cFile,-3),'fpt'))
      i:='DBFCDX'
@@ -233,12 +233,22 @@ static procedure chgdat(cFile, cTable, lCreateTable)
 
       DO WHILE ! Eof() .AND. Inkey() != K_ESC
 
+         Afill(oRecord:aChanged,NIL)
+
          if !set(_SET_DELETED)
             oRecord:FieldPut('deleted',deleted())
          endif
 
          FOR i := 1 TO FCount()
-            oRecord:FieldPut( FieldName( i ), FieldGet( i ) )
+            v := FieldGet( i )
+            t := valtype( v )
+            if t=='C' .and. !empty(v:=trim(v))
+            elseif t=='L' .or. !empty(v)
+            elseif t=='N' .and. !'.' $ tran(v,)
+            else
+                  loop
+            endif
+            oRecord:FieldPut( FieldName( i ), v )
          NEXT
    
          dbSkip()

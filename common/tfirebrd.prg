@@ -179,7 +179,7 @@ METHOD Execute( cQuery ) CLASS TFbServer
    LOCAL result
    LOCAL n
 
-   cQuery := RemoveSpaces( cQuery )
+   //cQuery := RemoveSpaces( cQuery )
 
    IF ::StartedTrans
       n := FBExecute( ::db, cQuery, ::dialect, ::trans )
@@ -981,10 +981,38 @@ STATIC FUNCTION KeyField( aTables, db, dialect )
    RETURN aKeys
 
 STATIC FUNCTION DataToSql( xField )
-
+local a,r,f,i,l
    SWITCH ValType( xField )
    CASE "C"
-      RETURN "'" + StrTran( xField, "'", "''" ) + "'"
+      xField := StrTran( xField, "'", "''" )
+      r:=""
+      f:=NIL
+      l:=HB_Ulen(xField)
+      for i:=1 to l
+         a:=hb_UPeek(xField,i)
+         if a>=32
+            if f == NIL
+               r+="'"
+            elseif f == .f.
+               r+=" || '"
+            endif
+            r+=hb_UChar(a)
+            f:=.t.
+         else
+            if f == .t.
+               r+="' || "
+            elseif f == .f.
+               r+=" || "
+            endif
+            r+="ASCII_CHAR(" + hb_ntos(a) + ")"
+            f:=.f.
+         endif
+      next
+      if f==.t.
+         r+="'"
+      endif
+
+      RETURN r
    CASE "D"
    CASE "T"
       RETURN "'" + HB_TSTOSTR( xField, .t. ) + "'"
