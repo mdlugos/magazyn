@@ -8,7 +8,7 @@
 
 -w3 -es2
 
--stop{pocc64|poccarm}
-
+-c=gnu90
 -lfbclient
+-i${hb_with_firebird}
 ${hb_name} ../common/firebird.c ../common/tfirebrd.prg ../common/cppl852m.c ../common/cp_utf8m.c

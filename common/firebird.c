@@ -664,8 +664,10 @@ HB_FUNC( FBGETDATA )
             case SQL_FLOAT:
                //hb_snprintf( data, sizeof( data ), "%15g ", *( float * ) ( var->sqldata ) );
                //hb_retc( data );
+               {
                double value = *( float * ) ( var->sqldata );
                hb_retnd(value);
+               }
                break;
 
             case SQL_DOUBLE:

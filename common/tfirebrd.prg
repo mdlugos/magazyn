@@ -866,7 +866,28 @@ METHOD FieldPut( nField, Value ) CLASS TFbRow
 
    IF nField >= 1 .AND. nField <= Len( ::aRow )
       ::aChanged[ nField ] := .T.
-      result := ::aRow[ nField ] := Value
+      IF ! Valtype(Value)$'NL' .and. empty(Value)
+         result := ::aRow[ nField ] := NIL
+      else
+         SWITCH ::FieldType(nField) of
+         CASE "C"
+         CASE "M"
+            if empty(Value)
+               result := ::aRow[ nField ] := NIL
+            else
+               result := ::aRow[ nField ] := Tran( Value, )
+            endif
+            EXIT
+         CASE "N"
+            result := ::aRow[ nField ] := Val( Tran( Value, ))
+            EXIT
+         CASE "L"
+            result := ::aRow[ nField ] := ! Empty( Value )
+            EXIT
+         otherwise
+            result := ::aRow[ nField ] := Value
+         ENDSWITCH
+      ENDIF
    ENDIF
 
    RETURN result
@@ -972,6 +993,8 @@ STATIC FUNCTION DataToSql( xField )
       RETURN hb_ntos( xField )
    CASE "L"
       RETURN iif( xField, "TRUE", "FALSE" )
+   CASE "U"
+      RETURN "NULL"
    ENDSWITCH
 
    RETURN NIL

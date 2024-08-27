@@ -47,12 +47,13 @@ PROCEDURE Main( ... )
 
       DO CASE
       CASE cTok == "-h"
-         cHostName := hb_PValue( i++ )
-         cDatabase := ':'
+         cHostName := hb_PValue( i++ )+':'
 
       CASE cTok == "-d"
          cDataBase := Lower(hb_PValue( i++ ))
-         cDatabase := '/db/' + cDatabase + '.fdb'
+         if ! subs(cDataBase,-4,1) == '.'
+            cDatabase := '/db/' + cDatabase + '.fdb'
+         endif
 
       CASE cTok == "-t"
          cTable := Lower(hb_PValue( i++ ))
@@ -76,17 +77,17 @@ PROCEDURE Main( ... )
    ENDDO
    altd()
    cdbg()
-
-   if lCreateTable .and. .not. hb_FileExists( cDatabase )
-      FErase( cDatabase )
+#if 0
+   if lCreateTable
+      // FErase( cDatabase )
       // jak za krótkie indeksy to zwiększyć page size
       oServer := FBCreateDB( cHostName + cDatabase, cUser, cPassWord, 4096/*4096|8192|16384*/, 'UTF8', 3, 'UNICODE_CI_AI')
       IF oServer <> 1
          ? procline(),oServer
-         QUIT
+      //   QUIT
       ENDIF
    endif
-   
+#endif   
    oServer := TFbServer():New( cHostName + cDatabase, cUser, cPassWord, 3 ) //, cDataBase )
    IF oServer:NetErr()
       ? procline(),oServer:ErrorNo(), oServer:Error()
@@ -129,6 +130,7 @@ PROCEDURE Main( ... )
 static function fielddef(fStruct)
    local f:='"'+trim(fStruct[1])+ '" ' 
    switch left(fStruct[2],1)
+      case 'Q'
       case 'C'
          if fStruct[3]>36
             f+='VAR'
@@ -136,6 +138,7 @@ static function fielddef(fStruct)
          f+='CHAR('+hb_ntos(fStruct[3])+')'
          exit
       case 'M'
+      case 'W'
          f+='BLOB SUB_TYPE 1'
          exit
       case 'D'
@@ -148,7 +151,7 @@ static function fielddef(fStruct)
          f+='TIMESTAMP'
          exit
       case 'B'
-         f+='DOUBLE'
+         f+='DOUBLE PRECISION'
          exit
       case 'N'
          f+='NUMERIC('
@@ -225,7 +228,7 @@ static procedure chgdat(cFile, cTable, lCreateTable)
          break
       ENDIF
 
-      oRecord := oTable:GetBlankRow()
+      oRecord := oTable:GetBlankRow()      
       asize(oRecord:aRow ,if(set(_SET_DELETED),FCount(),FCount()+1))
 
       DO WHILE ! Eof() .AND. Inkey() != K_ESC
