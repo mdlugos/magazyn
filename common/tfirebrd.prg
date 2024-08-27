@@ -869,7 +869,7 @@ METHOD FieldPut( nField, Value ) CLASS TFbRow
       IF ! Valtype(Value)$'NL' .and. empty(Value)
          result := ::aRow[ nField ] := NIL
       else
-         SWITCH ::FieldType(nField) of
+         SWITCH ::FieldType(nField)
          CASE "C"
          CASE "M"
             if empty(Value)
