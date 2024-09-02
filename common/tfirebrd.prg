@@ -858,7 +858,7 @@ METHOD FieldGet( nField ) CLASS TFbRow
 
 METHOD FieldPut( nField, Value ) CLASS TFbRow
 
-   LOCAL result
+   LOCAL result, t
 
    IF valtype(nField)=="C"
       nField := ::FieldPos(nField)
@@ -866,13 +866,14 @@ METHOD FieldPut( nField, Value ) CLASS TFbRow
 
    IF nField >= 1 .AND. nField <= Len( ::aRow )
       ::aChanged[ nField ] := .T.
-      IF ! Valtype(Value)$'NL' .and. empty(Value)
+      t := ::FieldType( nField ) 
+      IF ! t $ 'NL' .and. empty( Value )
          result := ::aRow[ nField ] := NIL
       else
-         SWITCH ::FieldType(nField)
+         SWITCH t
          CASE "C"
          CASE "M"
-            if empty(Value)
+            if empty( Value ) .and. len( Value ) > 2
                result := ::aRow[ nField ] := NIL
             else
                result := ::aRow[ nField ] := Tran( Value, )

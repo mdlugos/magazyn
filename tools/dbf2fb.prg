@@ -168,7 +168,7 @@ static function fielddef(fStruct)
 return f
 
 static procedure chgdat(cFile, cTable, lCreateTable)
-   LOCAL oTable, oRecord, aDbfStruct, i, cQuery, v, t
+   LOCAL oTable, oRecord, aDbfStruct, i, j, cQuery, v, t, f
    ? cFile
    IF File(strtran(cFile,subs(cFile,-3),'fpt'))
      i:='DBFCDX'
@@ -229,7 +229,6 @@ static procedure chgdat(cFile, cTable, lCreateTable)
       ENDIF
 
       oRecord := oTable:GetBlankRow()      
-      asize(oRecord:aRow ,if(set(_SET_DELETED),FCount(),FCount()+1))
 
       DO WHILE ! Eof() .AND. Inkey() != K_ESC
 
@@ -240,15 +239,23 @@ static procedure chgdat(cFile, cTable, lCreateTable)
          endif
 
          FOR i := 1 TO FCount()
-            v := FieldGet( i )
-            t := valtype( v )
-            if t=='C' .and. !empty(v:=trim(v))
-            elseif t=='L' .or. !empty(v)
-            elseif t=='N' .and. !'.' $ tran(v,)
-            else
-                  loop
+            f:=FieldName( i )
+            j:=oRecord:FieldPos( f )
+            if j>0
+               v := FieldGet( i )
+               t := valtype( v )
+               if t$'LN'
+               elseif t=='C'
+                  t := len( v )
+                  v := trim( v )
+                  if t > 2 .and. empty( v )
+                     loop
+                  endif
+               elseif empty( v )
+                     loop
+               endif
+               oRecord:FieldPut( j, v )
             endif
-            oRecord:FieldPut( FieldName( i ), v )
          NEXT
    
          dbSkip()
