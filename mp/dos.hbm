@@ -1,4 +1,4 @@
--oma -w1 -m -n
+-omados -w1 -m -n
 #-debug -inc -rebuild
 #-gui -gtwvt
 #-lhbzebra hbzebra.hbc

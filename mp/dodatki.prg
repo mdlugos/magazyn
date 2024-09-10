@@ -1421,8 +1421,8 @@ do while ile>0
 ?  "   │    │                       │    │",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"│",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"│",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"├──────────┬──────────┼──────────┬──────────┤"
 ?  "         NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU   MAGAZYNU    PRZYCHÓD   ROZCHÓD   NIEDOBORY   NADWYŻKI ",spec(P_SUPOFF)+" SPISUJĄCEGO"
 ?  "───┴────┴───────────────────────┴────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴─────────────────────",spec(P_8LPI)
-#undef qqout(x)
-#undef wqq(x)
+#undef qqout
+#undef wqq
 do while lp<=min(ark*30,ile)
 ? str(lp,3)+"|"+INDEX+"|"+LEFT(INDX_MAT->NAZWA,23)+"|"+INDX_MAT->jM+"|          |"+if(sflag,D_ILOUT(stan)+"|"+D_WAOUT(stan),"          |          ")+"|"+ostp(@DOP)+"|"+ostr(@DOR)+"|          |          |"
 ? "   |    |"+pad(substr(INDX_MAT->NAZWA,24),23)+"|    |          |          |          |"+dop+"|"+dor+"|          |          |"
@@ -1434,8 +1434,8 @@ do while lp<=min(ark*30,ile)
 ?  "   │                │                       │    │",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"│",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"├──────────┬──────────┼──────────┬──────────┤"
 ?  "                     NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU    PRZYCHÓD   ROZCHÓD   NIEDOBORY   NADWYŻKI",spec(P_SUPOFF)+"  SPISUJĄCEGO"
 ?  "───┴────────────────┴───────────────────────┴────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴────────────────────",spec(P_8LPI)
-#undef qqout(x)
-#undef wqq(x)
+#undef qqout
+#undef wqq
 do while lp<=min(ark*30,ile)
 ? str(lp,3)+"|"+tran(INDEX,"@R "+ INDEXPIC )+"|"+LEFT(INDX_MAT->NAZWA,23)+"|"+INDX_MAT->jM+"|          |"+if(sflag,D_ILOUT(stan),space(10))+"|"+ostp(@DOP)+"|"+ostr(@DOR)+"|          |          |"
 ? "   |"
@@ -1449,8 +1449,8 @@ do while lp<=min(ark*30,ile)
 ?  "   │              │                       │    │",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"│",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"├──────────┬──────────┼──────────┬──────────┤"
 ?  "    INDEKS SWW     NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU    PRZYCHÓD   ROZCHÓD   NIEDOBORY   NADWYŻKI",spec(P_SUPOFF)+"  SPISUJĄCEGO"
 ?  "───┴──────────────┴───────────────────────┴────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────────────────",spec(P_8LPI)
-#undef qqout(x)
-#undef wqq(x)
+#undef qqout
+#undef wqq
 do while lp<=min(ark*30,ile)
 ? str(lp,3)+"|"+tran(INDEX,"@R "+ INDEXPIC )+"|"+LEFT(INDX_MAT->NAZWA,23)+"|"+INDX_MAT->jM+"|          |"+if(sflag,D_ILOUT(stan),space(10))+"|"+ostp(@DOP)+"|"+ostr(@DOR)+"|          |          |"
 ? "   |              |"+pad(substr(INDX_MAT->NAZWA,24),23)+"|    |          |"+if(sflag,D_WAOUT(stan),space(10))+"|"+dop+"|"+dor+"|          |          |"
@@ -1463,8 +1463,8 @@ do while lp<=min(ark*30,ile)
 ?  "   |      |                       |    |",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"|",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"|----------+----------|----------+----------|"
 ?  "      SWW  NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU    PRZYCHÓD   ROZCHÓD   NIEDOBORY   NADWYŻKI",spec(P_SUPOFF)+"  SPISUJĄCEGO"
 ?  "___|______|_______________________|____|__________|__________|__________|__________|__________|__________|______________________________",spec(P_8LPI)
-#undef qqout(x)
-#undef wqq(x)
+#undef qqout
+#undef wqq
 do while lp<=min(ark*30,ile)
 ? str(lp,3)+"|"+tran(INDEX,"@R "+ INDEXPIC )+"|"+LEFT(INDX_MAT->NAZWA,23)+"|"+INDX_MAT->jM+"|          |"+if(sflag,D_ILOUT(stan),space(10))+"|"+ostp(@DOP)+"|"+ostr(@DOR)+"|          |          |"
 ? padl(trim(indx_mat->sww),10)+"|"+pad(substr(INDX_MAT->NAZWA,24),23)+"|    |          |"+if(sflag,D_WAOUT(stan),space(10))+"|"+dop+"|"+dor+"|          |          |"

@@ -72,15 +72,9 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
    hb_gtInfo( HB_GTI_CLOSABLE, .t. )
    hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
   #else 
-   #ifdef __PLATFORM__WINDOWS
-      hb_Run('chcp 65001 > nul')
-      hb_SetTermCP( 'UTF8MD')
-   #elseif __PLATFORM__UNIX
-      hb_SetTermCP( 'UTF8MD')
-   #elseif __PLATFORM__DOS
-      hb_SetTermCP( PC852 )
-   #endif
- #endif
+      //hb_Run('chcp 65001 > nul')
+      //hb_SetTermCP( 'UTF8MD')
+  #endif
    //SET(_SET_DEBUG, .t.)
 #ifdef A_ADS
    #ifdef __PLATFORM__WINDOWS
