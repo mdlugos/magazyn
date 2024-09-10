@@ -1126,7 +1126,7 @@ return OldExit
 */
 static proc DateMsg()
 
-    alarm("Nieprawidłowa data",,3,3)
+    alarm(hb_UTF8ToStr("Nieprawidłowa data"),,3,3)
 
 return
 
@@ -1238,7 +1238,7 @@ static proc getval(get)
 #endif
        exit
     endif
-    alarm("Tego się nie da wyliczyć",,3,3)
+    alarm(hb_UTF8ToStr("Tego się nie da wyliczyć"),,3,3)
   enddo
   g:killfocus()
   readprocname:=pn
@@ -1303,8 +1303,8 @@ static proc getchr(get,expandable)
         SET COLOR TO I
         @ r1,c1+3  say 'WPIS WIELOWIERSZOWY'
         @ r2,c1+3 say 'Esc'
-        SAYl "^→"
-        SAYl "^←"
+        SAYl "^"+if(HB_CDPISUTF8(),"→", chr(0x1b)) 
+        SAYl "^"+if(HB_CDPISUTF8(),"←", chr(0x1a)) 
         SAYl 'Hom'
         SAYl 'End'
         sayl 'PgU'
@@ -1344,7 +1344,7 @@ osk:=HB_SETKEYSAVE()
        m:=message("PODAJ  (B,M,K,E,R,W);ROZKAZ:;... ")
        k:=upper(hb_keyChar(inkey(0)))
        if k$'RW'
-         @ m[1]+1,m[2]+8 say "NAZWĘ: "
+         @ m[1]+1,m[2]+8 say "NAZWĘ: " UNICODE 
          n:=pad(defa,64)
          @ m[1]+2,m[2]+2 get n picture "@KS14"
          read

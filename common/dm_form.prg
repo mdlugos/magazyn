@@ -100,7 +100,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
        _fl:=_fi:=_fj+1
        _fpos:=_fkey:=0
        while _fi<=_flp .and. _frow+_fskip*(_fi-_fj+1)<=maxrow()
-         @ _fskip*(_fi-_fj)+_frow,_fco1,_fskip*(_fi-_fj+1)+_frow,_fco2 BOX hb_UTF8ToStrBox(IF( _flp<=_fi,'║ ║║╝═╚║ ','║ ║║╜─╙║ ')) COLOR _sbkgr
+         @ _fskip*(_fi-_fj)+_frow,_fco1,_fskip*(_fi-_fj+1)+_frow,_fco2 BOX UNICODE IF( _flp<=_fi,'║ ║║╝═╚║ ','║ ║║╜─╙║ ') COLOR _sbkgr
          _fl:=_fi
          _fk:=_frow+_fskip*(_fi-_fj)
          job:=right(ltrim(str(_fi,6,0)),4)
@@ -170,9 +170,8 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
       if stat
          _fpos:=0
          job:=right(ltrim(str(_fi,6,0)),4)
-         @ _fk,_fco1 SAY '║   .' color _sbkgr
+         @ _fk,_fco1 SAY '║   .' UNICODE color _sbkgr
          @ _fk,_fco1+max(0,4-len(job)) say job color _sbkgr
-         //@ _fk,_fco1+1 say str(_fi,3)+'.' color _sbkgr
          eval(_fmainget,_f,getlist)
          if _fpos=0
             _fpos:=rmpos
@@ -243,15 +242,15 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
               if _fskip*(_fl-_fj+1)+_frow>maxrow()
                  --_fl
                  if _fl=_flp-1
-                     @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAY '╙'+replicate('─',_fco2-_fco1-1)+'╜' 
+                     @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAY '╙'+replicate('─',_fco2-_fco1-1)+'╜' UNICODE
                  endif
               else
                  @ (_fl-_fj)*_fskip+_frow,_fco1,(_fl-_fj+1)*_fskip+_frow,_fco2 BOX UNICODE '║ ║║╝═╚║'
               endif
               scroll(_fskip+_frow,_fco1,_frow+_fskip*(_fl-_fj+1)-1,_fco2,-_fskip)
               if _fskip<2
-                @  _fskip+_frow,_fco1 SAY '║'
-                @  _fskip+_frow,_fco2 SAY '║'
+                @  _fskip+_frow,_fco1 SAY '║' UNICODE
+                @  _fskip+_frow,_fco2 SAY '║' UNICODE
               else
                 @  _fskip+_frow,_fco1,2*_fskip+_frow-1,_fco2 BOX UNICODE '║ ║║║ ║║'
               endif
@@ -267,8 +266,8 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                 ++_fl
                 scroll(_frow+_fskip,_fco1,_frow+_fskip*(_fi-_fj+1)-1,_fco2,_fskip)
                 if _fskip<2
-                  @  _fskip*(_fi-_fj)+_frow,_fco1 SAY '║'
-                  @  _fskip*(_fi-_fj)+_frow,_fco2 SAY '║'
+                  @  _fskip*(_fi-_fj)+_frow,_fco1 SAY '║' UNICODE
+                  @  _fskip*(_fi-_fj)+_frow,_fco2 SAY '║' UNICODE
                 else
                   @  _frow+_fskip*(_fi-_fj),_fco1,_frow+_fskip*(_fi-_fj+1)-1,_fco2 BOX UNICODE '║ ║║║ ║║'
                 endif
@@ -279,7 +278,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                  ++_fl
               endif
               IF _flp<=_fi
-                 @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAY '╚'+replicate('═',_fco2-_fco1-1)+'╝'
+                 @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAY '╚'+replicate('═',_fco2-_fco1-1)+'╝' UNICODE
               ENDIF
               loop
            else
@@ -308,7 +307,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                        _fkey:=_fi
                        do while _fk<=_frow+_fskip*(_fl-_fj)
                           job:=right(ltrim(str(_fkey++,6,0)),4)
-                          @ _fk,_fco1 SAY '║   .' color _sbkgr
+                          @ _fk,_fco1 SAY '║   .' UNICODE color _sbkgr
                           @ _fk,_fco1+max(0,4-len(job)) say job color _sbkgr
                           //@ _fk,_fco1+1 say str(_fkey++,3)+'.' color _sbkgr
                           _fk+=_fskip
@@ -324,13 +323,13 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                       stat:=.t.
                    else
                       RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,maxrow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow)+1))
-                      @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAY '╚'+replicate('═',_fco2-_fco1-1)+'╝'
+                      @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAY '╚'+replicate('═',_fco2-_fco1-1)+'╝' UNICODE
                    endif
                 else
                    skip
                    //scroll(_fk,_fco1,_fk+_fskip-1,_fco2,0)
                    if _fskip<2
-                     @ _frow+_fskip*(_fi-_fj), _fco1 SAY '║'+space(_fco2-_fco1-2)+'║'
+                     @ _frow+_fskip*(_fi-_fj), _fco1 SAY '║'+space(_fco2-_fco1-2)+'║' UNICODE
                    else
                      @  _fk,_fco1,_fk+_fskip-1,_fco2 BOX UNICODE '║ ║║║ ║║ '
                    endif
@@ -351,15 +350,15 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                     if _fskip*(_fl-_fj+1)+_frow>maxrow()
                          --_fl
                         if _fl=_flp-1
-                          @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAY '╙'+replicate('─',_fco2-_fco1-1)+'╜'
+                          @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAY '╙'+replicate('─',_fco2-_fco1-1)+'╜' UNICODE
                         endif
                     else
                         @ (_fl-_fj)*_fskip+_frow,_fco1,(_fl-_fj+1)*_fskip+_frow,_fco2 BOX UNICODE '║ ║║╝═╚║'
                     endif
                     scroll(_fskip+_frow,_fco1,_frow+_fskip*(_fl-_fj+1)-1,_fco2,-_fskip)
                     if _fskip<2
-                      @  _fskip+_frow,_fco1 SAY "║"
-                      @  _fskip+_frow,_fco2 SAY "║"
+                      @  _fskip+_frow,_fco1 SAY "║" UNICODE
+                      @  _fskip+_frow,_fco2 SAY "║" UNICODE
                     else
                       @  _fskip+_frow,_fco1,2*_fskip+_frow-1,_fco2 BOX UNICODE '║ ║║║ ║║'
                     endif
@@ -381,8 +380,8 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
             ++_fl
             scroll(_frow+_fskip, _fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2, _fskip)
             if _fskip<2
-              @ _frow+_fskip*(_fi-_fj), _fco1 SAY '║'
-              @ _frow+_fskip*(_fi-_fj), _fco2 SAY '║'
+              @ _frow+_fskip*(_fi-_fj), _fco1 SAY '║' UNICODE
+              @ _frow+_fskip*(_fi-_fj), _fco2 SAY '║' UNICODE
             else
               @  _frow+_fskip*(_fi-_fj), _fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2 BOX UNICODE '║ ║║║ ║║'
             endif
@@ -393,7 +392,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
             ++_fl
           endif
           IF _flp<=_fi
-            @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAY '╚'+replicate('═',_fco2-_fco1-1)+'╝'
+            @ _fskip*(_fl-_fj+1)+_frow,_fco1 SAY '╚'+replicate('═',_fco2-_fco1-1)+'╝' UNICODE
           ENDIF
             ENDCASE
          ENDDO

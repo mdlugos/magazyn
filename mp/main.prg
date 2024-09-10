@@ -173,16 +173,16 @@ endif
 #endif
 
 setpos(3,0)
-? padc(" ██████ █     █  ██████ ███████ ███████ █       █",maxcol())
-? padc("█        █   █  █          █    █       ██     ██",maxcol())
-? padc(" █████    █ █    █████     █    ██████  █ █   █ █",maxcol())
-? padc("      █    █          █    █    █       █  █ █  █",maxcol())
-? padc("██████     █    ██████     █    ███████ █   █   █",maxcol())
+? padc(hb_UTF8ToStr(" ██████ █     █  ██████ ███████ ███████ █       █"),maxcol())
+? padc(hb_UTF8ToStr("█        █   █  █          █    █       ██     ██"),maxcol())
+? padc(hb_UTF8ToStr(" █████    █ █    █████     █    ██████  █ █   █ █"),maxcol())
+? padc(hb_UTF8ToStr("      █    █          █    █    █       █  █ █  █"),maxcol())
+? padc(hb_UTF8ToStr("██████     █    ██████     █    ███████ █   █   █"),maxcol())
 ?
-? padc("█       █     █      ████      █     ██████ █     █ ██    █",maxcol())
-? padc("██     ██    █ █    █    ▀    █ █        ▄▀  █   █  █ █   █",maxcol())
-? padc("█ █   █ █   █▄▄▄█   █  ▄▄▄   █▄▄▄█     ▄▀     █ █   █  █  █",maxcol())
-? trim(padc("█  █ █  █  █▀▀▀▀▀█  █  ▀▀█  █▀▀▀▀▀█  ▄▀        █    █   █ █",maxcol()))
+? padc(hb_UTF8ToStr("█       █     █      ████      █     ██████ █     █ ██    █"),maxcol())
+? padc(hb_UTF8ToStr("██     ██    █ █    █    ▀    █ █        ▄▀  █   █  █ █   █"),maxcol())
+? padc(hb_UTF8ToStr("█ █   █ █   █▄▄▄█   █  ▄▄▄   █▄▄▄█     ▄▀     █ █   █  █  █"),maxcol())
+? trim(padc(hb_UTF8ToStr("█  █ █  █  █▀▀▀▀▀█  █  ▀▀█  █▀▀▀▀▀█  ▄▀        █    █   █ █"),maxcol()))
 #ifdef A_FIFO
 #ifdef A_LIFO
 ?? " LIFO"
@@ -190,7 +190,7 @@ setpos(3,0)
 ?? " FIFO"
 #endif
 #endif
-? trim(padc("█   █   █ █       █  ████  █       █ ██████    █    █    ██",maxcol()))
+? trim(padc(hb_UTF8ToStr("█   █   █ █       █  ████  █       █ ██████    █    █    ██"),maxcol()))
 
 
 set default to (defa+"roboczy"+HB_ps())
@@ -284,10 +284,10 @@ a:=DISKSPACE(if(subs(defa,2,1)==':',(asc(defa)-64)%32,0))
 #endif
 
 IF a<104857600
-    aadd(txt,message("TYLKO"+STR(int(a/1024/1024),3)+" MEGABAJTÓW;WOLNEGO MIEJSCA NA DYSKU !"))
+    aadd(txt,message("TYLKO"+STR(int(a/1024/1024),3)+hb_UTF8ToStr(" MEGABAJTÓW;WOLNEGO MIEJSCA NA DYSKU !")))
 ENDIF
 IF date()-45>DatY->D_Z_MIES1
-    aadd(txt,MESSAGE("ZAMKNIJ MIESIĄC !"))
+    aadd(txt,MESSAGE(hb_UTF8ToStr("ZAMKNIJ MIESIĄC !")))
 ENDIF
 
 if !empty(txt)
@@ -312,7 +312,7 @@ readmodal( {_GET_( dzisiaj, "dzisiaj",,,)} )
 #endif
 
 DO WHILE .T.
-  @ 18,0 SAY " Podaj hasło: "
+  @ 18,0 SAY " Podaj hasło: " UNICODE
   txt:=""
   SET CURSOR ON
   do while 0<(i:=INkey(0)) .and. i#13
@@ -326,7 +326,7 @@ DO WHILE .T.
       loop
     endif
     txt+=HB_KEYCHAR(i)
-    ?? "♦"
+    ?? hb_UTF8ToStr("♦")
   enddo
 
 #ifndef A_DECRYPT
@@ -336,7 +336,7 @@ DO WHILE .T.
    XSELECT OBSLUGA READONLY
        LOCATE FOR UpP(txt)==trim(A_DECRYPT(haslo))
        IF EOF()
-          ? "złe hasło ..."
+          ? hb_UTF8ToStr("złe hasło ...")
           set color to w
           @ 20,0 clear
           quit                        // gdy nie znalazl
@@ -396,7 +396,7 @@ endif
 
           @ maxrow()-2,0,maxrow(),maxcol() BOX UNICODE "╔═╗║╝═╚║ "
 
-          @ maxrow()-1,1 SAY "                     -wybór opcji    -                  -wyjście" color if(iscolor(),_sbnorm,"W+")
+          @ maxrow()-1,1 SAY "                     -wybór opcji    -                  -wyjście" UNICODE color if(iscolor(),_sbnorm,"W+")
 
       SET COLOR TO I
 
@@ -422,11 +422,11 @@ endif
 
       SET COLOR TO (_sbnorm)
 
-      @ 6,maxcol()/2-27 PROMPT "Kartoteki"    MESSAGE "Bieżące stany magazynu, kartoteki materiałów."
-      @ 6,maxcol()/2-17 PROMPT "Dok. obrotu"  MESSAGE "Przeglądanie wprowadzonych wcześniej dokumentów."
-      @ 6,maxcol()/2-5  PROMPT "Rejestracja " MESSAGE "Wprowadzanie dokumentów obrotu materiałowego."
-      @ 6,maxcol()/2+8  PROMPT "Zestawienia"  MESSAGE 'Wydruki zestawień.'
-      @ 6,maxcol()/2+20 PROMPT "Pozostałe"    MESSAGE 'Dodatkowe funkcje programu.'
+      @ 6,maxcol()/2-27 PROMPT "Kartoteki"    UNICODE MESSAGE "Bieżące stany magazynu, kartoteki materiałów."
+      @ 6,maxcol()/2-17 PROMPT "Dok. obrotu"  UNICODE MESSAGE "Przeglądanie wprowadzonych wcześniej dokumentów."
+      @ 6,maxcol()/2-5  PROMPT "Rejestracja " UNICODE MESSAGE "Wprowadzanie dokumentów obrotu materiałowego."
+      @ 6,maxcol()/2+8  PROMPT "Zestawienia"  UNICODE MESSAGE 'Wydruki zestawień.'
+      @ 6,maxcol()/2+20 PROMPT "Pozostałe"    UNICODE MESSAGE 'Dodatkowe funkcje programu.'
 
 #ifndef PLWIN
     dispend()
@@ -443,7 +443,7 @@ endif
          IF empty(mlog) .or. !ACZOJS(MAGAZYNY,@MAG_BIEZ,@i,mlog)
 
             @ 18,0
-            menu:=tak("Czy rzeczywiscie kończysz pracę",18,,.t.,0)
+            menu:=tak(hb_UTF8ToStr("Czy rzeczywiscie kończysz pracę"),18,,.t.,0)
             if valtype(menu)="L"
                EXIT
             ENDIF
@@ -514,7 +514,7 @@ endif
    ENDIF
 ENDDO
 
-menu:=tak("CZY ARCHIWOWAĆ",18,,.t.,.F.)
+menu:=tak(hb_UTF8ToStr("CZY ARCHIWOWAĆ"),18,,.t.,.F.)
 
 IF menu
    CLOSE ALL

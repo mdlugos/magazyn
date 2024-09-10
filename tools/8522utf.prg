@@ -26,7 +26,7 @@ AEVAL(DIRECTORY(SET(_SET_DEFAULT)+DB+"*.dbf"),{|X|CHGDAT(X[1])})
 ********************
 PROCEDURE CHGDAT(DB)
 
-LOCAL I:=0,st,f
+LOCAL i:=0,st,f
 
 erase (set(_SET_DEFAULT)+db+".cdx")
 i:=fopen(set(_SET_DEFAULT)+db,64)

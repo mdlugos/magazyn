@@ -405,7 +405,7 @@ if l=NIL
 else
    c:=.f.
 endif
-if c .and. 1#alarm("CZY DRUKOWAC ?",{"TAK","NIE"},1,2)
+if c .and. 1#alarm(hb_UTF8ToStr("CZY DRUKOWAĆ ?"),{"TAK","NIE"},1,2)
 #ifdef A_HPDF
   #define D_HWPRN A_HPDF
 #endif
@@ -478,7 +478,7 @@ endif
     if !oprn:Create()
        oprn:Destroy()
        oprn:=NIL
-       Alarm('Błąd Drukarki')
+       Alarm(hb_UTF8ToStr('Błąd Drukarki'))
        Return .f.
     endif
     ccpi(,4)
@@ -487,7 +487,7 @@ endif
     if ! oprn:StartDoc()
        oprn:Destroy()
        oprn:=NIL
-       Alarm('Błąd Drukarki')
+       Alarm(hb_UTF8ToStr('Błąd Drukarki'))
        Return .f.
     endif
 #endif
@@ -500,7 +500,7 @@ endif
     if !oprn:Create()
        oprn:Destroy()
        oprn:=NIL
-       Alarm('Błąd Drukarki')
+       Alarm(hb_UTF8ToStr('Błąd Drukarki'))
        Return .f.
     endif
     oprn:LeftMargin:=0
@@ -513,7 +513,7 @@ endif
     if ! oprn:StartDoc()
        oprn:Destroy()
        oprn:=NIL
-       Alarm('Błąd Drukarki')
+       Alarm(hb_UTF8ToStr('Błąd Drukarki'))
        Return .f.
     endif
     setprc(oprn:PRow(),oprn:PCol())
@@ -1839,7 +1839,7 @@ function KCR_U(mode,l,c)
      elseif k=K_CTRL_K
        m:=message("PODAJ  (R, W);ROZKAZ:;... ")
        k:=upper(chr(inkey(0)))
-       @ m[1]+1,m[2]+8 say "NAZWĘ: "
+       @ m[1]+1,m[2]+8 say "NAZWĘ: " UNICODE
        n:=pad(MEMVAR->defa,64)
        getlist:={}
        @ m[1]+2,m[2]+2 get n picture "@KS14"
@@ -2314,14 +2314,11 @@ HB_FUNC ( UPP )
             HB_SIZE nLen = hb_itemGetCLen( pText ), n;
             char * pszBuffer = ( char * ) hb_xgrab( nLen + 1 );
             const char * id = hb_parc( 2 );
-            PHB_CODEPAGE oldcp;
-            PHB_CODEPAGE cdp;
+            PHB_CODEPAGE oldcp = hb_vmCDP();
+            PHB_CODEPAGE cdp = NULL;
 
-            if (!id)
-               id = "UTF8MD" ;
-
-            oldcp = hb_vmCDP();
-            cdp = hb_cdpFind( id );
+            if (id)
+               cdp = hb_cdpFind( id );
 
             if (!cdp)
                cdp = oldcp;

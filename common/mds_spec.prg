@@ -1,6 +1,9 @@
 #include "dm_form.ch"
 #include "set.ch"
 #include "inkey.ch"
+
+#define I hb_UTF8ToStr("│")
+
 *************
 FUNCTION _sLIST(txt,_s)
   local hwbuf,sel,lfor,getlist:={},older,r,bl,x,y,z,skf2
@@ -84,7 +87,7 @@ endif
   endif
   cls
   begin sequence
-  if tak("LISTING NA DRUKARKĘ",0,0,.F.,.F.)
+  if tak(hb_UTF8ToStr("LISTING NA DRUKARKĘ"),0,0,.F.,.F.)
 #ifdef A_HPDF
   #define D_HWPRN A_HPRN
 #endif
@@ -112,11 +115,11 @@ endif
      oprn:=NIL
 #endif
   endif
-  ?? strtran(r,"│","|")
+  ?? strtran(r,I,"|")
   ?
   _skip(1,0,_s)
   setcancel(.f.)
-  DBEval( {|t,l|scrltxt(),t:=trim(eval(txt,0,_s,.t.)),scrltxt(),qqout(strtran(left(t,l:=maxcol()-col()),"│","|")),;
+  DBEval( {|t,l|scrltxt(),t:=trim(eval(txt,0,_s,.t.)),scrltxt(),qqout(strtran(left(t,l:=maxcol()-col()),I,"|")),;
     if(len(t)>l,(if(row()=maxrow(),(scrllf()/*,scroll(0,0,row(),maxcol(),1),setpos(row(),maxcol()-len(t)+l)*/),/*setpos(row()+1,maxcol()-len(t)+l)*/),qqout(subs(t,l+1))),),;
     if(row()=maxrow(),scrllf(),),qout(),scrltxt()},lfor,{||scrltxt(), EvaldB(_swar,_spocz,_skon).AND.inkey()#27},,, .T. )
   end sequence
@@ -209,7 +212,7 @@ ELSEIF valtype(_s)='A' .and. ReadkeY()#K_ESC .AND.! _sfilt==txt
   ELSE
     _sfilb:=&("{||"+txt+"}")
     if !r
-       @ _srow1+_sm-1,_scol1 say padc("PROSZĘ CZEKAĆ",_scoln) COLOR "*"+_slinia
+       @ _srow1+_sm-1,_scol1 say padc("PROSZĘ CZEKAĆ",_scoln) UNICODE COLOR "*"+_slinia
     endif
   ENDIF
   refresh(1,_s)
@@ -369,7 +372,7 @@ stat func _srap(txt,_s)
         @ 0,0
         if lastkey()=K_ENTER
            txt:=trim(txt)+'.frm'
-           @ 0,0 say "Dodatkowy tytuł"
+           @ 0,0 say "Dodatkowy tytuł" UNICODE
            tyt:=if(""=_sfilt,IF(_sfor=NIL,"","Raport z wybranych pozycji"),"Raport z wybranych pozycji, kryterium wyboru: "+_sfilt)+" "
            @ 1,0 get tyt picture "@KS"+ltrim(str(maxcol(),3)) send cargo:=.t.
            begin sequence
@@ -394,8 +397,8 @@ stat func _srap(txt,_s)
 #endif
             tyt:=if(empty(tyt),,trim(strtran(tyt,";",nl)))
            setcancel(.t.)
-            __REPORTFORM(p+TXT,tak("LISTING NA DRUKARKĘ",0,,.F.,.F.),,.F.,lfor,{||scrltxt(),EvaldB(_swar,_spocz,_skon).AND.inkey()#27},,,.T.,;
-             tyt=NIL.and.!TAK("CZY PODZAŁ NA STRONY",0,,.t.),tyt,.F.,TAK("CZY TYLKO SUMY",0,,.F.))
+            __REPORTFORM(p+TXT,tak(hb_UTF8ToStr("LISTING NA DRUKARKĘ"),0,,.F.,.F.),,.F.,lfor,{||scrltxt(),EvaldB(_swar,_spocz,_skon).AND.inkey()#27},,,.T.,;
+             tyt=NIL.and.!TAK(hb_UTF8ToStr("CZY PODZAŁ NA STRONY"),0,,.t.),tyt,.F.,TAK("CZY TYLKO SUMY",0,,.F.))
            end
 #ifdef D_HWPRN
            oprn:=NIL

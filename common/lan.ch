@@ -1,6 +1,14 @@
-        #define mkdir(x) makedir(x)
-        #command SET RDD DEFAULT [TO] <x> => REQUEST <x>;rddsetdefault(<"x">)
-        #command @ <top>, <left>, <bottom>, <right> BOX UNICODE <string> [COLOR <color>] => @ <top>, <left>, <bottom>, <right> BOX HB_UTF8TOSTRBOX(<string>) [COLOR <color>]
+#define mkdir(x) makedir(x)
+#command SET RDD DEFAULT [TO] <x> => REQUEST <x>;rddsetdefault(<"x">)
+#command @ <top>, <left>, <bottom>, <right> BOX UNICODE <string> [COLOR <color>] => ;
+         @ <top>, <left>, <bottom>, <right> BOX HB_UTF8TOSTRBOX(<string>) [COLOR <color>]
+
+#command @ <row>, <col> SAY <exp> UNICODE [PICTURE <pic>] [COLOR <clr>] => ;
+         DevPos( <row>, <col> ) ; DevOutPict( HB_UTF8TOSTR(<exp>), <pic> [, <clr>] )
+#command @ <row>, <col> SAY <exp> UNICODE [COLOR <clr>] => ;
+         DevPos( <row>, <col> ) ; DevOut( HB_UTF8TOSTR(<exp>) [, <clr>] )
+#command @ <row>, <col> PROMPT <prompt> UNICODE [MESSAGE <msg>] => ;
+         __AtPrompt( <row>, <col>, HB_UTF8TOSTR(<prompt>) [, HB_UTF8TOSTR(<msg>) ])
 
 #ifdef __PLATFORM__UNIX
 #define HB_OsPathSeparator() "/"
@@ -45,15 +53,15 @@
 #command COMMIT ALL => dbcommitall()
 
 #ifdef A_NETIO
-#command NUSE <(db)> [VIA <rdd>] [ALIAS <a>] [<new: NEW>] [<ex: EXCLUSIVE>] [<sh: SHARED>] [<ro: READONLY>] [INDEX <(index1)> [, <(indexn)>]] [CODEPAGE <cp>];
-         => NetusE( <.new.>, <rdd>, <(db)>, <(a)>,if(<.sh.> .or. <.ex.>, !<.ex.>, NIL), <.ro.>, <cp> ) [; ordlistadd( <(index1)> )] [; ordlistadd( <(indexn)> )]
+#command NUSE <(db)> [VIA <rdd>] [ALIAS <a>] [<new: NEW>] [<ex: EXCLUSIVE>] [<sh: SHARED>] [<ro: READONLY>] [CODEPAGE <cp>] [INDEX <(index1)> [, <(indexn)>]];
+         => NetusE( <.new.>, <rdd>, <(db)>, <(a)>,if(<.sh.> .or. <.ex.>, !<.ex.>, NIL), <.ro.>[, <cp>] ) [; ordlistadd( <(index1)> )] [; ordlistadd( <(indexn)> )]
 #else
 #ifdef A_SX
-#command NUSE <(db)> [VIA <rdd>] [ALIAS <a>] [<new: NEW>] [<ex: EXCLUSIVE>] [<sh: SHARED>] [<ro: READONLY>] [INDEX <(index1)> [, <(indexn)>]] [CODEPAGE <cp>];
+#command NUSE <(db)> [VIA <rdd>] [ALIAS <a>] [<new: NEW>] [<ex: EXCLUSIVE>] [<sh: SHARED>] [<ro: READONLY>] [CODEPAGE <cp>] [INDEX <(index1)> [, <(indexn)>]];
          => dbusearea( <.new.>, <rdd>, <(db)>, <(a)>,if(<.sh.> .or. <.ex.>, !<.ex.>, NIL), <.ro.>[,<cp>] );if DBINFO(132);DBINFO(131,A_SX);ENDIF [; ordlistadd( <(index1)> )] [; ordlistadd( <(indexn)> )]
 #define NetusE(a,b,c,d,e,f,g) (dbusearea(a,b,c,d,e,f,g),if(DBINFO(132),DBINFO(131,A_SX),))
 #else
-#command NUSE <(db)> [VIA <rdd>] [ALIAS <a>] [<new: NEW>] [<ex: EXCLUSIVE>] [<sh: SHARED>] [<ro: READONLY>] [INDEX <(index1)> [, <(indexn)>]] [CODEPAGE <cp>];
+#command NUSE <(db)> [VIA <rdd>] [ALIAS <a>] [<new: NEW>] [<ex: EXCLUSIVE>] [<sh: SHARED>] [<ro: READONLY>] [CODEPAGE <(cp)>] [INDEX <(index1)> [, <(indexn)>]];
          => dbUseArea( <.new.>, <rdd>, <(db)>, <(a)>,if(<.sh.> .or. <.ex.>, !<.ex.>, NIL), <.ro.> [,<cp>]) [; ordlistadd( <(index1)> )] [; ordlistadd( <(indexn)> )]
 #define NetusE(a,b,c,d,e,f,g) dbusearea(a,b,c,d,e,f,g)
 #endif

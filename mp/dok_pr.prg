@@ -2,6 +2,8 @@
 #include "dm_form.ch"
 #include "inkey.ch"
 
+#define I hb_UTF8ToStr("│")
+
 #ifdef A_LAN
 #ifndef A_DDBF
   #define A_DDBF
@@ -69,27 +71,27 @@
 #ifdef A_FK
 field transport
 #ifdef A_ZAGRODA
-#define DOLAR if(!KEY_DOK$dok_zapl .or. ROUND(BRUTTO-zaplacono,A_ZAOKR)=0 .or. przelewem=0,'│','$')
+#define DOLAR if(!KEY_DOK$dok_zapl .or. ROUND(BRUTTO-zaplacono,A_ZAOKR)=0 .or. przelewem=0,I,'$')
 #else
-#define DOLAR if(!KEY_DOK$dok_zapl .or. ROUND(BRUTTO-val(transport)-zaplacono,A_ZAOKR)=0,'│','$')
+#define DOLAR if(!KEY_DOK$dok_zapl .or. ROUND(BRUTTO-val(transport)-zaplacono,A_ZAOKR)=0,I,'$')
 #endif
 #else
-#define DOLAR '│'
+#define DOLAR I
 #endif
 
 #ifdef A_WE
-#define KWOTA DOLAR+tran(if(KEY_DOK$dok_zby,if(doc_brut,BRUTTO,NETTO),warT_ewiD*if(KEY_DOK$dok_rozch,-1,1)) ,WAPICT)+if(przelewem#0,'P',if(czekiem#0,"K",'│'))
+#define KWOTA DOLAR+tran(if(KEY_DOK$dok_zby,if(doc_brut,BRUTTO,NETTO),warT_ewiD*if(KEY_DOK$dok_rozch,-1,1)) ,WAPICT)+if(przelewem#0,'P',if(czekiem#0,"K",I))
 #else
-#define KWOTA DOLAR+tran(if(doc_brut,BRUTTO,NETTO),WAPICT)+if(przelewem#0,'P',if(czekiem#0,"K",'│'))
+#define KWOTA DOLAR+tran(if(doc_brut,BRUTTO,NETTO),WAPICT)+if(przelewem#0,'P',if(czekiem#0,"K",I))
 #endif
 
 #endif
 
 #ifdef A_KSEF
 field nr_ksef
-#define D_EF if(len(trim(nr_ksef))<35,'│','§')
+#define D_EF hb_UTF8ToStr(if(len(trim(nr_ksef))<35,'│','§'))
 #else
-#define D_EF '│'
+#define D_EF I
 #endif
 MEMVAR n_f,dd,da,lp,d_o,DOK,SCR,R,nk1,i,nim,il,wa,ce,changed,dok_zewn,;
       nz,MAG_BIEZ,mag_poz,doc_opcja,operator,miar_opcja,is_spec,dok_rozch,;
@@ -123,27 +125,27 @@ field przelewem,czekiem
 
 #ifdef A_SUBDOK
   #ifdef A_KHNUM
-    #define STDTOP2 "Nr/Lp┬──┬"+PADC("Firma",A_NRLTH,"─")+"┬─Data┬"
+    #define STDTOP2 hb_UTF8ToStr("Nr/Lp┬──┬"+PADC("Firma",A_NRLTH,"─")+"┬─Data┬")
     #define DBEG 16+A_NRLTH
   #else
-    #define STDTOP2 "Nr/Lp┬──┬─Data┬"
+    #define STDTOP2 hb_UTF8ToStr("Nr/Lp┬──┬─Data┬")
     #define DBEG 15
   #endif
 #else
   #ifdef A_KHNUM
    #ifdef A_KTM
 #define DBEG 12+A_NRLTH
-#define STDTOP2 "Nr/L┬"+PADC("Firma",A_NRLTH,"─")+"┬─Data┬"
+#define STDTOP2 hb_UTF8ToStr("Nr/L┬")+PADC("Firma",A_NRLTH,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬─Data┬")
    #else
-#define STDTOP2 "Nr/Lp┬"+PADC("Firma",A_NRLTH,"─")+"┬─Data┬"
+#define STDTOP2 hb_UTF8ToStr("Nr/Lp┬")+PADC("Firma",A_NRLTH,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬─Data┬")
 #define DBEG 13+A_NRLTH
    #endif
   #else
    #ifdef A_KTM
-#define STDTOP2 "Nr/p┬─Data┬"
+#define STDTOP2 hb_UTF8ToStr("Nr/p┬─Data┬")
 #define DBEG 11
    #else
-#define STDTOP2 "Nr/Lp┬─Data┬"
+#define STDTOP2 hb_UTF8ToStr("Nr/Lp┬─Data┬")
 #define DBEG 12
    #endif
   #endif
@@ -159,9 +161,9 @@ field przelewem,czekiem
               #undef STDZLE
               #define STDZLE pad(nr_zlec,11)
               #define STDBG 44
-              #define STDTOP "Nr/Lp┬─Data┬──Ilość─┬Jedn┬─Inf. dod.─┬MG┬─Kod┬Materiał:"
+              #define STDTOP hb_UTF8ToStr("Nr/Lp┬─Data┬──Ilość─┬Jedn┬─Inf. dod.─┬MG┬─Kod┬Materiał:")
            #else
-   #define STDTOP "Nr/Lp┬─Data┬──Ilość─┬Jedn┬Konto─┬MG┬─Kod┬Materiał:"
+   #define STDTOP hb_UTF8ToStr("Nr/Lp┬─Data┬──Ilość─┬Jedn┬Konto─┬MG┬─Kod┬Materiał:")
    #define STDBG 39
            #endif
    #else
@@ -170,14 +172,14 @@ field przelewem,czekiem
      #ifdef A_OBR
        #define STDPOZ2 smb_dow+nr_dowodu+if(data<=DatY->d_z_mies1 .or. kto_pisal=operator .or. kto_pisal#HB_UTF8CHR(0x00A0).and.!is_spec,"/","*")+D_LPSTR1(pozycja)
        #define ILPIC 8,ILDEC
-       #define STDTOP "Nr/p┬─Data┬──Ilość─┬Jedn┬───Koszty───────┬MG┬─Kod materiału──┬Materiał:"
+       #define STDTOP hb_UTF8ToStr("Nr/p┬─Data┬──Ilość─┬Jedn┬───Koszty───────┬MG┬─Kod materiału──┬Materiał:")
        #define STDZLE tran(nr_zlec,"@R XXX/XXX/XX/XXXXX")
        #define ZLBEG 31
        #define STDBG 48
      #else
        #define STDPOZ2 STDPOZ1
        #define ILPIC 9,ILDEC
-       #define STDTOP "Nr/p┬─Data┬───Ilość─┬Jedn┬Konto─┬MG┬─Kod materiału──┬Materiał:"
+       #define STDTOP hb_UTF8ToStr("Nr/p┬─Data┬───Ilość─┬Jedn┬Konto─┬MG┬─Kod materiału──┬Materiał:")
        #define STDZLE nr_zlec
        #define ZLBEG 32
        #define STDBG 39
@@ -186,9 +188,9 @@ field przelewem,czekiem
      #define STDZLE nr_zlec
      #define ZLBEG 32
      #ifdef A_OLZA
-        #define STDTOP "Nr/p┬─Data┬───Ilość─┬Jedn┬Zlecenie─┬MG┬─Kod materiału┬Materiał:"
+        #define STDTOP hb_UTF8ToStr("Nr/p┬─Data┬───Ilość─┬Jedn┬Zlecenie─┬MG┬─Kod materiału┬Materiał:")
         #undef STDTOP2
-        #define STDTOP2 "Nr/p┬─Data┬Ko.ko┬─St.Ko┬Wartość───┬"
+        #define STDTOP2 hb_UTF8ToStr("Nr/p┬─Data┬Ko.ko┬─St.Ko┬Wartość───┬")
         #define STDPOZ1 smb_dow+nr_dowodu+'/'+D_LPSTR1(pozycja)
         #define STDPOZ2 STDPOZ1
         #define STDBG 42
@@ -206,20 +208,20 @@ field przelewem,czekiem
               #undef STDZLE
               #define STDZLE pad(nr_zlec,11)
               #define STDBG 44
-              #define STDTOP "Nr/Lp┬─Data┬──Ilość─┬Jedn┬─Inf. dod.─┬MG┬Symbol┬Materiał:"
+              #define STDTOP hb_UTF8ToStr("Nr/Lp┬─Data┬──Ilość─┬Jedn┬─Inf. dod.─┬MG┬Symbol┬Materiał:")
            #else
               #define STDBG 39
-              #define STDTOP "Nr/Lp┬─Data┬──Ilość─┬Jedn┬Konto─┬MG┬Symbol┬Materiał:"
+              #define STDTOP hb_UTF8ToStr("Nr/Lp┬─Data┬──Ilość─┬Jedn┬Konto─┬MG┬Symbol┬Materiał:")
            #endif
         #else
            #ifdef A_ZLEC11
               #undef STDZLE
               #define STDZLE pad(nr_zlec,11)
               #define STDBG 44
-              #define STDTOP "Nr/Lp┬─Data┬──Ilość─┬Jedn┬─Inf. dod.─┬MG┬─Kod mater.─┬Materiał:"
+              #define STDTOP hb_UTF8ToStr("Nr/Lp┬─Data┬──Ilość─┬Jedn┬─Inf. dod.─┬MG┬─Kod mater.─┬Materiał:")
            #else
               #define STDBG 39
-              #define STDTOP "Nr/Lp┬─Data┬──Ilość─┬Jedn┬Konto─┬MG┬─Kod mater.─┬Materiał:"
+              #define STDTOP hb_UTF8ToStr("Nr/Lp┬─Data┬──Ilość─┬Jedn┬Konto─┬MG┬─Kod mater.─┬Materiał:")
            #endif
         #endif
      #endif
@@ -227,7 +229,7 @@ field przelewem,czekiem
 #endif
            #ifdef A_SUBDOK
              #undef STDPOZ2
-             #define STDPOZ2 smb_dow+nr_dowodu+'/'+str(D_LPVAL(pozycja),2)+"│"+sub_dok
+             #define STDPOZ2 smb_dow+nr_dowodu+'/'+str(D_LPVAL(pozycja),2)+I+sub_dok
            #endif
 
 STATIC proc set_all(_s,doc_opcja,_skey,stat_ord,init,chgbase)
@@ -260,42 +262,42 @@ if doc_opcja
 #define D_KH1 pad(if(val(dost_odb)=0,dost_odb,subs(dost_odb,A_NRLTH+2)),HB_FIELDLEN('DOST_ODB'))
 #endif
 #ifdef A_KHNUM
-#define D_KH2 D_KH+'│'
+#define D_KH2 D_KH+I
 #else
 #define D_KH2
 #endif
 
 #ifdef A_OLZA
   #ifdef A_VAT
-           _snagl+="───VAT────┬"
-           _sprompt:={||STDPOZ2+'│'+DTOV(data)+'│'+konto_kosz+"│"+stano_kosz+'│'+tran(warT_ewiD*if(KEY_DOK$dok_rozch,-1,1),WAPICT)+"│"+tran(warT_vaT,WAPICT)+"│"+D_KH1}
+           _snagl+=hb_UTF8ToStr("───VAT────┬")
+           _sprompt:={||STDPOZ2+I+DTOV(data)+I+konto_kosz+I+stano_kosz+I+tran(warT_ewiD*if(KEY_DOK$dok_rozch,-1,1),WAPICT)+I+tran(warT_vaT,WAPICT)+I+D_KH1}
   #else
-           _sprompt:={||STDPOZ2+'│'+DTOV(data)+'│'+konto_kosz+"│"+stano_kosz+'│'+tran(warT_ewiD*if(KEY_DOK$dok_rozch,-1,1),WAPICT)+"│"+D_KH1}
+           _sprompt:={||STDPOZ2+I+DTOV(data)+I+konto_kosz+I+stano_kosz+I+tran(warT_ewiD*if(KEY_DOK$dok_rozch,-1,1),WAPICT)+I+D_KH1}
   #endif
 #else
   #ifdef A_FA
    #ifdef A_KPR
-           _snagl+="NrKPR┬Nr faktury───┬Wartość───┬"
-           _sprompt:={||STDPOZ2+'│'+D_KH2+DTOV(data)+'│'+nr_kpr+D_EF+pad(nr_faktury,13)+KWOTA+D_KH1}
+           _snagl+=hb_UTF8ToStr("NrKPR┬Nr faktury───┬Wartość───┬")
+           _sprompt:={||STDPOZ2+I+D_KH2+DTOV(data)+I+nr_kpr+D_EF+pad(nr_faktury,13)+KWOTA+D_KH1}
    #else
-           _snagl+="Nr faktury───┬Wartość───┬"
-           _sprompt:={||STDPOZ2+'│'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+KWOTA+D_KH1}
+           _snagl+=hb_UTF8ToStr("Nr faktury───┬Wartość───┬")
+           _sprompt:={||STDPOZ2+I+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+KWOTA+D_KH1}
    #endif
   #else
 #ifdef A_F9
-           _snagl+="Nr faktury───┬"
-           _sprompt:={||STDPOZ2+'│'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+'│'+D_KH1}
+           _snagl+=hb_UTF8ToStr("Nr faktury───┬")
+           _sprompt:={||STDPOZ2+I+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+I+D_KH1}
 #else
     #ifdef A_VAT
-           _snagl+="Nr faktury───┬───VAT────┬"
-           _sprompt:={||STDPOZ2+'│'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+"│"+tran(warT_vaT,WAPICT)+'│'+D_KH1}
+           _snagl+=hb_UTF8ToStr("Nr faktury───┬───VAT────┬")
+           _sprompt:={||STDPOZ2+I+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+I+tran(warT_vaT,WAPICT)+I+D_KH1}
     #else
       #ifdef A_WE
-           _snagl+="Nr faktury───┬Wartość───┬"
-           _sprompt:={||STDPOZ2+'│'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+'│'+tran(warT_ewiD*if(KEY_DOK$dok_rozch,-1,1),WAPICT)+'│'+D_KH1}
+           _snagl+=hb_UTF8ToStr("Nr faktury───┬Wartość───┬")
+           _sprompt:={||STDPOZ2+I+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+I+tran(warT_ewiD*if(KEY_DOK$dok_rozch,-1,1),WAPICT)+I+D_KH1}
       #else
-           _snagl+="Nr faktury───┬"
-           _sprompt:={||STDPOZ2+'│'+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+'│'+D_KH1}
+           _snagl+=hb_UTF8ToStr("Nr faktury───┬")
+           _sprompt:={||STDPOZ2+I+D_KH2+DTOV(data)+D_EF+pad(nr_faktury,13)+I+D_KH1}
       #endif
     #endif
 #endif
@@ -327,10 +329,10 @@ else
 #define imiaR(x,y) x
 #endif
 
-         _sprompt:={|lam,il|lam:=i_lam(data),STDPOZ1+'│'+;
-      DTOV(data)+'│'+smiaR(ilosc*if(KEY_DOK$dok_rozch,-1,1),ILPIC)+'│'+;
-      imiaR((lam)->jm,(lam)->jm_opcja)+'│'+STDZLE+'│'+nr_mag+'│'+tran(index,"@R "+ INDEXPIC )+;
-      if(alias(lam)#"INDX_MAT",'|','│')+(lam)->nazwA}
+         _sprompt:={|lam,il|lam:=i_lam(data),STDPOZ1+I+;
+      DTOV(data)+I+smiaR(ilosc*if(KEY_DOK$dok_rozch,-1,1),ILPIC)+I+;
+      imiaR((lam)->jm,(lam)->jm_opcja)+I+STDZLE+I+nr_mag+I+tran(index,"@R "+ INDEXPIC )+;
+      hb_UTF8ToStr(if(alias(lam)#"INDX_MAT",'├','│'))+(lam)->nazwA}
 
 #undef imiaR
 #undef smiaR

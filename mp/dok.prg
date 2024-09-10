@@ -2,6 +2,9 @@
 #include "inkey.ch"
 #include "getexitm.ch"
 //#include "dbinfo.ch"
+
+#define I hb_UTF8ToStr("│")
+
 #ifndef A_MKNK
   //#define A_MKNK(x) eval({|y|mknk:=min(5,max(mknk,len(ltrim(str(y))))),pad(str(y,mknk),5)},x)
   #define A_MKNK(x) str(x,4)+' '
@@ -802,7 +805,7 @@ PROCEDURE DOK10(_f)
     @ 1,12 SAY trim(dok_naz)
   else
     @ 1,2 SAY trim(dok_naz)
-    @ 2,2 SAY if(dok="K","   Powód:",if(pm=-1,"Odbiorca:","Dostawca:"))
+    @ 2,2 SAY if(dok="K",hb_UTF8ToStr("   Powód:"),if(pm=-1,"Odbiorca:","Dostawca:"))
   endif
 _frow:=2
 
@@ -812,9 +815,9 @@ _frow:=2
     _frow:=7
  #ifdef A_FK
    if dok_fk
-   @ _frow,2 say "Zapłacono:"
+   @ _frow,2 say "Zapłacono:" UNICODE
    @ _frow,26 say "dnia:"
-   @ _frow,43 say "pozostało:"
+   @ _frow,43 say "pozostało:" UNICODE
    ++_frow
    endif
  #endif
@@ -858,10 +861,10 @@ _frow:=2
  #endif
     if dok_zew$"UV"
  #ifdef A_CENVAT
-       @ 3,2 say D_ODDO+" "+WANAZ+" w tym          " D_KPR
+       @ 3,2 say D_ODDO+" "+WANAZ+" w tym          " D_KPR UNICODE
   #define WBR(w,v) w
  #else
-       @ 3,2 say D_ODDO+" "+WANAZ+"                " D_KPR
+       @ 3,2 say D_ODDO+" "+WANAZ+"                " D_KPR UNICODE
   #define WBR(w,v) (w+v)
  #endif
  #define ZAG(w,v) ROUND(WBR(w,v)-zap-zac,A_ZAOKR)
@@ -881,9 +884,9 @@ _frow:=2
  #endif
  #undef D_ODDO
  #undef D_KPR
-    @ 5,7 say "gotówką───────przelewem─────────kartą───────Nr karty───Termin płatności"
+    @ 5,7 say "gotówką───────przelewem─────────kartą───────Nr karty───Termin płatności" UNICODE
     @ _frow+1,0,_frow+4,79 BOX UNICODE if(pozycja>D_LP1.and.!nowydm,'╠═╣║╜─╙║ ','╠═╣║╝═╚║ ')
-    @ _frow+1,2 say 'Lp══════Materiał═══════════════════════Ilość════════Cena zbytu══'+WANAZ
+    @ _frow+1,2 say 'Lp══════Materiał═══════════════════════Ilość════════Cena zbytu══'+WANAZ UNICODE
     return
     *******
   endif
@@ -891,7 +894,7 @@ _frow:=2
    if dok_fk
    ++_frow
    @ _frow,2 say "Termin:"
-   @ _frow,20 say "Zapłacono:"
+   @ _frow,20 say "Zapłacono:" UNICODE
    @ _frow,43 say "dnia:"
    @ _frow,59 say "pozost:"
    endif
@@ -909,7 +912,7 @@ _frow:=2
     setpos(_frow-1,2)
     do case
     case dok="K";?? "Dok. poprawiany   z dnia   "
-    case pm=-1      ;?? "Dok wysyłki   z dnia   "
+    case pm=-1      ;?? hb_UTF8ToStr("Dok wysyłki   z dnia   ")
 #ifdef A_ODDO
     case dok$DOK_ZB
           ?? "Za okres od        do  "
@@ -924,9 +927,9 @@ _frow:=2
 #ifdef A_VAT
     if dok_zew$"UV"
 #ifdef A_PZBRUT
-       ?? "     WARTOŚĆ   w tym VAT"
+       ?? hb_UTF8ToStr("     WARTOŚĆ   w tym VAT")
 #else
-       ?? "     WARTOŚĆ         VAT"
+       ?? hb_UTF8ToStr("     WARTOŚĆ         VAT")
 #endif
     endif
 #endif
@@ -958,15 +961,15 @@ endif
     endif
 #endif
   @ _frow+1,0,_frow+4,79 BOX UNICODE if(pozycja>D_LP1.and.!nowydm,'╠═╣║╜─╙║ ','╠═╣║╝═╚║ ')
-  @ _frow+1,2 say   'Lp══Kod materiału══════════════════════Ilość════════Cena════════'+WANAZ
+  @ _frow+1,2 say   'Lp══Kod materiału══════════════════════Ilość════════Cena════════'+WANAZ UNICODE
 #ifdef A_SB
-  @ _frow+1,10 SAY if(dok_p_r="S",'Stan bież.',if(""=dok_kon,'','══'+if(dok_zew="W","Zlecenie","Rodzaj")))
+  @ _frow+1,10 SAY if(dok_p_r="S",'Stan bież.',if(""=dok_kon,'','══'+if(dok_zew="W","Zlecenie","Rodzaj"))) UNICODE
   if dok$dok_di
-  @ _frow+1,36 SAY 'Stan bież.'
-  @ _frow+1,26 SAY 'Ilość'
+  @ _frow+1,36 SAY 'Stan bież.' UNICODE
+  @ _frow+1,26 SAY 'Ilość' UNICODE
   endif
 #else
-  @ _frow+1,25 SAY if(dok_p_r="S",'Stan bież.',if(""=dok_kon,'',if(dok_zew="W","Zlecenie","Rodzaj")))
+  @ _frow+1,25 SAY if(dok_p_r="S",'Stan bież.',if(""=dok_kon,'',if(dok_zew="W","Zlecenie","Rodzaj"))) UNICODE
 #endif
 return
 ********************
@@ -975,7 +978,7 @@ procedure dok11(_f)
   @ 0,0
   @ 0,0 say trim(magazyny[mag_poz])
     if canopen
-       devout(" ZAMKNIĘTY","W+")
+       devout(hb_UTF8ToStr(" ZAMKNIĘTY"),"W+")
 #ifdef A_KONTROLA
        IF A_KONTROLA
 #else
@@ -1142,7 +1145,7 @@ procedure dok2(_f,getlist)
 #endif
 
     if subs(dok,2)="K"
-      @ 4,2 GET n_f PICTURE "@K!S13" valid {|x|x:=recno(),empty(n_f).and.szukam({1,1,maxrow(),,1,0,'DOKUMENTY',{||smb_dow+nr_dowodu+"│"+dtoc(data)+"│"+dost_odb},{|_skey,_s|(_sret:=_skey=13).or._skey=27.or._skey=0.and.(if(val(d_o)=0,,_sfor:={||dost_odb=left(d_o,A_NRLTH)}),dbseek(D_MM '',,.t.),dbskip(),.f.)},D_MM ''}).and.(dd:=data,n_f:=pad(KEY_DOK+nr_dowodu,len(n_f)),updated(.t.),.t.),dbgoto(x),.t.}
+      @ 4,2 GET n_f PICTURE "@K!S13" valid {|x|x:=recno(),empty(n_f).and.szukam({1,1,maxrow(),,1,0,'DOKUMENTY',{||smb_dow+nr_dowodu+I+dtoc(data)+I+dost_odb},{|_skey,_s|(_sret:=_skey=13).or._skey=27.or._skey=0.and.(if(val(d_o)=0,,_sfor:={||dost_odb=left(d_o,A_NRLTH)}),dbseek(D_MM '',,.t.),dbskip(),.f.)},D_MM ''}).and.(dd:=data,n_f:=pad(KEY_DOK+nr_dowodu,len(n_f)),updated(.t.),.t.),dbgoto(x),.t.}
       @ 4,16 GET dd
 //#ifndef A_NVAT
       iv:=ascan(avat,{|y|y[2]#0})
@@ -1629,7 +1632,7 @@ memvar exp_od,exp_do
        if dok_zew="V" .and. empty(if(kh=firmy->numer_kol.and.!firmy->(eof()),firmy->ident,nr_faktury))
           alarm('BRAK NIPU !',,3,3)
           _fkey:=K_PGUP
-       elseif dok_kop<0 .or. TAK('CZY DRUKOWAĆ (DANE POPRAWNE)',_frow+1,,.T.,.F.)
+       elseif dok_kop<0 .or. TAK(hb_UTF8ToStr('CZY DRUKOWAĆ (DANE POPRAWNE)'),_frow+1,,.T.,.F.)
           wydruk_dok(abs(dok_kop))
        ENDIF
     endif
@@ -1760,7 +1763,7 @@ begin sequence
        set order to tag MAIN_NRK
 #endif
        if (dpos:=min(_flp+1,len(darr)))=1
-           @ _frow+4,1 say 'Zbiorówka za ten okres pod [F8]' color _sbkgr
+           @ _frow+4,1 say 'Zbiorówka za ten okres pod [F8]' UNICODE color _sbkgr
        endif
        dflag:=dm->pozycja=D_LP0 .and. dpos>0
 recover
@@ -1775,7 +1778,7 @@ end sequence
 #ifdef A_DIETA
 #ifdef A_MULTIDI
     if empty(darr) .and. pm=-1 .and. dok$dok_di .and. dok_zew="W" .and. nr_mag=A_MAGDI
-       mes:=message("Chwileczkę ")
+       mes:=message(hb_UTF8ToStr("Chwileczkę "))
 begin sequence
        dflag:=.f.
        darr:={}
@@ -1836,7 +1839,7 @@ begin sequence
               darr[i]:=surowce->indx_mat+" "+left(j,c-1)+" "+left(surowce->nazwa,40)+HB_UTF8CHR(0x00A0)+subs(j,-8)+" "+surowce->jmag
           next
           if (dpos:=min(_flp+1,len(darr)))=1
-             @ _frow+2,5 say 'Zapotrzebowanie na ten dzień pod [F8]' color _sbkgr
+             @ _frow+2,5 say 'Zapotrzebowanie na ten dzień pod [F8]' UNICODE color _sbkgr
           endif
           dflag:=dm->pozycja=D_LP0 .and. dpos>0
        endif
@@ -1888,7 +1891,7 @@ begin sequence
           select ro_zapot
           darr:={}
           j:=0
-          mes:=message("Chwileczkę ")
+          mes:=message(hb_UTF8ToStr("Chwileczkę "))
 //          exec {||message(10),aadd(darr,str(ascan(posilki,posilek)*15+ascan(diety,dieta),2)+str(recno(),6)+skladnik)} rest while data=da
           if fieldpos("POZYCJA")=0
              exec {||message(10),aadd(darr,{chr(ascan(posilki,posilek)+64),recno(),skladnik,dieta})} rest while data=da
@@ -1955,7 +1958,7 @@ begin sequence
 #endif
           enddo
           if (dpos:=min(_flp+1,len(darr)))=1
-             @ _frow+2,5 say 'Zapotrzebowanie na ten dzień pod [F8]' color _sbkgr
+             @ _frow+2,5 say 'Zapotrzebowanie na ten dzień pod [F8]' UNICODE color _sbkgr
           endif
           dflag:=dm->pozycja=D_LP0 .and. dpos>0
        endif
@@ -1973,7 +1976,7 @@ end sequence
     if !empty(darr)
        @ _frow+1,20 say 'F8' color _sbkgr
     else
-       @ _frow+1,20 say '══' color _sbkgr
+       @ _frow+1,20 say '══' UNICODE color _sbkgr
     endif
 #endif //dieta
 return
@@ -3681,7 +3684,7 @@ else
 #endif
       if (a:=len(ames))>0
          a:=ames[a]
-         @ a[3],a[2] SAY left("Naciśnij coś...",a[4]-a[2])
+         @ a[3],a[2] SAY left(hb_UTF8ToStr("Naciśnij coś..."),a[4]-a[2])
          tone(130,3)
          inkey(0)
          for a:=len(ames) to 1 step -1
@@ -3692,10 +3695,10 @@ return
 *******************************
 procedure dok6(_f)
   select DM
-  IF dok_kop<0 .or. dok_kop>0 .and. TAK('CZY DRUKOWAĆ (DANE SĄ POPRAWNE ?)',ROW(),25,.T.,.F.)
+  IF dok_kop<0 .or. dok_kop>0 .and. TAK(hb_UTF8ToStr('CZY DRUKOWAĆ (DANE SĄ POPRAWNE ?)'),ROW(),25,.T.,.F.)
     wydruk_dok(abs(dok_kop))
 //#ifdef A_OBR
-  else //if dok_kop<=0 .and. TAK('CZY DANE SĄ POPRAWNE',ROW(),25,.T.,.F.)
+  else //if dok_kop<=0 .and. TAK(hb_UTF8ToStr('CZY DANE SĄ POPRAWNE'),ROW(),25,.T.,.F.)
     KTO_PISAL:=OPERATOR
     changed:=.t.
 //#endif
@@ -3849,9 +3852,9 @@ endif
 #endif
 
 #ifdef A_KONTROLA
-    case (_fkey=K_CTRL_RET .or. _fkey=K_ALT_RETURN ).and. canopen .and. A_KONTROLA .and. alarm("CZY OTWORZYĆ DOKUMENT "+dm->smb_dow+dm->nr_dowodu,{"Tak","Nie"})=1
+    case (_fkey=K_CTRL_RET .or. _fkey=K_ALT_RETURN ).and. canopen .and. A_KONTROLA .and. alarm(hb_UTF8ToStr("CZY OTWORZYĆ DOKUMENT ")+dm->smb_dow+dm->nr_dowodu,{"Tak","Nie"})=1
 #else
-    case (_fkey=K_CTRL_RET .or. _fkey=K_ALT_RETURN ).and. canopen .and. iS_spec .and. alarm("CZY OTWORZYĆ DOKUMENT "+dm->smb_dow+dm->nr_dowodu,{"Tak","Nie"})=1
+    case (_fkey=K_CTRL_RET .or. _fkey=K_ALT_RETURN ).and. canopen .and. iS_spec .and. alarm(hb_UTF8ToStr("CZY OTWORZYĆ DOKUMENT ")+dm->smb_dow+dm->nr_dowodu,{"Tak","Nie"})=1
        BEGIN SEQUENCE
        hAslo_spec(0)
        RECOVER
@@ -3870,7 +3873,7 @@ endif
         tone(164.8,1)
 #ifdef A_DF
        if dok_df .and. kto_pisal#HB_UTF8CHR(0x00A0)+chr(0)
-          dispout(" - PONOWNY WYDRUK PARAGONU NIEMOŻLIWY !")
+          dispout(hb_UTF8ToStr(" - PONOWNY WYDRUK PARAGONU NIEMOŻLIWY !"))
           inkey(5)
        endif
 #endif

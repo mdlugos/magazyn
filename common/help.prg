@@ -84,9 +84,9 @@ endif
         scroll(r1,c1,r2,c2, 0)
         @ r1+1,c1+2,r2-1,c2-2 BOX UNICODE '┌─┐│┘─└│'
         SET COLOR TO I
-        @ r2-1,c1+3 say 'Esc'
-        @ r2-1,c1+7 SAY "^"+CHR(26)
-        @ r2-1,c1+10 SAY "^"+CHR(27)
+        @ r2-1,c1+ 3 say 'Esc'
+        @ r2-1,c1+ 7 SAY "^"+if(HB_CDPISUTF8(),"→", chr(0x1b)) 
+        @ r2-1,c1+10 SAY "^"+if(HB_CDPISUTF8(),"←", chr(0x1a)) 
         @ r2-1,c1+13 SAY 'Hom'
         @ r2-1,c1+17 SAY 'End'
         @ r2-1,c1+21 say 'PgU'
@@ -95,11 +95,11 @@ endif
         @ r2-1,c1+34 say '^End'
         @ r2-1,c1+39 say '^PgU'
         @ r2-1,c1+44 say '^PgD'
-        @ r2-1,c1+49 SAY CHR(17)+CHR(196)+CHR(217) // Enter
+        @ r2-1,c1+49 SAY if(HB_CDPISUTF8(),'◄',chr(0x10))+ hb_UTF8ToStr('─┘') // Enter
         @ r2-1,c1+53 say '^Y'
         @ r2-1,c1+56 say '^W'
-        @ r1+1,c1+3  say ' P O M O C '
-        @ r1+1,c2-2-len(htext) say htext
+        @ r1+1,c1+ 3  say ' P O M O C '
+        @ r1+1,c2- 2-len(htext) say htext
         set color to (if(iscolor(),"GR+/GR","W"))
 
 #ifdef __HARBOUR__
@@ -136,7 +136,7 @@ osk:=HB_SETKEYSAVE()
     k:=lastkey()
     if k=K_CTRL_W .or. k=K_F10 .or. k=K_CTRL_L
           HB_MEMOWRIT(HTEXT,strtran(txt,chr(141)+chr(10)),.f.)
-    elseif k=K_CTRL_P .and. 1=alarm("Czy drukować",{"Tak","Nie"},2)
+    elseif k=K_CTRL_P .and. 1=alarm(hb_UTF8ToStr("Czy drukować"),{"Tak","Nie"},2)
           set console off
           k:=getlines(hardcr(txt))
           print()
@@ -168,7 +168,7 @@ osk:=HB_SETKEYSAVE()
     elseif k=K_CTRL_K
        m:=message("PODAJ  (R, W);ROZKAZ:;... ")
        k:=upper(chr(INkey(0)))
-       @ m[1]+1,m[2]+8 say "NAZWĘ: "
+       @ m[1]+1,m[2]+8 say "NAZWĘ: " UNICODE
        n:=pad(defa,64)
        @ m[1]+2,m[2]+2 get n picture "@KS14"
        read

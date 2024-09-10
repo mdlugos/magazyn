@@ -216,12 +216,13 @@ s:=select(alias)
          if !empty(b)
            a:=b
          endif
-         NUSE (a) ALIAS (alias) CODEPAGE cp
+         //NUSE (a) ALIAS (alias) CODEPAGE cp
+         NetusE(NIL,NIL,a,alias,shared,rdo,cp)
       else
          a:=b:=alias
 #ifdef A_CDX
          s:=select()
-         if sel("indeks")#0
+         if sel("indeks",,,.t.)#0
             locate for {||c:=trim(baza), lower(expand(c))==alias}
             if found()
                a:=trim(path)

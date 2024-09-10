@@ -31,7 +31,7 @@ aeval(getlines(SET(_SET_DEFAULT)+HB_OsPathListSeparator()+set(_SET_PATH),HB_OsPa
      })
 
 PLIK=LOWER(LEFT(ALIAS()+"        ",8))
-@ 21,50 SAY 'PODAJ NAZWE BAZY' GET PLIK PICTURE "@K!" VALID ACZOJS(DIR)
+@ 21,50 SAY 'PODAJ NAZWĘ BAZY' UNICODE GET PLIK PICTURE "@K!" VALID ACZOJS(DIR)
 READ
 IF ReadkeY()=K_ESC
    RETURN NIL
@@ -44,8 +44,8 @@ lPack:=.f.
 @ 3,0 CLEAR
 do powr_dbed
 if sequr
-   @ 0,0 SAY "Bezpośrednie zmiany w tej bazie danych mogą rozkojarzyć dane !" COLOR "GR+"
-   @ 1,0 SAY "Upewnij się, czy posiadasz kopię bezpieczeństwa na dyskietce !" COLOR "GR+"
+   @ 0,0 SAY "Bezpośrednie zmiany w tej bazie danych mogą rozkojarzyć dane !" UNICODE COLOR "GR+"
+   @ 1,0 SAY "Upewnij się, czy posiadasz kopię bezpieczeństwa na dyskietce !" UNICODE COLOR "GR+"
 else
    go top
 ENDIF
@@ -240,7 +240,7 @@ ENDIF
       scr_buf = SAVESCREEN(8, 1, 19, 78)
       scroll(8, 1, 19, 78, 0)
       @ 9,3,18,76 BOX HB_B_DOUBLE_SINGLE_UNI COLOR "W+"
-      @ 11,5 say "Podaj  numer  klucza  indeksowego  (Esc - bez indeksowania)"
+      @ 11,5 say "Podaj  numer  klucza  indeksowego  (Esc - bez indeksowania)" UNICODE
       do while .not. empty(txt)
           @ 11+i,5 prompt str(i,1)+" - " + LEFT(txt, 66)
        i = i+1
@@ -252,8 +252,8 @@ ENDIF
        if i != 0
          SET ORDER TO i
          txt=IndexkeY(0)
-         @ nTop + 1, nLeft + 2 say padr("Klejność wg: "+txt,nright-nleft-43)
-         @ 16,5 say "Podaj poszukiwaną sekwencję znaków:"
+         @ nTop + 1, nLeft + 2 say padr(hb_UTF8ToStr("Klejność wg: ")+txt,nright-nleft-43)
+         @ 16,5 say "Podaj poszukiwaną sekwencję znaków:" UNICODE
 
          txt = EvAlDb(txt)
          @ 16,41 get txt picture "@KS34"
@@ -270,7 +270,7 @@ ENDIF
 
        else
      SET ORDER TO 0
-       @ nTop + 1, nLeft + 2 say padr("Klejność naturalna.",nright-nleft-43)
+       @ nTop + 1, nLeft + 2 say padr(hb_UTF8ToStr("Klejność naturalna."),nright-nleft-43)
        endif
     skip 0
        RESTSCREEN(8, 1, 19, 78, scr_buf)
@@ -309,9 +309,9 @@ ENDIF
       set color to W+
       @ 9,3,18,76 BOX UNICODE "╒═╕│╛═╘│" COLOR "W+"
       set color to W
-      @ 11,5 say "Podaj  wyrażenie filtra            (Esc - rezygnacja)"
-      @ 13,5 say 'Dostępne relacje: =,#,$,<,>,<=,>= '
-      @ 14,5 say 'Dostępne operacje logicze: .i., .lub., .nie.'
+      @ 11,5 say "Podaj  wyrażenie filtra            (Esc - rezygnacja)" UNICODE
+      @ 13,5 say 'Dostępne relacje: =,#,$,<,>,<=,>= ' UNICODE
+      @ 14,5 say 'Dostępne operacje logicze: .i., .lub., .nie.' UNICODE
       txt=dbfilter()
 
     do while .t.
@@ -419,7 +419,7 @@ ENDIF
 set deleted on
 
 @ 0,0 CLEAR to 2,79
-if !shared() .and. lPack .AND. tak('CZY SKASOWAĆ UKRYTE WIERSZE',0,,.f.,.F.)
+if !shared() .and. lPack .AND. tak(hb_UTF8ToStr('CZY SKASOWAĆ UKRYTE WIERSZE'),0,,.f.,.F.)
     @ 0,0 SAY "TRWA KASOWANIE UKRYTYCH WIERSZY W BAZIE " COLOR "BG+"
     dispout(alias(),"BG+*")
     i:=lastrec()
@@ -688,7 +688,7 @@ local nTop, nRight
     @ nTop, nRight - 40 say if(set(_SET_DELETED),"          ",If(Deleted(), " <Ukryty> ", "<Widoczny>"))
     @ nTop, nRight - 20 say padr(Ltrim(Str(Recno())) + "/" +;
                   Ltrim(Str(LastRec())), 15) +;
-                If(oB:hitTop, "<góra>", "      ")
+                If(oB:hitTop, hb_UTF8ToStr("<góra>"), "      ")
   end
 
 return (NIL)
@@ -747,17 +747,17 @@ return (nCount)
 PROCEDURE POWR_DBED
 
   @ maxrow()-1,0  CLEAR
-  @ maxrow()-1,0  SAY '   -wyjście     -edycja      -filtr    -pokaż ukryte       -ukryj rekord'
+  @ maxrow()-1,0  SAY '   -wyjście     -edycja      -filtr    -pokaż ukryte       -ukryj rekord' UNICODE
   @ maxrow(),27 SAY '- nawigacja       -szybkie szukanie'
   @ maxrow()-1,0  SAY 'Esc'  COLOR "I"
   @ maxrow()-1,13 SAY "Ent" COLOR "I"
   @ maxrow()-1,26 say "F9"  COLOR "I"
   @ maxrow()-1,37 SAY 'F2'  COLOR "I"
   @ maxrow()-1,56 SAY 'Del'  COLOR "I"
-  @ maxrow(),0  SAY '^'  COLOR "I"
-  @ maxrow(),2  SAY 'v'  COLOR "I"
-  @ maxrow(),4  SAY '>'  COLOR "I"
-  @ maxrow(),6  SAY '<'  COLOR "I"
+  @ maxrow(),0  SAY if(HB_CDPISUTF8(),'↑', chr(0x18)) COLOR "I"
+  @ maxrow(),2  SAY if(HB_CDPISUTF8(),'↓', chr(0x19)) COLOR "I"
+  @ maxrow(),4  SAY if(HB_CDPISUTF8(),'→', chr(0x1a)) COLOR "I"
+  @ maxrow(),6  SAY if(HB_CDPISUTF8(),'←', chr(0x1b)) COLOR "I"
   @ maxrow(),8  SAY 'Home'  COLOR "I"
   @ maxrow(),13 SAY 'End'  COLOR "I"
   @ maxrow(),17 SAY 'PgUp'  COLOR "I"
@@ -772,18 +772,18 @@ RETURN
 PROCEDURE POWR_GET
 
   @ maxrow()-1,0  CLEAR
-  @ maxrow()-1,0  SAY     '             -wyjscie z pola z zapisem zmian      -wyjscie z przywr.starej wart.'
-  @ maxrow(),0  SAY     '   -tryb wstawiania <insert> /zamiany znaków'
+  @ maxrow()-1,0  SAY     '             -wyjście z pola z zapisem zmian      -wyjscie z przywr.starej wart.' UNICODE
+  @ maxrow(),0  SAY     '   -tryb wstawiania <insert> /zamiany znaków' UNICODE
   @ maxrow(),65 SAY     '- edycja w polu'
   @ maxrow()-1,0  SAY 'Ent' COLOR "I"
   @ maxrow()-1,4  SAY 'PgUp' COLOR "I"
   @ maxrow()-1,9  SAY 'PgDn' COLOR "I"
   @ maxrow()-1,47 SAY 'Esc' COLOR "I"
   @ maxrow(),0  SAY 'Ins' COLOR "I"
-  @ maxrow(),47 SAY '^' COLOR "I"
-  @ maxrow(),50 SAY 'V' COLOR "I"
-  @ maxrow(),53 SAY '>' COLOR "I"
-  @ maxrow(),55 SAY '<' COLOR "I"
+  @ maxrow(),47  SAY if(HB_CDPISUTF8(),'↑', chr(0x18)) COLOR "I"
+  @ maxrow(),50  SAY if(HB_CDPISUTF8(),'↓', chr(0x19)) COLOR "I"
+  @ maxrow(),53  SAY if(HB_CDPISUTF8(),'→', chr(0x1a)) COLOR "I"
+  @ maxrow(),55  SAY if(HB_CDPISUTF8(),'←', chr(0x1b)) COLOR "I"
   @ maxrow(),57 SAY 'Home' COLOR "I"
   @ maxrow(),62 SAY 'End' COLOR "I"
 
@@ -985,7 +985,7 @@ c[K_HOME]     :={|b|j:=0,b:refreshall()}
 
 if nextkey()=0 //.and. fseek(h,0,2) < 65536
   b:forcestable()
-  @ maxrow(),maxcol()-31 SAY 'ALT+B - kopiuj CAŁOŚĆ do schowka' COLOR _sramka
+  @ maxrow(),maxcol()-31 SAY 'ALT+B - kopiuj CAŁOŚĆ do schowka' UNICODE COLOR _sramka
 endif
 
 do while .t.

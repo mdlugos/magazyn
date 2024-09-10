@@ -9,7 +9,11 @@
   #define A_WIN_PRN eval(memvar->do_getoprn)
   #define A_ZEBRA
 #endif
-#define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
+#ifndef __PLATFORM__DOS
+  #define A_KSEF
+  #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
+#endif
+
 //#define A_ADS 1
 //#define UpP(x) uPp(x,'UTF8MD')
 #define EvAlDb(x) &(x)
@@ -27,7 +31,6 @@
 #command init screen  =>
 #command INIT PRINTER => specout(eval(memvar->p_init,wasbad))
 #define A_WL
-#define A_KSEF
 #define A_DLINK
 #define A_XPRN
 #define A_PCL

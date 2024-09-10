@@ -61,18 +61,18 @@ endif
 
 SET MESSAGE TO 19 center
 
-@  8,maxcol()/2+16 PROMPT '1. Inwentaryzacja' MESSAGE 'Drukowanie "Arkusza spisu z natury" dla określonych gałęzi kodu materiału.'
-@  9,maxcol()/2+16 PROMPT '2. Dzień pocz.   ' MESSAGE 'Wybór dnia, od którego wyświetlane są ruchy.'
-@ 10,maxcol()/2+16 PROMPT '3. Zamknięcie.   ' MESSAGE 'Zamknięcie miesiąca (lub roku), kontrola stanów na podst. ruchów.'
-@ 11,maxcol()/2+16 PROMPT '4. Otwarcie.     ' MESSAGE 'Otwarcie pomyłkowo zamkniętego miesiąca lub dokumentu.'
-@ 12,maxcol()/2+16 PROMPT '5. Symbole i kody' MESSAGE 'Przeglądanie i porawianie baz danych, opisów, symboli, kodów, haseł, itp.'
+@  8,maxcol()/2+16 PROMPT '1. Inwentaryzacja' UNICODE MESSAGE 'Drukowanie "Arkusza spisu z natury" dla określonych gałęzi kodu materiału.'
+@  9,maxcol()/2+16 PROMPT '2. Dzień pocz.   ' UNICODE MESSAGE 'Wybór dnia, od którego wyświetlane są ruchy.'
+@ 10,maxcol()/2+16 PROMPT '3. Zamknięcie.   ' UNICODE MESSAGE 'Zamknięcie miesiąca (lub roku), kontrola stanów na podst. ruchów.'
+@ 11,maxcol()/2+16 PROMPT '4. Otwarcie.     ' UNICODE MESSAGE 'Otwarcie pomyłkowo zamkniętego miesiąca lub dokumentu.'
+@ 12,maxcol()/2+16 PROMPT '5. Symbole i kody' UNICODE MESSAGE 'Przeglądanie i porawianie baz danych, opisów, symboli, kodów, haseł, itp.'
 IF STARY_ROK#NIL
-@ 13,maxcol()/2+16 PROMPT '6. Zmiana roku.  ' MESSAGE 'Wejście do poprzedniego roku lub powrót do bieżącego roku.'
+@ 13,maxcol()/2+16 PROMPT '6. Zmiana roku.  ' UNICODE MESSAGE 'Wejście do poprzedniego roku lub powrót do bieżącego roku.'
  ELSE
-@ 13,maxcol()/2+16 PROMPT '6. Stary rok.    ' message 'Wejście do zeszłego roku, zmiany przenoszone na bieżący rok po zamknięciu.'
+@ 13,maxcol()/2+16 PROMPT '6. Stary rok.    ' UNICODE message 'Wejście do zeszłego roku, zmiany przenoszone na bieżący rok po zamknięciu.'
 ENDIF
-@ 14,maxcol()/2+16 PROMPT '7. Ilość linii.  ' message 'Zmiana ilości linii widocznych na ekranie.'
-@ 15,maxcol()/2+16 PROMPT '8. Ratuj.        ' message 'Reindeksacja baz - Odtwarzanie skorowidzy.'
+@ 14,maxcol()/2+16 PROMPT '7. Ilość linii.  ' UNICODE message 'Zmiana ilości linii widocznych na ekranie.'
+@ 15,maxcol()/2+16 PROMPT '8. Ratuj.        ' UNICODE message 'Reindeksacja baz - Odtwarzanie skorowidzy.'
       SETKEY(4,{||NIL})
       SETKEY(19,{||KIBORD(CHR(27)+CHR(5)+CHR(13))})
     MENU TO MENUPOM
@@ -105,7 +105,7 @@ DO CASE
    CASE m=4
     if iS_spec
     hAslo_spec(21)
-    if DatY->d_z_mies1>DatY->d_z_rok .and. alarm(if(DatY->d_z_mies1>DatY->d_z_mies2,"CZY OTWORZYĆ MIESIĄC ?","CZY OTWORZYĆ CAŁY ROK ?"),{"Tak","Nie"})=1
+    if DatY->d_z_mies1>DatY->d_z_rok .and. alarm(hb_UTF8ToStr(if(DatY->d_z_mies1>DatY->d_z_mies2,"CZY OTWORZYĆ MIESIĄC ?","CZY OTWORZYĆ CAŁY ROK ?")),{"Tak","Nie"})=1
       if stary_rok#NIL
          txt:=defa+str(year(stary_rok+D_OLZA),4)+HB_ps()
          if ! file(txt+'daty.*')
@@ -122,7 +122,7 @@ DO CASE
          #define D_Z3 &(subs(txt[3],at(':=',txt[3])+2))
 #endif
          if D_Z1#D_Z3
-            alarm("Otwarcie niemożliwe;Nowy rok jest zamknięty do "+dtoc(D_Z1)+" .")
+            alarm(hb_UTF8ToStr("Otwarcie niemożliwe;Nowy rok jest zamknięty do ")+dtoc(D_Z1)+" .")
 #ifdef A_LAN
             use
 #endif
@@ -281,7 +281,7 @@ DO CASE
       sysint(51,0)
 #endif
        else
-          alarm("NIE DOSTĘPNE NA MONITORZE TYPU HERCULES")
+          alarm(hb_UTF8ToStr("NIE DOSTĘPNE NA MONITORZE TYPU HERCULES"))
        endif
      case m=8
        ratuj()
@@ -301,13 +301,13 @@ local i:=3
            SET COLOR TO BG+/B
         endif
         @ 20,maxcol()/2-20,23,maxcol()/2+20 BOX UNICODE '╔═╗║╝═╚║ '
-        @ 20,maxcol()/2-15 SAY "Wybierz jedną z podanych dat:"
+        @ 20,maxcol()/2-15 SAY "Wybierz jedną z podanych dat:" UNICODE
         SET MESSAGE TO 22 CENTER
-        @ 21,maxcol()/2-18 PROMPT dtoc(DatY->d_z_mies1) MESSAGE "        Tylko ostatnie ruchy.       "
-        @ 21,maxcol()/2-6 PROMPT dtoc(DatY->d_z_mies2) MESSAGE "Ruchy w ostatnio zamykanym miesiącu."
-        @ 21,maxcol()/2+6 PROMPT dtoc(DatY->d_z_rok)   MESSAGE "           Wszystkie ruchy.         "
+        @ 21,maxcol()/2-18 PROMPT dtoc(DatY->d_z_mies1) UNICODE MESSAGE "        Tylko ostatnie ruchy.       "
+        @ 21,maxcol()/2-6 PROMPT dtoc(DatY->d_z_mies2) UNICODE MESSAGE "Ruchy w ostatnio zamykanym miesiącu."
+        @ 21,maxcol()/2+6 PROMPT dtoc(DatY->d_z_rok) UNICODE MESSAGE "           Wszystkie ruchy.         "
 
-        MENU TO I
+        MENU TO i
         DO CASE
            CASE i=1
                 DatY->data_gran:=DatY->d_z_mies1
@@ -368,7 +368,7 @@ IF dz1>DatY->d_z_mies1
      #define D_Z1 &(subs(m,at(':=',m)+2))
 #endif
      if D_Z1<DatY->d_z_rok
-        alarm("Najpierw zamknij rok"+str(year(D_Z1+D_OLZA),5)+" !;Nie można teraz zamknąć roku"+str(year(DatY->d_z_rok+D_OLZA),5)+" !")
+        alarm("Najpierw zamknij rok"+str(year(D_Z1+D_OLZA),5)+hb_UTF8ToStr(" !;Nie można teraz zamknąć roku")+str(year(DatY->d_z_rok+D_OLZA),5)+" !")
         dz1:=DatY->d_z_mies1
      endif
 #ifdef A_DDBF
@@ -390,9 +390,9 @@ IF dz1>DatY->d_z_mies1
       aadd(ar1,dz1)
       dz1-=day(dz1)
     enddo
-    aadd(ar,"Kontrola Stanów")
+    aadd(ar,hb_UTF8ToStr("Kontrola Stanów"))
     aadd(ar1,DatY->d_z_mies1)
-    if 0=(key:=alarm("Zamknięcie do:;( Esc - Rezygnacja )",ar))
+    if 0=(key:=alarm(hb_UTF8ToStr("Zamknięcie do:;( Esc - Rezygnacja )"),ar))
       break
     endif
     dz1:=ar1[key]
@@ -428,7 +428,7 @@ IF dz1>DatY->d_z_mies1
   if dz1>DatY->d_z_mies1
     select 0
     nuse dm
-    if !filock(.t.,"Proszę wszystkich użytkowników sieci o wyjście na chwilę z wprowadzania/poprawiania dokumentów, aby można było upewnić się, że nikt nie zmienia danych z zamykanego okresu. Po rozpoczęciu zamykania można będzie powrócić do przerwanej pracy.;Omiń - tylko kontrola stanów")
+    if !filock(.t.,hb_UTF8ToStr("Proszę wszystkich użytkowników sieci o wyjście na chwilę z wprowadzania/poprawiania dokumentów, aby można było upewnić się, że nikt nie zmienia danych z zamykanego okresu. Po rozpoczęciu zamykania można będzie powrócić do przerwanej pracy.;Omiń - tylko kontrola stanów"))
        dz1:=DatY->d_z_mies1
     else
        DatY->data_gran:=dz1
@@ -439,7 +439,7 @@ IF dz1>DatY->d_z_mies1
   endif
 #endif
 
-  ?? "PRZYGOTUJ DRUKARKĘ (NA WSZELKI WYPADEK)."
+  ?? hb_UTF8ToStr("PRZYGOTUJ DRUKARKĘ (NA WSZELKI WYPADEK).")
   ?
   ?
 #ifdef A_HPDF
@@ -462,16 +462,16 @@ IF dz1>DatY->d_z_mies1
 #else
     IF month(dz1) = 12 .and. dz1>DatY->d_z_rok
 #endif
-      ?? "Kontrola stanów i zamknięcie roku !"
+      ?? hb_UTF8ToStr("Kontrola stanów i zamknięcie roku !")
     else
-      ?? "Kontrola stanów i zamknięcie do dnia",dz1
+      ?? hb_UTF8ToStr("Kontrola stanów i zamknięcie do dnia"),dz1
     endif
     DatY->d_z_mies1:=DatY->d_z_mies2:=DatY->d_z_rok
   #ifndef A_DDBF
     inisave(set(_SET_DEFAULT)+"daty.ini")
   #endif
   else
-     ?? "Kontrola stanów."
+     ?? hb_UTF8ToStr("Kontrola stanów.")
      dz2:=DatY->d_z_mies2
      dz3:=dz2
   endif
@@ -503,14 +503,14 @@ DO WHILE !(EOF() .and. STANY->(eof()))
   begin sequence
       PRINT(1)
   end
-      ?? "W BAZIE STANY BRAKUJE MATERIAŁU O KODZIE:",NR_MAG,tran(INDEX,"@R "+ INDEXPIC )
+      ?? hb_UTF8ToStr("W BAZIE STANY BRAKUJE MATERIAŁU O KODZIE:"),NR_MAG,tran(INDEX,"@R "+ INDEXPIC )
 #ifdef A_JMALTTOT
 #define D_JMA A_JMALTTOT(ILOSC,MAIN->nr_zlec,4,x)
 #endif
 #ifndef STANY
     if INDX_MAT->(DBSEEK(MAIN->INDEX,.F.))
        ? indx_mat->NAZWA
-       ? "ZAKŁADAM, ŻE STAN BYŁ ZEROWY NA POCZĄTKU ROKU !!!!"
+       ? hb_UTF8ToStr("ZAKŁADAM, ŻE STAN BYŁ ZEROWY NA POCZĄTKU ROKU !!!!")
        STANY->(dbappend())
        STANY->nr_mag:=nr_mag
        STANY->index:=index
@@ -610,8 +610,8 @@ DO WHILE !(EOF() .and. STANY->(eof()))
       PRINT(1)
   end
       ?? NR_MAG+"/"+tran(indx_mat->INDEX,"@R "+ INDEXPIC ),cpad(indx_mat->NAZWA,36),stan,indx_mat->jm,wartosc
-      ? "RÓŻNICA W STANIE KOŃCOWYM"
-      ? "BYŁO",STAN,INDX_MAT->JM,WARTOSC,"zł"
+      ? hb_UTF8ToStr("RÓŻNICA W STANIE KOŃCOWYM")
+      ? hb_UTF8ToStr("BYŁO"),STAN,INDX_MAT->JM,WARTOSC,hb_UTF8ToStr("zł")
     sTAN:=s
 #ifndef STANY
 #ifdef A_ZAGRODA
@@ -621,7 +621,7 @@ DO WHILE !(EOF() .and. STANY->(eof()))
 #endif
 #endif
     WARTOSC:=round(W,A_ZAOKR)
-    ?? " JEST",STAN,INDX_MAT->JM,WARTOSC,"zł"
+    ?? " JEST",STAN,INDX_MAT->JM,WARTOSC,hb_UTF8ToStr("zł")
     ?
     ?
   else
@@ -634,8 +634,8 @@ DO WHILE !(EOF() .and. STANY->(eof()))
       PRINT(1)
   end
       ?? NR_MAG+"/"+tran(indx_mat->INDEX,"@R "+ INDEXPIC ),cpad(indx_mat->NAZWA,36),stan,indx_mat->jm
-      ? "RÓŻNICA W STANIE KOŃCOWYM"
-      ? "BYŁO",STAN,INDX_MAT->JM
+      ? hb_UTF8ToStr("RÓŻNICA W STANIE KOŃCOWYM")
+      ? hb_UTF8ToStr("BYŁO"),STAN,INDX_MAT->JM
     sTAN:=s
     ?? " JEST",STAN,INDX_MAT->JM
     ?
@@ -662,7 +662,7 @@ DO WHILE !(EOF() .and. STANY->(eof()))
       PRINT(1)
   end
       ?? NR_MAG+"/"+tran(indx_mat->INDEX,"@R "+ INDEXPIC ),cpad(indx_mat->NAZWA,36),stan,indx_mat->jm
-      ? "ZDUBLOWANA KARTOTEKA - USUNĄŁEM!!!"
+      ? hb_UTF8ToStr("ZDUBLOWANA KARTOTEKA - USUNĄŁEM!!!")
       ?
       ?
       LOCK
@@ -705,10 +705,10 @@ if stary_rok=dz1
      #define D_Z1 &(subs(m,at(':=',m)+2))
 #endif
    set color to (_sel)
-   ? "SPRAWDZENIE ZGODNOŚCI STANU KOŃCOWEGO I BILANSU OTWARCIA NOWEGO ROKU."+chr(7)
+   ? hb_UTF8ToStr("SPRAWDZENIE ZGODNOŚCI STANU KOŃCOWEGO I BILANSU OTWARCIA NOWEGO ROKU.")+chr(7)
    ?
    set color to (_snorm)
-   canfix:=D_Z1=DatY->d_z_mies1 .and. 1=alarm("Czy przenieść STAN KOŃCOWY;na BILANS OTWARCIA NOWEGO ROKU",{"TAK","NIE"})
+   canfix:=D_Z1=DatY->d_z_mies1 .and. 1=alarm(hb_UTF8ToStr("Czy przenieść STAN KOŃCOWY;na BILANS OTWARCIA NOWEGO ROKU"),{"TAK","NIE"})
 #undef D_Z1
       select 0
       nuse ind_lam readonly
@@ -775,9 +775,9 @@ if stary_rok=dz1
         PRINT(1)
         ? "MAGAZYN",NOWY->NR_MAG,"KOD:",tran(NOWY->INDEX,"@R "+ INDEXPIC )
         ? "NAZWA BO:",NOWY_IDX->NAZWA
-        ? "STAN KOŃCOWY:  BRAK !"
+        ? hb_UTF8ToStr("STAN KOŃCOWY:  BRAK !")
 #ifdef A_WA
-        ? "STAN BO:     ",NOWY->ZAMKN_ROKU,NOWY_IDX->jm,NOWY->WART_ROKU,"zł"
+        ? "STAN BO:     ",NOWY->ZAMKN_ROKU,NOWY_IDX->jm,NOWY->WART_ROKU,hb_UTF8ToStr("zł")
         if canfix
            lock in NOWY
            ? "DOKONANO KOREKTY BO !"
@@ -827,9 +827,9 @@ if stary_rok=dz1
         ? "MAGAZYN",NR_MAG,"KOD:",tran(INDEX,"@R "+ INDEXPIC )
         ? "NAZWA:   ",indx_mat->NAZWA
 #ifdef A_WA
-        ? "STAN KOŃCOWY:",ZAMK_MIES1,indx_mat->jm,WART_MIES1,"zł"
+        ? hb_UTF8ToStr("STAN KOŃCOWY:"),ZAMK_MIES1,indx_mat->jm,WART_MIES1,hb_UTF8ToStr("zł")
 #else
-        ? "STAN KOŃCOWY:",ZAMK_MIES1,indx_mat->jm
+        ? hb_UTF8ToStr("STAN KOŃCOWY:"),ZAMK_MIES1,indx_mat->jm
 #endif
         ? "STAN BO:       BRAK !"
         if canfix
@@ -896,10 +896,10 @@ if stary_rok=dz1
         ? "NAZWA BO:",NOWY_IDX->NAZWA
         endif
 #ifdef A_WA
-        ? "STAN KOŃCOWY:",ZAMK_MIES1,indx_mat->jm,WART_MIES1,"zł"
-        ? "STAN BO:     ",NOWY->ZAMKN_ROKU,NOWY_IDX->jm,NOWY->WART_ROKU,"zł"
+        ? hb_UTF8ToStr("STAN KOŃCOWY:"),ZAMK_MIES1,indx_mat->jm,WART_MIES1,hb_UTF8ToStr("zł")
+        ? "STAN BO:     ",NOWY->ZAMKN_ROKU,NOWY_IDX->jm,NOWY->WART_ROKU,hb_UTF8ToStr("zł")
 #else
-        ? "STAN KOŃCOWY:",ZAMK_MIES1,indx_mat->jm
+        ? hb_UTF8ToStr("STAN KOŃCOWY:"),ZAMK_MIES1,indx_mat->jm
         ? "STAN BO:     ",NOWY->ZAMKN_ROKU,NOWY_IDX->jm
 #endif
       if canfix
@@ -944,12 +944,12 @@ if stary_rok=dz1
                if NAZWA#NOWY_IDX->NAZWA
                   ? "NAZWA BO:",NOWY_IDX->NAZWA
                endif
-               ? "RÓŻNICA ZAWARTOŚCI PÓL: "
+               ? hb_UTF8ToStr("RÓŻNICA ZAWARTOŚCI PÓL: ")
                if canfix
                   LOCK IN NOWY_IDX
                endif
             endif
-            ? fieldname(key),"STAN KOŃCOWY",fieldget(key),"STAN BO",NOWY_IDX->(fieldget(key))
+            ? fieldname(key),hb_UTF8ToStr("STAN KOŃCOWY"),fieldget(key),"STAN BO",NOWY_IDX->(fieldget(key))
             aadd(s,fieldname(key))
             if canfix
                NOWY_IDX->(FIELDPUT(KEY,INDX_MAT->(FIELDGET(KEY))))
@@ -971,14 +971,14 @@ if stary_rok=dz1
     ENDIF
   ENDDO
   set print off
-  ?? ""
+  ?
+  ?
 //#undef IND_LAM
 #undef NOWY
 #undef NOWY_IDX
 elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
    set color to (_sel)
-   ? "ZAMKNIĘCIE ROKU"
-   ?? ", TROCHĘ POTRWA"
+   ? hb_UTF8ToStr("ZAMKNIĘCIE ROKU, TROCHĘ POTRWA")
    set color to (_snorm)
    ?
    close databases
@@ -997,7 +997,7 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
    endif
 #endif
      if !file(defa+"kopia.*") .and. !file(defa+"archiwum"+HB_ps()+"kopi"+str(year(DatY->d_z_mies1),4)+".*")
-        alarm("Brak kopii bezpieczeństwa danych.;Nie będę zamykać roku!",0,3)
+        alarm(hb_UTF8ToStr("Brak kopii bezpieczeństwa danych.;Nie będę zamykać roku!"),0,3)
         break
      endif
      mkdir(defa+"archiwum")
@@ -1012,7 +1012,7 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
 
 
   ?
-  ? "Kasowanie pozostałości kartoteki ROBOCZY."
+  ? hb_UTF8ToStr("Kasowanie pozostałości kartoteki ROBOCZY.")
 
    AEVAL(DIRECTORY(defa+"roboczy"+HB_ps()+"*.txt"),{|X|QOUT(X[1]),FERASE(defa+"roboczy"+HB_ps()+X[1])})
    AEVAL(DIRECTORY(defa+"roboczy"+HB_ps()+"*.prn"),{|X|QOUT(X[1]),FERASE(defa+"roboczy"+HB_ps()+X[1])})
@@ -1026,7 +1026,7 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
 
    AEVAL(DIRECTORY(defa+"tmp"+HB_ps()+"*.*"),{|X|QOUT(X[1]),FERASE(defa+"tmp"+HB_ps()+X[1])})
   ?
-  ? "Tworzenie nowych zbiorów tymczasowo w kartotece TMP:"
+  ? hb_UTF8ToStr("Tworzenie nowych zbiorów tymczasowo w kartotece TMP:")
   ?
   ? "Tworzenie zbioru DATY"
  
@@ -1071,7 +1071,7 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
 
    IF FILE(defa+"tmp"+HB_ps()+"firmy.dbf")
   ?
-  ?   "Przenoszenie kontrahentów."
+  ?   hb_UTF8ToStr("Przenoszenie kontrahentów.")
 
       nuse firmy exclusive
       append from (defa+"roboczy"+HB_ps()+"firmy")
@@ -1083,7 +1083,7 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
   w:=DatY->d_z_rok-31
   do while .t.
      tone(130,3)
-     alarm("Kasowanie kartotek,;które mają stan zerowy po dniu: "+dtoc(w)+";(klawisze [+] i [-] - zmiana daty);Esc - bez kasowania" ,{"-","OK","+"},@key)
+     alarm(hb_UTF8ToStr("Kasowanie kartotek,;które mają stan zerowy po dniu: ")+dtoc(w)+";(klawisze [+] i [-] - zmiana daty);Esc - bez kasowania" ,{"-","OK","+"},@key)
      if key=3
         w+=32
      elseif key#1
@@ -1291,7 +1291,7 @@ reuse()
 
 ?
 tone(262,2)
-wait "Koniec, nacisnij klawisz."
+wait hb_UTF8ToStr("Koniec, naciśnij klawisz.")
 
 
 RETURN
@@ -1333,7 +1333,7 @@ select main
 
 GAL:=MAG_BIEZ+space(len(index))
 
-@ 9,10 say "Proszę podać numer magazynu i gałąź:" 
+@ 9,10 say "Proszę podać numer magazynu i gałąź:" UNICODE
 @ 10,30 get gal PICTURE "@RK ##/"+ INDEXPIC
 read
 if readkey()=27
@@ -1352,16 +1352,16 @@ SELECT STANY
 
 setpos(21,0)
 
-if !tak("Czy drukować pozycje o stanie zerowym w/g kartoteki magazynu")
+if !tak(hb_UTF8ToStr("Czy drukować pozycje o stanie zerowym w/g kartoteki magazynu"))
   set filter to stan#0
 endif
 
   if !dbseek(gal,.f.)
-    alarm("Brak takich materiałów",,,3)
+    alarm(hb_UTF8ToStr("Brak takich materiałów"),,,3)
     return
   endif
 
-sflag:=tak("Czy drukować stan ilościowy w/g kartoteki magazynu")
+sflag:=tak(hb_UTF8ToStr("Czy drukować stan ilościowy w/g kartoteki magazynu"))
 #ifdef A_JMO
 jm_o:=TAK("CZY W ALTERNATYWNEJ JEDNOSTCE MIARY",,,miar_opcja,.F.)
 #define D_ILOUT(x) if(jm_o,if(x%indx_mat->przel=0,str(x/indx_mat->przel,6)+"    ",stuff(str(int(x/indx_mat->przel)+x%indx_mat->przel/1000,10,3),7,1,"r")),str(x,10,3))
@@ -1376,7 +1376,7 @@ jm_o:=TAK("CZY W ALTERNATYWNEJ JEDNOSTCE MIARY",,,miar_opcja,.F.)
   exec {++ile,wat+=WartosC} while NR_MAG+index=gal
 #define D_WAOUT(x) strpic(WartosC,10,A_ZAOKR,"@E ")
 
-@ 11,10 say "Ta gałąź liczy "+LTRIM(STR(ILE))+" pozycji, "+LTRIM(STR(INT(ILE/30+.99)))+" arkuszy."
+@ 11,10 say "Ta gałąź liczy "+LTRIM(STR(ILE))+" pozycji, "+LTRIM(STR(INT(ILE/30+.99)))+" arkuszy." UNICODE
 seek gal
 ark=1
 @ 13,30 say "Od arkusza numer:" get ark picture "@K 99" valid ark<1+ile/30 .and. ark>0
@@ -1387,23 +1387,27 @@ if readkey()=27
 endif
 lp=ark*30-29
 skip lp-1
-  mes:=message("Proszę czekać;TRWA WYDRUK.")
+  mes:=message(hb_UTF8ToStr("Proszę czekać;TRWA WYDRUK."))
 begin sequence
 set console off
 #ifdef D_HWPRN
 oprn:=D_HWPRN
-#command ?  [<exp,...>]         => wQ()[;?? <exp>]
-#command ?? <exp1> [,<expn>]    => wqq(<exp1>)[;wQQ(<expn>)]
+#command ?  [<exp,...>]         => wq()[;?? <exp>]
+#command ?? <exp1> [,<expn>]    => wqq(<exp1>)[;wqq(<expn>)]
 #else
 #command ? [<List,...>] => qout() [;?? <List>]
-#command ?? <exp1> [,<expn>]    => qqout(<exp1>)[;QQout(<expn>)]
+#command ?? <exp1> [,<expn>]    => qqout(<exp1>)[;qqout(<expn>)]
 #endif
+
 print()
 do while ile>0
 ?? "                       SPIS Z NATURY , DNIA",DatE(),"            NR",ARK
 ? 
 ? TRIM(magazyny[mag_poz]),trim(ADRES_MAG[mag_poz]),"POLE SPISOWE:",TranR(gal,"XX/"+ INDEXPIC )
 ? 
+#define wqq(x) wQQ(hb_UTF8ToStr(x))
+#define qqout(x) QQout(hb_UTF8ToStr(x))
+
 ? "SKŁAD OSOBOWY ZESPOŁU SPISUJĄCEGO:     OSOBY ODPOWIEDZIALNE MATERIALNIE:"
 ?
 ? "1.                                     1."
@@ -1417,6 +1421,8 @@ do while ile>0
 ?  "   │    │                       │    │",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"│",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"│",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"├──────────┬──────────┼──────────┬──────────┤"
 ?  "         NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU   MAGAZYNU    PRZYCHÓD   ROZCHÓD   NIEDOBORY   NADWYŻKI ",spec(P_SUPOFF)+" SPISUJĄCEGO"
 ?  "───┴────┴───────────────────────┴────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴─────────────────────",spec(P_8LPI)
+#undef qqout(x)
+#undef wqq(x)
 do while lp<=min(ark*30,ile)
 ? str(lp,3)+"|"+INDEX+"|"+LEFT(INDX_MAT->NAZWA,23)+"|"+INDX_MAT->jM+"|          |"+if(sflag,D_ILOUT(stan)+"|"+D_WAOUT(stan),"          |          ")+"|"+ostp(@DOP)+"|"+ostr(@DOR)+"|          |          |"
 ? "   |    |"+pad(substr(INDX_MAT->NAZWA,24),23)+"|    |          |          |          |"+dop+"|"+dor+"|          |          |"
@@ -1428,6 +1434,8 @@ do while lp<=min(ark*30,ile)
 ?  "   │                │                       │    │",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"│",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"├──────────┬──────────┼──────────┬──────────┤"
 ?  "                     NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU    PRZYCHÓD   ROZCHÓD   NIEDOBORY   NADWYŻKI",spec(P_SUPOFF)+"  SPISUJĄCEGO"
 ?  "───┴────────────────┴───────────────────────┴────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴────────────────────",spec(P_8LPI)
+#undef qqout(x)
+#undef wqq(x)
 do while lp<=min(ark*30,ile)
 ? str(lp,3)+"|"+tran(INDEX,"@R "+ INDEXPIC )+"|"+LEFT(INDX_MAT->NAZWA,23)+"|"+INDX_MAT->jM+"|          |"+if(sflag,D_ILOUT(stan),space(10))+"|"+ostp(@DOP)+"|"+ostr(@DOR)+"|          |          |"
 ? "   |"
@@ -1441,6 +1449,8 @@ do while lp<=min(ark*30,ile)
 ?  "   │              │                       │    │",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"│",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"├──────────┬──────────┼──────────┬──────────┤"
 ?  "    INDEKS SWW     NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU    PRZYCHÓD   ROZCHÓD   NIEDOBORY   NADWYŻKI",spec(P_SUPOFF)+"  SPISUJĄCEGO"
 ?  "───┴──────────────┴───────────────────────┴────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────────────────",spec(P_8LPI)
+#undef qqout(x)
+#undef wqq(x)
 do while lp<=min(ark*30,ile)
 ? str(lp,3)+"|"+tran(INDEX,"@R "+ INDEXPIC )+"|"+LEFT(INDX_MAT->NAZWA,23)+"|"+INDX_MAT->jM+"|          |"+if(sflag,D_ILOUT(stan),space(10))+"|"+ostp(@DOP)+"|"+ostr(@DOR)+"|          |          |"
 ? "   |              |"+pad(substr(INDX_MAT->NAZWA,24),23)+"|    |          |"+if(sflag,D_WAOUT(stan),space(10))+"|"+dop+"|"+dor+"|          |          |"
@@ -1453,6 +1463,8 @@ do while lp<=min(ark*30,ile)
 ?  "   |      |                       |    |",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"|",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"|----------+----------|----------+----------|"
 ?  "      SWW  NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU    PRZYCHÓD   ROZCHÓD   NIEDOBORY   NADWYŻKI",spec(P_SUPOFF)+"  SPISUJĄCEGO"
 ?  "___|______|_______________________|____|__________|__________|__________|__________|__________|__________|______________________________",spec(P_8LPI)
+#undef qqout(x)
+#undef wqq(x)
 do while lp<=min(ark*30,ile)
 ? str(lp,3)+"|"+tran(INDEX,"@R "+ INDEXPIC )+"|"+LEFT(INDX_MAT->NAZWA,23)+"|"+INDX_MAT->jM+"|          |"+if(sflag,D_ILOUT(stan),space(10))+"|"+ostp(@DOP)+"|"+ostr(@DOR)+"|          |          |"
 ? padl(trim(indx_mat->sww),10)+"|"+pad(substr(INDX_MAT->NAZWA,24),23)+"|    |          |"+if(sflag,D_WAOUT(stan),space(10))+"|"+dop+"|"+dor+"|          |          |"
@@ -1463,6 +1475,8 @@ do while lp<=min(ark*30,ile)
 ?  "   │            │                       │    │",spec(P_SUPON)+"W DNIU    ",spec(P_SUPOFF)+"│",spec(P_SUPON)+"KARTOTEKI ",spec(P_SUPOFF)+"├──────────┬──────────┼──────────┬──────────┤"
 ?  "    INDEKS SWW   NAZWA                        ",spec(P_SUPON)+"SPISU      MAGAZYNU    PRZYCHÓD   ROZCHÓD   NIEDOBORY   NADWYŻKI",spec(P_SUPOFF)+"  SPISUJĄCEGO"
 ?  "───┴────────────┴───────────────────────┴────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴────────────────────────",spec(P_8LPI)
+#undef qqout
+#undef wqq
 #ifndef A_INOWA
 ?? spec(P_SUPON)
 #endif
@@ -1487,7 +1501,7 @@ if sflag .and. lp>ile
 ?? space(57),strpic(wat,12,A_ZAOKR,"@E ",.f.)
 endif
 ? "Podpis osoby odpowiedzialnej materialnie                                Podpisy zespołu spisującego"
-?? spec(P_6LPI+ccpi(4)+chr(13)+"")
+?? spec(P_6LPI+ccpi(4)+chr(13)+chr(10))
 if lp>ile
    break
 endif
@@ -1554,7 +1568,7 @@ memvar operator,mag_biez
 field haslo_spec,magazyn,magazynier
     local m,txt
       @ p,0
-      @ p,0 SAY "Podaj hasło:"
+      @ p,0 SAY "Podaj hasło:" UNICODE
        txt:=""
     set cursor on
   do while 0<(m:=INkey(0)) .and. m#13
@@ -1581,7 +1595,7 @@ field haslo_spec,magazyn,magazynier
    XSELECT OBSLUGA READONLY
        LOCATE FOR EvaldB({|txt,operator|mag_biez==magazyn .and. Trim(operator)==Trim(magazynier) .and. lower(txt)==TRIM(A_DECRYPT(haslo_spec))},txt,operator)
        IF EOF()
-          ? "złe hasło ..."
+          ? hb_utf8ToStr("złe hasło ...")
       use
       inkey(2)
       break

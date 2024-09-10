@@ -43,6 +43,10 @@ if sc#0
   quit
 endif
 
+a:=hb_UTF8ToStr(a)
+f:=hb_UTF8ToStr(f)
+fa:=hb_UTF8ToStr(fa)
+
 public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_a:=fa
 
 #ifdef __HARBOUR__
@@ -51,6 +55,12 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
   SET(_SET_LANGUAGE,'PL')
   REQUEST HB_CODEPAGE_PL852M
   REQUEST HB_CODEPAGE_UTF8MD
+#ifdef __PLATFORM__DOS
+  SET(_SET_CODEPAGE, PC852 )
+#else  
+  SET(_SET_CODEPAGE,'UTF8MD')
+#endif
+  SET(_SET_DBCODEPAGE, PC852 )
   #ifdef PLWIN
    request hb_translate
    hb_gtInfo( HB_GTI_FONTNAME , "Lucida Console" )
@@ -61,25 +71,16 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
    SetCursor( 0 )
    hb_gtInfo( HB_GTI_CLOSABLE, .t. )
    hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
-   SET(_SET_CODEPAGE,'UTF8MD')
-/*
-    #ifdef PC852
-     HB_CDPSELECT(PC852)
-    #else
-     REQUEST HB_CODEPAGE_PLWIN
-     HB_CDPSELECT('PLWIN')
-    #endif
-*/
-  #else
-   SET(_SET_CODEPAGE,'UTF8MD')
-  #endif
-   SET(_SET_DBCODEPAGE,PC852)
-#ifdef __PLATFORM__WINDOWS
-   hb_Run('chcp 65001 > nul')
-   hb_SetTermCP( 'UTF8MD')
-#else
-   hb_SetTermCP( 'UTF8MD')
-#endif
+  #else 
+   #ifdef __PLATFORM__WINDOWS
+      hb_Run('chcp 65001 > nul')
+      hb_SetTermCP( 'UTF8MD')
+   #elseif __PLATFORM__UNIX
+      hb_SetTermCP( 'UTF8MD')
+   #elseif __PLATFORM__DOS
+      hb_SetTermCP( PC852 )
+   #endif
+ #endif
    //SET(_SET_DEBUG, .t.)
 #ifdef A_ADS
    #ifdef __PLATFORM__WINDOWS
@@ -198,9 +199,9 @@ CLEAR screen
 @ 22,0 say padc(os(),maxcol())
 #endif
 #ifdef A_DEMO
-@ 23,0 say padc(IF(DTOS(date())<A_DEMO,"NA OKRES WDROŻENIOWY","DLA CELÓW DEMONSTRACYJNYCH"),maxcol())
+@ 23,0 say padc(hb_UTF8ToStr(IF(DTOS(date())<A_DEMO,"NA OKRES WDROŻENIOWY","DLA CELÓW DEMONSTRACYJNYCH")),maxcol())
 #endif
-@ 18,0 say padc("PROSZĘ CHWILĘ POCZEKAĆ !",maxcol()) color "*"+setcolor()
+@ 18,0 say padc(hb_UTF8ToStr("PROSZĘ CHWILĘ POCZEKAĆ !"),maxcol()) color "*"+setcolor()
 #ifdef A_MYSZ
 sysint(51,0)
 #else
@@ -252,7 +253,7 @@ static s:=0,ee:=NIL
 
 
 // used below
-#define NTRIM(n)    ( LTrim(Str(n)) )
+
   ErrorMessage(e,@cMessage)
   ? cMessage
   ?
@@ -263,7 +264,7 @@ static s:=0,ee:=NIL
   ? "Stos: "
   i := 2
   while ( !Empty(ProcName(i)) )
-    ?? Trim(ProcName(i))+"(" + NTRIM(ProcLine(i)) + "), "
+    ?? Trim(ProcName(i))+"(" + hb_ntos(ProcLine(i)) + "), "
     i++
   end
   ?
@@ -288,11 +289,11 @@ static s:=0,ee:=NIL
   elseIf ( e:genCode == EG_OPEN .OR. e:genCode == EG_CREATE).AND. e:osCode == 55
    __Run( "Echo > Nul")
    //Return (.t.)
-    e:description := 'Błąd sieci MS-Windows, wybierz "spróbuj"...'
+    e:description := hb_UTF8ToStr('Błąd sieci MS-Windows, wybierz "spróbuj"...')
 #endif
 
   elseif ( e:genCode == EG_DATAWIDTH )
-    e:description := "WYNIK NIE MIEŚCI SIĘ W POLU BAZY DANYCH !!!;Istnieje duże prawdopodobieństwo, że nastąpiło rozkojarzenie danych."
+    e:description := hb_UTF8ToStr("WYNIK NIE MIEŚCI SIĘ W POLU BAZY DANYCH !!!;Istnieje duże prawdopodobieństwo, że nastąpiło rozkojarzenie danych.")
 
   elseif ( e:genCode == EG_LOCK )
 #ifndef NONTXERR
@@ -308,7 +309,7 @@ static s:=0,ee:=NIL
   tone(130,5)
   clear typeahead
   #endif
-       ALARM("UWAGA SIEĆ: Nie potrafię uzyskać prawa zapisu do skorowidza. Prawdopodobnie zablokowany przez innego użytkownika. Sprawdź, kto to jest i dlaczego wisi. Próbuj aż do skutku! Przerwanie programu w takiej sytuacji nie jest bezpieczne dla danych.;Naciśnij Enter aby ponowić próbę.")
+       ALARM(hb_UTF8ToStr("UWAGA SIEĆ: Nie potrafię uzyskać prawa zapisu do skorowidza. Prawdopodobnie zablokowany przez innego użytkownika. Sprawdź, kto to jest i dlaczego wisi. Próbuj aż do skutku! Przerwanie programu w takiej sytuacji nie jest bezpieczne dla danych.;Naciśnij Enter aby ponowić próbę."))
     endif
     s:=seconds()
 #endif
@@ -316,28 +317,28 @@ static s:=0,ee:=NIL
     return .t.
 
   elseif ( e:genCode == EG_APPENDLOCK )
-    e:description := "Nie potrafę dopisać nowego rekordu do bazy "+alias()+";Jest zablokowana przez innego użytkownika."
+    e:description := hb_UTF8ToStr("Nie potrafę dopisać nowego rekordu do bazy "+alias()+";Jest zablokowana przez innego użytkownika.")
     //e:canDefault:=.f.
     //neterr(.t.)
 
 
   elseif ( e:osCode = 32 )
-    e:description := "Nie mam dostępu do zbioru.;Jest zablokowany przez inny program."
+    e:description := hb_UTF8ToStr("Nie mam dostępu do zbioru.;Jest zablokowany przez inny program.")
     //e:canDefault:=.f.
     //neterr(.t.)
 
 
   elseif ( e:osCode > 32 )
-    e:description := "Nie mam dostępu do zbioru.;Prawdopodobnie awaria sieci."
+    e:description := hb_UTF8ToStr("Nie mam dostępu do zbioru.;Prawdopodobnie awaria sieci.")
     //e:canDefault:=.f.
     //neterr(.t.)
 
   elseif ( e:osCode == 8 )
-    e:description := 'Za mało miejsca na dysku.;Nie potrafię zapisać zbioru'
+    e:description := hb_UTF8ToStr('Za mało miejsca na dysku.;Nie potrafię zapisać zbioru')
     //e:canDefault:=.f.
 
   elseif ( e:osCode == 4 )
-    e:description := 'Za mały limit otwartych zbiorów.;Program nie uruchomiony za pomocą właściwego pliku "BAT", lub;za mała deklaracja ilości zbiorów w sieci, lub;za mało zadeklarowanych "FILES" w CONFIG.SYS, lub;za mało zadeklarowanych zbiorów w "SET CLIPPER=Fxx" w AUTOEXEC.BAT;wymagania programu: '+A_FILELIMIT+'.;Zbiór:'
+    e:description := hb_UTF8ToStr('Za mały limit otwartych zbiorów.;Program nie uruchomiony za pomocą właściwego pliku "BAT", lub;za mała deklaracja ilości zbiorów w sieci, lub;za mało zadeklarowanych "FILES" w CONFIG.SYS, lub;za mało zadeklarowanych zbiorów w "SET CLIPPER=Fxx" w AUTOEXEC.BAT;wymagania programu: '+A_FILELIMIT+'.;Zbiór:')
     //e:canDefault:=.f.
 
   elseif ( e:genCode == EG_PRINT )
@@ -352,10 +353,10 @@ static s:=0,ee:=NIL
   clear typeahead
   #endif
 #ifdef A_LAN
-  nChoice:=alarm('Drukarka nie jest gotowa. Sprawdź, czy jest "On line".;'+;
+  nChoice:=alarm(hb_UTF8ToStr('Drukarka nie jest gotowa. Sprawdź, czy jest "On line".;'+;
       'Jeżeli skierujesz wydruk do zbioru, to możesz go potem;'+;
-      'wydrukować za pomoca komendy PRINT.',;
-      {"Spróbuj","Przerwij","Druk do zbioru"})
+      'wydrukować za pomoca komendy PRINT.'),;
+      {hb_UTF8ToStr("Spróbuj"),"Przerwij","Druk do zbioru"})
       if nChoice > 2
          f:=set(_SET_DEFAULT)
          h:=fcreateu(@f)
@@ -370,10 +371,10 @@ static s:=0,ee:=NIL
       endif
 #else
   f:=left(procname(i),8)+".PRN"
-  nChoice:=alarm('Drukarka nie jest gotowa. Sprawdź, czy jest "On line".;'+;
+  nChoice:=alarm(hb_UTF8ToStr('Drukarka nie jest gotowa. Sprawdź, czy jest "On line".;'+;
       'Jeżeli skierujesz wydruk do zbioru, to możesz go potem;'+;
-      'wydrukować za pomoca komendy :;PRINT '+set(_SET_DEFAULT)+f,;
-      {"Spróbuj","Przerwij","Druk do zbioru"})
+      'wydrukować za pomoca komendy :;PRINT ')+set(_SET_DEFAULT)+f,;
+      {hb_UTF8ToStr("Spróbuj"),"Przerwij","Druk do zbioru"})
 #endif
   do case
     case nChoice = 2 ; SET PRINTER TO ;ee:=NIL; BREAK(e)
@@ -385,7 +386,7 @@ static s:=0,ee:=NIL
 #ifdef A_ADS
   elseif  e:subsystem = 'ADS' .and. e:subcode=7041 .and. file("indeks.dbf")
  #ifndef __PLATFORM__LINUX
-          AdsRegCallBack( {|nPercent|dispout(replicate( "▒", int(npercent/100*(f[4]-f[2]-5))-(i-f[2]))),message(1),i:=col(),dispout(str(nPercent,3)+'%'),setpos(row(),i),.f.}  )
+          AdsRegCallBack( {|nPercent|dispout(replicate( hb_UTF8ToStr("▒"), int(npercent/100*(f[4]-f[2]-5))-(i-f[2]))),message(1),i:=col(),dispout(str(nPercent,3)+'%'),setpos(row(),i),.f.}  )
  #endif
 
     cMessage:=lower(alias())
@@ -418,9 +419,9 @@ static s:=0,ee:=NIL
  #endif
           c:=trim(indeks->for)
           if empty(c)
-             ordCondSet(,,,,{||dispout("▒"),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
+             ordCondSet(,,,,{||dispout(hb_UTF8ToStr("▒")),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
           else
-             ordCondSet( expand(c),,,,{||dispout("▒"),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
+             ordCondSet( expand(c),,,,{||dispout(hb_UTF8ToStr("▒")),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
           endif
           i:=f[2]
           //a:=strtran(expand(a),'UPP(','UPPER(')
@@ -457,7 +458,7 @@ static s:=0,ee:=NIL
 #ifndef SIMPLE
         clear typeahead
 #endif
-        alarm("Uszkodzony skorowidz "+e:filename+" został usunięty;Proszę uruchomić program jeszcze raz.")
+        alarm("Uszkodzony skorowidz "+e:filename+hb_UTF8ToStr(" został usunięty;Proszę uruchomić program jeszcze raz."))
         endif
         errorinhandler()
     endif
@@ -552,7 +553,7 @@ static s:=0,ee:=NIL
           if empty(c)
              ordCondSet(,,,,{||dispout("▒"),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
           else
-             ordCondSet( expand(c),{||&c},,,{||dispout("▒"),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
+             ordCondSet( expand(c),{||&c},,,{||dispout(hb_UTF8ToStr("▒")),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
           endif
  #endif
  #ifdef A_ADS
@@ -562,7 +563,7 @@ static s:=0,ee:=NIL
           AdsRegCallBack( {|nPercent|outerr(replicate(".",nPercent/2-i),i:=nPercent/2,.f.}  )
   #else
           i:=f[2]
-          AdsRegCallBack( {|nPercent|dispout(replicate( "▒", int(npercent/100*(f[4]-f[2]-5))-(i-f[2]))),message(1),i:=col(),dispout(str(nPercent,3)+'%'),setpos(row(),i),.f.}  )
+          AdsRegCallBack( {|nPercent|dispout(replicate( hb_UTF8ToStr("▒"), int(npercent/100*(f[4]-f[2]-5))-(i-f[2]))),message(1),i:=col(),dispout(str(nPercent,3)+'%'),setpos(row(),i),.f.}  )
   #endif
 
   #ifdef A_CDX
@@ -659,7 +660,7 @@ static s:=0,ee:=NIL
 #else
           t:=MESSAGE("Odtwarzanie skorowidza "+expand(d)+", baza: "+expand(b)+".dbf, klucz: "+expand(a)+";.")
           setpos(t[3]-1,t[2]+1)
-          ordCondSet( expand(c),if(empty(c),,{||&c}),,,{||dispout("▒"),message(1),.t.},int(1+lastrec()/(t[4]-t[2]-1)),recno(),,,,indeks->descend)
+          ordCondSet( expand(c),if(empty(c),,{||&c}),,,{||dispout(hb_UTF8ToStr("▒")),message(1),.t.},int(1+lastrec()/(t[4]-t[2]-1)),recno(),,,,indeks->descend)
 #endif
 #ifdef IndexkeY
           ordCreate(e:filename,,strtran(expand(a),'UPP(','UPPER('),{||&a},indeks->unique)
@@ -746,14 +747,13 @@ static s:=0,ee:=NIL
 
 
 // used below
-//#define NTRIM(n)    ( LTrim(Str(n)) )
 
   ? cMessage
   ?
   ? 'Stos: '
   i := 2
   while ( !Empty(ProcName(i)) )
-    ?? Trim(ProcName(i)) + "(" + NTRIM(ProcLine(i)) + "), "
+    ?? Trim(ProcName(i)) + "(" + hb_ntos(ProcLine(i)) + "), "
     i++
   end
   ?
@@ -773,7 +773,7 @@ static proc ErrorMessage(e,cMessage,aOptions)
 
 if ""=cMessage
   // start error message
-  cMessage := if( e:severity > ES_WARNING, "Błąd ", "Uwaga " )
+  cMessage := if( e:severity > ES_WARNING, hb_UTF8ToStr("Błąd "), "Uwaga " )
 
   // add subsystem name if available
   if ( ValType(e:subsystem) $ "MC" )
@@ -783,7 +783,7 @@ if ""=cMessage
 
   // add subsystem's error code if available
   if ( ValType(e:subCode) == "N" )
-    cMessage += ("/" + NTRIM(e:subCode))
+    cMessage += ("/" + hb_ntos(e:subCode))
   end
 
 
@@ -807,7 +807,7 @@ if ""=cMessage
   end
 
   if ( !Empty(e:osCode) )
-    cMessage +=  ";(DOS Error " + NTRIM(e:osCode) + ")"
+    cMessage +=  ";(DOS Error " + hb_ntos(e:osCode) + ")"
   end
 
 endif
@@ -816,13 +816,13 @@ endif
   aoptions:={}
 
   if (e:canRetry)
-    AAdd(aOptions, "Spróbuj")
+    AAdd(aOptions, hb_UTF8ToStr("Spróbuj"))
   end
 
 
   if (e:severity > ES_WARNING )
      if (e:canDefault)
-       AAdd(aOptions, "Omiń")
+       AAdd(aOptions, hb_UTF8ToStr("Omiń"))
      end
      aadd(aoptions,"Przerwij")
      aadd(aoptions,"Koniec !")
@@ -937,7 +937,7 @@ do while !(al)->(if(empty(rec),dbrlock(),dbrlock(rec)))
   clear typeahead
   #endif
       s:=.t.
-      alarm("UWAGA SIEĆ: "+IF(M=NIL,"Nie potrafię uzyskać wyłącznego prawa zapisu.",M)+";BAZA: "+alias(al),if(l=.t.,{"Próbuj","Rezygnuj","Omiń"},{"Próbuj","Rezygnuj"}),@e,2,@s)
+      alarm(hb_UTF8ToStr("UWAGA SIEĆ: ")+IF(M=NIL,hb_UTF8ToStr("Nie potrafię uzyskać wyłącznego prawa zapisu."),M)+";BAZA: "+alias(al),if(l=.t.,{hb_UTF8ToStr("Próbuj"),"Rezygnuj",hb_UTF8ToStr("Omiń")},{hb_UTF8ToStr("Próbuj"),"Rezygnuj"}),@e,2,@s)
       if e>1
 #ifndef SIMPLE
          window(s)
@@ -959,7 +959,7 @@ do while !(al)->(if(empty(rec),dbrlock(),dbrlock(rec)))
 #endif      
 #else
       @ s[3]-1,s[2]+1 say padl("[Esc] - rezygnacja",s[4]-s[2]-2)
-      @ s[3]-1,s[2]+2 say "Próba..."
+      @ s[3]-1,s[2]+2 say "Próba..." UNICODE
    elseif inkey(.6-seconds()%.5)#0
       window(s)
       s:=NIL
@@ -995,7 +995,7 @@ do while !(al)->(flock())
   clear typeahead
   #endif
       s:=.t.
-      alarm("UWAGA SIEĆ: "+IF(M=NIL,"Nie potrafię uzyskać wyłącznego prawa zapisu.",M)+";BAZA: "+alias(al),if(l=.t.,{"Próbuj","Rezygnuj"},{"Próbuj","Rezygnuj","Omiń"}),@e,2,@s)
+      alarm(hb_UTF8ToStr("UWAGA SIEĆ: ")+IF(M=NIL,hb_UTF8ToStr("Nie potrafię uzyskać wyłącznego prawa zapisu."),M)+";BAZA: "+alias(al),if(l=.t.,{hb_UTF8ToStr("Próbuj"),"Rezygnuj"},{hb_UTF8ToStr("Próbuj"),"Rezygnuj",hb_UTF8ToStr("Omiń")}),@e,2,@s)
       if e>1
 #ifndef SIMPLE
          window(s)
@@ -1014,7 +1014,7 @@ do while !(al)->(flock())
       ?? chr(8)+message(1)
 #else
       @ s[3]-1,s[2]+1 say padl("[Esc] - rezygnacja",s[4]-s[2]-2)
-      @ s[3]-1,s[2]+2 say "Próba..."
+      @ s[3]-1,s[2]+2 say "Próba..." UNICODE
    elseif inkey(.6-seconds()%.5)#0// .or. seconds()>w
       window(s)
       s:=NIL

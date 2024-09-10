@@ -288,7 +288,7 @@ static func uwagi2odb(uwagi)
           next
           l:=len(a)
           if l<2
-               alarm('Odbiorca nie daje się podzielić na nazwę i adres, wstaw średnik:;'+uwagi)
+               alarm(hb_UTF8ToStr('Odbiorca nie daje się podzielić na nazwę i adres, wstaw średnik:;')+uwagi)
           elseif l<3
                s:=a[1]
                a:=adres2arr(a[2])
@@ -312,7 +312,7 @@ static func adres2arr(adres)
      endif
      aeval(a,{|x,i|a[i]:=alltrim(x)})
      if len(a)<>2
-          alarm('Adres nie daje się podzielić na dwie części, wstaw przecinek:;'+adres)
+          alarm(hb_UTF8ToStr('Adres nie daje się podzielić na dwie części, wstaw przecinek:;')+adres)
      endif
 return a
 
@@ -357,7 +357,7 @@ local element, node, s
      DEFAULT filen TO str(year(FIELD->Data)%100,2)+strtran(trim(FIELD->smb_dow+FIELD->nr_dowodu),' ','0')+".xml"
 
      if tree<>NIL
-          alarm("Poprzedna faktura nie zakończona")
+          alarm(hb_UTF8ToStr("Poprzedna faktura nie zakończona"))
           break
           return nil
      endif

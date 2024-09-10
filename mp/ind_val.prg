@@ -1,5 +1,8 @@
 #include "inkey.ch"
 #include "getexitm.ch"
+
+#define I hb_UTF8ToStr("│")
+
 #ifndef A_FA
 #ifdef A_WA
 #define cenA_zaK cena_przy
@@ -192,7 +195,7 @@ waga:=subs(out,3,1)>'0'.or.left(out,2)>'05'
 zawiesz:=subs(out,3,1)>'0'
 cotw:=subs(out,4,1)>'0'
 
-@ w[1]+1,w[2]+2 SAY "Towar na wagę:" GET waga picture "Y"
+@ w[1]+1,w[2]+2 SAY "Towar na wagę:" UNICODE GET waga picture "Y"
 @ w[1]+2,w[2]+2 SAY "   Zawieszony:" GET zawiesz picture "Y"
 @ w[1]+3,w[2]+2 SAY " Cena otwarta:" GET cotw picture "Y"
 read
@@ -282,7 +285,7 @@ endif
   scr= savescreen(9,1,22,78)
   stos:={}
   @ 9,1,22,78 BOX UNICODE '╔═╗║╝═╚║' color 'RG+/BG'
-  @ 9,3 SAY 'Wpisywanie nowej, poprawianie lub kasowanie starej Karty Materiału' color 'RG+/BG'
+  @ 9,3 SAY 'Wpisywanie nowej, poprawianie lub kasowanie starej Karty Materiału' UNICODE color 'RG+/BG'
   SET COLOR TO BG+/B
   SCROLL(10,2,21,77,0)
 
@@ -342,7 +345,7 @@ endif
 
       @ 17,2   say nr_mag+" Data:"
       @ 18,2   say "Stan:"
-      @ 19,2   say WANAZ+":"
+      @ 19,2   say WANAZ+":" UNICODE
       @ 20,2   SAY "Cena:"
       @ 17,12  SAY data_zmian
       @ 18,11  SAY smiaR(stan,data_zmian)
@@ -548,7 +551,7 @@ endif
     getlist[1]:postblock:={|x,n|varput(getlist,'kna',left(n,16),.t.),.t.}
     @ 12,3 SAY 'Kasa:' GET kna
     SAYL 'Gr:' GET kgr PICTURE "@K" VALID {|e|e:=NIL,aczojs(grupy,@kgr,@e) .and. (varput(getlist,'pv',subs(grupy[e],17,2),.t.),.t.)}
-    SAYL 'Ilość:' GET kwa VALID aczojs({'3 - cena ustawiona otwarta  ','2 - cena ustawiona zamknięta','1 - cena zawsze wprowadzana','0 - zablokowane'})
+    SAYL 'Ilość:' UNICODE GET kwa VALID aczojs({'3 - cena ustawiona otwarta  ',hb_UTF8ToStr('2 - cena ustawiona zamknięta'),'1 - cena zawsze wprowadzana','0 - zablokowane'})
     SAYL 'K:' Get ksh VALID aczojs({'0','1','2'})
     SAYL 'Klaw:' GET kkl
 #endif
@@ -558,7 +561,7 @@ endif
 #ifdef A_KODVAL
     atail(getlist):postblock:=A_KODVAL
 #else
-    atail(getlist):postblock:={|g,y|y:=UpP(trim(kw)),!g:changed.or.empty(y).or.len(y)=10.or.SUROWCE->(szukam({,,,,1,len(y),'Wybierz '+A_KODY,{||KoD+'│'+nazwa},,y}).and.(kw:=KoD)='')}
+    atail(getlist):postblock:={|g,y|y:=UpP(trim(kw)),!g:changed.or.empty(y).or.len(y)=10.or.SUROWCE->(szukam({,,,,1,len(y),'Wybierz '+A_KODY,{||KoD+I+nazwa},,y}).and.(kw:=KoD)='')}
 #endif
 #endif
 #endif
@@ -622,17 +625,17 @@ endif
  #endif
  #ifdef A_CENVAT
     sayl "Cena zbytu:" get ce picture WAPIC
-    sayl "Procent VAT:" get pv picture "@K XX" valid {|g|pv:=lower(pv),if(pv<="9",pv:=str(val(pv),2),),(ascan(stawkizby,pv)#0 .or. alarm('NIEWŁAŚCIWY PROCENT VAT!',,3,3)=NIL).and.(!g:changed.or.(kibord(chr(5)+chr(24)),.t.))}
+    sayl "Procent VAT:" get pv picture "@K XX" valid {|g|pv:=lower(pv),if(pv<="9",pv:=str(val(pv),2),),(ascan(stawkizby,pv)#0 .or. alarm(hb_UTF8ToStr('NIEWŁAŚCIWY PROCENT VAT!'),,3,3)=NIL).and.(!g:changed.or.(kibord(chr(5)+chr(24)),.t.))}
  #else
 #define D_BPOS (setpos(row(),53),devout(tran(WzVAT(1,ce,val(pv),.f.),WAPICT)),.t.)
     sayl "Cena zbytu:" get ce picture WAPIC valid D_BPOS
-    sayl "Procent VAT:" get pv picture "@K XX" valid {|g|pv:=lower(pv),if(pv<="9",pv:=str(val(pv),2),),(ascan(stawkizby,pv)#0 .or. alarm('NIEWŁAŚCIWY PROCENT VAT!',,3,3)=NIL).and.D_BPOS}
+    sayl "Procent VAT:" get pv picture "@K XX" valid {|g|pv:=lower(pv),if(pv<="9",pv:=str(val(pv),2),),(ascan(stawkizby,pv)#0 .or. alarm(hb_UTF8ToStr('NIEWŁAŚCIWY PROCENT VAT!'),,3,3)=NIL).and.D_BPOS}
     sayl "Brutto:"
     #undef D_BPOS
     @ row(),53 SAY tran(WzVAT(1,ce,val(pv),.f.),WAPICT)
  #endif
  #ifdef A_PROCMAR
-    sayl "Marża:" get pm picture "@K ###"
+    sayl "Marża:" UNICODE get pm picture "@K ###"
     if STANY->cenA_zaK<>0
       if round(pm - eval(memvar->liczm,STANY->cenA_zaK,ce,val(pv)) ,0 )<>0
          SAYL '%' COLOR 'R+/B'
@@ -742,10 +745,10 @@ endif
 #else
     SAYl 'Miara:' GET j_m picture "@K" VALID JM(@j_m,@j_o,@p,row())
 #ifdef A_JMO
-    sayl "(*" get p picture "@K ######.###" valid P#0 .and. (p=1 .or. j_m#'szt'.or.(j_o:="X"+str(p,3),.t.)).or.NIL=alarm("PRZELICZNIK MUSI BYĆ WIĘKSZY OD ZERA !",,5,3)
+    sayl "(*" get p picture "@K ######.###" valid P#0 .and. (p=1 .or. j_m#'szt'.or.(j_o:="X"+str(p,3),.t.)).or.NIL=alarm(hb_UTF8ToStr("PRZELICZNIK MUSI BYĆ WIĘKSZY OD ZERA !"),,5,3)
 #else
     sayl "(*" get p picture "@K ######.###" valid ;
-        P#0 .or. NIL=alarm("PRZELICZNIK MUSI BYĆ WIĘKSZY OD ZERA !",,5,3)
+        P#0 .or. NIL=alarm(hb_UTF8ToStr("PRZELICZNIK MUSI BYĆ WIĘKSZY OD ZERA !"),,5,3)
 #endif
     SAYl '= 1' GET j_o picture "@K!" VALID !empty(j_o) .or. ACZOJS(JMIAR)
     sayl ")"
@@ -765,7 +768,7 @@ endif
     a:=select()
     sel('SUROWCE','SUR_KOD')
     SAYl 'Dieta:'
-    GETl id picture "@K! "+replicate("X",len(surowce->skladnik)) VALID {|g|!g:changed .or. SUROWCE->(szukam({,,,,1,len(trim(id)),'Surowce z Diety',{||field->skladnik+"│"+nazwa+"│"+field->jmag+' ='+str(field->przel)+' '+field->jedn},{|_skey,_s D_MYSZ|surinfo(_skey,_s,@id,ni D_MYSZ)} ,UpP(Trim(id))}).and.(setpos(g:row,g:col+len(field->skladnik)+1),dispout(left(nazwa,78-col())),.t.) )}
+    GETl id picture "@K! "+replicate("X",len(surowce->skladnik)) VALID {|g|!g:changed .or. SUROWCE->(szukam({,,,,1,len(trim(id)),'Surowce z Diety',{||field->skladnik+I+nazwa+I+field->jmag+' ='+str(field->przel)+' '+field->jedn},{|_skey,_s D_MYSZ|surinfo(_skey,_s,@id,ni D_MYSZ)} ,UpP(Trim(id))}).and.(setpos(g:row,g:col+len(field->skladnik)+1),dispout(left(nazwa,78-col())),.t.) )}
     if dbseek(left(id,len(field->skladnik)))
        sayl left(nazwa,78-col())
     endif
@@ -796,7 +799,7 @@ endif
 #endif
 #ifdef A_TRWALOSC
     wa:=waznosc
-    @ 15,3  say "Ważność" GET wa picture "@K ###"
+    @ 15,3  say "Ważność" UNICODE GET wa picture "@K ###"
     @ 15,15 say "dni" GET uw picture "@KS58" send cargo:=.t.
 #else
     @ 15,3 GET uw picture "@KS73" send cargo:=.t.
@@ -826,7 +829,7 @@ endif
 #ifdef A_LAN
   if !lock
     setpos(23,30)
-    alarm("POPRAWIANIE NIEMOŻLIWE DO CZASU ZWOLNIENIA PRZEZ INNYCH UŻYTKOWNIKÓW SIECI",,9999,3)
+    alarm(hb_UTF8ToStr("POPRAWIANIE NIEMOŻLIWE DO CZASU ZWOLNIENIA PRZEZ INNYCH UŻYTKOWNIKÓW SIECI"),,9999,3)
     break
   endif
 #endif
@@ -894,7 +897,7 @@ endif
       txt=nr_mag
     enddo
     if !eof()
-      alarm("TEGO MATERIAŁU NIE MOŻNA SKASOWAĆ;RUCHY NA MAGAZYNIE;"+MAGAZYNY[max(1,ascan(magazyny,NR_MAG))],,,3)
+      alarm(hb_UTF8ToStr("TEGO MATERIAŁU NIE MOŻNA SKASOWAĆ;RUCHY NA MAGAZYNIE;")+MAGAZYNY[max(1,ascan(magazyny,NR_MAG))],,,3)
     ELSE
       SELECT STANY
       seek indx_mat->index
@@ -914,7 +917,7 @@ endif
       IF INDX_MAT->INDEX=INDEX
 #else
     if dbseek(indx_mat->nr_mag+indx_mat->index)
-      alarm("TEGO MATERIAŁU NIE MOŻNA SKASOWAĆ;RUCHY NA MAGAZYNIE;"+MAGAZYNY[max(1,ascan(magazyny,NR_MAG))],,,3)
+      alarm(hb_UTF8ToStr("TEGO MATERIAŁU NIE MOŻNA SKASOWAĆ;RUCHY NA MAGAZYNIE;")+MAGAZYNY[max(1,ascan(magazyny,NR_MAG))],,,3)
     else
       select STANY
 #ifdef A_WA
@@ -923,8 +926,8 @@ endif
       IF STAN#0
 #endif
 #endif
-        alarm("TEGO MATERIAŁU NIE MOŻNA SKASOWAĆ;STAN NA MAGAZYNIE;"+MAGAZYNY[max(1,ascan(magazyny,NR_MAG))],,,3)
-      ELSEIF Tak('KASOWANIE TEGO MATERIALU',22,15,.F.,.F.)
+        alarm(hb_UTF8ToStr("TEGO MATERIAŁU NIE MOŻNA SKASOWAĆ;STAN NA MAGAZYNIE;")+MAGAZYNY[max(1,ascan(magazyny,NR_MAG))],,,3)
+      ELSEIF Tak(hb_UTF8ToStr('KASOWANIE TEGO MATERIAŁU'),22,15,.F.,.F.)
         SELECT INDX_MAT
         Rf:=.t.
         DELETE
@@ -949,7 +952,7 @@ endif
         //pos:=ascan(getlist,{|g|g:name='kw'})
         //kw:=KoD
         //loop
-        aadd(mes,message('TAKI KOD JUŻ ISTNIEJE !;'+nazwa))
+        aadd(mes,message(hb_UTF8ToStr('TAKI KOD JUŻ ISTNIEJE !;')+nazwa))
      endif
      go rcrd
   ENDIF
@@ -959,7 +962,7 @@ endif
   IF kw#KoD
      SET ORDER TO TAG INDX_KOD
      if dbseek(nm+kw)
-        alarm('TAKI KOD JUŻ ISTNIEJE !;'+nazwa,,5,3)
+        alarm(hb_UTF8ToStr('TAKI KOD JUŻ ISTNIEJE !;')+nazwa,,5,3)
         go rcrd
         pos:=ascan(getlist,{|g|g:name='kw'})
         kw:=KoD
@@ -971,7 +974,7 @@ endif
 #endif
 #endif
   if !empty(stos)
-      aadd(mes,message('Zmiany "na bazie" starej wersji karty materiału.'))
+      aadd(mes,message(hb_UTF8ToStr('Zmiany "na bazie" starej wersji karty materiału.')))
   endif
 
   IF ni # index
@@ -987,7 +990,7 @@ endif
     enddo
     if !eof()
           SELECT INDX_MAT
-          alarm('TAKI KOD MATERIAŁU JUŻ ISTNIEJE !;'+nazwa,,5,3)
+          alarm(hb_UTF8ToStr('TAKI KOD MATERIAŁU JUŻ ISTNIEJE !;')+nazwa,,5,3)
           go rcrd
           pos:=ascan(getlist,{|g|g:name='ni'})
           loop
@@ -1013,7 +1016,7 @@ endif
        set order to TAG MAIN_IND
        if dbseek(indx_mat->nr_mag+indx_mat->index)
           SELECT INDX_MAT
-          alarm('TAKI KOD MATERIAŁU JUŻ ISTNIEJE !;'+nazwa,,5,3)
+          alarm(hb_UTF8ToStr('TAKI KOD MATERIAŁU JUŻ ISTNIEJE !;')+nazwa,,5,3)
           go rcrd
           pos:=ascan(getlist,{|g|g:name='ni'})
           loop
@@ -1025,12 +1028,12 @@ endif
          IF STAN#0
 #endif
 #endif
-          alarm('TAKI KOD MATERIAŁU JUŻ ISTNIEJE !;'+nazwa,,5,3)
+          alarm(hb_UTF8ToStr('TAKI KOD MATERIAŁU JUŻ ISTNIEJE !;')+nazwa,,5,3)
           go rcrd
           pos:=ascan(getlist,{|g|g:name='ni'})
           loop
          ENDIF
-         if 2=alarm('TAKI KOD MATERIAŁU JUŻ ISTNIEJE,:;'+trim(nazwa)+";ale kartoteka jest pusta. CO ROBIĆ ?",{"Kontynuować","Zmienić kod"},1,2)
+         if 2=alarm(hb_UTF8ToStr('TAKI KOD MATERIAŁU JUŻ ISTNIEJE,:;')+trim(nazwa)+hb_UTF8ToStr(";ale kartoteka jest pusta. CO ROBIĆ ?"),{hb_UTF8ToStr("Kontynuować"),hb_UTF8ToStr("Zmienić kod")},1,2)
           go rcrd
           pos:=ascan(getlist,{|g|g:name='ni'})
           loop
@@ -1090,7 +1093,7 @@ endif
 #endif
                 tone(262,2)
                 setpos(20,40)
-                new:=alarm("CO ROBIĆ ?;( [Esc] - rezygnacja )",{"Dopisać nową","Poprawić starą"})
+                new:=alarm(hb_UTF8ToStr("CO ROBIĆ ?;( [Esc] - rezygnacja )"),{hb_UTF8ToStr("Dopisać nową"),hb_UTF8ToStr("Poprawić starą")})
 
              ENDIF
           endif
@@ -1106,7 +1109,7 @@ endif
              ENDIF
              tone(262,2)
              setpos(20,40)
-             new:=alarm("CO ROBIĆ ?;( [Esc] - rezygnacja )",{"Dopisać nową kartę materiału"})
+             new:=alarm(hb_UTF8ToStr("CO ROBIĆ ?;( [Esc] - rezygnacja )"),{hb_UTF8ToStr("Dopisać nową kartę materiału")})
           endif
           if new=0
               go rcrd
@@ -1196,7 +1199,7 @@ endif
           waznosc := wa
 #endif
         ELSE
-          alarm('TAKI KOD MATERIAŁU JUŻ ISTNIEJE !;'+nazwa,,5,3)
+          alarm(hb_UTF8ToStr('TAKI KOD MATERIAŁU JUŻ ISTNIEJE !;')+nazwa,,5,3)
           go rcrd
           pos:=ascan(getlist,{|g|g:name='ni'})
           loop
@@ -1214,13 +1217,13 @@ endif
             endif
           elseif pv#proc_vat
              clear typeahead
-             alarm("NIE MOŻESZ ZMIENIAĆ STAWKI VAT NA TOWARZE OBECNYM W KASIE !",,5,3)
+             alarm(hb_UTF8ToStr("NIE MOŻESZ ZMIENIAĆ STAWKI VAT NA TOWARZE OBECNYM W KASIE !"),,5,3)
              pv:=proc_vat
              pos:=ascan(getlist,{|g|g:name='pv'})
              loop
           elseif rodz_tow#left(rt,1)
              clear typeahead
-             alarm("NIE MOŻESZ ZMIENIAĆ STATUSU NA TOWARZE OBECNYM W KASIE !",,5,3)
+             alarm(hb_UTF8ToStr("NIE MOŻESZ ZMIENIAĆ STATUSU NA TOWARZE OBECNYM W KASIE !"),,5,3)
              rt:=rodz_tow
              pos:=ascan(getlist,{|g|g:name='rt'})
              loop
@@ -1250,14 +1253,14 @@ endif
         a:=max(da,dp)
         tone(262,2)
         setpos(20,40)
-        aadd(mes,i:=message("Zmiana obowiązuje od:;stara data:;data zakupu:;nowa data:;Esc - rezygnacja z poprawy"))
+        aadd(mes,i:=message(hb_UTF8ToStr("Zmiana obowiązuje od:;stara data:;data zakupu:;nowa data:;Esc - rezygnacja z poprawy")))
         setcolor(_snorm)
         txt:={getnew(i[3]-4,i[4]-12,{||dp}):display(),;
               getnew(i[3]-3,i[4]-12,{||max(dp,STANY->data_przy)}):display(),;
               getnew(i[3]-2,i[4]-12,{|x|if(x=NIL,a,a:=x)}):display()}
         txt[1]:preblock:=txt[2]:preblock:={|g|g:exitstate:=GE_NOEXIT,.t.}
         txt[1]:postblock:=txt[2]:postblock:={|g|if(g:exitState=GE_ENTER,g:exitState:=GE_WRITE,),.t.}
-        txt[3]:postblock:={||if(a<=DatY->d_z_mies1,(a:=DatY->d_z_mies1+1,ALARM('NIE COFAJ SIĘ DO ZAMKNIĘTEGO MIESIĄCA!',,,3),.f.),.t.)}
+        txt[3]:postblock:={||if(a<=DatY->d_z_mies1,(a:=DatY->d_z_mies1+1,ALARM(hb_UTF8ToStr('NIE COFAJ SIĘ DO ZAMKNIĘTEGO MIESIĄCA!'),,,3),.f.),.t.)}
         #ifdef A_FA
           i:=if(ce=cena.and.pv=proc_vat,1,3)
         #else
@@ -1295,7 +1298,7 @@ endif
               seek ni
               ar:={}
 #ifdef A_LAN
-              exec {||unlink:=.t.,aadd(ar,recno())} rest while index=ni .and. reclock(.f.,"NIE POTRAFIĘ ZMIENIĆ NAZWY W MAGAZYNIE "+NR_MAG,.f.,,recno())
+              exec {||unlink:=.t.,aadd(ar,recno())} rest while index=ni .and. reclock(.f.,hb_UTF8ToStr("NIE POTRAFIĘ ZMIENIĆ NAZWY W MAGAZYNIE ")+NR_MAG,.f.,,recno())
               if index=ni
                  select indx_mat
                  select stany
@@ -1561,26 +1564,26 @@ ENDCASE
 #endif
 
 #ifdef A_OLZA
-RETURN(DTOV(data)+if(data>DatY->d_z_mies1,"│","┼")+smb_dow+nr_dowodu+"/"+D_LPSTR1+"│"+nr_zlec+"│";
-  +if(NR_MAG+smb_dow$dok_rozch,"         │"+smiaR(-ilosc,9)+"│",smiaR(ilosc,9)+"│         │");
-  +str(wartosC,10,CEOKR)+if(INDX_MAT->data_POPR>DATA,"┼","│")+smiaR(s,10)+"│"+str(w,10,CEOKR))
+RETURN(DTOV(data)+hb_UTF8ToStr(if(data>DatY->d_z_mies1,"│","┼"))+smb_dow+nr_dowodu+"/"+D_LPSTR1+I+nr_zlec+I;
+  +if(NR_MAG+smb_dow$dok_rozch,"         "+I+smiaR(-ilosc,9),smiaR(ilosc,9)+I+"         ")+I;
+  +str(wartosC,10,CEOKR)+hb_UTF8ToStr(if(INDX_MAT->data_POPR>DATA,"┼","│"))+smiaR(s,10)+I+str(w,10,CEOKR))
 #else
 #ifdef A_ANKER
 #ifdef A_ZAGRODA
-dispout(DTOV(data)+if(data>DatY->d_z_mies1,"│","┼")+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+"│"+nr_zleC+"│";
-  +if(NR_MAG+smb_dow$dok_rozch,"         │"+smiaR(-ilosc,9)+"│",smiaR(ilosc,9)+"│         │");
-  +str(wartosC,10,CEOKR)+if(INDX_MAT->data_POPR>DATA,"┼","│")+smiaR(s,10)+"│"+str(w,10,CEOKR),if(year(data)<year(DatY->d_z_rok+1),'GR+/N',if(smb_dow='PA' .and. ilosc<>0,'W/R','W/N')))
+dispout(DTOV(data)+hb_UTF8ToStr(if(data>DatY->d_z_mies1,"│","┼"))+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+I+nr_zleC+I;
+  +if(NR_MAG+smb_dow$dok_rozch,"         "+I+smiaR(-ilosc,9),smiaR(ilosc,9)+I+"         ")+I;
+  +str(wartosC,10,CEOKR)+hb_UTF8ToStr(if(INDX_MAT->data_POPR>DATA,"┼","│"))+smiaR(s,10)+I+str(w,10,CEOKR),if(year(data)<year(DatY->d_z_rok+1),'GR+/N',if(smb_dow='PA' .and. ilosc<>0,'W/R','W/N')))
 RETURN('')
 #else
-dispout(DTOV(data)+if(data>DatY->d_z_mies1,"│","┼")+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+"│"+nr_zleC+"│";
-  +if(NR_MAG+smb_dow$dok_rozch,"         │"+smiaR(-ilosc,9)+"│",smiaR(ilosc,9)+"│         │");
-  +str(wartosC,10,CEOKR)+if(INDX_MAT->data_POPR>DATA,"┼","│")+smiaR(s,10)+"│"+str(w,10,CEOKR),if(year(data)<year(DatY->d_z_rok+1),'GR+/N',{'W/N','W/N','W/N','W/N','W/N','W/N','W/R'}[dow(data)]))
+dispout(DTOV(data)+hb_UTF8ToStr(if(data>DatY->d_z_mies1,"│","┼"))+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+I+nr_zleC+I;
+  +if(NR_MAG+smb_dow$dok_rozch,"         "+I+smiaR(-ilosc,9),smiaR(ilosc,9)+I+"         ")+I;
+  +str(wartosC,10,CEOKR)+hb_UTF8ToStr(if(INDX_MAT->data_POPR>DATA,"┼","│"))+smiaR(s,10)+I+str(w,10,CEOKR),if(year(data)<year(DatY->d_z_rok+1),'GR+/N',{'W/N','W/N','W/N','W/N','W/N','W/N','W/R'}[dow(data)]))
 RETURN('')
 #endif
 #else
-RETURN(DTOV(data)+if(data>DatY->d_z_mies1,"│","┼")+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+"│"+nr_zleC+"│";
-  +if(NR_MAG+smb_dow$dok_rozch,"         │"+smiaR(-ilosc,9)+"│",smiaR(ilosc,9)+"│         │");
-  +str(wartosC,10,CEOKR)+if(INDX_MAT->data_POPR>DATA,"┼","│")+smiaR(s,10)+"│"+str(w,10,CEOKR))
+RETURN(DTOV(data)+hb_UTF8ToStr(if(data>DatY->d_z_mies1,"│","┼"))+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+I+nr_zleC+I;
+  +if(NR_MAG+smb_dow$dok_rozch,"         "+I+smiaR(-ilosc,9),smiaR(ilosc,9)+I+"         ")+I;
+  +str(wartosC,10,CEOKR)+hb_UTF8ToStr(if(INDX_MAT->data_POPR>DATA,"┼","│"))+smiaR(s,10)+I+str(w,10,CEOKR))
 #endif
 #endif
 #undef smiaR
@@ -1641,7 +1644,7 @@ field data
       if se#STANY->stan
       w2:=we:=STANY->stan*(i_lam(STANY->data_zmian))->cenA
 #endif
-      alarm("UWAGA SIEĆ: ZMIENIŁ SIĘ STAN KOŃCOWY",,,3)
+      alarm(hb_UTF8ToStr("UWAGA SIEĆ: ZMIENIŁ SIĘ STAN KOŃCOWY"),,,3)
       s2:=se:=STANY->stan
       _sef:=.f.
       kibord(chr(30))
@@ -1929,10 +1932,10 @@ field data
 #endif
 #ifdef A_WA
        if _sef .and. ( ROUND(Se-S2,3)#0 .or. ROUND(we-w2,A_ZAOKR)#0) .or. _sbf .and. select()=MAIN->(select())  .and. ( ROUND(Sb-S1,3)#0 .or. ROUND(wb-w1,A_ZAOKR)#0)
-           alarm("NIE ZGADZA SIĘ STAN LUB WARTOŚĆ;PROSZĘ SPRAWDZIĆ !",,,3)
+           alarm(hb_UTF8ToStr("NIE ZGADZA SIĘ STAN LUB WARTOŚĆ;PROSZĘ SPRAWDZIĆ !"),,,3)
 #else
        if _sef .and. ROUND(Se-S2,3)#0 .or. _sbf .and. select()=MAIN->(select())  .and. ROUND(Sb-S1,3)#0
-           alarm("NIE ZGADZA SIĘ STAN;PROSZĘ SPRAWDZIĆ !",,,3)
+           alarm(hb_UTF8ToStr("NIE ZGADZA SIĘ STAN;PROSZĘ SPRAWDZIĆ !"),,,3)
 #endif
            return LASTKEY()=27
        elseif _skey=27 .or. _skey=4 .or. _skey=19

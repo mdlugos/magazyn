@@ -2,6 +2,9 @@
 #include "dm_form.ch"
 #include "inkey.ch"
 #include "getexitm.ch"
+
+#define I hb_UTF8ToStr("│")
+
 #ifdef A_ZAGRODA
   #define A_KASA
   #define D_KODY 55
@@ -250,14 +253,14 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
  #endif
   RET:=IF(ALIAS(sel:=I_LAM(if(il=NIL.and.da>STANY->data_zmian.and.STANY->stan#0,STANY->data_zmian,da)))="IND_LAM","┼","│")
 #endif
-
+ret := hb_UTF8ToStr(ret)
 #ifdef A_TRWALOSC
- #define TRWALTXT IF(WAZNOSC>0.AND.STANY->STAN>0.AND.STANY->DATA_PRZY+WAZNOSC<DA,hb_utf8chr(0x2261),IF(STANY->DATA_ZMIAN>DatY->data_gran,"■",RET))
+ #define TRWALTXT IF(WAZNOSC>0.AND.STANY->STAN>0.AND.STANY->DATA_PRZY+WAZNOSC<DA,hb_utf8chr(0x2261),IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET))
 #else
  #ifdef A_WA
-  #define TRWALTXT IF(STANY->STAN>0.AND.STANY->WARTOSC=0,"$",IF(STANY->DATA_ZMIAN>DatY->data_gran,"■",RET))
+  #define TRWALTXT IF(STANY->STAN>0.AND.STANY->WARTOSC=0,"$",IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET))
  #else
-  #define TRWALTXT IF(STANY->STAN>0.AND.indx_mat->cenA=0,"$",IF(STANY->DATA_ZMIAN>DatY->data_gran,"■",RET))
+  #define TRWALTXT IF(STANY->STAN>0.AND.indx_mat->cenA=0,"$",IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET))
  #endif
 #endif
 
@@ -300,23 +303,23 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
 
 #ifdef A_SHORTIND
  #ifdef A_FA
-  #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"■",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,9,CEOKR,"@E ",.t.)
+  #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,9,CEOKR,"@E ",.t.)
  #else
   #ifdef A_WA
-   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"■",RET)+strpic( if((D_ST)=0,STANY->cena_przy, D_WA / D_ST) D_CF8,9,CEOKR,"@E ",.t.)
+   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET)+strpic( if((D_ST)=0,STANY->cena_przy, D_WA / D_ST) D_CF8,9,CEOKR,"@E ",.t.)
   #else
-   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"■",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,9,CEOKR,"@E ",.t.)
+   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,9,CEOKR,"@E ",.t.)
   #endif
  #endif
 #else
  #ifdef A_SWW
   #ifdef A_FA
-   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"■",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
+   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
   #else
    #ifdef A_WA
-    #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"■",RET)+strpic(if((D_ST)=0,STANY->cena_przy, D_WA / D_ST) D_CF8,8,CEOKR,"@E ",.t.)
+    #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET)+strpic(if((D_ST)=0,STANY->cena_przy, D_WA / D_ST) D_CF8,8,CEOKR,"@E ",.t.)
    #else
-    #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"■",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
+    #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
    #endif
   #endif
   #ifdef A_VIEWCZAK
@@ -348,18 +351,18 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
    #define ILDEC 2
    #ifdef A_VIEWVAT
     #define OBRTXT 10
-    #define LARTXT pad(nazwA,33)+IF(""=INDX_MAT->UWAGI,{"0","│","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+KoD+ret+INDX_MAT->proc_vat
+    #define LARTXT pad(nazwA,33)+IF(""=INDX_MAT->UWAGI,{"0",I,"!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+KoD+ret+INDX_MAT->proc_vat
    #else
     #define OBRTXT 7
     #ifdef A_VIEWCZAK
-     #define LARTXT pad(nazwA,33)+IF(""=INDX_MAT->UWAGI,{"0","│","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+KoD+ret+strpic(STANY->cenA_zaK D_CF8,5,CEOKR,"@E ")
+     #define LARTXT pad(nazwA,33)+IF(""=INDX_MAT->UWAGI,{"0",I,"!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+KoD+ret+strpic(STANY->cenA_zaK D_CF8,5,CEOKR,"@E ")
     #else
      #undef nazwA
-     #define nazwA (pad(nazwa,hb_fieldlen([nazwa]))+'│'+left(indx_mat->shortname,10))
+     #define nazwA (pad(nazwa,hb_fieldlen([nazwa]))+I+left(indx_mat->shortname,10))
      #ifndef STANY
-      #define LARTXT pad(nazwA,hb_fieldlen([nazwa]))+IF(""=INDX_MAT->UWAGI,{"0","│","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
+      #define LARTXT pad(nazwA,hb_fieldlen([nazwa]))+IF(""=INDX_MAT->UWAGI,{"0",I,"!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
      #else
-      #define LARTXT pad(nazwA,hb_fieldlen([nazwa]))+IF(""=INDX_MAT->UWAGI,{"0","│","!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD
+      #define LARTXT pad(nazwA,hb_fieldlen([nazwa]))+IF(""=INDX_MAT->UWAGI,{"0",I,"!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD
       //+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
      #endif
     #endif
@@ -432,7 +435,7 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
  #endif
 #endif
 
-RETURN (sel)->(tran(index,"@R "+ INDEXPIC )+IF(indx_mat->LAMUS#0 .and. ret="│","*",ret)+;
+RETURN (sel)->(tran(index,"@R "+ INDEXPIC )+IF(indx_mat->LAMUS#0 .and. ret=I,"*",ret)+;
     (if(_sbeg=SSBEG,'INDX_MAT',sel))->(LARTXT)+TRWALTXT+D_JMO SHORTTXT)
 #undef D_CF8
 #undef D_ST
@@ -836,7 +839,7 @@ DO CASE
 
 #ifdef A_SZYM
    case _skey=43 .and. il#NIL .and. dok="ZL"
-   //.and. firmy->(if(il=NIL,szukam({1,14,maxrow(),,1,0,'FIRMY',{||numer_kol+if(""=uwagi,"│","*")+nazwa},{|_skey,_s|_sret:=_skey=13,_skey=13 .or. _skey=27},""}),eof()))
+   //.and. firmy->(if(il=NIL,szukam({1,14,maxrow(),,1,0,'FIRMY',{||numer_kol+if(""=uwagi,I,"*")+nazwa},{|_skey,_s|_sret:=_skey=13,_skey=13 .or. _skey=27},""}),eof()))
       if _si=0
          _srec[1]:=recno()
          _sm:=1
@@ -893,7 +896,7 @@ DO CASE
         _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
         _sret:=2
     REFRESH(,_s)
-    @ _srow2,_scol1+1 say if(_sfor=NIL,"WSZYSTKIE MATERIAŁY ","STAN NIEZEROWY ")+trim(magazyny[mag_poz]) COLOR _slinia
+    @ _srow2,_scol1+1 say hb_UTF8ToStr(if(_sfor=NIL,"WSZYSTKIE MATERIAŁY ","STAN NIEZEROWY "))+trim(magazyny[mag_poz]) COLOR _slinia
 
   CASE _skey=-3 .AND. _sret#1// f4   INDX_MAT
       SELECT STANY
@@ -914,7 +917,7 @@ DO CASE
       _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
       _sfor:=NIL
       REFRESH(,_s)
-      @ _srow2,_scol1+1 say "MATERIAŁY Z WSZYSTKICH MAGAZYNÓW" COLOR _slinia
+      @ _srow2,_scol1+1 say "MATERIAŁY Z WSZYSTKICH MAGAZYNÓW" UNICODE COLOR _slinia
       _sret=1
 
   CASE _skey=-4 .AND. _sret#0 // f5
@@ -971,7 +974,7 @@ DO CASE
       endif
       REFRESH(,_s)
     endif
-    @ _srow2,_scol1+1 say if(_sfor=NIL,"WSZYSTKIE MATERIAŁY","STAN NIEZEROWY") COLOR _slinia
+    @ _srow2,_scol1+1 say if(_sfor=NIL,"WSZYSTKIE MATERIAŁY","STAN NIEZEROWY") UNICODE COLOR _slinia
     if _sret=2
       DEVOUT(" "+trim(magazyny[mag_poz]),_slinia)
     endif
@@ -1249,9 +1252,9 @@ endif
  #endif
 #endif
 #ifdef A_OLZA
-    szukam({1,max(0,maxcol()-79),maxrow(),maxcol(),0,0,"Data┬─Dokument┬Zlecenie─┬─Przychód┬──Rozchód┬───"+WANAZ+"┬"+smiaR+"┬"+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"Z",NR_MAG+INDEX+"Z"})
+    szukam({1,max(0,maxcol()-79),maxrow(),maxcol(),0,0,hb_UTF8ToStr("Data┬─Dokument┬Zlecenie─┬─Przychód┬──Rozchód┬───"+WANAZ+"┬"+smiaR+"┬")+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"Z",NR_MAG+INDEX+"Z"})
 #else
-    szukam({1,max(0,maxcol()-77),maxrow(),maxcol(),0,0,"Data┬──Dokument┬Koszty┬─Przychód┬─Rozchód─┬───"+WANAZ+"┬"+smiaR+"┬"+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"Z",NR_MAG+INDEX+"Z"})
+    szukam({1,max(0,maxcol()-77),maxrow(),maxcol(),0,0,hb_UTF8ToStr("Data┬──Dokument┬Koszty┬─Przychód┬─Rozchód─┬───"+WANAZ+"┬"+smiaR+"┬")+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"Z",NR_MAG+INDEX+"Z"})
 #endif
 #undef smiaR
     set filter to
@@ -1328,10 +1331,10 @@ endif
       @ bl[1]+3,bl[2]+2 GET a[2] picture "@K" valid {|g,r|r:=!empty(a[2]).and.aczojs(txt),if(r.and.len(getlist)<6,(SetPos( bl[1]+3, bl[2]+14 ),b[2]:=indx_mat->(&(a[2])),AAdd(GetList,_GET_( b[2], "b[2]", "@KS46", , ):display())) ,),empty(a[2]).or.r}
       @ bl[1]+4,bl[2]+2 GET a[3] picture "@K" valid {|g,r|r:=!empty(a[3]).and.aczojs(txt),if(r.and.len(getlist)<7,(SetPos( bl[1]+4, bl[2]+14 ),b[3]:=indx_mat->(&(a[3])),AAdd(GetList,_GET_( b[3], "b[3]", "@KS46", , ):display())) ,),empty(a[3]).or.r}
       @ bl[1]+5,bl[2]+2 GET a[4] picture "@K" valid {|g,r|r:=!empty(a[4]).and.aczojs(txt),if(r.and.len(getlist)<8,(SetPos( bl[1]+5, bl[2]+14 ),b[4]:=indx_mat->(&(a[4])),AAdd(GetList,_GET_( b[4], "b[4]", "@KS46", , ):display())) ,),empty(a[4]).or.r}
-      @ bl[1]+1,bl[2]+20 Say "Podaj wartość:"
+      @ bl[1]+1,bl[2]+20 Say "Podaj wartość:" UNICODE
       read
       window(bl)
-      if readkey()=K_ESC .or. ALARM("CZY NA PEWNO CHCESZ ZAMIENIĄ WSZYSTKIE TOWARY ZACZYNAJńCE SIĘ NA:"+_spocz,{"TAK","NIE"},2,2)#1
+      if readkey()=K_ESC .or. ALARM(hb_UTF8ToStr("CZY NA PEWNO CHCESZ ZAMIENIĆ WSZYSTKIE TOWARY ZACZYNAJĄCE SIĘ NA:")+_spocz,{"TAK","NIE"},2,2)#1
          return .f.
       endif
       k_pola:=a
@@ -1446,7 +1449,7 @@ endif
   else
     bl:=_sfor
   endif
-  txt:=message("Liczę stan,;proszę czekać.")
+  txt:=message(hb_UTF8ToStr("Liczę stan,;proszę czekać."))
   seek _spocz
   _skey:=0
   DBEval( {||_skey+=STANY->stan*(i_lam(da))->gram},bl,{|| EvaldB(_swar,_spocz,_skon).AND.nextkey()=0},,, .T. )
