@@ -3,6 +3,9 @@
 #command @ <top>, <left>, <bottom>, <right> BOX UNICODE <string> [COLOR <color>] => ;
          @ <top>, <left>, <bottom>, <right> BOX HB_UTF8TOSTRBOX(<string>) [COLOR <color>]
 
+#command @ <row>, <col> BOX <exp> UNICODE [COLOR <clr>] => ;
+         hb_DispOutAtBox( <row>, <col>, hb_UTF8ToStrBox(<exp>) [, <clr>] )
+
 #command @ <row>, <col> SAY <exp> UNICODE [PICTURE <pic>] [COLOR <clr>] => ;
          DevPos( <row>, <col> ) ; DevOutPict( HB_UTF8TOSTR(<exp>), <pic> [, <clr>] )
 #command @ <row>, <col> SAY <exp> UNICODE [COLOR <clr>] => ;

@@ -811,7 +811,11 @@ _frow:=2
 
 #ifdef A_FA
   if dok_p_r="F"
+#ifdef __PLATFORM__DOS
+    @ 5,0,11,79 BOX UNICODE '║─║║║ ║║ '
+#else   
     @ 5,0,11,79 BOX UNICODE '╟─╢║║ ║║ '
+#endif    
     _frow:=7
  #ifdef A_FK
    if dok_fk
@@ -2148,7 +2152,7 @@ local txt,j,x,s:=0,si:='',gzl,y,z,a
             parr[5]:=W(parr[2],parr[3],val(parr[4]),dok_df)
          endif
 #endif
-        nim:=pad("♫",46)
+        nim:=pad(IF(hb_cdpIsUTF8(),"♫",chr(0x0E)),46)
 #ifdef A_MM
         mag_biez:=nr_mag
         //_fpos:=2
@@ -2938,7 +2942,7 @@ if pflag:=dmprzeg(ppos)
       parr[5]:=W(parr[2],parr[3],val(parr[4]),dok_df)
    endif
 #endif
-   nim:=pad("♫",46)
+   nim:=pad(IF(hb_cdpIsUTF8(),"♫",chr(0x0E)),46)
    txt:=KEY_DOK+nr_dowodu
    skip
    ppos:=if(KEY_DOK+nr_dowodu=txt,recno(),0)

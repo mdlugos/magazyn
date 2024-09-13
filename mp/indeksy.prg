@@ -32,11 +32,11 @@
 #endif
 
 #ifdef A_ANKER
- #define nazwA (pad(nazwa,hb_fieldlen([nazwa]))+strpic(field->cenA,11,2,"@E ")+" zł "+field->proc_vat+"%")
+ #define nazwA (pad(nazwa,hb_fieldlen([nazwa]))+strpic(field->cenA,11,2,"@E ")+hb_UTF8ToStr(" zł ")+field->proc_vat+"%")
 #endif
 
 #ifdef A_FP600
- #define nazwA (pad(nazwa,hb_fieldlen([nazwa]))+strpic(field->cenA,11,2,"@E ")+" zł "+field->proc_vat+"%")
+ #define nazwA (pad(nazwa,hb_fieldlen([nazwa]))+strpic(field->cenA,11,2,"@E ")+hb_UTF8ToStr(" zł ")+field->proc_vat+"%")
 #endif
 
 #ifndef STANY
@@ -68,7 +68,7 @@
 #else
  #ifdef A_SHORTIND
       #ifdef A_KODY
-       #define TOPLINE 'Kod┬Nazwa'+repl('─',40-len(KoD))+'┬'+pad(A_KODY,len(KoD),'─')+'┬──────Stan┬─jm─┬Cena'
+       #define TOPLINE 'Kod┬Nazwa'+repl('─',40-len(KoD))+'┬'+hb_upadr(A_KODY,len(KoD),'─')+'┬──────Stan┬─jm─┬Cena'
        #undef D_KODY
        #define D_KODY 48
       #else
@@ -99,16 +99,16 @@
        #define TOPLINE 'Kod kresk.─┬Nazwa────────────────────────────┬Kod──┬C.Zak┬───Stan┬─jm─┬Cena'
       #else
 #ifdef STANY
-       #define TOPLINE 'Kod kresk.─┬Nazwa───────────────────────────────────┬──────────┬'+pad(A_KODY,len(KoD),'─')+'┬───Stan┬─jm─┬Cena'
+       #define TOPLINE 'Kod kresk.─┬Nazwa───────────────────────────────────┬──────────┬'+hb_upadr(A_KODY,len(KoD),'─')+'┬───Stan┬─jm─┬Cena'
 #else
-       #define TOPLINE 'Kod kresk.─┬Nazwa───────────────────────────────────┬──────────┬'+pad(A_KODY,len(KoD),'─')+LARMG+'┬───Stan┬─jm─┬Cena'
+       #define TOPLINE 'Kod kresk.─┬Nazwa───────────────────────────────────┬──────────┬'+hb_upadr(A_KODY,len(KoD),'─')+LARMG+'┬───Stan┬─jm─┬Cena'
 #endif
       #endif
      #endif
     #else
      #ifdef A_7
       #ifdef A_KODY
-       #define TOPLINE 'Kod───┬Nazwa'+repl('─',49-len(KoD))+'┬'+pad(A_KODY,len(KoD),'─')+'┬─────Stan┬jm'
+       #define TOPLINE 'Kod───┬Nazwa'+repl('─',49-len(KoD))+'┬'+hb_upadr(A_KODY,len(KoD),'─')+'┬─────Stan┬jm'
        #define D_KODY 55
       #else
        #define TOPLINE 'Kod───┬Nazwa──────────────────────────────────────'+LARMG+'┬─────Stan┬─jm─┬Cena'
@@ -594,7 +594,7 @@ DO CASE
       _sfilt:=NIL
       _sfilb:=NIL
     ENDIF
-    DEFAULT _snagl TO TOPLINE
+    DEFAULT _snagl TO hb_UTF8ToStr(TOPLINE)
 #ifndef STANY
     IF _skon
       SET RELATION TO INDEX+mag_biez INTO STANY

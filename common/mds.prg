@@ -4,26 +4,53 @@
 
 #define I hb_UTF8ToStr("│")
 
-#define R1TO4(x) _stopka(x,'─','┴')
-#define R1TO3(x) _stopka(x,'═','╧')
-#define R1TO2(x) STRTRAN(IF(hb_UTF8ToStr('╤')=='?',x,STRTRAN(x,hb_UTF8ToStr('┬'),hb_UTF8ToStr('╤'))),hb_UTF8ToStr('─'),hb_UTF8ToStr('═'))
-//#define R1TO1(x) (x)
+#define R1TO4(x) _stopka(x,'─','┴',_SRAMKA)
+#ifdef __PLATFORM__DOS
+#define BOTD '└'+REPLICATE('═',_scoln)+'┘'
+#define TOPD '┌'+REPLICATE('═',_scoln)+'┐'
+#define R1TO3(x) ''
+#define R1TO2(x) _snaglo(x,'═','═',_SRAMKA)
+#else
+#define BOTD '╘'+REPLICATE('═',_scoln)+'╛'
+#define TOPD '╒'+REPLICATE('═',_scoln)+'╕'
+#define R1TO3(x) _stopka(x,'═','╧',_SRAMKA)
+#define R1TO2(x) _snaglo(x,'═','╤',_SRAMKA)
+#endif
 *******
 request tranr
 request evaldb
 
-static function _stopka(s,m,t)
-local x:='',i,j:=0
-
-if hb_UTF8ToStr(t)='?'
-  t:=hb_UTF8ToStr('┴')
-endif
-do while (i:=hb_at(hb_UTF8ToStr('┬'),s,j+1))>0
-   x+=replicate(m,i-j-1)+t //padl(t,i-j,m)
-   j:=i 
-enddo
-
+static function _snaglo(s,m,t,clr)
+  local x:='',i,j:=0,u:=hb_UTF8ToStr('┬')
+  
+  s:=strtran(s,hb_UTF8ToStr('─'),hb_UTF8ToStr(m))
+  t:=hb_UTF8ToStrBox(t)
+  do while (i:=hb_at(u,s,j+1))>0
+    DispOut(subs(s,j+1,i-j-1),clr)
+    hb_DispOutAtBox(row(),col(),t,clr)
+    setpos(row(),col()+1)
+    j:=i 
+  enddo
+  x:=subs(s,j+1)
+  
 return x
+
+static function _stopka(s,m,t,clr)
+  local i,j:=0,u:=hb_UTF8ToStr('┬')
+  #ifdef __PLATFORM__DOS
+  if t='╧'
+     return ''
+  endif
+  #endif
+  m:=hb_UTF8ToStrBox(m)
+  t:=hb_UTF8ToStrBox(t)
+  do while (i:=hb_at(u,s,j+1))>0
+    hb_DispOutAtBox(row(),col(),replicate(m,i-j-1)+t,clr)
+    setpos(row(),col()+i-j)
+    j:=i 
+  enddo
+  
+return ''
 
 FUNCTION szukam(_s)
 
@@ -575,7 +602,7 @@ FUNCTION _SDOL(_s,_skey)
         enddo
       ENDDO
       if _sef
-        @ _srow2,_scol1-1 SAY '╘'+REPLICATE('═',_scoln)+'╛' UNICODE COLOR _SRAMKA
+        @ _srow2,_scol1-1 BOX BOTD UNICODE COLOR _SRAMKA
         @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) COLOR _SRAMKA
       ENDIF
       _sm:=if(_si>0,_si,1)
@@ -606,7 +633,7 @@ FUNCTION _sgora(_s,_skey)
         enddo
       ENDDO
       if _sbf
-        @ _srow1-1,_scol1-1 SAY '╒'+REPLICATE('═',_scoln)+'╕' UNICODE COLOR _SRAMKA
+        @ _srow1-1,_scol1-1 BOX TOPD UNICODE COLOR _SRAMKA
         @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) COLOR _SRAMKA
       ENDIF
     ENDIF
@@ -630,7 +657,7 @@ FUNCTION _sPgDn(_s,_skey)
         enddo
       ENDDO
       IF  _sef
-        @ _srow2,_scol1-1 SAY '╘'+REPLICATE('═',_scoln)+'╛' UNICODE COLOR _SRAMKA
+        @ _srow2,_scol1-1 BOX BOTD UNICODE COLOR _SRAMKA
         @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) COLOR _SRAMKA
       ENDIF
     ENDIF
@@ -655,7 +682,7 @@ FUNCTION _sPgUp(_s,_skey)
         enddo
       ENDDO
       IF _sbf
-        @ _srow1-1,_scol1-1 SAY '╒'+REPLICATE('═',_scoln)+'╕' COLOR _SRAMKA
+        @ _srow1-1,_scol1-1 SAY TOPD COLOR _SRAMKA
         @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) COLOR _SRAMKA
       ENDIF
     ENDIF
@@ -668,7 +695,7 @@ FUNCTION _stop(_s)
     local _stxt,_skey
     IF ! _sbf
       RESTSCREEN(_srow1,_scol1-1,_srow2,_scol2,SUBSTR(_scr,1+(_srow1-_srowb)*(_scoln+2)*D_REST))
-      @ _srow1-1,_scol1-1 SAY '╒'+REPLICATE('═',_scoln)+'╕' UNICODE COLOR _SRAMKA
+      @ _srow1-1,_scol1-1 BOX TOPD UNICODE COLOR _SRAMKA
       @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) COLOR _SRAMKA
       _sbf=.T.
       _sef=.F.
@@ -693,7 +720,7 @@ FUNCTION _stop(_s)
         ENDDO
       ENDIF
       IF   _sef
-        @ _srow2,_scol1-1 SAY '╘'+REPLICATE('═',_scoln)+'╛' UNICODE COLOR _SRAMKA
+        @ _srow2,_scol1-1 BOX BOTD UNICODE COLOR _SRAMKA
         @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) COLOR _SRAMKA
       ENDIF
 #ifdef D_LAN
@@ -714,7 +741,7 @@ FUNCTION _sbot(_s)
     local _skey,_stxt
     IF ! _sef
       RESTSCREEN(_srow1-1,_scol1-1,_srow2-1,_scol2,SUBSTR(_scr,1+(_srow1-1-_srowb)*(_scoln+2)*D_REST))
-      @ _srow2,_scol1-1 SAY '╘'+REPLICATE('═',_scoln)+'╛' UNICODE COLOR _SRAMKA
+      @ _srow2,_scol1-1 BOX BOTD UNICODE COLOR _SRAMKA
       @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) COLOR _SRAMKA
       _sef=.T.
       _sbf=.F.
@@ -746,7 +773,7 @@ FUNCTION _sbot(_s)
         ENDDO
       ENDIF
       IF   _sbf
-        @ _srow1-1,_scol1-1 SAY '╒'+REPLICATE('═',_scoln)+'╕' UNICODE COLOR _SRAMKA
+        @ _srow1-1,_scol1-1 BOX TOPD UNICODE COLOR _SRAMKA
         @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) COLOR _SRAMKA
       ENDIF
       _sm:=if(_si>0,_si,1)
@@ -819,7 +846,7 @@ FUNCTION _sznak(_s,_skey)
           _srow2:=_srow1+_si
           RESTSCREEN(_srow2+1,_scol1-1,_srowe,_scol2,SUBSTR(_scr,1+(_srow2+1-_srowb)*(_scoln+2)*D_REST))
           RESTSCREEN(_srowb,_scol1-1,_srow1-1,_scol2,_scr)
-          @ _srow1-1,_scol1-1 SAY '╒'+REPLICATE('═',_scoln)+'╕' UNICODE COLOR _SRAMKA
+          @ _srow1-1,_scol1-1 BOX TOPD UNICODE COLOR _SRAMKA
           @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) COLOR _SRAMKA
         else
           _srow1+=l
@@ -830,13 +857,13 @@ FUNCTION _sznak(_s,_skey)
           RESTSCREEN(_srowb,_scol1-1,_srow1-1,_scol2,_scr)
           RESTSCREEN(_srow2,_scol1-1,_srowe,_scol2,SUBSTR(_scr,1+(_srow2-_srowb)*(_scoln+2)*D_REST))
           IF _sbf
-             @ _srow1-1,_scol1-1 SAY '╒'+REPLICATE('═',_scoln)+'╕' UNICODE COLOR _SRAMKA
+             @ _srow1-1,_scol1-1 BOX TOPD UNICODE COLOR _SRAMKA
              @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) COLOR _SRAMKA
           ELSE
-             @ _srow1-1,_scol1-1 SAY '┌'+REPLICATE('─',_scoln)+'┐' UNICODE COLOR _SRAMKA
+             @ _srow1-1,_scol1-1 BOX '┌'+REPLICATE('─',_scoln)+'┐' UNICODE COLOR _SRAMKA
              @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
           ENDIF
-          @ _srow2,_scol1-1 SAY '╘'+REPLICATE('═',_scoln)+'╛' UNICODE COLOR _SRAMKA
+          @ _srow2,_scol1-1 BOX BOTD UNICODE COLOR _SRAMKA
           @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) COLOR _SRAMKA
           _sef:=.t.
         endif
@@ -991,7 +1018,7 @@ IF _si<_srown
   ++_si
  ELSE
   IF _sbf
-    @ _srow1-1,_scol1-1 SAY '┌'+REPLICATE('─',_scoln)+'┐' UNICODE COLOR _SRAMKA
+    @ _srow1-1,_scol1-1 BOX '┌'+REPLICATE('─',_scoln)+'┐' UNICODE COLOR _SRAMKA
     @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
     _sbf=.F.
   ENDIF
@@ -1019,7 +1046,7 @@ IF _si<_srown
   ++_si
  ELSE
   IF _sef
-    @ _srow2,_scol1-1 SAY '└'+REPLICATE('─',_scoln)+'┘' UNICODE COLOR _SRAMKA
+    @ _srow2,_scol1-1 BOX '└'+REPLICATE('─',_scoln)+'┘' UNICODE COLOR _SRAMKA
     @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
     _sef=.F.
   ENDIF
@@ -1062,17 +1089,17 @@ endif
       do while .t.
       _srec[1]:=RECNO()
         IF obf:=_sbf
-          @ _srow1-1,_scol1-1 SAY '╒'+REPLICATE('═',_scoln)+'╕' UNICODE COLOR _SRAMKA
+          @ _srow1-1,_scol1-1 BOX TOPD UNICODE COLOR _SRAMKA
           @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) COLOR _SRAMKA
         ELSE
-          @ _srow1-1,_scol1-1 SAY '┌'+REPLICATE('─',_scoln)+'┐' UNICODE COLOR _SRAMKA
+          @ _srow1-1,_scol1-1 BOX '┌'+REPLICATE('─',_scoln)+'┐' UNICODE COLOR _SRAMKA
           @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
         ENDIF
         IF oef:=_sef
-          @ _srow2,_scol1-1 SAY '╘'+REPLICATE('═',_scoln)+'╛' UNICODE COLOR _SRAMKA
+          @ _srow2,_scol1-1 BOX BOTD UNICODE COLOR _SRAMKA
           @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) COLOR _SRAMKA
         ELSE
-          @ _srow2,_scol1-1 SAY '└'+REPLICATE('─',_scoln)+'┘' UNICODE COLOR _SRAMKA
+          @ _srow2,_scol1-1 BOX '└'+REPLICATE('─',_scoln)+'┘' UNICODE COLOR _SRAMKA
           @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
         ENDIF
       IF crsr=1
@@ -1101,11 +1128,11 @@ endif
             endif
 
             if _sbf .and. _sbf#obf
-               @ _srow1-1,_scol1-1 SAY '╒'+REPLICATE('═',_scoln)+'╕' UNICODE COLOR _SRAMKA
+               @ _srow1-1,_scol1-1 BOX TOPD UNICODE COLOR _SRAMKA
                @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) COLOR _SRAMKA
             endif
             if _sef .and. _sef#oef
-	       @ _srow2,_scol1-1 SAY '╘'+REPLICATE('═',_scoln)+'╛' UNICODE COLOR _SRAMKA
+	             @ _srow2,_scol1-1 BOX BOTD UNICODE COLOR _SRAMKA
                @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) COLOR _SRAMKA
             endif
             _sm:=1
@@ -1130,12 +1157,20 @@ endif
         obf:=.f.
       elseif _srowe>_srow2
         ++_srow2
+#ifdef __PLATFORM__DOS
+        @ _srow2-1,_scol1-1,_srow2,_scol2 BOX UNICODE '│ ││┘═└│' COLOR _SRAMKA
+#else        
         @ _srow2-1,_scol1-1,_srow2,_scol2 BOX UNICODE '│ ││╛═╘│' COLOR _SRAMKA
         @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) COLOR _SRAMKA
+#endif        
         oef:=.t.
       else
         --_srow1
+        #ifdef __PLATFORM__DOS
+        @ _srow1-1,_scol1-1,_srow1,_scol2 BOX UNICODE '┌═┐││ ││' COLOR _SRAMKA
+        #else
         @ _srow1-1,_scol1-1,_srow1,_scol2 BOX UNICODE '╒═╕││ ││' COLOR _SRAMKA
+        #endif
         @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) COLOR _SRAMKA
         obf:=.t.
       endif
@@ -1210,19 +1245,19 @@ endif
     ENDIF
     IF _sbf#obf
     IF _sbf
-        @ _srow1-1,_scol1-1 SAY '╒'+REPLICATE('═',_scoln)+'╕' UNICODE COLOR _SRAMKA
+        @ _srow1-1,_scol1-1 BOX TOPD UNICODE COLOR _SRAMKA
         @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) COLOR _SRAMKA
     ELSE
-        @ _srow1-1,_scol1-1 SAY '┌'+REPLICATE('─',_scoln)+'┐' UNICODE COLOR _SRAMKA
+        @ _srow1-1,_scol1-1 BOX '┌'+REPLICATE('─',_scoln)+'┐' UNICODE COLOR _SRAMKA
         @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
     ENDIF
     ENDIF
     IF _sef#oef
        IF _sef
-        @ _srow2,_scol1-1 SAY '╘'+REPLICATE('═',_scoln)+'╛' UNICODE COLOR _SRAMKA
+        @ _srow2,_scol1-1 BOX BOTD UNICODE COLOR _SRAMKA
         @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) COLOR _SRAMKA
        ELSE
-        @ _srow2,_scol1-1 SAY '└'+REPLICATE('─',_scoln)+'┘' UNICODE COLOR _SRAMKA
+        @ _srow2,_scol1-1 BOX '└'+REPLICATE('─',_scoln)+'┘' UNICODE COLOR _SRAMKA
         @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
        ENDIF
     ENDIF
@@ -1299,10 +1334,10 @@ function CUT(_s,zmiana,key)
       NEXT
       RESTSCREEN(_srowb,_scol1-1,_srow1-1,_scol2,_scr)
       IF _sbf
-        @ _srow1-1,_scol1-1 SAY '╒'+REPLICATE('═',_scoln)+'╕' UNICODE COLOR _SRAMKA
+        @ _srow1-1,_scol1-1 BOX '╒'+REPLICATE('═',_scoln)+'╕' UNICODE COLOR _SRAMKA
         @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) COLOR _SRAMKA
       ELSE
-        @ _srow1-1,_scol1-1 SAY '┌'+REPLICATE('─',_scoln)+'┐' UNICODE COLOR _SRAMKA
+        @ _srow1-1,_scol1-1 BOX '┌'+REPLICATE('─',_scoln)+'┐' UNICODE COLOR _SRAMKA
         @ _srow1-1,_scol1+_snagkol SAY _snagl COLOR _SRAMKA
       ENDIF
     else
@@ -1344,10 +1379,10 @@ end sequence
       _srow2=_srow1+_si
       RESTSCREEN(_srow2+1,_scol1-1,_srowe,_scol2,SUBSTR(_scr,1+(_srow2+1-_srowb)*(_scoln+2)*D_REST))
       IF _sef
-        @ _srow2,_scol1-1 SAY '╘'+REPLICATE('═',_scoln)+'╛' UNICODE COLOR _SRAMKA
+        @ _srow2,_scol1-1 BOX '╘'+REPLICATE('═',_scoln)+'╛' UNICODE COLOR _SRAMKA
         @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) COLOR _SRAMKA
       ELSE
-        @ _srow2,_scol1-1 SAY '└'+REPLICATE('─',_scoln)+'┘' UNICODE COLOR _SRAMKA
+        @ _srow2,_scol1-1 BOX '└'+REPLICATE('─',_scoln)+'┘' UNICODE COLOR _SRAMKA
         @ _srow2,_scol1+_snagkol SAY R1TO4(_snagl) COLOR _SRAMKA
       ENDIF
     else

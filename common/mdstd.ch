@@ -3,12 +3,19 @@
 #command @ <top>, <left>, <bottom>, <right> BOX UNICODE <string> [COLOR <color>] => ;
          @ <top>, <left>, <bottom>, <right> BOX HB_UTF8TOSTRBOX(<string>) [COLOR <color>]
 
+#command @ <row>, <col> BOX <exp> UNICODE [COLOR <clr>] => ;
+         hb_DispOutAtBox( <row>, <col>, hb_UTF8ToStrBox(<exp>) [, <clr>] )
+
 #command @ <row>, <col> SAY <exp> UNICODE [PICTURE <pic>] [COLOR <clr>] => ;
          DevPos( <row>, <col> ) ; DevOutPict( HB_UTF8TOSTR(<exp>), <pic> [, <clr>] )
 #command @ <row>, <col> SAY <exp> UNICODE [COLOR <clr>] => ;
          DevPos( <row>, <col> ) ; DevOut( HB_UTF8TOSTR(<exp>) [, <clr>] )
 #command @ <row>, <col> PROMPT <prompt> UNICODE [MESSAGE <msg>] => ;
          __AtPrompt( <row>, <col>, HB_UTF8TOSTR(<prompt>) [, HB_UTF8TOSTR(<msg>) ])
+
+
+hb_UTF8ToStrBox
+hb_DispOutAtBox
 
 #ifdef __PLATFORM__UNIX
 #define HB_OsPathSeparator() "/"

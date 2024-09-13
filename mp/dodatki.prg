@@ -156,12 +156,16 @@ DO CASE
    CASE m=5 .and. iS_spec
 
     hAslo_spec(21)
-    @ 23,0 SAY "Swap: " + LTRIM(STR(MEMORY(0))) +;
-      ", Lg object: " + LTRIM(STR(MEMORY(1))) +;
-      ", Run: " + LTRIM(STR(MEMORY(2))) +;
-      ", EMM: " + LTRIM(STR(MEMORY(4))) +;
-      ", FM: " + LTRIM(STR(MEMORY(101))) +;
-      ", Idle Conven: " + LTRIM(STR(MEMORY(104)))
+
+   #include "hbmemory.ch"
+   if MEMORY( HB_MEM_STATISTICS ) != 0
+     @ 23,0 SAY "Swap: " + LTRIM(STR(MEMORY(HB_MEM_CHAR))) +;
+      ", Lg object: " + LTRIM(STR(MEMORY(HB_MEM_BLOCK))) +;
+      ", Run: " + LTRIM(STR(MEMORY(HB_MEM_RUN))) +;
+      ", EMM: " + LTRIM(STR(MEMORY(HB_MEM_EMS))) +;
+      ", FM: " + LTRIM(STR(MEMORY(HB_MEM_FM))) +;
+      ", Idle Conven: " + LTRIM(STR(MEMORY(HB_MEM_CONV)))
+   endif
 
     browse()
 

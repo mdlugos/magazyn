@@ -307,7 +307,11 @@ ENDIF
 
       scroll(8, 1, 19, 78, 0)
       set color to W+
+#ifdef __PLATFORM__DOS      
+      @ 9,3,18,76 BOX UNICODE "┌═┐│┘═└│" COLOR "W+"
+#else
       @ 9,3,18,76 BOX UNICODE "╒═╕│╛═╘│" COLOR "W+"
+#endif      
       set color to W
       @ 11,5 say "Podaj  wyrażenie filtra            (Esc - rezygnacja)" UNICODE
       @ 13,5 say 'Dostępne relacje: =,#,$,<,>,<=,>= ' UNICODE

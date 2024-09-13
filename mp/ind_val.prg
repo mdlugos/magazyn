@@ -1693,7 +1693,7 @@ field data
     endcase
     wb:=sb*(i_lam(dg))->cenA
 #endif
-    _snagl:="Data┬──Dokument┬Koszty┬─Przychód┬─Rozchód─┬───"+WANAZ+"┬"+str(sb,10,3)+"┬"+str(wb,10,CEOKR)
+    _snagl:=hb_UTF8ToStr("Data┬──Dokument┬Koszty┬─Przychód┬─Rozchód─┬───"+WANAZ+"┬"+str(sb,10,3)+"┬"+str(wb,10,CEOKR))
         Return .t.
      else
 *
