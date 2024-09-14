@@ -95,7 +95,7 @@ endif
         @ r2-1,c1+34 say '^End'
         @ r2-1,c1+39 say '^PgU'
         @ r2-1,c1+44 say '^PgD'
-        @ r2-1,c1+49 SAY if(HB_CDPISUTF8(),'◄',chr(0x10))+ hb_UTF8ToStr('─┘') // Enter
+        @ r2-1,c1+49 SAY if(HB_CDPISUTF8(),'◄',chr(0x11))+ hb_UTF8ToStr('─┘') // Enter
         @ r2-1,c1+53 say '^Y'
         @ r2-1,c1+56 say '^W'
         @ r1+1,c1+ 3  say ' P O M O C '

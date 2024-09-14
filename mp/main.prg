@@ -405,9 +405,9 @@ endif
           @ maxrow()-1,6  SAY "R"
           @ maxrow()-1,8  SAY "Z"
           @ maxrow()-1,10 SAY "P"
-          @ maxrow()-1,12 SAY "─>"
-          @ maxrow()-1,15 SAY "<─"
-          @ maxrow()-1,18 SAY "<─┘"
+          @ maxrow()-1,12 SAY hb_UTF8ToStr("─")+if(HB_CDPISUTF8(),'►',chr(0x10))
+          @ maxrow()-1,15 SAY if(HB_CDPISUTF8(),'◄',chr(0x11))+ hb_UTF8ToStr("─")
+          @ maxrow()-1,18 SAY if(HB_CDPISUTF8(),'◄',chr(0x11))+ hb_UTF8ToStr('─┘')
           @ maxrow()-1,35 SAY "F1"
           @ maxrow()-1,40 SAY "P O M O C" color (_sbnorm)
           @ maxrow()-1,53 say "Esc"

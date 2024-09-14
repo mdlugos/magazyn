@@ -3,6 +3,7 @@
 #include "inkey.ch"
 #include "set.ch"
 #include "dbinfo.ch"
+#include "hbgtinfo.ch"
 #ifdef SIMPLE
 #undef A_MYSZ
 #else
@@ -2225,16 +2226,13 @@ HB_FUNC ( GETLINES )
 
 
 func getscrtxt(txt)
-local ret:='',i,l
+local ret:='',i,k:=4,l:=hb_blen(txt)/k
 
-//#ifdef __PLATFORM__UNIX
-local k:=4
-l:=hb_blen(txt)/k
-for i:=0 to l-1
-  ret+=HB_utf8chr(bin2w(hb_bsubstr(txt,i*k+1,2)))
-next i
+   for i:=0 to l-1
+      ret+=HB_UCHAR(bin2w(hb_bsubstr(txt,i*k+1,2)))
+   next i
 
-return ret //HB_TRANSLATE(ret,'UTF8',)
+return ret
 /****************
 #else
 local k:=2
@@ -2429,17 +2427,14 @@ HB_FUNC ( TRANR )
 HB_FUNC ( ALTATTR )
       {
          size_t i, j = hb_parclen( 1 );
-         char * src = (char *) hb_parc( 1 ), * ret = (char *) hb_xgrab( j );
-         char k = (char) hb_parni( 2 );
+         HB_WCHAR * src = (HB_WCHAR *) hb_parc( 1 );
+         HB_WCHAR * ret = (HB_WCHAR *) hb_xgrab( j );
+         HB_WCHAR k = (HB_WCHAR) hb_parni( 2 );
+         j >>= 1;
          for( i = 0; i < j ; i++ )
-         {
+            ret[i] = (i & 1) ? src[i] ^ k : src[i];
 
-           if (i%4 == 2)
-           ret[i] = src[i] ^ k;
-           else
-           ret[i] = src[i];
-         }
-         hb_retclen( ret, j );
+         hb_retclen( (char *) ret, j<<1 );
          hb_xfree( ret );
       }
 

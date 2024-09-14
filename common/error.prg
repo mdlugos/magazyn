@@ -1,3 +1,10 @@
+#ifdef __PLATFORM__DOS
+#define D_CDP PC852
+#else
+#define D_CDP 'UTF8MD'
+#endif
+
+
 #ifdef A_EXT
 request A_EXT
 #endif
@@ -20,7 +27,6 @@ memvar _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,firma_n,firma_a,defa,p
 local sc:=A_SUMK,a:=A_AUTOR,f:=A_KOMU_N,fa:=A_KOMU_A
 
 local i,n,t
-
 #ifdef SIMPLE
   #include "simpleio.ch"
 //  #ifdef __PLATFORM__WINDOWS
@@ -51,18 +57,11 @@ public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_
 
 #ifdef __HARBOUR__
   hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
-  REQUEST HB_LANG_PL
+  REQUEST HB_LANG_PL,HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8MD
   SET(_SET_LANGUAGE,'PL')
-  REQUEST HB_CODEPAGE_PL852M
-  REQUEST HB_CODEPAGE_UTF8MD
-#ifdef __PLATFORM__DOS
-  SET(_SET_CODEPAGE, PC852 )
-#else  
-  SET(_SET_CODEPAGE,'UTF8MD')
-#endif
+  SET(_SET_CODEPAGE, D_CDP )
   SET(_SET_DBCODEPAGE, PC852 )
   #ifdef PLWIN
-   request hb_translate
    hb_gtInfo( HB_GTI_FONTNAME , "Lucida Console" )
    hb_gtInfo( HB_GTI_FONTWIDTH, 10  )
    hb_gtInfo( HB_GTI_FONTSIZE , 20 )
@@ -226,11 +225,7 @@ field nazwa,baza,klucz,path,plik,for,unique,descend
 static s:=0,ee:=NIL
 
 #ifdef __HARBOUR__
-    #ifdef PC852
-     HB_CDPSELECT('UTF8MD')
-    #else
-     HB_CDPSELECT('PLWIN')
-    #endif
+   HB_CDPSELECT(D_CDP)
 #endif
 // put messages to STDERR
   if e:severity=NIL
@@ -379,7 +374,7 @@ static s:=0,ee:=NIL
 
 #ifdef A_ADS
   elseif  e:subsystem = 'ADS' .and. e:subcode=7041 .and. file("indeks.dbf")
- #ifndef __PLATFORM__LINUX
+ #ifndef __PLATFORM__UNIX
           AdsRegCallBack( {|nPercent|dispout(replicate( hb_UTF8ToStr("▒"), int(npercent/100*(f[4]-f[2]-5))-(i-f[2]))),message(1),i:=col(),dispout(str(nPercent,3)+'%'),setpos(row(),i),.f.}  )
  #endif
 
@@ -434,7 +429,7 @@ static s:=0,ee:=NIL
  #endif
     enddo
     indeks->(dbgoto(n))
- #ifndef __PLATFORM__LINUX
+ #ifndef __PLATFORM__UNIX
           AdsClrCallBack()
  #endif
  #ifdef A_CDX

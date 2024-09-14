@@ -10,10 +10,7 @@
 	"settings": {
 		"files.associations": {
 			"*.ch": "c",
-			"mysql.h": "c",
-			"iberror.h": "c",
-			"ibase.h": "c",
-			"hbapi.h": "c"
+			"*.h": "c"
 		}
 	}
 }

@@ -223,7 +223,7 @@ private gt
 #else
   #define D_LOCK
 #endif
-    if DM->kto_pisal=HB_UTF8CHR(0x00A0)
+    if DM->kto_pisal=HB_UCHAR(0x00A0)
       select main
         SEEK dM->(KEY_DOK+NR_DOWODU)
         y:={};l:=.f.;x:=0
@@ -282,7 +282,7 @@ private gt
 #else
   #define D_DF (wartosc+wart_vat)
 #endif
-    private df:=dok_p_r='F' .and. dok_df .and. kto_pisal=HB_UTF8CHR(0x00A0)+HB_BCHAR(0), df_ver:=-1, aux, komunikat//,numerp,datap
+    private df:=dok_p_r='F' .and. dok_df .and. kto_pisal=HB_UCHAR(0x00A0)+HB_BCHAR(0), df_ver:=-1, aux, komunikat//,numerp,datap
 #ifdef A_WP
     IF wart_par#0.and.(round(D_DF-wart_par,2)#0.or.round(vat_par-wart_vat,2)#0)
         alarm(hb_UTF8ToStr("WARTOŚĆ WYDRUKOWANEGO PARAGONU WYNOSI:;"+ltrim(tran(wart_par,"@E"))+" ZŁ, w tym "+ltrim(tran(vat_par,"@E"))+" podatku VAT.;NIE MOŻNA DRUKOWAĆ RACHUNKU O WARTOŚCI INNEJ NIŻ PARAGON."))
@@ -340,7 +340,7 @@ private gt
     print(1,lpt)
 
 #ifdef A_DFP
-    changed:=kto_pisal=HB_UTF8CHR(0x00A0)
+    changed:=kto_pisal=HB_UCHAR(0x00A0)
     if df
        aux:=NIL
        do while aux=NIL
@@ -458,16 +458,16 @@ private gt
     l:=j+1
 #ifdef A_DF
     IF dok_df
-     if kto_pisal=HB_UTF8CHR(0x00A0)+HB_BCHAR(0)
+     if kto_pisal=HB_UCHAR(0x00A0)+HB_BCHAR(0)
        changed:=.t.
        kto_pisal:=HB_BCHAR(0)+operator
-     elseif kto_pisal=HB_UTF8CHR(0x00A0)
+     elseif kto_pisal=HB_UCHAR(0x00A0)
        changed:=.t.
        kto_pisal:=HB_BCHAR(1)+operator
      endif
-    ELSEIF KTO_PISAL=HB_UTF8CHR(0x00A0)
+    ELSEIF KTO_PISAL=HB_UCHAR(0x00A0)
 #else
-    IF KTO_PISAL=HB_UTF8CHR(0x00A0)
+    IF KTO_PISAL=HB_UCHAR(0x00A0)
 #endif
           changed:=.t.
           KTO_PISAL:=OPERATOR
@@ -2617,7 +2617,7 @@ oprn:=D_HWPRN
   print(1 D_LPT)
   setprc(0,0)
 
-    IF KTO_PISAL=HB_UTF8CHR(0x00A0)
+    IF KTO_PISAL=HB_UCHAR(0x00A0)
       KTO_PISAL:=OPERATOR
       changed:=.t.
     ENDIF     

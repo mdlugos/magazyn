@@ -255,7 +255,7 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
 #endif
 ret := hb_UTF8ToStr(ret)
 #ifdef A_TRWALOSC
- #define TRWALTXT IF(WAZNOSC>0.AND.STANY->STAN>0.AND.STANY->DATA_PRZY+WAZNOSC<DA,hb_utf8chr(0x2261),IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET))
+ #define TRWALTXT IF(WAZNOSC>0.AND.STANY->STAN>0.AND.STANY->DATA_PRZY+WAZNOSC<DA,hb_UTF8ToStr("°"),IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET))
 #else
  #ifdef A_WA
   #define TRWALTXT IF(STANY->STAN>0.AND.STANY->WARTOSC=0,"$",IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET))

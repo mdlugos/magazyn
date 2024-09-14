@@ -184,10 +184,10 @@ DO WHILE .T.
      set order to 1
 #ifdef A_FK
     znalaz:= szukam({1,40,maxrow(),,1,0,hb_UTF8ToStr("Przegląd ")+dok,;
-        {||nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+hb_UTF8ToStr(if(data>DatY->d_z_mies1 .and. kto_pisal=HB_UTF8CHR(0x00A0),"│","┼"))+D_KH+I+DTOV(data)+I+D_KH1},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
+        {||nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+hb_UTF8ToStr(if(data>DatY->d_z_mies1 .and. kto_pisal=HB_UCHAR(0x00A0),"│","┼"))+D_KH+I+DTOV(data)+I+D_KH1},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
 #else
     znalaz:= szukam({1,40,maxrow(),,1,0,hb_UTF8ToStr("Przegląd ")+dok,;
-        {||nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+hb_UTF8ToStr(if(data>DatY->d_z_mies1 .and. kto_pisal=HB_UTF8CHR(0x00A0),"│","┼"))+DTOV(data)+I+dost_odb},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
+        {||nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+hb_UTF8ToStr(if(data>DatY->d_z_mies1 .and. kto_pisal=HB_UCHAR(0x00A0),"│","┼"))+DTOV(data)+I+dost_odb},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
 #endif
      firMy->(dbgoto(rf))
     if znalaz
@@ -257,7 +257,7 @@ do case
 #ifdef A_OLZA
   #define DEF_WAR
 #else
-  #define DEF_WAR kto_pisal=HB_UTF8CHR(0x00A0) .and.
+  #define DEF_WAR kto_pisal=HB_UCHAR(0x00A0) .and.
 #endif
 #define DEF_WAR1
 #ifdef A_LAN
@@ -273,9 +273,9 @@ do case
      private changed:=.f.
 #else
  #ifdef A_LAN
-     private changed:=if( kto_pisal#HB_UTF8CHR(0x00A0) .and. data>max(DatY->d_z_mies1,DatY->data_gran).and. ( _flp=0 .or. _skey=13 .and. pozycja=D_LP0 DEF_WAR1),if(nowydm,,1),.f.)
+     private changed:=if( kto_pisal#HB_UCHAR(0x00A0) .and. data>max(DatY->d_z_mies1,DatY->data_gran).and. ( _flp=0 .or. _skey=13 .and. pozycja=D_LP0 DEF_WAR1),if(nowydm,,1),.f.)
  #else
-     private changed:=if( kto_pisal#HB_UTF8CHR(0x00A0) .and. data>max(DatY->d_z_mies1,DatY->data_gran) .and. ( _flp=0 .or. _skey=13 .and. pozycja=D_LP0 DEF_WAR1),,.f.)
+     private changed:=if( kto_pisal#HB_UCHAR(0x00A0) .and. data>max(DatY->d_z_mies1,DatY->data_gran) .and. ( _flp=0 .or. _skey=13 .and. pozycja=D_LP0 DEF_WAR1),,.f.)
  #endif
 #endif
      _skey:=ordnumber()
@@ -1297,7 +1297,7 @@ LOCAL ZNALAZ,recf,RECM,RECS,RECI,RECD,rec1,rec2,PRZE:=IL,A,B,c,d,j,oldp,dpushl,a
      nim:=pad(left(nim,len(index)),46)
  #else
      //nz:=subs(nim,len(index)+2,6)
-     //prze:=-val(subs(nim,rat(HB_UTF8CHR(0x00A0),nim)+1))
+     //prze:=-val(subs(nim,rat(HB_UCHAR(0x00A0),nim)+1))
      //nim:=pad(left(nim,len(index)),46)
  #endif
  #ifdef A_FA
