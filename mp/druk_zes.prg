@@ -4826,9 +4826,10 @@ IF dtos(od)>'2006'
 
         r:=max(1,ascan(dokumenty[mag_poz:=max(1,ascan(magazyny,nr_mag))],smb_dow))
         if (x:=dok_par[mag_poz,r,A_KPR+1]) <> '{|'
-           x:='{||'+x+'}'
+          wb:=hb_macroBlock(x) 
+        else
+          wb:=&x
         endif
-        wb:=&x
         aeval(getlines(dok_par[mag_poz,r,A_KPR],","),{|i,j|i:=val(i),j:=eval(wb,i),if(valtype(j)='N',(coltot[i]+=j,STRONTOT[i]+=j),)})
         skip
       enddo
@@ -4868,9 +4869,10 @@ ELSE
       do while data<=dm .and. mag_biez=D_MM
         r:=max(1,ascan(dokumenty[mag_poz:=max(1,ascan(magazyny,nr_mag))],smb_dow))
         if (x:=dok_par[mag_poz,r,A_KPR+1]) <> '{|'
-           x:='{||'+x+'}'
+          wb:=hb_macroBlock(x) 
+        else
+          wb:=&x
         endif
-        wb:=&x
         aeval(getlines(dok_par[mag_poz,r,A_KPR],","),{|i,j|i:=val(i),j:=eval(wb,i),coltot[i]+=j,STRONTOT[i]+=j})
         skip
       enddo
@@ -5047,9 +5049,10 @@ ENDIF
 #undef D_SUBKEY
 #undef F_SUBDOK
         if (x:=dok_par[mag_poz,r,A_KPR+1]) <> '{|'
-           x:='{||'+x+'}'
+          wb:=hb_macroBlock(x) 
+        else
+          wb:=&x
         endif
-        wb:=&x
         x:=getlines(dok_par[mag_poz,r,A_KPR],",")
         z:=array(len(x))
         aeval(x,{|a,b|a:=val(a),x[b]:=a,z[b]:=eval(wb,a)})

@@ -42,15 +42,6 @@ next i
 
 return left(x,12)+str((220-a)%10,1)
 ********************************
-func mkbl(b)
-if valtype(b)='C'
-   if b<>'{|'
-     b:='{||'+b+'}'
-   endif
-   b:=&b
-endif
-Return b
-*******************
 #ifdef UpP
 function UPP(x)
 RETURN UpP(x)
@@ -1085,17 +1076,19 @@ win:=window(i,j)
 
 
              if valtype(x:=v[j])='C'
-                if x<>'{|'
-                   x:='{||'+x+'}'
-                endif
-                v[j]:=&x
+               if x<>'{|'
+                  v[j]:=hb_macroBlock(x) 
+               else
+                  v[j]:=&x
+               endif
              endif
 
              if valtype(x:=w[j])='C'
-                if x<>'{|'
-                   x:='{||'+x+'}'
-                endif
-                w[j]:=&x
+               if x<>'{|'
+                  w[j]:=hb_macroBlock(x) 
+               else
+                  w[j]:=&x
+               endif
              endif
 
              if valtype(w[j])='L' .and. w[j]

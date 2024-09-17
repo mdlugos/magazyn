@@ -724,7 +724,7 @@ DO CASE
            if _sret=2
               set relation to index+mag_biez into STANY
               _sfilt:='STANY->NR_MAG="'+mag_biez+'"'
-              _sfilb:=&('{||'+_sfilt+'}')
+              _sfilb:=hb_macroBlock(_sfilt)
            else
               set relation to index into STANY
            endif
@@ -747,7 +747,7 @@ DO CASE
            if _sret=2
               set relation to index+mag_biez into STANY
               _sfilt:='STANY->NR_MAG="'+mag_biez+'"'
-              _sfilb:=&('{||'+_sfilt+'}')
+              _sfilb:=hb_macroBlock(_sfilt)
            else
               set relation to index into STANY
            endif
@@ -773,7 +773,7 @@ DO CASE
            if _sret=2
               set relation to index+mag_biez into STANY
               _sfilt:='STANY->NR_MAG="'+mag_biez+'"'
-              _sfilb:=&('{||'+_sfilt+'}')
+              _sfilb:=hb_macroBlock(_sfilt)
               _spocz:=subs(_spocz,3)
            else
               set relation to index into STANY
@@ -890,7 +890,7 @@ DO CASE
       ELSE
          set relation to index+mag_biez into STANY
          _sfilt:='STANY->NR_MAG="'+mag_biez+'"'
-         _sfilb:=&('{||'+_sfilt+'}')
+         _sfilb:=hb_macroBlock(_sfilt)
       ENDIF
  #endif
         _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')

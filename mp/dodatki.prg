@@ -1599,7 +1599,7 @@ field haslo_spec,magazyn,magazynier
    XSELECT OBSLUGA READONLY
        LOCATE FOR EvaldB({|txt,operator|mag_biez==magazyn .and. Trim(operator)==Trim(magazynier) .and. lower(txt)==TRIM(A_DECRYPT(haslo_spec))},txt,operator)
        IF EOF()
-          ? hb_utf8ToStr("złe hasło ...")
+          ? hb_UTF8ToStr("złe hasło ...")
       use
       inkey(2)
       break

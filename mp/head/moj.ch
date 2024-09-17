@@ -1,3 +1,9 @@
+#ifndef __PLATFORM__DOS
+  #define A_KSEF
+  #define A_UNICODE 'UTF8MD'
+  #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
+#endif
+
 //#include "lan.ch"
 #include "mdstd.ch"
 
@@ -9,16 +15,12 @@
   #define A_WIN_PRN eval(memvar->do_getoprn)
   #define A_ZEBRA
 #endif
-#ifndef __PLATFORM__DOS
-  #define A_KSEF
-  #define A_UNICODE 'UTF8MD'
-  #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
-#endif
 
 //#define A_ADS 1
-//#define UpP(x) uPp(x,'UTF8MD')
-#define EvAlDb(x) &(x)
-#define EvaldB eVal
+//#define UpP(x) uPp(x,A_UNICODE)
+
+//upper z UTF8MD już gotowe, podobnie z PL852M
+#define UpP(x) UPPER(x)
 #define PC852 'PL852M'
 //#define A_CDX VFPCDX
 //#define A_HBGET

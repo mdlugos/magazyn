@@ -1,21 +1,29 @@
-#define mkdir(x) makedir(x)
+#ifdef A_UNICODE
+#define hb_UTF8ToStr(x) x
+#endif
+
+#ifndef EvAlDb
+  #define EvAlDb(x) &(x)
+#endif
+#ifndef EvaldB
+  #define EvaldB eVal
+#endif    
+
 #command SET RDD DEFAULT [TO] <x> => REQUEST <x>;rddsetdefault(<"x">)
 #command @ <top>, <left>, <bottom>, <right> BOX UNICODE <string> [COLOR <color>] => ;
-         @ <top>, <left>, <bottom>, <right> BOX HB_UTF8TOSTRBOX(<string>) [COLOR <color>]
+         @ <top>, <left>, <bottom>, <right> BOX hb_UTF8ToStrBox(<string>) [COLOR <color>]
 
 #command @ <row>, <col> BOX <exp> UNICODE [COLOR <clr>] => ;
          hb_DispOutAtBox( <row>, <col>, hb_UTF8ToStrBox(<exp>) [, <clr>] )
 
 #command @ <row>, <col> SAY <exp> UNICODE [PICTURE <pic>] [COLOR <clr>] => ;
-         DevPos( <row>, <col> ) ; DevOutPict( HB_UTF8TOSTR(<exp>), <pic> [, <clr>] )
+         DevPos( <row>, <col> ) ; DevOutPict( hb_UTF8ToStr(<exp>), <pic> [, <clr>] )
 #command @ <row>, <col> SAY <exp> UNICODE [COLOR <clr>] => ;
-         DevPos( <row>, <col> ) ; DevOut( HB_UTF8TOSTR(<exp>) [, <clr>] )
+         DevPos( <row>, <col> ) ; DevOut( hb_UTF8ToStr(<exp>) [, <clr>] )
 #command @ <row>, <col> PROMPT <prompt> UNICODE [MESSAGE <msg>] => ;
-         __AtPrompt( <row>, <col>, HB_UTF8TOSTR(<prompt>) [, HB_UTF8TOSTR(<msg>) ])
+         __AtPrompt( <row>, <col>, hb_UTF8ToStr(<prompt>) [, hb_UTF8ToStr(<msg>) ])
 
-
-hb_UTF8ToStrBox
-hb_DispOutAtBox
+#define mkdir(x) makedir(x)
 
 #ifdef __PLATFORM__UNIX
 #define HB_OsPathSeparator() "/"

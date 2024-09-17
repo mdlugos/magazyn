@@ -181,7 +181,7 @@ do while .t.
   txt=STRTRAN(txt,".lub.",".OR.")
   txt=STRTRAN(txt,".nie.","!")
   IF ""#txt .AND. ReadkeY()#K_ESC
-      b:=&("{||"+txt+"}")
+      b:=hb_macroBlock(txt)
       r:=eval(b)
       if valtype(r)#"L"
          b:=errornew()
@@ -210,7 +210,7 @@ ELSEIF valtype(_s)='A' .and. ReadkeY()#K_ESC .AND.! _sfilt==txt
     refresh(,_s)
     return .f.
   ELSE
-    _sfilb:=&("{||"+txt+"}")
+    _sfilb:=hb_macroBlock(txt)
     if !r
        @ _srow1+_sm-1,_scol1 say padc("PROSZĘ CZEKAĆ",_scoln) UNICODE COLOR "*"+_slinia
     endif

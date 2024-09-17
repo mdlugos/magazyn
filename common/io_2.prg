@@ -769,7 +769,7 @@ RETURN cCode
 func oprn(x)
 #ifdef D_HWPRN
    if valtype(oprn)='O'
-      return mkbl(x)
+      return hb_macroBlock(x)
    endif
    return {||NIL}
 #else
@@ -1501,8 +1501,8 @@ begin sequence
 #endif
     else
        r:=ltrim(subs(r,6))
-       b:=&(p+r+'}')
        if (p=='{||')
+         b:=hb_macroBlock(r)
 #ifdef A_SIMPLE
        y:={|x|x:=getlines(eval(b)),if(len(x)>0,fwrite(2,x[1]),NIL),aeval(x,{|y|fwrite(2,HB_EOL()),fwrite(2,y)},2)}
 #else
@@ -1513,6 +1513,7 @@ begin sequence
 #endif
 #endif
       else
+         b:=&(p+r+'}')
 #ifdef A_SIMPLE
        y:={|x|x:=getlines(eval(b,x),x),if(len(x)>0,fwrite(2,x[1]),NIL),aeval(x,{|y|fwrite(2,HB_EOL()),fwrite(2,y)},2)}
 #else
