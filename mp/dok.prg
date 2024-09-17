@@ -964,7 +964,11 @@ endif
        devout("    Data   Nr KPR Nr Kol")
     endif
 #endif
+#ifdef __PLATFORM__DOS
+  @ _frow+1,0,_frow+4,79 BOX UNICODE if(pozycja>D_LP1.and.!nowydm,'╠═╣║╝─╚║ ','╠═╣║╝═╚║ ')
+#else
   @ _frow+1,0,_frow+4,79 BOX UNICODE if(pozycja>D_LP1.and.!nowydm,'╠═╣║╜─╙║ ','╠═╣║╝═╚║ ')
+#endif  
   @ _frow+1,2 say   'Lp══Kod materiału══════════════════════Ilość════════Cena════════'+WANAZ UNICODE
 #ifdef A_SB
   @ _frow+1,10 SAY if(dok_p_r="S",'Stan bież.',if(""=dok_kon,'','══'+if(dok_zew="W","Zlecenie","Rodzaj"))) UNICODE

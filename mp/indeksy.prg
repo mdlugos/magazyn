@@ -1293,7 +1293,7 @@ endif
             --_sm
             SAVE LINE _sm+_srow1-1
           endif
-          if getscrtxt(savescreen(_sm+_srow1-1,_scol2 SSEND,_sm+_srow1-1,_scol2 SSEND))=hb_utf8Asc("■")
+          if getscrtxt(savescreen(_sm+_srow1-1,_scol2 SSEND,_sm+_srow1-1,_scol2 SSEND))="■"
              KiBorD(chr(9))
              exit
           endif

@@ -1334,7 +1334,7 @@ function CUT(_s,zmiana,key)
       NEXT
       RESTSCREEN(_srowb,_scol1-1,_srow1-1,_scol2,_scr)
       IF _sbf
-        @ _srow1-1,_scol1-1 BOX '╒'+REPLICATE('═',_scoln)+'╕' UNICODE COLOR _SRAMKA
+        @ _srow1-1,_scol1-1 BOX TOPD UNICODE COLOR _SRAMKA
         @ _srow1-1,_scol1+_snagkol SAY R1TO2(_snagl) COLOR _SRAMKA
       ELSE
         @ _srow1-1,_scol1-1 BOX '┌'+REPLICATE('─',_scoln)+'┐' UNICODE COLOR _SRAMKA
@@ -1379,7 +1379,7 @@ end sequence
       _srow2=_srow1+_si
       RESTSCREEN(_srow2+1,_scol1-1,_srowe,_scol2,SUBSTR(_scr,1+(_srow2+1-_srowb)*(_scoln+2)*D_REST))
       IF _sef
-        @ _srow2,_scol1-1 BOX '╘'+REPLICATE('═',_scoln)+'╛' UNICODE COLOR _SRAMKA
+        @ _srow2,_scol1-1 BOX BOTD UNICODE COLOR _SRAMKA
         @ _srow2,_scol1+_snagkol SAY R1TO3(_snagl) COLOR _SRAMKA
       ELSE
         @ _srow2,_scol1-1 BOX '└'+REPLICATE('─',_scoln)+'┘' UNICODE COLOR _SRAMKA

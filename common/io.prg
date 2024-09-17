@@ -876,7 +876,11 @@ IF _c
    IF LEN(ARRAY)<maxrow()
       @ _a,_b,_c,_d BOX UNICODE '╔═╗║╝═╚║' COLOR "GR+/GR"
     ELSE
+#ifdef __PLATFORM__DOS
+      @ _a,_b,_c,_d BOX UNICODE '╔─╗║╝─╚║' COLOR "GR+/GR"
+#else
       @ _a,_b,_c,_d BOX UNICODE '╓─╖║╜─╙║' COLOR "GR+/GR"
+#endif
    ENDIF
    if tyt#NIL
       @ _a,_b+1 SAY left(tyt,_d-_b) COLOR "GR+/GR"
