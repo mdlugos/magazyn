@@ -591,8 +591,8 @@ private gt
           end sequence
        else
        if dbSEEK(pad(nr_faktury,D_MM),.f.)
-          ? "Przed korektą:"
-//          ?
+          ? hb_UTF8ToStr("Przed korektą:")
+//        ?
           main->(dbSEEK(dM->(KEY_DOK+NR_DOWODU),.f.))
 #ifdef A_DFP
           df:=.f.
@@ -1648,7 +1648,7 @@ if ret
                  ret:=.t.
               endif
            elseif b=HB_BCHAR(2)+'ERR'
-              messagehb_UTF8ToStr(('Drukarka zgłasza błąd ramki: ')+b)
+              message(hb_UTF8ToStr('Drukarka zgłasza błąd ramki: ')+b)
            else
               message(hb_UTF8ToStr('Niedorzeczna odpowiedź drukarki: ')+b)
            endif
@@ -1721,7 +1721,7 @@ local s:=' ',ret,disp,x,kod
               ret:=.t.
            endif
            //ack:=pad(s,hb_blen(ack))
-	   ack:=s+space(hb_blen(ack)-hb_blen(s))
+           ack:=s+space(hb_blen(ack)-hb_blen(s))
            if !disp .and. ret
               exit
            endif
@@ -1745,7 +1745,7 @@ local s:=' ',ret,disp,x,kod
         disp:=.t.
      endif
      if s%32>=16
-        l+=hb_UTF8ToStr(";SKASOWANY CMOS.")
+        l+=";SKASOWANY CMOS."
         rtr:=NIL
         disp:=.t.
      endif
@@ -1761,7 +1761,7 @@ local s:=' ',ret,disp,x,kod
         l+=hb_UTF8ToStr(";W PAMIĘCI DRUKARKI ZNAJDUJE SIĘ DOKUMENT DO WYDRUKOWANIA.")
      endif
      if s%2=1
-        l+=hb_UTF8ToStr(";BRAK WOLNEGO MIEJSCA W BAZIE KONTRLONEJ NAZW I STAWEK.")
+        l+=";BRAK WOLNEGO MIEJSCA W BAZIE KONTRLONEJ NAZW I STAWEK."
         rtr:=NIL
         disp:=.t.
      endif
@@ -2226,7 +2226,7 @@ memvar aux,df_ver
            tone(130,3)
            if 1=alarm(hb_UTF8ToStr("BŁĄD DRUKARKI PARAGONÓW!")+l+hb_UTF8ToStr(";CZY PRÓBOWAĆ JESZCZE RAZ?"),{"TAK","NIE"})
               if rswrite(3,HB_BCHAR(27)+"%")=2 .and. rsread(3,@s,1)=1 .and. s=HB_BCHAR(6)
-                 alarm("DRUKUJĘ ZALEGŁY RAPORT DOBOWY!")
+                 alarm(hb_UTF8ToStr("DRUKUJĘ ZALEGŁY RAPORT DOBOWY!"))
               endif
               l:=""
               x:=seconds()

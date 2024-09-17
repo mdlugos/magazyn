@@ -326,7 +326,7 @@ DO WHILE .T.
       loop
     endif
     txt+=HB_KEYCHAR(i)
-    ?? hb_UTF8ToStr("♦")
+    ?? if(HB_CDPISUTF8(),"♦",chr(4))
   enddo
 
 #ifndef A_DECRYPT

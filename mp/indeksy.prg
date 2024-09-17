@@ -367,7 +367,7 @@ ret := hb_UTF8ToStr(ret)
      #endif
     #endif
    #endif
-   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"■",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,6,CEOKR,"@E ")
+   #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,6,CEOKR,"@E ")
   #else
    #ifdef A_7
     #ifdef A_KODY
@@ -376,12 +376,12 @@ ret := hb_UTF8ToStr(ret)
      #define SHORTTXT
     #else
      #ifdef A_FA
-      #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"■",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
+      #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
      #else
       #ifdef A_WA
-       #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"■",RET)+strpic(if((D_ST)=0,STANY->cena_przy, D_WA / D_ST) D_CF8,8,CEOKR,"@E ",.t.)
+       #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET)+strpic(if((D_ST)=0,STANY->cena_przy, D_WA / D_ST) D_CF8,8,CEOKR,"@E ",.t.)
       #else
-       #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,"■",RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
+       #define SHORTTXT +IF(STANY->DATA_ZMIAN>DatY->data_gran,hb_UTF8ToStr("■"),RET)+strpic(if(il=NIL,indx_mat->cenA,cenA) D_CF8,8,CEOKR,"@E ",.t.)
       #endif
      #endif
     #endif
@@ -1122,7 +1122,7 @@ DO CASE
             _slth:=7
             refresh(0,_s)
             getlist:={}
-            bl:=message("NIE POTRAFIĘ PRZEPISAĆ DO WŁASNEJ KARTOTEKI;- INDEKS ZAJĘTY;PROSZĘ PODAĆ NOWY SYTMBOL:")
+            bl:=message(hb_UTF8ToStr("NIE POTRAFIĘ PRZEPISAĆ DO WŁASNEJ KARTOTEKI;- INDEKS ZAJĘTY;PROSZĘ PODAĆ NOWY SYTMBOL:"))
             @ bl[3]-1,bl[4]-18 get _skey[2] picture "@RK ####-###-###-###" valid !(dbseek(mag_biez+_skey[2],.f.) .and. stan#0 .and. cenA_zaK#_skey[3])
             read
             message(bl)
@@ -1156,7 +1156,7 @@ DO CASE
          proc_mar:=_skey[8]
          if hlink[3]
             getlist:={}
-            _skey:=message("PROSZĘ PODAĆ PROCENT MARŻY:    %")
+            _skey:=message(hb_UTF8ToStr("PROSZĘ PODAĆ PROCENT MARŻY:    %"))
             @ _skey[1]+1,_skey[4]-5 get proc_mar picture "@K ##"
             read
             message(_skey)
@@ -1279,7 +1279,7 @@ endif
             ++_sm
             SAVE LINE _sm+_srow1-1
           endif
-          if savescreen(_sm+_srow1-1,_scol2 SSEND,_sm+_srow1-1,_scol2 SSEND)="■"
+          if getscrtxt(savescreen(_sm+_srow1-1,_scol2 SSEND,_sm+_srow1-1,_scol2 SSEND))=hb_UTF8ToStr("■")
              KiBorD(chr(9))
              exit
           endif
@@ -1293,7 +1293,7 @@ endif
             --_sm
             SAVE LINE _sm+_srow1-1
           endif
-          if savescreen(_sm+_srow1-1,_scol2 SSEND,_sm+_srow1-1,_scol2 SSEND)="■"
+          if getscrtxt(savescreen(_sm+_srow1-1,_scol2 SSEND,_sm+_srow1-1,_scol2 SSEND))=hb_utf8Asc("■")
              KiBorD(chr(9))
              exit
           endif

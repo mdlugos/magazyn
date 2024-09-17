@@ -1,9 +1,12 @@
-#ifdef __PLATFORM__DOS
-#define D_CDP PC852
+#ifdef A_UNICODE
+   #define D_CDP 'UTF8MD'
 #else
-#define D_CDP 'UTF8MD'
+   #ifdef __PLATFORM__DOS
+      #define D_CDP PC852
+   #else
+      #define D_CDP PC852
+   #endif
 #endif
-
 
 #ifdef A_EXT
 request A_EXT
@@ -540,7 +543,7 @@ static s:=0,ee:=NIL
           setpos(f[3]-1,f[2]+1)
           select (cMessage)
           if empty(c)
-             ordCondSet(,,,,{||dispout("▒"),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
+             ordCondSet(,,,,{||dispout(hb_UTF8ToStr"▒")),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
           else
              ordCondSet( expand(c),{||&c},,,{||dispout(hb_UTF8ToStr("▒")),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
           endif
@@ -940,7 +943,7 @@ do while !(al)->(if(empty(rec),dbrlock(),dbrlock(rec)))
          return c
       endif
 #ifdef SIMPLE
-      ? "[Esc] - rezygnacja, Próba  "
+      ? hb_UTF8ToStr("[Esc] - rezygnacja, Próba  ")
    else
       message(1)
 #ifdef __HARBOUR__
@@ -998,7 +1001,7 @@ do while !(al)->(flock())
          return c
       endif
 #ifdef SIMPLE
-      ? "[Esc] - rezygnacja, Próba"
+      ? hb_UTF8ToStr("[Esc] - rezygnacja, Próba")
    else
       ?? chr(8)+message(1)
 #else

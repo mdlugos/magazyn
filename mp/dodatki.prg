@@ -172,7 +172,7 @@ DO CASE
    CASE m=6
 
    if stary_rok#NIL
-      txt:={"POWRÓT"} //nie wiem, jak gęboko zakopany
+      txt:={hb_UTF8ToStr("POWRÓT")} //nie wiem, jak gęboko zakopany
    else
       txt:={}
    endif
@@ -225,7 +225,7 @@ DO CASE
       m:=1
 #ifdef PLWIN
     #include   'hbgtinfo.ch'
-      aczojs({"98x32","80x25 (Norm)","Zmieniaj ilość linii","Zmieniaj wielkość czcionki","Pełny ekran (Alt+Enter)"},"",@m)
+      aczojs({"98x32","80x25 (Norm)",hb_UTF8ToStr("Zmieniaj ilość linii"),hb_UTF8ToStr("Zmieniaj wielkość czcionki"),hb_UTF8ToStr("Pełny ekran (Alt+Enter)")},"",@m)
       do case
       case m<2
         SetMode(32,98)
@@ -1207,7 +1207,7 @@ endif
 
 #define NTRIM(n)    ( LTrim(Str(n)) )
   ?
-  ? "Błąd "
+  ? hb_UTF8ToStr("Błąd ")
 
   // add subsystem name if available
   if ( ValType(w:subsystem) == "C" )
@@ -1307,23 +1307,23 @@ procedure inwentura
 memvar P_36LPI,P_12LPI,P_6LPI,P_8LPI,P_SUPON,P_SUPOFF,P_UON,P_UOFF
 #else
 #ifdef A_PCL
-#define P_36LPI '&l2C'
-#define P_12LPI '&l4C'
-#define P_6LPI  '&l8C'
-#define P_8LPI  '&l6C'
-#define P_SUPON '(s7V'
-#define P_SUPOFF '(s12V'
-#define P_UON   '&d0D'
-#define P_UOFF   '&d@'
+#define P_36LPI hb_BChar(0x1B)+'&l2C'
+#define P_12LPI hb_BChar(0x1B)+'&l4C'
+#define P_6LPI  hb_BChar(0x1B)+'&l8C'
+#define P_8LPI  hb_BChar(0x1B)+'&l6C'
+#define P_SUPON hb_BChar(0x1B)+'(s7V'
+#define P_SUPOFF hb_BChar(0x1B)+'(s12V'
+#define P_UON   hb_BChar(0x1B)+'&d0D'
+#define P_UOFF   hb_BChar(0x1B)+'&d@'
 #else
-#define P_36LPI '3'
-#define P_12LPI '3'
-#define P_8LPI  '0'
-#define P_6LPI  '2'
-#define P_SUPON 'S1'
-#define P_SUPOFF 'T'
-#define P_UON   '-1'
-#define P_UOFF   '-0'
+#define P_36LPI hb_BChar(0x1B)+'3'+hb_BChar(0x06)
+#define P_12LPI hb_BChar(0x1B)+'3'+hb_BChar(0x12)
+#define P_8LPI  hb_BChar(0x1B)+'0'
+#define P_6LPI  hb_BChar(0x1B)+'2'
+#define P_SUPON hb_BChar(0x1B)+'S1'
+#define P_SUPOFF hb_BChar(0x1B)+'T'
+#define P_UON   hb_BChar(0x1B)+'-1'
+#define P_UOFF   hb_BChar(0x1B)+'-0'
 #endif
 #endif
 MEMVAR GETLIST
@@ -1504,7 +1504,7 @@ enddo
 if sflag .and. lp>ile
 ?? space(57),strpic(wat,12,A_ZAOKR,"@E ",.f.)
 endif
-? "Podpis osoby odpowiedzialnej materialnie                                Podpisy zespołu spisującego"
+? hb_UTF8ToStr("Podpis osoby odpowiedzialnej materialnie                                Podpisy zespołu spisującego")
 ?? spec(P_6LPI+ccpi(4)+chr(13)+chr(10))
 if lp>ile
    break
@@ -1586,7 +1586,7 @@ field haslo_spec,magazyn,magazynier
       loop
     endif
     txt+=hb_keyChar(m)
-    ?? "♦"
+    ?? if(HB_CDPISUTF8(),"♦",chr(4))
   enddo
     set cursor off
    select 0

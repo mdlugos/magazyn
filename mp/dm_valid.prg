@@ -425,7 +425,7 @@ return r
        kk:=b
        getactive():updatebuffer()
        b:=subs(kk,4,1)
-       if !aczojs(zaklady,@b,,,"Zakłady:")
+       if !aczojs(zaklady,@b,,,hb_UTF8ToStr("Zakłady:"))
           getactive():pos:=4
           return .f.
        endif
@@ -460,7 +460,7 @@ return r
        sk:=b
        getactive():updatebuffer()
        b:=subs(sk,4,1)
-       if !aczojs(zaklady,@b,@j,,"Zakłady:")
+       if !aczojs(zaklady,@b,@j,,hb_UTF8ToStr("Zakłady:"))
           getactive():pos:=4
           return .f.
        endif
@@ -478,7 +478,7 @@ return r
        aeval(dzial,{|x,i|z[i]:=b=trim(substr(x,4,1))})
        b:=subs(sk,5)
        j:=NIL
-       if !aczojs(dzial,@b,@j,z,"Działy:")
+       if !aczojs(dzial,@b,@j,z,hb_UTF8ToStr("Działy:"))
           getactive():pos:=5
           return .f.
        endif
@@ -519,21 +519,21 @@ return r
       cz=substr(nz,2,2)
       dz=substr(nz,4,2)
    do while .t.
-      if !aczojs(zaklady,@za,,,"Zakłady")
+      if !aczojs(zaklady,@za,,,hb_UTF8ToStr("Zakłady"))
          getactive():pos:=1
          return .f.
       elseif nz#za
          nz:=za+cz+dz+subs(nz,6)
          getactive():updatebuffer()
          loop
-      elseif !aczojs(czynnosc,@cz,,,"Czynność")
+      elseif !aczojs(czynnosc,@cz,,,hb_UTF8ToStr("Czynność"))
          getactive():pos:=2
          return .f.
       elseif cz#substr(nz,2,2)
          nz:=za+cz+dz+subs(nz,6)
          getactive():updatebuffer()
          loop
-      elseif dz#subs(sk,5,2).and.(dzwz:=array(len(dzial)),aeval(dzial,{|x,i|dzwz[i]:=za=trim(substr(x,4,1))}),j:=NIL,!aczojs(dzial,@dz,@j,dzwz,"Działy"))
+      elseif dz#subs(sk,5,2).and.(dzwz:=array(len(dzial)),aeval(dzial,{|x,i|dzwz[i]:=za=trim(substr(x,4,1))}),j:=NIL,!aczojs(dzial,@dz,@j,dzwz,hb_UTF8ToStr("Działy")))
              getactive():pos:=4
              return .f.
       elseif dz#subs(nz,4,2)
@@ -630,9 +630,9 @@ endif
                    if empty(indexord())
                      w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
-                       index on &v tag main_ind eval {||dispout("▒"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v tag main_ind eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
-                       index on &v for &u tag main_ind eval {||dispout("▒"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v for &u tag main_ind eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      endif
                      //break
                    endif
@@ -641,9 +641,9 @@ endif
                      index on &v to (defa+y+HB_ps()+'main_ind')
                      w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
-                       index on &v to (defa+y+HB_ps()+'main_ind') eval {||dispout("▒"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
-                       index on &v to (defa+y+HB_ps()+'main_ind') for &u eval {||dispout("▒"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') for &u eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      endif
                      //break
                    else
@@ -750,9 +750,9 @@ endif
                    if empty(indexord())
                      w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
-                       index on &v tag main_ind eval {||dispout("▒"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v tag main_ind eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
-                       index on &v tag main_ind for &u eval {||dispout("▒"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v tag main_ind for &u eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      endif
                      //break
                    endif
@@ -761,9 +761,9 @@ endif
                      index on &v to (defa+y+HB_ps()+'main_ind')
                      w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
-                       index on &v to (defa+y+HB_ps()+'main_ind') eval {||dispout("▒"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
-                       index on &v to (defa+y+HB_ps()+'main_ind') for &u eval {||dispout("▒"),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') for &u eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      endif
                      //break
                    else
@@ -1312,7 +1312,7 @@ LOCAL ZNALAZ,recf,RECM,RECS,RECI,RECD,rec1,rec2,PRZE:=IL,A,B,c,d,j,oldp,dpushl,a
 memvar ppush,parr,pflag
 dpushl:=.f.
 if ppush
-   if nim="♫"
+   if nim=IF(hb_cdpIsUTF8(),"♫",chr(0x0E))
    dpushl:=.t.
 #ifdef A_MM
    mag_biez:=parr[7]
@@ -1840,7 +1840,7 @@ endif
           endif
 #ifndef A_MINUS
         else
-         aadd(ames,message('NA STANIE JEST TYLKO'+str(STANY->stan)+" "+(lam)->jm+";Nie mam z czego rozchodować"+strpic(-prze,11,ILDEC,,.t.)+" "+(lam)->jm))
+         aadd(ames,message('NA STANIE JEST TYLKO'+str(STANY->stan)+" "+(lam)->jm+hb_UTF8ToStr(";Nie mam z czego rozchodować")+strpic(-prze,11,ILDEC,,.t.)+" "+(lam)->jm))
        endif
 #endif
       endif
@@ -1852,7 +1852,7 @@ endif
 #ifdef A_JMO
     if miar_opcja
        @ _fk+1,48 say (lam)->jm_opcja
-       if !_fnowy .and. oldp#(lam)->przel .and. il#0 .and. il%oldp=0 .and. 1=alarm("ZMIANA KWANTU Z"+str(oldp,4)+" NA"+str((lam)->przel,4)+";CZY ZMIENIĆ OGÓLNĄ ILOŚĆ SZTUK",{"TAK","NIE"})
+       if !_fnowy .and. oldp#(lam)->przel .and. il#0 .and. il%oldp=0 .and. 1=alarm("ZMIANA KWANTU Z"+str(oldp,4)+" NA"+str((lam)->przel,4)+hb_UTF8ToStr(";CZY ZMIENIĆ OGÓLNĄ ILOŚĆ SZTUK"),{"TAK","NIE"})
           il:=int(il/oldp)*(lam)->przel
        elseif il#0
           aeval(getlist,{|g|if(g:name='il',g:display(),)})
@@ -2107,7 +2107,7 @@ if D_DIETANEG (pv#(lam)->proc_vat .or. cz#(lam)->D_ALTCEN) .AND.(_fnowy .or. il=
 #ifdef A_JMO
 if !_fnowy
     @ _fk+1,48 say (lam)->(if(miar_opcja,jm_opcja,jm))
-    if miar_opcja .and. oldp#(lam)->przel .and. il#0 .and. il%oldp=0 .and. 1=alarm("ZMIANA KWANTU Z"+str(oldp,4)+" NA"+str((lam)->przel,4)+";CZY ZMIENIĆ OGÓLNĄ ILOŚĆ SZTUK",{"TAK","NIE"})
+    if miar_opcja .and. oldp#(lam)->przel .and. il#0 .and. il%oldp=0 .and. 1=alarm("ZMIANA KWANTU Z"+str(oldp,4)+" NA"+str((lam)->przel,4)+hb_UTF8ToStr(";CZY ZMIENIĆ OGÓLNĄ ILOŚĆ SZTUK"),{"TAK","NIE"})
        il:=int(il/oldp)*(lam)->przel
     elseif il#0
        aeval(getlist,{|g|if(g:name='il',g:display(),)})
@@ -2313,7 +2313,7 @@ field spec_nr
    b:gotopblock:={||i:=1}
    b:skipblock:={|s|-i+(i:=min(max(1,i+s),len(asp)))}
    b:addcolumn(tbcolumnnew('opis',{||pad(asp[i,1],10)}))
-   b:addcolumn(tbcolumnnew('pudeł',{||tran(asp[i,2],"@Z #####")}))
+   b:addcolumn(tbcolumnnew(hb_UTF8ToStr('pudeł'),{||tran(asp[i,2],"@Z #####")}))
    b:addcolumn(tbcolumnnew('lot kod',{||asp[i,3]}))
    b:addcolumn(tbcolumnnew('palet',{||tran(asp[i,4],"@Z #####")}))
 #else
