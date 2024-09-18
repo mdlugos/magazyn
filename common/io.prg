@@ -389,7 +389,7 @@ function alarm(txt,parr,i)
 
   ? txt
   if empty(parr)
-    ?? " - Naciśnij [Enter]:"+chr(7)
+    ?? hb_UTF8ToStr(" - Naciśnij [Enter]:")+chr(7)
     xfr(0,@txt,254)
     return 1
   else
@@ -487,7 +487,7 @@ function alarm(txt,parr,ps,pe,keep)
   ink_flag:=parr=NIL
 
   if empty(parr)
-     parr:={"Naciśnij Enter"}
+     parr:={hb_UTF8ToStr("Naciśnij Enter")}
   endif
   IF PS=NIL
      PS:=0
@@ -1049,15 +1049,15 @@ win:=window(i,j)
 
        i:=1
        b:=tbrowsenew(win[1]+1,win[2]+1,win[3]-1,win[4]-1)
-       b:colsep:='│'
+       b:colsep:=hb_UTF8ToStrBox('│')
        if valtype(n)='A'
-          b:headsep:='┬─'
+          b:headsep:=hb_UTF8ToStrBox('┬─')
        endif
        b:gotopblock:={||i:=1,_a:=a[i],i}
        b:gobottomblock:={||i:=len(a),_a:=a[i],i}
        b:skipblock:={|n,l|l:=i,i+=n,i:=max(1,min(i,len(a))),_a:=a[i],i-l}
        if t<>NIL
-          b:footsep:='┴─'
+          b:footsep:=hb_UTF8ToStrBox('┴─')
        endif
 
        c:=tbcolumnnew(,{||i})

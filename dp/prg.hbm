@@ -1,0 +1,20 @@
+-odi -w1 -m -n
+#-debug -inc -rebuild
+-gui -gtwvt
+-lhbwin hbwin.hbc
+
+-i../common
+../common/mlcfunc.c ../common/cppl852m.c ../common/cp_utf8m.c
+
+main osobodni menu recept zapot surowce druki element dodatki
+
+../common/dm_form
+../common/io
+../common/error
+../common/help
+../common/io_2
+../common/clp_brow
+../common/mds
+../common/mds_spec
+../common/frmrun
+../common/getsys

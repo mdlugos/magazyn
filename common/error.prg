@@ -41,23 +41,6 @@ local i,n,t
 SET(_SET_DEBUG,.t.)
 ErrorBlock( {|e| DefError(e)} )
 
-t:=a+f+fa
-n:=int(hb_blen(t)/4)*4
-for i:=1 to n step 4
-  sc+=bin2l(hb_bsubstr(t,i,4))
-next
-
-if sc#0
-  altd()
-  quit
-endif
-
-a:=hb_UTF8ToStr(a)
-f:=hb_UTF8ToStr(f)
-fa:=hb_UTF8ToStr(fa)
-
-public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_a:=fa
-
 #ifdef __HARBOUR__
   hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
   REQUEST HB_LANG_PL,HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8MD
@@ -126,6 +109,26 @@ SET DELETED ON
 SET DATE    A_SET_DAT
 SET EPOCH TO year(date())-98
 SET CENTURY ON
+
+//header w UTF8 ale suma wylicozna dla kodowania PC852
+
+a:=hb_UTF8ToStr(a)
+f:=hb_UTF8ToStr(f)
+fa:=hb_UTF8ToStr(fa)
+
+t:=a+f+fa
+n:=int(hb_blen(t)/4)*4
+for i:=1 to n step 4
+  sc+=bin2l(hb_bsubstr(t,i,4))
+next
+
+if sc#0
+  altd()
+  quit
+endif
+
+public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_a:=fa
+
 
 #ifndef A_XPRN
 #ifdef A_PCL
@@ -543,7 +546,7 @@ static s:=0,ee:=NIL
           setpos(f[3]-1,f[2]+1)
           select (cMessage)
           if empty(c)
-             ordCondSet(,,,,{||dispout(hb_UTF8ToStr"▒")),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
+             ordCondSet(,,,,{||dispout(hb_UTF8ToStr("▒")),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
           else
              ordCondSet( expand(c),{||&c},,,{||dispout(hb_UTF8ToStr("▒")),message(1),.t.},int(1+lastrec()/(f[4]-f[2]-2)),RECNO(),,,,indeks->descend)
           endif

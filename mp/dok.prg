@@ -2766,7 +2766,7 @@ if si#STANY->(nr_mag+index)
       b:=wartosc
 #endif
    endif
-   seek si+dtos(da)+'@'
+   seek si+dtos(da)+HB_UCHAR(0x0A0)
 #ifdef A_WA
    exec {||a+=ilosc,b+=wartosc} rest while nr_mag+index=si
 #else

@@ -528,10 +528,12 @@ local lFresh, nCursSave, mGetVar, nLen
   mGetVar := Eval(oCol:block)
 
   nLen:=hb_fieldlen(oCol:heading)
-  
+
+#ifdef A_UNICODE  
   if valtype(mGetVar)='C'
     mGetVar+=space(nLen - Len(mGetVar))
   endif
+#endif
 
   // create a corresponding GET with ambiguous set/get block
   oGet := GetNew(Row(), Col(),{|x| if(PCount() == 0, mGetVar, mGetVar := x)},"mGetVar",oCol:picture,oB:colorSpec)
@@ -820,7 +822,7 @@ local b:=TBColumnNew(m[1],fb)
          b:block:={|x,y|if(x<>NIL,eval(fb,trim(x)),eval(fb))}
     elseif left(m[2],1)$"CQ"
          b:block:={|x,y|if(x<>NIL,x:=eval(fb,trim(x)),x:=eval(fb)),y:=len(x),if(y<m[3],x+=space(m[3]-y),x)} 
-         b:width:=min(m[3],maxcol()-1)
+         //b:width:=min(max(len(m[1]),m[3]),maxcol()-1)
     endif
 
 return b
