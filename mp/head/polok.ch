@@ -1,17 +1,15 @@
-  #ifdef __PLATFORM__WINDOWS
-    #define PLWIN
+#ifdef __PLATFORM__WINDOWS
+  #define PLWIN
 //    #define A_WIN_PRN eval(memvar->do_getoprn)
-    #define A_ZEBRA
-    #define A_EXT hb_hextonum, hb_numtohex, curdir
-    #define A_WIN_PRN .f.
-  #endif
+  #define A_ZEBRA
+  #define A_EXT hb_hextonum, hb_numtohex, curdir
+  #define A_WIN_PRN .f.
+#endif
 #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
 #define A_BACKUP MEMVAR->backup
 #define A_VIEWCZAK
 //#define A_VIEWVAT
 #define A_WL
-#define EvAlDb(x) &(x)
-#define EvaldB eVal
 #define UpP(x) UPPER(x)
 #define PC852 "PL852M"
 #include "lan.ch"

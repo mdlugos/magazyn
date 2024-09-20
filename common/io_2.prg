@@ -48,7 +48,7 @@ if k#NIL
      if !empty(b)
       set index to (b)
      else
-      ordcreate(,a,k,{||&k})
+      ordcreate(,a,k,EvAlDb('{||'+k+'}'))
      endif
    endif
    set order to 1
@@ -995,7 +995,7 @@ while valtype(oprn)='O' .and. ""<>x
       c:={oprn:fontName,oprn:FontPointSize,oprn:FontWidth}
       oprn:setfont('Arial',8,{0,0},,,,255)
       oprn:Line( oprn:LeftMargin, oprn:BottomMargin -oprn:LineHeight, oprn:RightMargin, oprn:BottomMargin - oprn:LineHeight )
-      oprn:TextOutAt(oprn:LeftMargin ,oprn:BottomMargin ,A_STOPKA,,,24)
+      oprn:TextOutAt(oprn:LeftMargin ,oprn:BottomMargin ,hb_UTF8ToStr(A_STOPKA),,,24)
       oprn:setfont(c[1],c[2],c[3],,,,255)
 #endif
       oprn:NewPage(.t.)
@@ -1008,7 +1008,7 @@ while valtype(oprn)='O' .and. ""<>x
       c:={oprn:fontName,oprn:FontPointSize,oprn:FontWidth,c}
       oprn:setfont('Arial',8,{0,0},,,,255)
       oprn:Line( oprn:LeftMargin, oprn:BottomMargin -oprn:LineHeight, oprn:RightMargin, oprn:BottomMargin - oprn:LineHeight )
-      oprn:TextOutAt(oprn:LeftMargin ,oprn:BottomMargin ,A_STOPKA,,,24)
+      oprn:TextOutAt(oprn:LeftMargin ,oprn:BottomMargin ,hb_UTF8ToStr(A_STOPKA),,,24)
       oprn:setfont(c[1],c[2],c[3],,,,255)
       c:=c[4]
 #endif
@@ -1311,7 +1311,7 @@ if valtype(oprn)='O'
       c:={oprn:fontName,oprn:FontPointSize,oprn:FontWidth}
       oprn:setfont('Arial',8,{0,0},,,,255)
       oprn:Line( oprn:LeftMargin, oprn:BottomMargin -oprn:LineHeight, oprn:RightMargin, oprn:BottomMargin - oprn:LineHeight )
-      oprn:TextOutAt(oprn:LeftMargin ,oprn:BottomMargin ,A_STOPKA,,,24)
+      oprn:TextOutAt(oprn:LeftMargin ,oprn:BottomMargin ,hb_UTF8ToStr(A_STOPKA),,,24)
       oprn:setfont(c[1],c[2],c[3],,,,255)
 #endif
      oprn:NewPage(.t.)

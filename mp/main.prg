@@ -133,7 +133,7 @@ aeval(defa,{|x,i|if(right(x,1)<>HB_ps(),defa[i]+=HB_ps(),)})
 #endif
   a:=DiskName()+HB_OsDriveSeparator()+HB_ps()+curdir(DiskName())+HB_ps()
 
-#ifdef __PLATFORM__WINDOWS
+#ifndef __PLATFORM__UNIX
 if curdir()=HB_ps()
   a:=HB_ps()+curdir()+HB_ps()
 endif

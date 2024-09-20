@@ -1,12 +1,15 @@
-#ifdef A_UNICODE
+#ifdef __PLATFORM__DOS
    #define D_CDP 'UTF8MD'
 #else
-   #ifdef __PLATFORM__DOS
-      #define D_CDP PC852
+   #ifdef A_UNICODE
+      #define D_CDP 'UTF8MD'
    #else
-      #define D_CDP PC852
+      #define D_CDP 'PL852M'
    #endif
 #endif
+
+#undef PC852
+#define PC852 'PL852M'
 
 #ifdef A_EXT
 request A_EXT
