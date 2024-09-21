@@ -85,16 +85,18 @@ if key=0
          endif
       endif
    endif
-   if IT_KOPCJA
-      _snagl:=hb_UTF8ToStr("Numer┬─Nazwa")+replicate(hb_UTF8ToStr("─"),min(len(nazwa),maxcol()-6-A_KTL-4*A_WAL)-6)+hb_UTF8ToStr("╦─(Wn)")+padc("Obroty",2*A_WAL-9,hb_UTF8ToStr("─"))+hb_UTF8ToStr(hb_utf8Stuff("(Ma)─╦─(Wn)"+replicate("─",2*A_WAL-9)+"(Ma)",A_WAL+1,13,"Saldo końcowe"))
-      _sprompt:={|skw,skm|if(DatY->d_z_rok=DatY->d_z_mies1,(skw:=sald_rok_w,skm:=sald_rok_m),if(DatY->d_z_mies2=DatY->d_z_mies1,(skw:=sald_poc_w,skm:=sald_poc_m),(skw:=sald_kon_w,skm:=sald_kon_m))),;
-                konto+I+padr(nazwa,min(len(nazwa),maxcol()-6-A_KTL-4*A_WAL))+I2+strpic(sald_bie_w-skw,A_WAL,2,"@EZ ")+if(skw=skm,I,if(skw<skm,">","<"))+strpic(sald_bie_m-skm,A_WAL,2,"@EZ ")+I2+strpic(IF(SALD_BIE_W>SALD_BIE_M,sald_bie_w-SALD_BIE_M,0),A_WAL,2,"@EZ ")+I+strpic(IF(SALD_BIE_M>SALD_BIE_W,sald_bie_m-SALD_BIE_W,0),A_WAL,2,"@EZ ")}
-   else
-      _snagl:=hb_UTF8ToStr("Numer┬─Nazwa")+replicate(hb_UTF8ToStr("─"),min(len(nazwa),maxcol()-6-A_KTL-4*A_WAL)-6)+hb_UTF8ToStr("╦─(Wn)")+padc("Saldo pocz.",2*A_WAL-9,hb_UTF8ToStr("─"))+hb_UTF8ToStr("(Ma)─╦─(Wn)")+padc("Obroty",2*A_WAL-9,hb_UTF8ToStr("─"))+"(Ma)"
-      _sprompt:={|skw,skm|if(DatY->d_z_rok=DatY->d_z_mies1,(skw:=sald_rok_w,skm:=sald_rok_m),if(DatY->d_z_mies2=DatY->d_z_mies1,(skw:=sald_poc_w,skm:=sald_poc_m),(skw:=sald_kon_w,skm:=sald_kon_m))),;
-                konto+I+padr(nazwa,min(len(nazwa),maxcol()-6-A_KTL-4*A_WAL))+I2+strpic(IF(SKW>SKM,skw-SKM,0),A_WAL,2,"@EZ ")+I+strpic(IF(skm>SKW,SKM-SKW,0),A_WAL,2,"@EZ ")+I2+strpic(sald_bie_w-skw,A_WAL,2,"@EZ ")+if(sald_bie_w=sald_bie_m,I,if(sald_bie_w<sald_bie_m,">","<"))+strpic(sald_bie_m-skm,A_WAL,2,"@EZ ")}
-   endif
    _snagkol:=A_KTL-5
+   i:=if(_scol2=NIL,maxcol(),_scol2)
+   key:=hb_fieldlen('nazwa')
+   if IT_KOPCJA .and. i<=A_KTL+key+6*A_WAL
+      _snagl:=hb_UTF8ToStr("Numer┬─Nazwa")+replicate(hb_UTF8ToStr("─"),min(key,i-6-A_KTL-4*A_WAL)-6)+hb_UTF8ToStr("╦─(Wn)")+padc("Obroty",2*A_WAL-9,hb_UTF8ToStr("─"))+hb_UTF8ToStr("(Ma)─╦─(Wn)")+padc(hb_UTF8ToStr("Saldo końcowe"),2*A_WAL-9,hb_UTF8ToStr("─"))+"(Ma)"
+      _sprompt:={|skw,skm|if(DatY->d_z_rok=DatY->d_z_mies1,(skw:=sald_rok_w,skm:=sald_rok_m),if(DatY->d_z_mies2=DatY->d_z_mies1,(skw:=sald_poc_w,skm:=sald_poc_m),(skw:=sald_kon_w,skm:=sald_kon_m))),;
+                konto+I+padr(nazwa,min(key,i-6-A_KTL-4*A_WAL))+I2+strpic(sald_bie_w-skw,A_WAL,2,"@EZ ")+if(skw=skm,I,if(skw<skm,">","<"))+strpic(sald_bie_m-skm,A_WAL,2,"@EZ ")+I2+strpic(IF(SALD_BIE_W>SALD_BIE_M,sald_bie_w-SALD_BIE_M,0),A_WAL,2,"@EZ ")+I+strpic(IF(SALD_BIE_M>SALD_BIE_W,sald_bie_m-SALD_BIE_W,0),A_WAL,2,"@EZ ")}
+   else
+      _snagl:=left(hb_UTF8ToStr("Numer┬─Nazwa")+replicate(hb_UTF8ToStr("─"),if(key>=i-6-A_KTL-4*A_WAL,i-6-A_KTL-4*A_WAL,min(key,i-8-A_KTL-6*A_WAL))-6)+hb_UTF8ToStr("╦─(Wn)")+padc(hb_UTF8ToStr("Saldo początkowe"),2*A_WAL-9,hb_UTF8ToStr("─"))+hb_UTF8ToStr("(Ma)─╦─(Wn)")+padc("Obroty",2*A_WAL-9,hb_UTF8ToStr("─"))+hb_UTF8ToStr("(Ma)─╦─(Wn)")+padc(hb_UTF8ToStr("Saldo końcowe"),2*A_WAL-9,hb_UTF8ToStr("─"))+"(Ma)",i-_snagkol-2)
+      _sprompt:={|skw,skm|if(DatY->d_z_rok=DatY->d_z_mies1,(skw:=sald_rok_w,skm:=sald_rok_m),if(DatY->d_z_mies2=DatY->d_z_mies1,(skw:=sald_poc_w,skm:=sald_poc_m),(skw:=sald_kon_w,skm:=sald_kon_m))),;
+                konto+I+padr(nazwa,if(key>=i-6-A_KTL-4*A_WAL,i-6-A_KTL-4*A_WAL,min(key,i-8-A_KTL-6*A_WAL)))+I2+strpic(IF(SKW>SKM,skw-SKM,0),A_WAL,2,"@EZ ")+I+strpic(IF(skm>SKW,SKM-SKW,0),A_WAL,2,"@EZ ")+I2+strpic(sald_bie_w-skw,A_WAL,2,"@EZ ")+if(sald_bie_w=sald_bie_m,I,if(sald_bie_w<sald_bie_m,">","<"))+strpic(sald_bie_m-skm,A_WAL,2,"@EZ ")+I2+strpic(IF(SALD_BIE_W>SALD_BIE_M,sald_bie_w-SALD_BIE_M,0),A_WAL,2,"@EZ ")+I+strpic(IF(SALD_BIE_M>SALD_BIE_W,sald_bie_m-SALD_BIE_W,0),A_WAL,2,"@EZ ")}
+   endif
 
 elseif key=K_ESC
    return .t.
@@ -210,7 +212,7 @@ local win,getlist:={},nk,na,chg:=.f.,pos,snt,r,lock,wasl,spw,spm,skw,skm,a,kha,o
    spm:=sald_poc_m
    skw:=sald_kon_w
    skm:=sald_kon_m
-   win:=window(7+if(DatY->d_z_mies1>DatY->d_z_mies2,6,if(DatY->d_z_mies2>DatY->d_z_rok,3,0)),max(22+2*A_WAL,len(nk+na)+1),"w+/GR,i,,bg+/Gr,w+/b")
+   win:=window(7+if(DatY->d_z_mies1>DatY->d_z_mies2,6,if(DatY->d_z_mies2>DatY->d_z_rok,3,0)),max(22+2*A_WAL,A_KTL+hb_fieldlen('nazwa')+1),"w+/GR,i,,bg+/Gr,w+/b")
 #ifdef __PLATFORM__DOS   
    @ win[1]+ 3,win[2]+23 BOX replicate("═",A_WAL-5)+"Wn═══┬═══Ma"+replicate("═",A_WAL-5) UNICODE
 #else

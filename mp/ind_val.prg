@@ -104,7 +104,7 @@ if k=0
    endif
    if val(_spocz)=0
       ordsetfocus('SUR_NAZ')
-      _sbeg:=len(skladnik)+2
+      _sbeg:=hb_fieldlen('skladnik')+2
       _swar:=EvAlDb('{|p|'+ordkey()+'=p'+'}')
       if _slth>0
          dbseek(_spocz)
@@ -118,7 +118,7 @@ if k=0
            return .t.
          endif
       else
-         dbseek(str(val(_spocz),len(skladnik)))
+         dbseek(str(val(_spocz),hb_fieldlen('skladnik')))
          _spocz:=''
          _slth:=0
       endif
@@ -134,7 +134,7 @@ elseif k=K_ESC
    return .t.
 elseif ISALPHA(UpP(hb_keyChar(k))) .and. _sbeg=1
    ordsetfocus('SUR_NAZ')
-   _sbeg:=len(skladnik)+2
+   _sbeg:=hb_fieldlen('skladnik')+2
    _spocz:=LEFT(_spocz,len(_spocz)-_slth)+UpP(hb_keyChar(K))
    _slth:=1
    _swar:=EvAlDb('{|p|'+ordkey()+'=p'+'}')
@@ -155,7 +155,7 @@ elseif k=K_CTRL_RIGHT .and. _sbeg=1
     _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     _spocz:=LEFT(_spocz,len(_spocz)-_slth)
     _slth:=0
-    _sbeg:=len(skladnik)+2
+    _sbeg:=hb_fieldlen('skladnik')+2
     REFRESH LINE _sm+_srow1-1 DIRECTION 0
     refresh(1,_s)
 
@@ -210,7 +210,7 @@ return
 **************
 func nextni()
 local i,s,ni:=index
-  for i:=len(index) to 1 step -1
+  for i:=hb_fieldlen('index') to 1 step -1
     if isdigit(subs(index,i,1))
        ni:=subs(index,i+1)
        exit
@@ -409,10 +409,10 @@ endif
   lam:=recno()
 
   ni:=nextni()
-  s:=left(index,len(index)-len(ni))
+  s:=left(index,hb_fieldlen('index')-len(ni))
   dbSkip(1)
 
-  DBEval({||ni:=nextni(),s:=left(index,len(index)-len(ni))},,{|x|x:=val(ni),index=s .and. val(right(index,len(ni)))<=x+1},,,.F. )
+  DBEval({||ni:=nextni(),s:=left(index,hb_fieldlen('index')-len(ni))},,{|x|x:=val(ni),index=s .and. val(right(index,len(ni)))<=x+1},,,.F. )
 
   dbGoto(lam)
 
@@ -768,8 +768,8 @@ endif
     a:=select()
     sel('SUROWCE','SUR_KOD')
     SAYl 'Dieta:'
-    GETl id picture "@K! "+replicate("X",len(surowce->skladnik)) VALID {|g|!g:changed .or. SUROWCE->(szukam({,,,,1,len(trim(id)),'Surowce z Diety',{||field->skladnik+I+nazwa+I+field->jmag+' ='+str(field->przel)+' '+field->jedn},{|_skey,_s D_MYSZ|surinfo(_skey,_s,@id,ni D_MYSZ)} ,UpP(Trim(id))}).and.(setpos(g:row,g:col+len(field->skladnik)+1),dispout(left(nazwa,78-col())),.t.) )}
-    if dbseek(left(id,len(field->skladnik)))
+    GETl id picture "@K! "+replicate("X",(hb_fieldlen('skladnik'))) VALID {|g|!g:changed .or. SUROWCE->(szukam({,,,,1,len(trim(id)),'Surowce z Diety',{||field->skladnik+I+nazwa+I+field->jmag+' ='+str(field->przel)+' '+field->jedn},{|_skey,_s D_MYSZ|surinfo(_skey,_s,@id,ni D_MYSZ)} ,UpP(Trim(id))}).and.(setpos(g:row,g:col+hb_fieldlen('skladnik')+1),dispout(left(nazwa,78-col())),.t.) )}
+    if dbseek(left(id,hb_fieldlen('skladnik')))
        sayl left(nazwa,78-col())
     endif
     select (a)

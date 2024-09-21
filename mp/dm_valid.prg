@@ -175,10 +175,10 @@ DO WHILE .T.
 
 #ifdef A_KHSEP
 #define D_KH kontrahent
-#define D_KH1 pad(dost_odb,HB_FIELDLEN('DOST_ODB'))
+#define D_KH1 dost_odb
 #else
 #define D_KH hb_bleft(dost_odb,A_NRLTH)
-#define D_KH1 pad(if(val(dost_odb)=0,dost_odb,hb_bsubstr(dost_odb,A_NRLTH+2)),HB_FIELDLEN('DOST_ODB'))
+#define D_KH1 if(val(dost_odb)=0,dost_odb,pad(hb_bsubstr(dost_odb,A_NRLTH+2),HB_FIELDLEN('DOST_ODB')))
 #endif
      rf:=firMy->(recno())
      set order to 1
@@ -1270,14 +1270,14 @@ LOCAL ZNALAZ,recf,RECM,RECS,RECI,RECD,rec1,rec2,PRZE:=IL,A,B,c,d,j,oldp,dpushl,a
 
 #ifdef A_DIETA
   if dpushl:=dpush
-    if darr[dpos-1] <> left(nim,len(index))
+    if darr[dpos-1] <> left(nim,hb_fieldlen('index'))
 //       --dpos
        dpushl:=.f.
     else
  #ifdef A_KASA
-     il:=prze:=-val(subs(nim,len(index)+1))
-     pv:=subs(nim,len(index)+12,2)
-     cz:=val(subs(nim,len(index)+16,10))
+     il:=prze:=-val(subs(nim,hb_fieldlen('index')+1))
+     pv:=subs(nim,hb_fieldlen('index')+12,2)
+     cz:=val(subs(nim,hb_fieldlen('index')+16,10))
      wa:=pm*val(right(nim,10))
      if wa<>0
         ce:=ck:=wa/il
@@ -1293,12 +1293,12 @@ LOCAL ZNALAZ,recf,RECM,RECS,RECI,RECD,rec1,rec2,PRZE:=IL,A,B,c,d,j,oldp,dpushl,a
     endif
   #endif
      wz:=ROUND(pm*il*cz,A_ZAOKR)
-     nz:=subs(nim,len(index)+36)
-     nim:=pad(left(nim,len(index)),46)
+     nz:=subs(nim,hb_fieldlen('index')+36)
+     nim:=pad(left(nim,hb_fieldlen('index')),46)
  #else
-     //nz:=subs(nim,len(index)+2,6)
+     //nz:=subs(nim,hb_fieldlen('index')+2,6)
      //prze:=-val(subs(nim,rat(HB_UCHAR(0x00A0),nim)+1))
-     //nim:=pad(left(nim,len(index)),46)
+     //nim:=pad(left(nim,hb_fieldlen('index')),46)
  #endif
  #ifdef A_FA
      cenpz(_f,getlist)
@@ -1341,7 +1341,7 @@ if ppush
    pv:=parr[4]
    wz:=pm*parr[5]
    IF _fnowy
-      STANY->(dbseek(mag_biez+left(nim,len(index)),.f.))
+      STANY->(dbseek(mag_biez+left(nim,hb_fieldlen('index')),.f.))
 #ifndef STANY
       INDX_MAT->(dbseek(STANY->index))
 #endif
@@ -2514,7 +2514,7 @@ DO CASE
 #ifdef A_FFULL
       IF !empty(kh) .and. kh=numer_kol .and. !empty(_spocz) .and. UpP(_spocz)+' '=UpP(TRIM(nazwa))+' ' .and. !FIRMY->(eof())
 #else
-      IF !empty(kh) .and. kh=numer_kol .and. !empty(_spocz) .and. UpP(nazwa)=UpP(left(_spocz,len(nazwa))) .and. FIRMY->(!eof())
+      IF !empty(kh) .and. kh=numer_kol .and. !empty(_spocz) .and. UpP(nazwa)=UpP(left(_spocz,hb_fieldlen('nazwa'))) .and. FIRMY->(!eof())
 #endif
          return _sret:=.t.
          //return gfirma(13,_s,getlist)
@@ -2523,12 +2523,12 @@ DO CASE
       SET ORDER TO TAG FIRM_NUM
       sel('KH','KH')
       SET RELATION TO str(N1,A_NRLTH) INTO FIRMY
-      _sprompt:={||str(n1,A_NRLTH)+if(""=uwagi,I,"*")+n15+I+pad(longname,HB_FIELDLEN('LONGNAME'))}
+      _sprompt:={||str(n1,A_NRLTH)+if(""=uwagi,I,"*")+n15+I+longname}
 #else
 #ifdef A_FFULL
-      _sprompt:={||numer_kol+if(""=uwagi,I,"*")+nazwa+I+pad(longname,HB_FIELDLEN('LONGNAME'))}
+      _sprompt:={||numer_kol+if(""=uwagi,I,"*")+nazwa+I+longname}
 #else
-      _sprompt:={||numer_kol+if(""=uwagi,I,"*")+pad(nazwa,HB_FIELDLEN('NAZWA'))}
+      _sprompt:={||numer_kol+if(""=uwagi,I,"*")+nazwa}
 #endif
 #endif
       _spocz:=UpP(_spocz)
@@ -2548,7 +2548,7 @@ DO CASE
 #ifdef A_WL
                   h:=getwl(_spocz,@txt)
                   if h<>'n/n'
-                       _scol2:=_scol1+len(eval(_sprompt))+1
+                       _scol2:=_scol1+len(eval(_sprompt,0,_s,.t.))+1
                        if _scol2>maxcol()
                           _scol1-=_scol2-maxcol()
                           _scol1:=max(1,_scol1)
@@ -2564,7 +2564,7 @@ DO CASE
                           re:=trim(subs(re,_skey+2))+', '+left(re,_skey-1)
                        endif
                        goto lastrec()+1
-                       FIRM_EDIT(numer_kol,_s,pad(txt['name'],len(nazwa)),pad(txt['name'],len(longname)),pad(re,len(adres)),pad(txt['nip'],len(ident)),h)
+                       FIRM_EDIT(numer_kol,_s,pad(txt['name'],hb_fieldlen('nazwa')),pad(txt['name'],hb_fieldlen('longname')),pad(re,hb_fieldlen('adres')),pad(txt['nip'],hb_fieldlen('ident')),h)
                        return .f.
                   endif
 #endif
@@ -2687,7 +2687,7 @@ DO CASE
                   SET ORDER TO TAG FIRM_LNG
 
                   if indexord()>2 .and. dbSEEK(_spocz)
-                     _sbeg:=A_NRLTH+3+len(nazwa)
+                     _sbeg:=A_NRLTH+3+hb_fieldlen('nazwa')
                      if _spocz=UpP(trim(longname))
                         return gfirma(13,_s,getlist)
                      endif
@@ -2696,14 +2696,14 @@ DO CASE
                      _slth:=0
                      _sfilt:='['+txt+']$UPPER(longname)'
                      _sfilb:={||txt$UPPER(longname)}
-                     _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,I,"*")+nazwa+I+pad(longname,HB_FIELDLEN('LONGNAME')),if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+                     _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,I,"*")+nazwa+I+longname,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
                   endif
 #else
                   _spocz:=''
                   _slth:=0
                   _sfilt:='['+txt+']$UPPER(naZwa)'
                   _sfilb:={||txt$UPPER(naZwa)}
-                  _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,I,"*")+pad(nazwa,HB_FIELDLEN('NAZWA')),if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+                  _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,I,"*")+nazwa,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
 #endif
                endif
       ENDCASE
@@ -2721,12 +2721,12 @@ DO CASE
       kh:=numer_kol
       getlist[1]:display()
 #ifdef A_FFULL
-         D_O:=pad(trim(nazwa)+" * "+longname,len(dm->dost_odb))
+         D_O:=pad(trim(nazwa)+" * "+longname,dm->(hb_fieldlen('dost_odb')))
 #else
 #ifdef A_OLZBY
          d_o:=nazwa
 #else
-         d_o:=PAD(nazwa,LEN(dm->DOST_ODB))
+         d_o:=PAD(nazwa,dm->(hb_fieldlen('dost_odb')))
 #endif
 #endif
 #ifdef A_FA
@@ -2760,7 +2760,7 @@ DO CASE
                  x:=''
                endif
             endif
-            n_ksef:=pad(if(empty(x),'',left(x,10)+'-'+left(dtos(da),6)),len(DM->nr_ksef))
+            n_ksef:=pad(if(empty(x),'',left(x,10)+'-'+left(dtos(da),6)),DM->(hb_fieldlen('nr_ksef'))
 #endif
          endif
 #endif
@@ -2850,7 +2850,7 @@ DO CASE
 #ifdef A_FFULL
          SET ORDER TO TAG FIRM_LNG
          if indexord()>2
-            _sbeg+=len(nazwa)+1
+            _sbeg+=hb_fieldlen('nazwa')+1
          else
             _sbeg:=1
             SET ORDER TO TAG FIRM_NUM
@@ -2882,7 +2882,7 @@ DO CASE
 #ifdef A_FFULL
          SET ORDER TO TAG FIRM_LNG
          if indexord()>2
-            _sbeg+=len(nazwa)+1
+            _sbeg+=hb_fieldlen('nazwa')+1
          else
             SET ORDER TO TAG FIRM_NUM
          endif
@@ -3440,7 +3440,7 @@ if szukam(_s) .and. !eof()
    n_ksef:=field->nr_ksef
    dv:=stod(subs(n_ksef,12,8))
    varput(getlistactive(),'dd',dv)
-   varput(getlistactive(),'n_f',pad(field->nr_faktury,len(n_f)))
+   varput(getlistactive(),'n_f',pad(field->nr_faktury,DM->(hb_fieldlen('nr_faktury'))))
    if dataval(dv)
       varput(getlistactive(),'da',dv)
    endif

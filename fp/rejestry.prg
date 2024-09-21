@@ -12,7 +12,7 @@ field smb_dow,nr_dowodu
 field dowod
 #endif
 #ifndef A_IDENT
-  #define A_IDENT len(FIELD->ident)
+  #define A_IDENT hb_fieldlen('ident')
 #endif
 
 proc rejestry

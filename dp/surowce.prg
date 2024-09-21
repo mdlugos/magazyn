@@ -150,7 +150,7 @@ stat proc sdok2(_f,getlist,deep)
   @  5,_fco1+3 BOX if(empty(deep),'F9','══') UNICODE COLOR (_sbkgr)
   @  2,_fco1+2  get now picture "@K" valid {||nowy:=if(now=" ",!nowy,nowy),now:=if(nowy,"NOWY   ","POPRAWA"),.t.}
   @  2,_fco1+10 get NA picture "@KS23"
-  @  2,_fco1+34 get in picture "@!KS"+str(min(7,len(in)),1)
+  @  2,_fco1+34 get in picture "@!KS"+str(min(7,hb_fieldlen('indx_maT')),1)
   @  4,_fco1+4  get jem picture "@K"
   @  4,_fco1+11 get prz picture "@K 9999" valid prz#0 .or.alarm(hb_UTF8ToStr("MUSI BYĆ RÓŻNY OD ZERA"),,3,3)=NIL
   @  4,_fco1+16 get jed picture "@K"
@@ -272,7 +272,7 @@ stat proc sdok3(_f)
       SET ORDER TO tag sur_kod
 #ifdef A_LPNUM
       go bottom
-      skl:=str(val(skladnik)+1,len(skladnik))
+      skl:=str(val(skladnik)+1,hb_fieldlen('skladnik'))
 #else
       GO lastrec()
       skl:=if(eof(),chr(0)+chr(0),i2bin(bin2w(skladnik)+1))
@@ -376,7 +376,7 @@ static fpstart:=0
      endif
      il:=0
      _fpos:=1
-      na:=space(len(elementy->nazwa))
+      na:=space(elementy->(hb_fieldlen('nazwa')))
     else
       il:=ilosc
       elementy->(dbseek(zawar->element,.f.))
@@ -496,7 +496,7 @@ local totrec
           append blank
           SKLADNIK:=SUROWCE->SKLADNIK
 #ifdef A_LPNUM
-          pozycja:=str(_fi,len(pozycja))
+          pozycja:=str(_fi,hb_fieldlen('pozycja'))
 #endif
         endif
 
@@ -516,11 +516,11 @@ local totrec
           ENDIF
           skip
 #ifdef A_LAN
-          replace pozycja with str(val(pozycja)-1,len(pozycja)) rest while SKLADNIK=SUROWCE->SKLADNIK for reclock()
+          replace pozycja with str(val(pozycja)-1,hb_fieldlen('pozycja')) rest while SKLADNIK=SUROWCE->SKLADNIK for reclock()
           go totrec
           lock
 #else
-          replace pozycja with str(val(pozycja)-1,len(pozycja)) rest while SKLADNIK=SUROWCE->SKLADNIK
+          replace pozycja with str(val(pozycja)-1,hb_fieldlen('pozycja')) rest while SKLADNIK=SUROWCE->SKLADNIK
           go totrec
 #endif
           endif
@@ -774,7 +774,7 @@ do case
 
    CASE _skey=2 .AND. _sbeg=1 // ^>
     SET ORDER TO tag sur_naz
-    _sbeg:=len(kod)+2
+    _sbeg:=hb_fieldlen('kod')+2
     _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     _spform:={|p|tranr(p,"X/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")}
     _spform:={|p,l|RIGHT(p,l)}
@@ -785,7 +785,7 @@ do case
    CASE _skey=26 .AND. _sbeg#1 // ^<
     SET ORDER TO tag sur_smb
     _spocz:=''
-    _spform:={|p|tranr(p,repl("X",len(kod))+"|"+repl("X",len(nazwa)))}
+    _spform:={|p|tranr(p,repl("X",hb_fieldlen('kod'))+"|"+repl("X",hb_fieldlen('nazwa')))}
     _slth:=0
     _sbeg:=1
     _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')

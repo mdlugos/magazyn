@@ -173,7 +173,7 @@ stat proc rdok3(_f)
       SET ORDER TO tag dan_kod
 #ifdef A_LPNUM
       go bottom
-      dan:=str(val(danie)+1,len(danie))
+      dan:=str(val(danie)+1,hb_fieldlen('danie'))
 #else
       GO lastrec()
       dan:=if(eof(),chr(0)+chr(0),i2bin(bin2w(DANIE)+1))
@@ -248,8 +248,8 @@ stat proc RDOK4(_f,getlist,deep)
        return
      endif
      il:=0
-     na:=space(len(surowce->nazwa))
-     di:=space(len(dieta))
+     na:=space(surowce->(hb_fieldlen('nazwa')))
+     di:=space(hb_fieldlen('dieta'))
      _fpos:=1
    else
       il:=ilosc
@@ -341,7 +341,7 @@ local totrec
           append blank
           DANIE:=DANIA->DANIE
 #ifdef A_LPNUM
-          pozycja:=str(_fi,len(pozycja))
+          pozycja:=str(_fi,hb_fieldlen('pozycja'))
 #endif
         endif
 
@@ -362,11 +362,11 @@ local totrec
           ENDIF
           skip
 #ifdef A_LAN
-          replace pozycja with str(val(pozycja)-1,len(pozycja)) rest while DANIE=DANIA->DANIE for reclock()
+          replace pozycja with str(val(pozycja)-1,hb_fieldlen('pozycja')) rest while DANIE=DANIA->DANIE for reclock()
           go totrec
           lock
 #else
-          replace pozycja with str(val(pozycja)-1,len(pozycja)) rest while DANIE=DANIA->DANIE
+          replace pozycja with str(val(pozycja)-1,hb_fieldlen('pozycja')) rest while DANIE=DANIA->DANIE
           go totrec
 #endif
           endif

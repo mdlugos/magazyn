@@ -141,12 +141,12 @@ local getlist,a,b,c,d,scr
            choiced:=RELEWY->dieta
            choiceg:=' '
         endif
-        a:=if(choicef='J  ',choiced,space(len(relewy->dieta)))
+        a:=if(choicef='J  ',choiced,space(RELEWY->(hb_fieldlen('dieta'))))
         b:=if(choicef='J  ',choiceg,' ')
         c:=1
         d:=choicew
         Getlist:={}
-        @ _skey[1]+1,_skey[2]+15 get choicef picture "@! NNN" valid {||a:=if(choicef='J  ',choiced,space(len(relewy->dieta))),b:=if(choicef='J  ',choiceg,' '),getlist[2]:display(),getlist[3]:display(),.t.}
+        @ _skey[1]+1,_skey[2]+15 get choicef picture "@! NNN" valid {||a:=if(choicef='J  ',choiced,space(RELEWY->(hb_fieldlen('dieta')))),b:=if(choicef='J  ',choiceg,' '),getlist[2]:display(),getlist[3]:display(),.t.}
         @ _skey[1]+1,_skey[2]+30 get c picture "#"  //when choicef='J  '
         @ _skey[1]+3,_skey[2]+14 get a picture "@!KS"+LTRIM(STR(A_DILTH)) valid {|r|r:=dival(,@a),if(r,choiced:=a,),r} when choicef='J  '
 #ifdef A_GOCZ
@@ -494,7 +494,7 @@ local i,totrec,da,kon,carry,w,d,coldtot,cnewtot,a,b
           DATA:=RELEWY->DATA
           posilek:=RELEWY->posilek
 #ifdef A_LPNUM
-          pozycja:=str(_fi,len(pozycja))
+          pozycja:=str(_fi,hb_fieldlen('pozycja'))
 #endif
         endif
         KOD_OSOBY:=osoby->kod_osoby

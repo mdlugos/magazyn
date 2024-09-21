@@ -699,7 +699,7 @@ if dbseek(key)
       ?? if(l<5,space(5),'')
       a:=P_COLN*{5,6,25/3,10,12,15,50/3,20}[cpi]*.1-pcol()-10*l-15
 #endif
-      a:=min(a,len(surowce->nazwa)+5)
+      a:=min(a,surowce->(hb_fieldlen('nazwa'))+5)
       specout(P_UON)
       ?? pad(hb_UTF8ToStr(" składnik       "),a-5)+hb_UTF8ToStr("Dieta|  ilość |j.m.")
 #ifdef A_ELZ
@@ -714,7 +714,7 @@ if dbseek(key)
           asort(darr,,,{|a,b|a[1]<b[1]})
           j:=0
           for i:=1 to len(darr)-2
-              if (j:=ascan(darr,{|x|darr[i,3]=left(x[3],len(skladnik))},max(i+1,++j)))#0
+              if (j:=ascan(darr,{|x|darr[i,3]=left(x[3],hb_fieldlen('skladnik'))},max(i+1,++j)))#0
               //{chr(ascan(posil,posilek)+64)+pozycja,recno(),skladnik+dieta}
                  txt:=darr[j]
                  adel(darr,j)

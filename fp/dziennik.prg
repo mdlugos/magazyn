@@ -7,7 +7,7 @@
 #include "ar.ch"
 
 #ifndef A_IDENT
-  #define A_IDENT len(FIELD->ident)
+  #define A_IDENT hb_fieldlen('ident')
 #endif
 #ifndef A_WAL
   #define A_WAL 11
@@ -68,20 +68,20 @@ if key=0
       endif
       if p=NIL
          _sfor:=NIL
-         _sprompt:={|ktm,ktw|ktm:=ktw:=space(A_KTL),if(czyma,ktm:=pad(konto,A_KTL),ktw:=pad(konto,A_KTL)),DTOV(data)+I+pad(if(_sbeg=7,ident,right(trim(ident),A_IDENT)),A_IDENT)+I+rejestr+I+lp+"/"+LP(pozycja)+I+strpic(kwota,A_WAL,2,"@E ")+I+ktw+I+ktm}
+         _sprompt:={|ktm,ktw|ktm:=ktw:=space(A_KTL),if(czyma,ktm:=pad(konto,A_KTL),ktw:=pad(konto,A_KTL)),DTOV(data)+I+pad(if(_sbeg=7,ident,right(trim(ident),A_IDENT)),A_IDENT)+I+rejestr+I+lp+"/"+LP(pozycja)+I+strpic(kwota,A_WAL,2,"@E ")+hb_UTF8ToStr("║")+ktw+I+ktm}
       else
-         _sprompt:=if(dzflag=1,{|ktm,ktw,r,s,w|s:=czyma,w:=kwota,r:=recno(),ktw:=if(dbseek(UpP(ident)+rejestr+lp+link,.f.).and.s#czyma,pad(konto,A_KTL),space(A_KTL)),ktw:=ktm:=hb_UTF8ToStr(if(round(w-kwota,2)=0,"│","┼"))+ktw,dbgoto(r),if(s,ktm:=">"+pad(konto,A_KTL),ktw:=">"+pad(konto,A_KTL)),DTOV(data)+I+pad(if(_sbeg=7,ident,right(trim(ident),A_IDENT)),A_IDENT)+I+rejestr+I+lp+"/"+LP(pozycja)+I+strpic(kwota,A_WAL,2,"@E ")+ktw+ktm},;
-                               {|ktm,ktw,r,s,w|s:=czyma,w:=kwota,r:=recno(),ktw:=if(dbseek(rejestr+lp+link,.f.)           .and.s#czyma,pad(konto,A_KTL),space(A_KTL)),ktw:=ktm:=hb_UTF8ToStr(if(round(w-kwota,2)=0,"│","┼"))+ktw,dbgoto(r),if(s,ktm:=">"+pad(konto,A_KTL),ktw:=">"+pad(konto,A_KTL)),DTOV(data)+I+pad(if(_sbeg=7,ident,right(trim(ident),A_IDENT)),A_IDENT)+I+rejestr+I+lp+"/"+LP(pozycja)+I+strpic(kwota,A_WAL,2,"@E ")+ktw+ktm})
+         _sprompt:=if(dzflag=1,{|ktm,ktw,p,q,r,s,w,b|s:=czyma,w:=kwota,r:=recno(),ktw:=if(dbseek(UpP(ident)+rejestr+lp+link,.f.).and.s#czyma,pad(konto,A_KTL),space(A_KTL)),ktm:=hb_UTF8ToStr(if(round(w-kwota,2)=0,"│","┼"))+ktw,b:=if(round(w-kwota,2)=0,"║","╟"),dbgoto(r),if(s,ktm:=">"+pad(konto,A_KTL),(ktw:=pad(konto,A_KTL),b:='>')),q:=DTOV(data)+I+pad(if(_sbeg=7,ident,right(trim(ident),A_IDENT)),A_IDENT)+I+rejestr+I+lp+"/"+LP(pozycja)+I+strpic(kwota,A_WAL,2,"@E "),if(empty(p),(devout(q),hb_DispOutAtBox(row(),col(),hb_UTF8ToStrBox(b)),DevPos(row(),col()+1),q:=''),q+=hb_UTF8ToStr(b)),q+ktw+ktm},;
+                               {|ktm,ktw,p,q,r,s,w,b|s:=czyma,w:=kwota,r:=recno(),ktw:=if(dbseek(rejestr+lp+link,.f.)           .and.s#czyma,pad(konto,A_KTL),space(A_KTL)),ktm:=hb_UTF8ToStr(if(round(w-kwota,2)=0,"│","┼"))+ktw,b:=if(round(w-kwota,2)=0,"║","╟"),dbgoto(r),if(s,ktm:=">"+pad(konto,A_KTL),(ktw:=pad(konto,A_KTL),b:='>')),q:=DTOV(data)+I+pad(if(_sbeg=7,ident,right(trim(ident),A_IDENT)),A_IDENT)+I+rejestr+I+lp+"/"+LP(pozycja)+I+strpic(kwota,A_WAL,2,"@E "),if(empty(p),(devout(q),hb_DispOutAtBox(row(),col(),hb_UTF8ToStrBox(b)),DevPos(row(),col()+1),q:=''),q+=hb_UTF8ToStr(b)),q+ktw+ktm})
          p:=czyma
          _sfor:={||czyma=p}
       endif
-      _snagl:=hb_UTF8ToStr("Data┬")+padc("Ident",A_IDENT,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬─R┬──Lp─────┬")+padc("Kwota",A_WAL,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬─Wn")+padc("Konto",2*A_KTL-5,hb_UTF8ToStr("─"))+"Ma"
+      _snagl:=hb_UTF8ToStr("Data┬")+padc("Ident",A_IDENT,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬─R┬──Lp─────┬")+padc("Kwota",A_WAL,hb_UTF8ToStr("─"))+hb_UTF8ToStr("╦─Wn")+padc("Konto",2*A_KTL-5,hb_UTF8ToStr("─"))+"Ma"
    else
-      _snagl:=hb_UTF8ToStr("Data┬")+padc("Ident",A_IDENT,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬─R┬──Lp─────┬")+padc("Analityka",2*A_KTL-A_WAL,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬──Wn")+padc(trim(konta->konto),2*A_WAL-7,hb_UTF8ToStr('─'))+"Ma"
+      _snagl:=hb_UTF8ToStr("Data┬")+padc("Ident",A_IDENT,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬─R┬──Lp─────┬")+padc("Analityka",2*A_KTL-A_WAL,hb_UTF8ToStr("─"))+hb_UTF8ToStr("╦──Wn")+padc(trim(konta->konto),2*A_WAL-7,hb_UTF8ToStr('─'))+"Ma"
 #ifndef A_STL
 #define A_STL 3
 #endif
-      _sprompt:={||DTOV(data)+I+pad(if(_sbeg=7,ident,right(trim(ident),A_IDENT)),A_IDENT)+I+rejestr+I+lp+"/"+LP(pozycja)+I+pad(subs(konto,A_STL+1),2*A_KTL-A_WAL)+I+strpic(if(czyma,0,kwota),A_WAL,2,"@EZ ")+I+strpic(if(czyma,kwota,0),A_WAL,2,"@EZ ")}
+      _sprompt:={||DTOV(data)+I+pad(if(_sbeg=7,ident,right(trim(ident),A_IDENT)),A_IDENT)+I+rejestr+I+lp+"/"+LP(pozycja)+I+pad(subs(konto,A_STL+1),2*A_KTL-A_WAL)+hb_UTF8ToStr("║")+strpic(if(czyma,0,kwota),A_WAL,2,"@EZ ")+I+strpic(if(czyma,kwota,0),A_WAL,2,"@EZ ")}
       _sfor:=NIL
       _slth:=0 //2
       _sbeg:=1

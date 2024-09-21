@@ -1,9 +1,9 @@
 #ifdef __PLATFORM__WINDOWS
   #define PLWIN
   #define A_WIN_PRN eval(MEMVAR->do_getoprn)
-  #define A_IDENT min(len(FIELD->ident),18)
+  #define A_IDENT min(hb_fieldlen('ident'),18)
 #else
-  #define A_IDENT min(len(FIELD->ident),24)
+  #define A_IDENT min(hb_fieldlen('ident'),24)
 #endif
 #define A_STOPKA 'Program: System Fi-Ks, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
 #include "lan.ch"

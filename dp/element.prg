@@ -359,7 +359,7 @@ begin sequence
 if deep
    inkey()
    if !eof()
-    FORM_EDIT({30,min(maxcol(),max(len(nazwa),A_DILTH+17)+40),3,1,999,;
+    FORM_EDIT({30,min(maxcol(),max(hb_fieldlen('nazwa'),A_DILTH+17)+40),3,1,999,;
 {|f|eDOK1(f)},;
 {|f|edok2(f,{})},;
 {||setcursor(0)},;
@@ -369,7 +369,7 @@ if deep
     endif
 else
     lock
-    FORM_EDIT({30,min(maxcol(),max(len(nazwa),A_DILTH+17)+40),3,1,999,;
+    FORM_EDIT({30,min(maxcol(),max(hb_fieldlen('nazwa'),A_DILTH+17)+40),3,1,999,;
 {|f|eDOK1(f)},;
 {|f,g|edok2(f,g)},;
 {|f|edok3(f)},;
@@ -459,7 +459,7 @@ stat proc edok3(_f)
       SET ORDER TO tag ele_kod
 #ifdef A_LPNUM
       go bottom
-      ele:=str(val(element)+1,len(element))
+      ele:=str(val(element)+1,hb_fieldlen('element'))
 #else
       GO lastrec()
       ele:=if(eof(),chr(0)+chr(0),i2bin(bin2w(element)+1))
@@ -544,7 +544,7 @@ local totrec
           append blank
           element:=elementy->element
 #ifdef A_LPNUM
-          pozycja:=str(_fi,len(pozycja))
+          pozycja:=str(_fi,hb_fieldlen('pozycja'))
 #endif
         endif
 
@@ -565,11 +565,11 @@ local totrec
           ENDIF
           skip
 #ifdef A_LAN
-          replace pozycja with str(val(pozycja)-1,len(pozycja)) rest while element=elementy->element for reclock()
+          replace pozycja with str(val(pozycja)-1,hb_fieldlen('pozycja')) rest while element=elementy->element for reclock()
           go totrec
           lock
 #else
-          replace pozycja with str(val(pozycja)-1,len(pozycja)) rest while element=elementy->element
+          replace pozycja with str(val(pozycja)-1,hb_fieldlen('pozycja')) rest while element=elementy->element
           go totrec
 #endif
           endif

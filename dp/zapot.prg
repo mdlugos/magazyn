@@ -204,7 +204,7 @@ return l
 **********************
 func dior(d1,d2,f)
  if empty(d1) .or. empty(d2)
-   return space(len(relewy->dieta))
+   return space(relewy->(hb_fieldlen('dieta')))
  endif
  aeval(f,{|x|x[3]:=dind(x[4],d1) .or. dind(x[4],d2)})
 return trimd(f)
@@ -224,10 +224,10 @@ local i,j,k,l,a,b,g:='',h:=''
                 h+=x[2];
              ) })
    if empty(d)
-      return pad(HB_UCHAR(0x0A0),len(relewy->dieta))
+      return pad(HB_UCHAR(0x0A0),relewy->(hb_fieldlen('dieta')))
    endif
    if len(d)=len(f)
-      return space(len(relewy->dieta))
+      return space(relewy->(hb_fieldlen('dieta')))
    endif
    c:=''
    for i:=1 to len(d)
@@ -333,17 +333,17 @@ local i,j,k,l,a,b,g:='',h:=''
    d:=''
    aeval(f,{|x|if(x[3],d+=x[1],c+=x[1])})
    if empty(d)
-      return pad(HB_UCHAR(0x0A0),len(relewy->dieta))
+      return pad(HB_UCHAR(0x0A0),relewy->(hb_fieldlen('dieta')))
    endif
    if empty(c)
-      return space(len(relewy->dieta))
+      return space(relewy->(hb_fieldlen('dieta')))
    endif
    if len(d)>len(c)
       d:='-'+c
    endif
 #endif
 
-return pad(d,len(relewy->dieta))
+return pad(d,relewy->(hb_fieldlen('dieta')))
 ***************
 func mk_azap(aDat)
 local aZap:={{},{},{}},rec,mes,d,e,f:={},i,j
@@ -486,7 +486,7 @@ static proc zDOK4(_f,getlist,deep)
     surowce->(dbseek(zapot->skladnik,.f.))
 #ifdef A_ZAP_DAN
 #ifdef A_DODATKI
-    if len(trim(danie))=len(menu->pozycja)
+    if len(trim(danie))=menu->(hb_fieldlen('pozycja'))
        menu->(dbseek(dtos(zapot->data)+zapot->posilek+trim(zapot->danie),.f.))
        dania->(dbseek(menu->danie,.f.))
     else
@@ -496,7 +496,7 @@ static proc zDOK4(_f,getlist,deep)
 #else
     dania->(dbseek(zapot->danie,.f.))
 #endif
-    dan:=pad(trim(dania->nazwa)+" "+dania->gramatura+" "+dania->jedn,len(dania->nazwa))
+    dan:=pad(trim(dania->nazwa)+" "+dania->gramatura+" "+dania->jedn,dania->(hb_fieldlen('nazwa')))
 #endif
     na:=surowce->nazwa
     il:=ilosc
@@ -520,7 +520,7 @@ static proc zDOK4(_f,getlist,deep)
        di:=aZap[1,apos,2]
 #ifdef A_ZAP_DAN
        dania->(dbgoto(aZap[1,apos,3]))
-       dan:=pad(trim(dania->nazwa)+" "+dania->gramatura+" "+dania->jedn,len(dania->nazwa))
+       dan:=pad(trim(dania->nazwa)+" "+dania->gramatura+" "+dania->jedn,dania->(hb_fieldlen('nazwa')))
 #ifdef A_DODATKI
        menu->(dbgoto(aZap[1,apos,4]))
        if menu->ile_pos=0
@@ -537,16 +537,16 @@ static proc zDOK4(_f,getlist,deep)
        //surowce->(dbgoto(lastrec()+1))
 #ifdef A_ZAP_DAN
        if dan=NIL
-          dan:=space(len(dania->nazwa))
+          dan:=space(dania->(hb_fieldlen('nazwa')))
        endif
        dania->(dbgoto(0))
 #ifdef A_DODATKI
        menu->(dbgoto(0))
 #endif
 #endif
-       na:=space(len(surowce->nazwa))
+       na:=space(surowce->(hb_fieldlen('nazwa')))
        il:=0
-       di:=space(len(dieta))
+       di:=space(hb_fieldlen('dieta'))
        _fpos:=1 D_G
     endif
   endif
@@ -668,7 +668,7 @@ LOCAL Z,s,pg,_s
      menu->(dbgoto(0))
      return .t.
   endif
-  if dan==pad(dania->(trim(nazwa)+" "+gramatura+" "+jedn),len(dania->nazwa))
+  if dan==pad(dania->(trim(nazwa)+" "+gramatura+" "+jedn),dania->(hb_fieldlen('nazwa')))
      return .t.
   endif
   s:=push_stat()
@@ -681,14 +681,14 @@ LOCAL Z,s,pg,_s
        seek keyp
     endif
   
-    if len(trim(zapot->danie))=len(pozycja)
+    if len(trim(zapot->danie))=hb_fieldlen('pozycja')
       locate for zapot->danie=pozycja while dtos(data)+posilek=keyp
     else
       locate for zapot->danie=danie while dtos(data)+posilek=keyp
     endif
 
     if !found()
-       seek keyp+str(val(dan),len(pozycja))
+       seek keyp+str(val(dan),hb_fieldlen('pozycja'))
     endif
 
     select dania
@@ -731,7 +731,7 @@ LOCAL Z,s,pg,_s
  SET RELATION TO
 
   IF Z
-    dan:=pad(dania->(trim(nazwa)+" "+gramatura+" "+jedn),len(dania->nazwa))
+    dan:=pad(dania->(trim(nazwa)+" "+gramatura+" "+jedn),dania->(hb_fieldlen('nazwa')))
     z:={dania->(recno()),menu->(recno())}
     pop_stat(s)
     dania->(dbgoto(z[1]))
@@ -770,7 +770,7 @@ local r:=surowce->(recno())
     gram:=il*surowce->przel/ip
 #ifdef A_ZAP_DAN
 #ifdef A_DODATKI
-    if len(trim(danie))=len(menu->pozycja)
+    if len(trim(danie))=menu->(hb_fieldlen('pozycja'))
        menu->(dbseek(dtos(zapot->data)+zapot->posilek+trim(zapot->danie),.f.))
        dania->(dbseek(menu->danie,.f.))
     else
@@ -812,7 +812,7 @@ local pos:=apos
           di:=aZap[1,apos,2]
 #ifdef A_ZAP_DAN
           dania->(dbgoto(aZap[1,apos,3]))
-          dan:=pad(trim(dania->nazwa)+" "+dania->gramatura+" "+dania->jedn,len(dania->nazwa))
+          dan:=pad(trim(dania->nazwa)+" "+dania->gramatura+" "+dania->jedn,dania->(hb_fieldlen('nazwa')))
 #ifdef A_DODATKI
           menu->(dbgoto(aZap[1,apos,4]))
           if menu->ile_pos=0
@@ -850,7 +850,7 @@ static PROC zDOK5(_F)
           DATA:=RELEWY->DATA
           posilek:=RELEWY->posilek
 #ifdef A_LPNUM
-          pozycja:=str(_fi,len(pozycja))
+          pozycja:=str(_fi,hb_fieldlen('pozycja'))
 #endif
         endif
     if dieta#di .and. di>" "
@@ -862,7 +862,7 @@ static PROC zDOK5(_F)
        select zapot
     endif
 #ifdef A_ZAP_DAN
-        if dan==pad(trim(dania->nazwa)+" "+dania->gramatura+" "+dania->jedn,len(dania->nazwa))
+        if dan==pad(trim(dania->nazwa)+" "+dania->gramatura+" "+dania->jedn,dania->(hb_fieldlen('nazwa')))
 #ifdef A_DODATKI
            if menu->(dtos(data)+posilek)==keyp .and. menu->danie == dania->danie .and. menu->ile_pos<>0
               danie:=menu->pozycja
@@ -892,11 +892,11 @@ static PROC zDOK5(_F)
           ENDIF
           skip
 #ifdef A_LAN
-          replace pozycja with str(val(pozycja)-1,len(pozycja)) rest while DTOS(data)+posilek=relewy->(DTOS(data)+posilek) for reclock()
+          replace pozycja with str(val(pozycja)-1,hb_fieldlen('pozycja')) rest while DTOS(data)+posilek=relewy->(DTOS(data)+posilek) for reclock()
           go totrec
           lock
 #else
-          replace pozycja with str(val(pozycja)-1,len(pozycja)) rest while DTOS(data)+posilek=relewy->(DTOS(data)+posilek)
+          replace pozycja with str(val(pozycja)-1,hb_fieldlen('pozycja')) rest while DTOS(data)+posilek=relewy->(DTOS(data)+posilek)
           go totrec
 #endif
           endif
@@ -1058,7 +1058,7 @@ do case
         SET ORDER TO tag indx_naz
         _spocz=LEFT(_spocz,len(_spocz)-_slth)+UpP(CHR(_SKEY))
         _slth=1
-        _sbeg=len(index)+2
+        _sbeg=hb_fieldlen('index')+2
 
       case _sbeg#1  .and. _slth=1 .and. _skey<58
         SET ORDER TO tag indx_num

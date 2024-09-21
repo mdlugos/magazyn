@@ -394,11 +394,11 @@ if valtype(g)='O'
 endif
 r:=szukam({1,14,maxrow(),,1,0,'FIRMY',{||numer_kol+if(""=uwagi,I,"*")+nazwa},{|_skey,_s|if(_skey=13,_s[12]:=.t.,gfirma(_skey,_s,getlist))},""})
       if r.and.valtype(g)='O'
-         a:=MAIN->(len(EvAlDb(IndexKey(3)))-10-len(index))
-      if len(t)>=len(main->nr_zlec)
-         t:=left(t,a-len(firmy->numer_kol))+FIRMY->numer_kol+subs(t,a+1)
+         a:=MAIN->(len(EvAlDb(IndexKey(3)))-10-hb_fieldlen('index'))
+      if len(t)>=main->(hb_fieldlen('nr_zlec'))
+         t:=firmy->(left(t,a-hb_fieldlen('numer_kol'))+FIELD->numer_kol+subs(t,a+1)
       else
-         t:=FIRMY->numer_kol+subs(t,len(firmy->numer_kol)+1)
+         t:=FIRMY->(FIELD->numer_kol+subs(t,hb_fieldlen('numer_kol')+1))
       endif
          g:varput(t)
       endif
@@ -437,7 +437,7 @@ pm:=-1
   I_OD:=I_DO:=EvaldB(bkey)
 #ifdef A_ZLEC11
   i_gr:=len(i_od)
-  bpic:=padl("XXXXXXXXXXX-XX/"+ INDEXPIC ,i_gr+2+len( INDEXPIC )-len(index),"X")
+  bpic:=padl("XXXXXXXXXXX-XX/"+ INDEXPIC ,i_gr+2+len( INDEXPIC )-hb_fieldlen('index'),"X")
   i_gr:=11
 #else
   i_gr:=8
@@ -460,7 +460,7 @@ endif
 
 I_OD=UpP(TRIM(I_OD))
 I_DO=UpP(TRIM(I_DO))
-a:=len(EvAlDb(IndexKey()))-10-len(index)
+a:=len(EvAlDb(IndexKey()))-10-hb_fieldlen('index')
 #ifdef A_OBR
 stanowis->(ordsetfocus("kont_num"))
 return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,hb_UTF8ToStr("ZESTAWIENIE ROZCHODÓW W/G KONT"),{||NIL},{|x,y|;
@@ -504,7 +504,7 @@ DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
   I_OD:=I_DO:=EvaldB(bkey)
 #ifdef A_ZLEC11
   i_gr:=len(i_od)
-  bpic:=padl("XXXXXXXXXXX-XX/"+ INDEXPIC ,i_gr+2+len( INDEXPIC )-len(index),"X")
+  bpic:=padl("XXXXXXXXXXX-XX/"+ INDEXPIC ,i_gr+2+len( INDEXPIC )-hb_fieldlen('index'),"X")
   i_gr:=13
 #else
   i_gr:=8
@@ -524,7 +524,7 @@ if readkey()=27
 endif
 I_OD=UpP(TRIM(I_OD))
 I_DO=UpP(TRIM(I_DO))
-a:=len(EvAlDb(INDEXKEY()))-10-len(index)
+a:=len(EvAlDb(INDEXKEY()))-10-hb_fieldlen('index')
 
 return({od,do,i_od,i_do,i_gr,bkey,bpic,1,hb_UTF8ToStr("ZESTAWIENIE PRZYCHODÓW W/G KONT"),{||NIL},{||;
   FIRMY->(IF(i_gr>=a.and.DBSEEK(subs(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),HB_BCHAR(13)+replicate('_',78)}})
@@ -586,7 +586,7 @@ SELECT STANY
   @ 20,05 SAY 'MAT. "od" :' GET I_OD PICTURE "@KR! "+bpic valid {||if(i_do<i_od,(i_do:=i_od),),.t.}
   @ 20,45 SAY 'MAT. "do" :' GET I_DO PICTURE "@KR! "+bpic valid {||if(i_do<i_od,(i_do:=i_od)=NIL,.t.)}
   i_gr:=2
-  @ 22,10 SAY 'grupowanie według pierwszych' UNICODE GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=len(index)
+  @ 22,10 SAY 'grupowanie według pierwszych' UNICODE GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=hb_fieldlen('index')
   SAYL " znaków klucza" UNICODE
   READ
   if readkey()=27

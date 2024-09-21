@@ -258,8 +258,8 @@ if doc_opcja
 #define D_KH kontrahent
 #define D_KH1 pad(dost_odb,HB_FIELDLEN('DOST_ODB'))
 #else
-#define D_KH left(dost_odb,A_NRLTH)
-#define D_KH1 pad(if(val(dost_odb)=0,dost_odb,subs(dost_odb,A_NRLTH+2)),HB_FIELDLEN('DOST_ODB'))
+#define D_KH hb_Bleft(dost_odb,A_NRLTH)
+#define D_KH1 pad(if(val(dost_odb)=0,dost_odb,hb_BSubStr(dost_odb,A_NRLTH+2)),HB_FIELDLEN('DOST_ODB'))
 #endif
 #ifdef A_KHNUM
 #define D_KH2 D_KH+I

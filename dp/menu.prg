@@ -174,8 +174,8 @@ static proc mDOK4(_f,getlist,deep)
      endif
      return
   else
-    dan:=space(len(dania->nazwa))
-    DIE:=space(len(dieta))
+    dan:=space(dania->(hb_fieldlen('nazwa')))
+    DIE:=space(hb_fieldlen('dieta'))
 #ifdef A_DODATKI
     ilp:=0
 #endif
@@ -214,16 +214,16 @@ local a:={},b:={},i
 #endif
    dbeval({||aadd(a,recno())},D_LAN,bl)
 #undef D_LAN
-   AEVAL(a,{|r,i|dbgoto(r),FIELD->pozycja:=STR(_fi+i,len(pozycja))})
+   AEVAL(a,{|r,i|dbgoto(r),FIELD->pozycja:=STR(_fi+i,hb_fieldlen('pozycja'))})
    append blank
    aeval(b,{|p,i|fieldput(i,p)})
    if alias()="MAIN"
       FIELD->ile_pos:=0
    endif
-   pozycja:=str(_fi,len(pozycja))
+   pozycja:=str(_fi,hb_fieldlen('pozycja'))
 #ifdef A_DODATKI
    if alias()="MENU"
-      i:=len(pozycja)
+      i:=hb_fieldlen('pozycja')
       select ZAPOT
       seek keyp
       dbeval({||FIELD->danie:=str(val(danie)+1,i)},{||len(trim(danie))=i.and.danie>=menu->pozycja.and.reclock()},{||dtos(data)+posilek=keyp})
@@ -307,7 +307,7 @@ local totrec
     changed:=.t.
     if empty(dan)
 #ifdef A_DODATKI
-       totrec:=len(pozycja)
+       totrec:=hb_fieldlen('pozycja')
        select ZAPOT
        seek keyp
        dbeval({||FIELD->danie:=MENU->danie},{||len(trim(danie))=totrec.and.danie=menu->pozycja.and.reclock()},{||dtos(data)+posilek=keyp})
@@ -329,9 +329,9 @@ local totrec
           ENDIF
           skip
 #ifdef A_LAN
-          replace pozycja with str(val(pozycja)-1,len(pozycja)) rest while DTOS(data)+posilek=relewy->(DTOS(data)+posilek) for reclock()
+          replace pozycja with str(val(pozycja)-1,hb_fieldlen('pozycja')) rest while DTOS(data)+posilek=relewy->(DTOS(data)+posilek) for reclock()
 #else
-          replace pozycja with str(val(pozycja)-1,len(pozycja)) rest while DTOS(data)+posilek=relewy->(DTOS(data)+posilek)
+          replace pozycja with str(val(pozycja)-1,hb_fieldlen('pozycja')) rest while DTOS(data)+posilek=relewy->(DTOS(data)+posilek)
 #endif
           go totrec
        endif
@@ -345,7 +345,7 @@ local totrec
       posilek:=RELEWY->posilek
       _fnowy:=.f.
 #ifdef A_LPNUM
-      pozycja:=str(_fi,len(pozycja))
+      pozycja:=str(_fi,hb_fieldlen('pozycja'))
 #endif
     endif
     danie:=dania->danie
@@ -558,7 +558,7 @@ static function danval(_f,getlist)
 field danie,posilek,DATA,nazwa,gramatura,jedn,dieta
 
 LOCAL DAC,ZNALAZ,recme,recr,recd,_s
-  dan:=pad(dan,len(dania->nazwa))
+  dan:=pad(dan,dania->(hb_fieldlen('nazwa')))
   if empty(dan) .or. dan=dania->nazwa
      return .t.
   endif

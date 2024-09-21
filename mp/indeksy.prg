@@ -32,11 +32,11 @@
 #endif
 
 #ifdef A_ANKER
- #define nazwA (pad(nazwa,hb_fieldlen([nazwa]))+strpic(field->cenA,11,2,"@E ")+hb_UTF8ToStr(" zł ")+field->proc_vat+"%")
+ #define nazwA (nazwa+strpic(field->cenA,11,2,"@E ")+hb_UTF8ToStr(" zł ")+field->proc_vat+"%")
 #endif
 
 #ifdef A_FP600
- #define nazwA (pad(nazwa,hb_fieldlen([nazwa]))+strpic(field->cenA,11,2,"@E ")+hb_UTF8ToStr(" zł ")+field->proc_vat+"%")
+ #define nazwA (nazwa+strpic(field->cenA,11,2,"@E ")+hb_UTF8ToStr(" zł ")+field->proc_vat+"%")
 #endif
 
 #ifndef STANY
@@ -174,7 +174,7 @@ private hlink:=NIL
       else
          DEFAULT _sinfo TO {|skey,s D_MYSZ|peoma(skey,s D_MYSZ)}
          if valtype(g)='O' .and. _spocz=NIL .and. _slth=NIL .and. _sbeg=NIL
-            _spocz:=trim(right(g:varget(),len(indx_mat->index)))
+            _spocz:=trim(right(g:varget(),indx_mat->(hb_fieldlen(index))))
          endif
       endif
       DEFAULT _spocz TO ''
@@ -195,7 +195,7 @@ private hlink:=NIL
       r:=szukam(_s)
       if r.and.valtype(g)='O'
          t:=g:varget()
-         t:=right(STANY->(left(t,len(t)-len(nr_mag+index))+nr_mag+index),len(t))
+         t:=right(STANY->(left(t,len(t)-HB_fieldlen('nr_mag')-hb_fieldlen('index'))+nr_mag+index),len(t))
          g:varput(t)
       endif
 return r
@@ -249,7 +249,7 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
  #ifdef A_KODY
   #define LARTXT pad(nazwA,45-len(KoD))+ret+INDX_MAT->KoD
  #else
-  #define LARTXT pad(nazwA,HB_FIELDLEN([NAZWA]))
+  #define LARTXT nazwA
  #endif
   RET:=IF(ALIAS(sel:=I_LAM(if(il=NIL.and.da>STANY->data_zmian.and.STANY->stan#0,STANY->data_zmian,da)))="IND_LAM","┼","│")
 #endif
@@ -358,11 +358,11 @@ ret := hb_UTF8ToStr(ret)
      #define LARTXT pad(nazwA,33)+IF(""=INDX_MAT->UWAGI,{"0",I,"!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+KoD+ret+strpic(STANY->cenA_zaK D_CF8,5,CEOKR,"@E ")
     #else
      #undef nazwA
-     #define nazwA (pad(nazwa,hb_fieldlen([nazwa]))+I+left(indx_mat->shortname,10))
+     #define nazwA (nazwa+I+left(indx_mat->shortname,10))
      #ifndef STANY
-      #define LARTXT pad(nazwA,hb_fieldlen([nazwa]))+IF(""=INDX_MAT->UWAGI,{"0",I,"!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
+      #define LARTXT nazwA+IF(""=INDX_MAT->UWAGI,{"0",I,"!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
      #else
-      #define LARTXT pad(nazwA,hb_fieldlen([nazwa]))+IF(""=INDX_MAT->UWAGI,{"0",I,"!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD
+      #define LARTXT nazwA+IF(""=INDX_MAT->UWAGI,{"0",I,"!","3","4","5","6","7"}[INDX_MAT->status%8+1],"&")+INDX_MAT->KoD
       //+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
      #endif
     #endif
@@ -561,9 +561,9 @@ DO CASE
         _spform={|p,l|right(p,l)}
 #ifdef A_ANKER
 #ifdef A_ZAGRODA
-      CASE pad(txt,len(index))=index .and. if(len(trim(field->tandem))>=6,dbseek(pad(field->tandem,len(index))),.t.)
+      CASE pad(txt,hb_fieldlen('index'))=index .and. if(len(trim(field->tandem))>=6,dbseek(pad(field->tandem,hb_fieldlen('index'))),.t.)
 #else
-      CASE pad(txt,len(index))=index
+      CASE pad(txt,hb_fieldlen('index'))=index
 #endif
 #else
  #ifdef A_LFIRST

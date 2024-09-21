@@ -691,7 +691,7 @@ private gt
           il_f:=il_f+fakkormem[y,2]
           adel(fakkormem,y)
           asize(fakkormem,len(fakkormem)-1)
-          nz:=space(len(nz))
+          nz:=space(hb_fieldlen('nr_zlec'))
 *
           if il_f=0
              do while j<=linecount .and. !(valtype(dok[j])="C" .and. dok[j]="SUMA")
@@ -2311,7 +2311,7 @@ if it_zesmnu#NIL
    goto it_Zesmnu
 endif
 setpos(row()+recno(),col())
-if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+pad(nazwa,hb_fieldlen('NAZWA'))}})
+if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
    it_zesmnu:=recno()
    ap:=getlines(POLA)
    l:=len(ap)

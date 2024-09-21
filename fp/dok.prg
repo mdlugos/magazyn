@@ -33,7 +33,7 @@ field dowod
 #define nr_dowodU subs(dowod,3)
 #endif
 #ifndef A_IDENT
-  #define A_IDENT len(FIELD->ident)
+  #define A_IDENT hb_fieldlen('ident')
 #endif
 MEMVAR _sbnorm,rejestry,_snorm,is_spec,_sbkgr,_sramka
 memvar da,defa
@@ -180,7 +180,7 @@ func dok //append - .t. append blank .f. - noedit
     l:=len(ad[AD_POLA])
     i:=l+3
     if "P"$ad[AD_FLAGS]
-       j:=10+2*A_WAL+A_KTL+A_IDENT+len(konta->nazwa)
+       j:=10+2*A_WAL+A_KTL+A_IDENT+konta->(hb_fieldlen('nazwa'))
        if empty(ad[AD_POLA,l,AP_FIELD])
          k:=&('{'+ad[AD_POLA,l,AP_NAME]+',j}')
          j:=max(k[2],j)
