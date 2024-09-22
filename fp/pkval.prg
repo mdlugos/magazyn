@@ -1,6 +1,6 @@
 #include "ar.ch"
 #include "inkey.ch"
-#include "getexit.ch"
+#include "getexitm.ch"
 #ifdef A_DSPLIT
 field smb_dow,nr_dowodu
 #define dowoD smb_dow+nr_dowodu

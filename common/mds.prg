@@ -4,8 +4,13 @@
 
 #define I hb_UTF8ToStr("│")
 
+#ifdef __PLATFORM__DOS
+#define BOTD '└'+REPLICATE('═',_scoln)+'┘'
+#define TOPD '┌'+REPLICATE('═',_scoln)+'┐'
+#else
 #define BOTD '╘'+REPLICATE('═',_scoln)+'╛'
 #define TOPD '╒'+REPLICATE('═',_scoln)+'╕'
+#endif
 #define RNTO1(x) _snaglo(x,'─')
 #define RNTO2(x) _snaglo(x,'═')
 #define RSTO2(x) _stopka(x,'═')
@@ -1192,11 +1197,11 @@ endif
         oef:=.t.
       else
         --_srow1
-        #ifdef __PLATFORM__DOS
+#ifdef __PLATFORM__DOS
         @ _srow1-1,_scol1-1,_srow1,_scol2 BOX UNICODE '┌═┐││ ││' COLOR _SRAMKA
-        #else
+#else
         @ _srow1-1,_scol1-1,_srow1,_scol2 BOX UNICODE '╒═╕││ ││' COLOR _SRAMKA
-        #endif
+#endif
         @ _srow1-1,_scol1+_snagkol SAY RNTO2(_snagl) COLOR _SRAMKA
         obf:=.t.
       endif

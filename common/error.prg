@@ -1,5 +1,5 @@
 #ifdef __PLATFORM__DOS
-   #define D_CDP 'UTF8MD'
+   #define D_CDP 'PL852M'
 #else
    #ifdef A_UNICODE
       #define D_CDP 'UTF8MD'

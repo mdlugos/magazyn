@@ -1,0 +1,22 @@
+-ofkdos -w1 -m -n
+-lhbmxml hbmxml.hbc
+
+#-debug -inc -rebuild
+
+-i../common
+
+../common/mlcfunc.c ../common/cppl852m.c ../common/cp_utf8m.c
+
+main rejestry konta kontr dok pkval dziennik dok_druk dodatki
+
+../common/dm_form
+../common/io
+../common/error
+../common/help
+../common/io_2
+../common/clp_brow
+../common/mds
+../common/mds_spec
+../common/frmrun
+../common/getsys
+../common/jpk
