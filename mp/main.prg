@@ -277,11 +277,7 @@ reuse()
 #endif
 
 txt:={}
-#ifdef __HARBOUR__
 a:=HB_DISKSPACE(defa)
-#else
-a:=DISKSPACE(if(subs(defa,2,1)==':',(asc(defa)-64)%32,0))
-#endif
 
 IF a<104857600
     aadd(txt,message("TYLKO"+STR(int(a/1024/1024),3)+hb_UTF8ToStr(" MEGABAJTÓW;WOLNEGO MIEJSCA NA DYSKU !")))
@@ -364,6 +360,8 @@ DO WHILE .T.
 
 
    DO WHILE .T. // PETLA GLOWNA DLA DANEGO MAGAZYNU
+      a := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
+
   SET CURSOR OFF
 
 *************************************
@@ -405,9 +403,9 @@ endif
           @ maxrow()-1,6  SAY "R"
           @ maxrow()-1,8  SAY "Z"
           @ maxrow()-1,10 SAY "P"
-          @ maxrow()-1,12 SAY hb_UTF8ToStr("─")+if(HB_CDPISUTF8(),'►',chr(0x10))
-          @ maxrow()-1,15 SAY if(HB_CDPISUTF8(),'◄',chr(0x11))+ hb_UTF8ToStr("─")
-          @ maxrow()-1,18 SAY if(HB_CDPISUTF8(),'◄',chr(0x11))+ hb_UTF8ToStr('─┘')
+          @ maxrow()-1,12 BOX "─►" UNICODE
+          @ maxrow()-1,15 BOX '◄─' UNICODE
+          @ maxrow()-1,18 BOX '◄─┘' UNICODE
           @ maxrow()-1,35 SAY "F1"
           @ maxrow()-1,40 SAY "P O M O C" color (_sbnorm)
           @ maxrow()-1,53 say "Esc"
@@ -431,7 +429,8 @@ endif
 #ifndef PLWIN
     dispend()
 #endif
-    menu:=level1
+      hb_gtInfo( HB_GTI_BOXCP, a)
+      menu:=level1
       MENU TO menu
 
       set color to (_snorm)
@@ -518,9 +517,7 @@ menu:=tak(hb_UTF8ToStr("CZY ARCHIWOWAĆ"),18,,.t.,.F.)
 
 IF menu
    CLOSE ALL
-#ifdef __HARBOUR__
    hb_idlesleep(0.5)
-#endif
    IF type('bckp')='C' .and. !empty(year2bckp)
 #ifdef A_BACKUP
       if len(bckp)>12

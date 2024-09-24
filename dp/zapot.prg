@@ -1126,7 +1126,7 @@ do case
      @ 9,1,22,78 BOX UNICODE '╔═╗║╝═╚║' color 'RG+/BG'
      @ 9,3 SAY 'Tylko do oglądania' UNICODE color 'RG+/BG'
      SET COLOR TO BG+/B
-     SCROLL(10,2,21,77,0)
+     hb_scroll(10,2,21,77,0)
      SELECT STANY
      @ 17,3   say "Data:"
      @ 18,3   say "Stan:"

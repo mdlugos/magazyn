@@ -164,11 +164,7 @@ RETURN
 PROCEDURE dok_in
 local a,x,y
 #ifdef A_DOKCOMP
-#ifdef __HARBOUR__
 #define EVLINE self:=evline(buf,j++,@x);IF self<>NIL;IF self[3]<>NIL;__mvPrivate(Self[3]);END;x:=&(self[1]);END
-#else
-#define EVLINE self:=evline(buf,j++,@x);IF self<>NIL;IF self[3]<>NIL;x:=Self[3];PRIVATE &x;END;x:=&(self[1]);END
-#endif
 static apcomp:={}
 #else
 local _f,_s
@@ -2694,7 +2690,7 @@ IF p='DOK4'
    endif
    g:killfocus()
    a:=savescreen(_fk,_fco1+5,_fk+1,_fco2-1)
-   scroll(_fk,_fco1+5,_frow+_fskip*(_fl-_fj+1)-1,_fco2-1,-_fskip)
+   hb_scroll(_fk,_fco1+5,_frow+_fskip*(_fl-_fj+1)-1,_fco2-1,-_fskip)
    restscreen(_fk,_fco1+5,_fk+1,_fco2-1,a)
    g:exitState:=GE_TOP
    INDX_MAT->(dbgoto(lastrec()+1))
@@ -3724,11 +3720,7 @@ do while _fpopkey
 //@ _fk+_fskip-1,_fco2 SAY '<' COLOR _sbkgr
 
 
-#ifdef __HARBOUR__
 #define D_REST 4
-#else
-#define D_REST 2
-#endif
 #ifdef A_LAN
 dm->(dbgoto(recno()))
 if _flp>D_LPVAL(dm->pozycja) .or. if(_flp=0, dm->pozycja >D_LP0,_fi#D_LPVAL(pozycja)) .and. D_LPVAL(pozycja)>0
@@ -3747,7 +3739,6 @@ elseif _flp<D_LPVAL(dm->pozycja)
    _fkey:=K_PGDN
 else
 #ifdef A_MYSZ
-#ifdef __HARBOUR__
      _fkey:=inkey(2, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)
      bx:=cx:=dx:=0
      if _fkey>=K_MINMOUSE .and. _fkey<=K_MAXMOUSE
@@ -3760,21 +3751,6 @@ else
         dx:=mrow()
         _fkey:=GE_MOUSE
      endif
-#else
-     sysint(51,1)
-     job:=seconds()+2
-     bx:=cx:=dx:=0
-     do while (_fkey:=inkey())=0 .and. job>seconds()
-        sysint(51,3,@bx,@cx,@dx)
-        if bx#0
-            cx:=int(cx/8+.1)
-            dx:=int(dx/8+.1)
-            _fkey:=GE_MOUSE
-            exit
-        endif
-    enddo
-    sysint(51,2)
-#endif
 #else
    _fkey:=inkey(2)
 #endif
@@ -3795,7 +3771,6 @@ else
 endif
 #else
 #ifdef A_MYSZ
-#ifdef __HARBOUR__
      _fkey:=inkey(0, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)
      bx:=cx:=dx:=0
      if _fkey>=K_MINMOUSE .and. _fkey<=K_MAXMOUSE
@@ -3808,20 +3783,6 @@ endif
         dx:=mrow()
         _fkey:=GE_MOUSE
      endif
-#else
-     sysint(51,1)
-     bx:=cx:=dx:=0
-     do while (_fkey:=inkey())=0
-        sysint(51,3,@bx,@cx,@dx)
-        if bx#0
-            _fkey:=GE_MOUSE
-            cx:=int(cx/8+.1)
-            dx:=int(dx/8+.1)
-            exit
-        endif
-     enddo
-     sysint(51,2)
-#endif
 #else
    _fkey:=inkey(0)
 #endif

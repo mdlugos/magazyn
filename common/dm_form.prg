@@ -146,16 +146,11 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
       getlist:={}
 #ifdef A_MYSZ
       job:=0
-#ifdef __HARBOUR__
       if (_fkey:=nextkey(INKEY_KEYBOARD + INKEY_LDOWN))#0
          if _fkey=1002
            _fkey:=0
            job:=1
          endif
-#else
-      sysint(51,3,@job)
-      if job#0.or.(_fkey:=nextkey())#0
-#endif
 #else
       if (_fkey:=nextkey())#0
 #endif
@@ -251,7 +246,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
               else
                  @ (_fl-_fj)*_fskip+_frow,_fco1,(_fl-_fj+1)*_fskip+_frow,_fco2 BOX UNICODE '║ ║║╝═╚║'
               endif
-              scroll(_fskip+_frow,_fco1,_frow+_fskip*(_fl-_fj+1)-1,_fco2,-_fskip)
+              hb_scroll(_fskip+_frow,_fco1,_frow+_fskip*(_fl-_fj+1)-1,_fco2,-_fskip)
               if _fskip<2
                 @  _fskip+_frow,_fco1 BOX '║' UNICODE
                 @  _fskip+_frow,_fco2 BOX '║' UNICODE
@@ -268,7 +263,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                 stat:=.t.
                 ++_fj
                 ++_fl
-                scroll(_frow+_fskip,_fco1,_frow+_fskip*(_fi-_fj+1)-1,_fco2,_fskip)
+                hb_scroll(_frow+_fskip,_fco1,_frow+_fskip*(_fi-_fj+1)-1,_fco2,_fskip)
                 if _fskip<2
                   @  _fskip*(_fi-_fj)+_frow,_fco1 BOX '║' UNICODE
                   @  _fskip*(_fi-_fj)+_frow,_fco2 BOX '║' UNICODE
@@ -292,11 +287,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
            endif
         endif
 #endif
-#ifdef __HARBOUR__
 #define D_REST 4
-#else
-#define D_REST 2
-#endif
             DO CASE
 
               CASE _fnowy
@@ -304,7 +295,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                  if _flp>0 .and. _fi<=_flp
                     skip
                     if _fi<_fl
-                       scroll(_fk,_fco1,_frow+_fskip*(_fl-_fj+1),_fco2,_fskip)
+                       hb_scroll(_fk,_fco1,_frow+_fskip*(_fl-_fj+1),_fco2,_fskip)
                        --_fl
                        RESTSCREEN(1+_fskip*(_fl-_fj+1)+_frow,_fco1,maxrow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(1+_fskip*(_fl-_fj+1)+_frow)+1))
                        *********
@@ -331,7 +322,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                    endif
                 else
                    skip
-                   //scroll(_fk,_fco1,_fk+_fskip-1,_fco2,0)
+                   //hb_scroll(_fk,_fco1,_fk+_fskip-1,_fco2,0)
                    if _fskip<2
                      @ _frow+_fskip*(_fi-_fj), _fco1 BOX '║'+space(_fco2-_fco1-2)+'║' UNICODE
                    else
@@ -359,7 +350,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                     else
                         @ (_fl-_fj)*_fskip+_frow,_fco1,(_fl-_fj+1)*_fskip+_frow,_fco2 BOX UNICODE '║ ║║╝═╚║'
                     endif
-                    scroll(_fskip+_frow,_fco1,_frow+_fskip*(_fl-_fj+1)-1,_fco2,-_fskip)
+                    hb_scroll(_fskip+_frow,_fco1,_frow+_fskip*(_fl-_fj+1)-1,_fco2,-_fskip)
                     if _fskip<2
                       @  _fskip+_frow,_fco1 BOX "║" UNICODE
                       @  _fskip+_frow,_fco2 BOX "║" UNICODE
@@ -382,7 +373,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
             stat:=.t.
             ++_fj
             ++_fl
-            scroll(_frow+_fskip, _fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2, _fskip)
+            hb_scroll(_frow+_fskip, _fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2, _fskip)
             if _fskip<2
               @ _frow+_fskip*(_fi-_fj), _fco1 BOX '║' UNICODE
               @ _frow+_fskip*(_fi-_fj), _fco2 BOX '║' UNICODE

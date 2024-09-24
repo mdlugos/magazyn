@@ -98,9 +98,9 @@ memvar keystroke,help_code,func_sel,cur_area,cur_dbf,field_list,frame,;
    nColorSave := SetColor(color7)
    oB := TBrowseDB(10, 1, MaxRow()-1, MaxCol()-1)
 
-   oB:headSep := hb_UTF8ToStr( "═╤═" )
-   oB:colSep  := hb_UTF8ToStr( " │ " )
-   oB:footSep := hb_UTF8ToStr( "═╧═" )
+   oB:headSep := hb_UTF8ToStrBox( "═╤═" )
+   oB:colSep  := hb_UTF8ToStrBox( " │ " )
+   oB:footSep := hb_UTF8ToStrBox( "═╧═" )
    oB:skipBlock := {|x| Skipped(x, lAppend)}
 
    /* put columns into browse */
@@ -136,7 +136,7 @@ memvar keystroke,help_code,func_sel,cur_area,cur_dbf,field_list,frame,;
 
    /* initialize parts of screen not handled by TBrowse */
    stat_msg("")
-   scroll(8, 0, MaxRow()-1, MaxCol(), 0)
+   hb_scroll(8, 0, MaxRow()-1, MaxCol(), 0)
    @ 8, 0, MaxRow()-1, MaxCol() BOX frame
    @ nHsepRow, 0 SAY hb_UTF8ToStr( "╞" )
    @ nHsepRow, MaxCol() SAY hb_UTF8ToStr( "╡" )
@@ -353,7 +353,7 @@ memvar keystroke,help_code,func_sel,cur_area,cur_dbf,field_list,frame,;
             cMemoBuff := SaveScreen(10, 10, MaxRow()-2, 69)
 
             SetColor(color8)
-            Scroll(10, 10, MaxRow()-2, 69, 0)
+            hb_scroll(10, 10, MaxRow()-2, 69, 0)
             @ 10, 10, MaxRow()-2, 69 BOX frame
 
             /* use fieldspec for title */

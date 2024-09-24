@@ -174,22 +174,22 @@ local a:={},r,f2,f3,f4,f5,f6,x
       SETKEY(4,{||KIBORD(HB_BCHAR(27)+HB_BCHAR(24)+HB_BCHAR(13))})
       SETKEY(19,{||KIBORD(HB_BCHAR(27)+HB_BCHAR(5)+HB_BCHAR(13))})
 #ifndef A_NOMZ
-          a:={'R ZESTAWIENIE ROZCHODÓW WEDŁUG KONT',;
-              'P ZESTAWIENIE PRZYCHODÓW WEDŁUG KONT'}
+          a:={hb_UTF8ToStr('R ZESTAWIENIE ROZCHODÓW WEDŁUG KONT'),;
+              hb_UTF8ToStr('P ZESTAWIENIE PRZYCHODÓW WEDŁUG KONT')}
 #endif
-       aadd(a,'K KARTOTEKA MATERIAŁOWA')
-       aadd(a,'O DOKUMENTY OBROTU MATERIAŁOWEGO')
-       aadd(a,'D DOKUMENTY WEDŁUG KODU MATERIAŁU')
+       aadd(a,hb_UTF8ToStr('K KARTOTEKA MATERIAŁOWA'))
+       aadd(a,hb_UTF8ToStr('O DOKUMENTY OBROTU MATERIAŁOWEGO'))
+       aadd(a,hb_UTF8ToStr('D DOKUMENTY WEDŁUG KODU MATERIAŁU'))
 #ifdef A_FA
-       aadd(a,'S REJESTR SPRZEDAŻY')
-       aadd(a,'Z REJESTR ZAKUPÓW')
+       aadd(a,hb_UTF8ToStr('S REJESTR SPRZEDAŻY'))
+       aadd(a,hb_UTF8ToStr('Z REJESTR ZAKUPÓW'))
 #endif
 #ifdef A_KPR
-       aadd(a,'KSIĘGA PRZYCHODÓW I ROZCHODÓW')
+       aadd(a,hb_UTF8ToStr('KSIĘGA PRZYCHODÓW I ROZCHODÓW'))
 #endif
 #ifdef A_OLZA
-       aadd(a,'KK DOKUMENTY WEDŁUG KONTA KOSZTÓW')
-       aadd(a,'SK DOKUMENTY WEDŁUG STANOWISKA KOSZTÓW')
+       aadd(a,hb_UTF8ToStr('KK DOKUMENTY WEDŁUG KONTA KOSZTÓW'))
+       aadd(a,hb_UTF8ToStr('SK DOKUMENTY WEDŁUG STANOWISKA KOSZTÓW'))
 #endif
 #ifdef A_DRUKCOMP
        aadd(a,'ZESTAWIENIA DODATKOWE')
@@ -396,7 +396,7 @@ r:=szukam({1,14,maxrow(),,1,0,'FIRMY',{||numer_kol+if(""=uwagi,I,"*")+nazwa},{|_
       if r.and.valtype(g)='O'
          a:=MAIN->(len(EvAlDb(IndexKey(3)))-10-hb_fieldlen('index'))
       if len(t)>=main->(hb_fieldlen('nr_zlec'))
-         t:=firmy->(left(t,a-hb_fieldlen('numer_kol'))+FIELD->numer_kol+subs(t,a+1)
+         t:=firmy->(left(t,a-hb_fieldlen('numer_kol'))+FIELD->numer_kol)+subs(t,a+1)
       else
          t:=FIRMY->(FIELD->numer_kol+subs(t,hb_fieldlen('numer_kol')+1))
       endif

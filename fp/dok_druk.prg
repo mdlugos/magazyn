@@ -5,7 +5,6 @@
 #include "inkey.ch"
 
 
-#ifdef __HARBOUR__
 #define EVLINE self:=evline(buf,j++,@x);
    ;IF self==NIL;
    ;ELSE;
@@ -14,17 +13,6 @@
      ;END;
      ;x:=&(self[1]);
    ;END
-#else
-#define EVLINE self:=evline(buf,j++,@x);
-   ;IF self==NIL;
-   ;ELSE;
-     ;IF self[3]<>NIL;
-        ;x:=Self[3];
-        ;PRIVATE &x;
-     ;END;
-     ;x:=&(self[1]);
-   ;END
-#endif
 *********************
 memvar rejestry
 memvar defa,buf
@@ -132,7 +120,6 @@ return
 *******************
 #undef EVLINE
 
-#ifdef __HARBOUR__
 #define EVLINE(buf,lbl,lc) while j>0 .and. j<=lc .and. (j=1 .or. !valtype(buf[j-1])$"MC" .or. buf[j-1]<>lbl);
    ;self:=evline(buf,j++,@x);
    ;IF self==NIL;
@@ -143,19 +130,6 @@ return
      ;x:=&(self[1]);
    ;END;
 ;END
-#else
-#define EVLINE(buf,lbl,lc) while j>0 .and. j<=lc .and. (j=1 .or. !valtype(buf[j-1])$"MC" .or. buf[j-1]<>lbl);
-   ;self:=evline(buf,j++,@x);
-   ;IF self==NIL;
-   ;ELSE;
-     ;IF self[3]<>NIL;
-        ;x:=Self[3];
-        ;PRIVATE &x;
-     ;END;
-     ;x:=&(self[1]);
-   ;END;
-;END
-#endif
 *************************
 func obroty(w,m,da,k,l)
 DEFAULT k TO MAIN->(EvAlDb('{|DATA,REJESTR,LP,IDENT|'+IndexkeY(0)+'}'))

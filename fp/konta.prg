@@ -27,15 +27,6 @@ k:=g:varget()
 if valtype(f)='A'
    r:=f[2]
    f:=f[1]
-/*
-#ifdef __HARBOUR__
-   if pos=NIL
-     list:=__GetListActive():aGetList
-     pos:=__GetListActive():nPos
-     //ascan(list,{|x|g:name==x:name})
-   endif
-#endif
-*/
 else
    r:={||.t.}
 endif

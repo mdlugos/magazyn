@@ -11,7 +11,7 @@
 
 #command SET RDD DEFAULT [TO] <x> => REQUEST <x>;rddsetdefault(<"x">)
 #command @ <top>, <left>, <bottom>, <right> BOX UNICODE <string> [COLOR <color>] => ;
-         @ <top>, <left>, <bottom>, <right> BOX hb_UTF8ToStrBox(<string>) [COLOR <color>]
+         hb_DispBox(<top>, <left>, <bottom>, <right>, hb_UTF8ToStrBox(<string>)[, <color>])
 
 #command @ <row>, <col> BOX <exp> UNICODE [COLOR <clr>] => ;
          hb_DispOutAtBox( <row>, <col>, hb_UTF8ToStrBox(<exp>) [, <clr>] )

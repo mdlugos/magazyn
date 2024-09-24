@@ -41,7 +41,7 @@ ELSE
 
 	* clear window and draw box
 	SetColor(M->color8)
-	scroll(8, 10, 22, 69, 0)
+	hb_scroll(8, 10, 22, 69, 0)
 	@ 8,10,22,69 BOX M->frame
 
 	* display help title
@@ -52,7 +52,7 @@ ELSE
 	* get the help text
 	htext = helptext(M->helpfile, M->help_code)
 
-	* scroll state makes eliminates the need for a cursor
+	* hb_scroll state makes eliminates the need for a cursor
 	SET CURSOR OFF
 
 	* use editor in browse only mode

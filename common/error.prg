@@ -1,11 +1,7 @@
-#ifdef __PLATFORM__DOS
-   #define D_CDP 'PL852M'
+#ifdef A_UNICODE
+   #define D_CDP 'UTF8MD'
 #else
-   #ifdef A_UNICODE
-      #define D_CDP 'UTF8MD'
-   #else
-      #define D_CDP 'PL852M'
-   #endif
+   #define D_CDP 'PL852M'
 #endif
 
 #undef PC852
@@ -20,13 +16,8 @@ request A_EXT
 //#define TCVT(x) tran(x,)
 #include "error.ch"
 #include "inkey.ch"
-#ifdef __HARBOUR__
 #include "hbgtinfo.ch"
 init proc esys()
-#else
-ANNOUNCE _ntxerr
-proc ErrorSys()
-#endif
 
 
 memvar _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,firma_n,firma_a,defa,pcl
@@ -44,9 +35,15 @@ local i,n,t
 SET(_SET_DEBUG,.t.)
 ErrorBlock( {|e| DefError(e)} )
 
-#ifdef __HARBOUR__
+REQUEST HB_LANG_PL, HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8MD, HB_CODEPAGE_PLMAZ //, HB_CODEPAGE_UTF16LE
+#ifdef A_UNICODE
+  hb_gtInfo( HB_GTI_BOXCP, D_CDP)
+#else
+  //browse musi mieć BOXCP tego samego rodzaju co główną bo left/right/substr
+  REQUEST HB_CODEPAGE_PLMAZ
+  hb_gtInfo( HB_GTI_BOXCP, 'PLMAZ')
+#endif
   hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
-  REQUEST HB_LANG_PL,HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8MD
   SET(_SET_LANGUAGE,'PL')
   SET(_SET_CODEPAGE, D_CDP )
   SET(_SET_DBCODEPAGE, PC852 )
@@ -95,13 +92,6 @@ ErrorBlock( {|e| DefError(e)} )
    #endif
 #endif
    SET HARDCOMMIT ON
-#else
-#ifdef A_CDX
-   SET RDD DEFAULT TO A_CDX
-#else
-   SET RDD DEFAULT TO DBFNTX           // Set up DBFNTX as default driver
-#endif
-#endif
 
 #ifdef A_LAN
 set exclusive off
@@ -162,9 +152,6 @@ public pcl:=.f.
     SetKey(K_CTRL_L,i,t)
 #endif
 //setkey(28,{|x|help(x)})
-#ifndef __HARBOUR__
-isega() //musi, bo korzysta z jej wyniku d.asm
-#endif
 SET CURSOR OFF
 SET SCOREBOARD OFF
 SET CONFIRM ON
@@ -185,9 +172,7 @@ else // MDA, VGA MONO
   _sunsel:="W+"
   SET COLOR TO W,I,,W,W+
 endif
-#ifdef __HARBOUR__
-  setmode(min(maxrow()+1,Round((maxcol()+1)*5/16,0)),maxcol()+1)
-#endif
+setmode(min(maxrow()+1,Round((maxcol()+1)*5/16,0)),maxcol()+1)
 INIT SCREEN
 CLEAR screen
 @ 1,0 say padc("program dla:     "+firma_n+space(17),maxcol())
@@ -207,9 +192,7 @@ CLEAR screen
 #ifdef A_MYSZ
 sysint(51,0)
 #else
-#ifdef __HARBOUR__
 MHIDE()
-#endif
 #endif
 #endif
 return
@@ -233,9 +216,7 @@ local i, cMessage:="", aOptions:={}, nChoice,r,t,n,bk,h,f,a,b,c,d
 field nazwa,baza,klucz,path,plik,for,unique,descend
 static s:=0,ee:=NIL
 
-#ifdef __HARBOUR__
    HB_CDPSELECT(D_CDP)
-#endif
 // put messages to STDERR
   if e:severity=NIL
      e:severity:=ES_ERROR
@@ -644,11 +625,7 @@ static s:=0,ee:=NIL
           a:=trim(klucz)
           c:=trim(for)
           select (cMessage)
-#ifdef __HARBOUR__
           nchoice:=0 ; while !empty(ordbagname(++nchoice)) ; aadd(aoptions,t+ordbagname(nchoice)) ; enddo
-#else
-          nchoice:=0 ; while !empty(t:=ordbagname(++nchoice)) ; aadd(aoptions,t) ; enddo
-#endif
 
 #ifdef SIMPLE
           ?
@@ -952,9 +929,7 @@ do while !(al)->(if(empty(rec),dbrlock(),dbrlock(rec)))
       ? hb_UTF8ToStr("[Esc] - rezygnacja, Próba  ")
    else
       message(1)
-#ifdef __HARBOUR__
       HB_IDLESLEEP(.5)
-#endif      
 #else
       @ s[3]-1,s[2]+1 say padl("[Esc] - rezygnacja",s[4]-s[2]-2)
       @ s[3]-1,s[2]+2 say "Próba..." UNICODE

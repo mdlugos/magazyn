@@ -58,37 +58,8 @@ return .t.
 stat func icv(b,o)
 local t
      t:=valtype(b)
-#ifdef __HARBOUR__
      if ! t$'PB'
         o:=hb_ValToExp(b)
-#else
-     if t$"MC"
-        if ! "'" $ b
-           o:="'"+b+"'"
-        elseif ! '"' $ b
-           o:='"'+b+'"'
-        else
-           o:='['+b+']'
-        endif
-     elseif t="N"
-        o:=ltrim(str(b))
-     elseif t="D"
-        o:="ctod('"+dtoc(b)+"')"
-     elseif t="L"
-        o:=if(b,".t.",".f.")
-     elseif t="A"
-        t:=''
-        begin sequence
-          aeval(b,{|x|t+=","+icv(x)})
-          o:="{"+substr(t,2)+"}"
-        recover
-          if o=NIL
-             break
-          endif
-        end
-     elseif t='U'
-        o:='NIL'
-#endif
      elseif pcount()<2
         break
      endif
@@ -175,14 +146,6 @@ if a=NIL
    x:=findfile(x)
    if ""#x
       a:=memoread(x)
-#ifndef __HARBOUR__
-      i:=at(chr(10),a)
-      if i>1 .and. subs(a,i-1,1)=chr(13)
-         i:=chr(13)+chr(10)
-      else
-         i:=chr(10)
-      endif
-#endif
       a:=getlines(a,i)
       i:=0
       l:=len(a)
@@ -214,14 +177,6 @@ local a,l:=0,i,j,c,y
    x:=findfile(x)
    if ""#x
       a:=memoread(x)
-#ifndef __HARBOUR__
-      i:=at(chr(10),a)
-      if i>1 .and. subs(a,i-1,1)=chr(13)
-         i:=chr(13)+chr(10)
-      else
-         i:=chr(10)
-      endif
-#endif
       a:=getlines(a,i)
       l:=len(a)
    endif
@@ -238,14 +193,7 @@ for i:=1 to l
     c:=extractleft(x)
 
     if !empty(c)
-#ifdef __HARBOUR__
     __mvPublic(c)
-#else
-    for j:=1 to len(c)
-      y:=c[j]
-      PUBLIC &y
-    next j
-#endif
     endif
 
     begin sequence
@@ -254,59 +202,12 @@ for i:=1 to l
 next
 
 return .f.
-/***********
-function inirest(x)
-static a,l,i
-if a=NIL
-   x:=findfile(x)
-   if ""#x
-      a:=memoread(x)
-#ifndef __HARBOUR__
-      i:=at(chr(10),a)
-      if i>1 .and. subs(a,i-1,1)=chr(13)
-         i:=chr(13)+chr(10)
-      else
-         i:=chr(10)
-      endif
-#endif
-      a:=getlines(a,i)
-      i:=0
-      l:=len(a)
-   else
-      i:=l:=0
-   endif
-endif
-do while .t.
-   ++i
-   if i>l
-      x:=a:=NIL
-      return .f.
-   endif
-   x:=a[i]
-   if x='&:'
-      x:=subs(x,3)
-   elseif '&:'$x
-      x:=Trim(left(x,at('&:',x)-1))
-   endif
-   if x#';'
-      exit
-   endif
-enddo
-return .t.
-**************/
+**************************
 procedure inisave(name)
 local i,txt,j,b,c
    name:=findfile(name)
    txt:=memoread(name)
 
-#ifndef __HARBOUR__
-      i:=at(chr(10),txt)
-      if i>1 .and. subs(txt,i-1,1)=chr(13)
-         i:=chr(13)+chr(10)
-      else
-         i:=chr(10)
-      endif
-#endif
    txt:=getlines(txt,i)
    for i:=1 to len(txt)
      if txt[i]#';' .and. txt[i]#'&:'
@@ -328,20 +229,8 @@ local i,txt,j,b,c
    for i:=1 to len(txt)
      j+=txt[i]+HB_EOL()
    next i
-#ifdef __HARBOUR__
    hb_memowrit(name,j)
    hb_idlestate()
-#else
-   memowrit(name,j)
-#endif
-/*
-   j:=fcreate(name)
-   for i:=1 to len(txt)
-     fwrite(j,txt[i])
-     fwrite(j,HB_EOL())
-   next i
-   fclose(j)
-*/
 return
 ******************************
 func findfile(x,netio)
@@ -1295,7 +1184,7 @@ return txt
   #endif
 #endif
 #ifdef A_DRUKCOMP
-#ifdef __HARBOUR__
+
 #ifdef D_HWPRN
 #ifdef A_WIN_PRN
 EXTERNAL WIN_PRINTERGETDEFAULT,WIN_PRINTERLIST,WIN_PRINTERSETDEFAULT,WIN_PRINTFILERAW,WIN_PRINTEREXISTS,WIN_PRINTERSTATUS,WIN_PRINTERPORTTONAME
@@ -1353,7 +1242,7 @@ proc wout(...)
     wwout(...)
   endif
 return
-#endif
+****************************************
 func evline(ba,jl,bx)
 memvar j,oprn
 //static ss:={},sp:=0
@@ -1381,7 +1270,6 @@ begin sequence
     p:='{||'
  endif
  if r="?"
-#ifdef __HARBOUR__
 #ifdef A_SIMPLE
     if r="??"
        y:=&(p+'outerr('+subs(r,4)+')}')
@@ -1401,21 +1289,6 @@ begin sequence
     else
        y:=&(p+'wq(),wqq('+subs(r,3)+')}')
     endif
-#else
-#ifdef A_SIMPLE
-    if r="??"
-       y:=&(p+'outerr('+subs(r,4)+')}')
-    else
-       y:=&(p+'outerr(HB_EOL()),outerr('+subs(r,3)+')}')
-    endif
-#else
-    if r="??"
-       y:=&(p+'qqout('+subs(r,4)+')}')
-    else
-       y:=&(p+'qout('+subs(r,3)+')}')
-    endif
-#endif
-#endif
  elseif r="JUMP " //.or. r="GOTO "
     a:=":"+ltrim(subs(r,6))+" "
     b:=ascan(ba,{|x|valtype(x)$"MC".and. x+' '=a})+1
@@ -1617,7 +1490,6 @@ return callfunc(,b+1,p,getlines(alltrim(subs(buf[b],len(c)+1)),','))
 func callsub(bx,g)
 return callfunc(bx,0,{g},IF(EMPTY(G),NIL,{'getlist'}))
 ***************************
-#ifdef __HARBOUR__
 #define EVLINE self:=evline(buf,j++,@bx);
    ;IF self==NIL;
    ;ELSE;
@@ -1626,24 +1498,12 @@ return callfunc(bx,0,{g},IF(EMPTY(G),NIL,{'getlist'}))
      ;END;
      ;bx:=&(self[1]);
    ;END
-#else
-#define EVLINE self:=evline(buf,j++,@bx);
-   ;IF self==NIL;
-   ;ELSE;
-     ;IF self[3]<>NIL;
-        ;bx:=Self[3];
-        ;PRIVATE &bx;
-     ;END;
-     ;bx:=&(self[1]);
-   ;END
-#endif
 func callfunc(bx,b,c,d) // ({'JUMP SUB'},0,{1,2,3},{'a','b','c'})
 local x,y,l
 memvar j,self,buf
 private j:=0
 
 if !empty(d)
-#ifdef __HARBOUR__
   __mvPrivate(d)
      if valtype(c)='A'
        y:=min(len(d),len(c))
@@ -1652,15 +1512,6 @@ if !empty(d)
          &x:=c[l]
        next l
      endif
-#else
-  for l:=1 to len(d)
-     x:=alltrim(d[l])
-     private &x
-     if valtype(c)='A' .and. len(c)>=l
-        &x:=c[l]
-     endif
-  next l
-#endif
 endif
 
 IF empty(b) //zero,NIL
@@ -1680,7 +1531,6 @@ enddo
 
 return bx
 #else
-#ifdef __HARBOUR__
 proc wq(...)
 qout()
 wqq(...)
@@ -1699,7 +1549,6 @@ proc wout(...)
     wwout(...)
   endif
 return
-#endif
 #endif
 ***************************
 func getsetup(get,valid,when,subscript)
@@ -1816,7 +1665,6 @@ proc field2bin(f,d,a)
 
 return
 ************************************
-#ifdef __HARBOUR__
 #ifdef A_HBGET
 function __SetProc(x)
    static procnm:=''
@@ -2440,5 +2288,4 @@ HB_FUNC ( ALTATTR )
       }
 
 #pragma ENDDUMP
-#endif
 ********************

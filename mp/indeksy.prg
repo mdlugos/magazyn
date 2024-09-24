@@ -982,40 +982,13 @@ DO CASE
 #ifdef A_MYSZ
    case _skey=14
         if bx=1 .and. dx=row() .and. cx=_scol1+SSBEG-2
-#ifndef __HARBOUR__
-            sysint(51,1)
-            sysint(51,10,0,0,7168+if(_sbeg=1,16,17))
-            do while bx#0
-              sysint(51,3,@bx)
-            enddo
-            sysint(51,10,0,-1,30464)
-            sysint(51,2)
-#endif
           peoma(2,_s)
 
         elseif bx=1 .and. dx=row() .and. cx<_scol1+SSBEG-2
-#ifndef __HARBOUR__
-            sysint(51,1)
-            sysint(51,10,0,0,7168+27)
-            do while bx#0
-              sysint(51,3,@bx)
-            enddo
-            sysint(51,10,0,-1,30464)
-            sysint(51,2)
-#endif
           peoma(9,_s)
 
         elseif bx=1 .and. dx=row() .and. cx>_scol2 SSEND
 
-#ifndef __HARBOUR__
-            sysint(51,1)
-            sysint(51,10,0,0,7168+9)
-            do while bx#0
-              sysint(51,3,@bx)
-            enddo
-            sysint(51,10,0,-1,30464)
-            sysint(51,2)
-#endif
           peoma(22,_s)
 
         else

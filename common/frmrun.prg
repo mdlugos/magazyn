@@ -160,13 +160,8 @@ FUNCTION __ReportForm( cFRMName, lPrinter, cAltFile, lNoConsole, bFor, ;
     IF aReportData[ RP_BEJECT ]
      EjectPage()
     ENDIF
-#ifdef __HARBOUR__
     #command ? [ <list,...> ] => WOut( <list> )
     #command ?? [ <list,...> ] => WWOut( <list> )
-#else
-    #command ? [ <list,...> ] => QOut( <list> )
-    #command ?? [ <list,...> ] => QQOut( <list> )
-#endif
     if lPrinter
 #ifdef A_15CALI
     IF aReportData[ RP_WIDTH ] >96 .and. 1=alarm("CZY DRUKUJESZ NA SZEROKIM PAPIERZE",{"TAK","NIE"})
@@ -289,7 +284,7 @@ FUNCTION __ReportForm( cFRMName, lPrinter, cAltFile, lNoConsole, bFor, ;
      if row()>=maxrow()-1
        if row()=maxrow()
          scrllf()
-         scroll(0,0,maxrow(),maxcol(),1)
+         hb_scroll(0,0,maxrow(),maxcol(),1)
        else
          setpos(maxrow(),0)
        endif
@@ -348,7 +343,7 @@ FUNCTION __ReportForm( cFRMName, lPrinter, cAltFile, lNoConsole, bFor, ;
      if row()>=maxrow()-1
        if row()=maxrow()
          scrllf()
-         scroll(0,0,maxrow(),maxcol(),1)
+         hb_scroll(0,0,maxrow(),maxcol(),1)
        else
          setpos(maxrow(),0)
        endif
@@ -812,7 +807,7 @@ STATIC FUNCTION PrintIt( cString )
      if row()>=maxrow()-1
        if row()=maxrow()
          scrllf()
-         scroll(0,0,maxrow(),maxcol(),1)
+         hb_scroll(0,0,maxrow(),maxcol(),1)
        else
          setpos(maxrow(),0)
        endif

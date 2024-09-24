@@ -501,7 +501,7 @@ func dok //append - .t. append blank .f. - noedit
 #endif
            adw[i,o]:=main->konto
            if main->czyma=.t.
-              dispout(if(hb_cdpIsUTF8(),'↔',chr(0x1D)))
+              eval({|a|a:=hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD'),hb_DispOutAtBox(row(),col(),hb_UTF8ToStrBox('↔')),hb_gtInfo( HB_GTI_BOXCP,a)})
            endif
         else
            adw[i,o]:=pad(ad[AD_POLA,i,AP_KTWN+p],A_KTL)
@@ -560,8 +560,8 @@ func dok //append - .t. append blank .f. - noedit
         #endif
            adm[i,o]:=main->konto
            if main->czyma=.f.
-              setpos(win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1))
-              dispout(if(hb_cdpIsUTF8(),'↔',chr(0x1D)))
+              eval({|r,c,a|a:=hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD'),hb_DispOutAtBox(r,c,hb_UTF8ToStrBox('↔')),hb_gtInfo( HB_GTI_BOXCP,a)},win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1))
+              //@ win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1) BOX '↔' UNICODE
            endif
         else
            adm[i,o]:=pad(ad[AD_POLA,i,AP_KTMA+p],A_KTL)
@@ -631,7 +631,6 @@ if !empty(buf) .and. valtype(buf)$"MC"
 endif
 
 
-#ifdef __HARBOUR__
 #define EVLINE self:=evline(buf,j++,@x);
    ;IF self==NIL;
    ;ELSE;
@@ -640,17 +639,6 @@ endif
      ;END;
      ;x:=&(self[1]);
    ;END
-#else
-#define EVLINE self:=evline(buf,j++,@x);
-   ;IF self==NIL;
-   ;ELSE;
-     ;IF self[3]<>NIL;
-        ;x:=Self[3];
-        ;PRIVATE &x;
-     ;END;
-     ;x:=&(self[1]);
-   ;END
-#endif
 
     linecount:=len(buf)
     j:=1
@@ -968,8 +956,8 @@ endif
               IF XOR("-"$r,"X"$r .and. af[i]<0)
                 if czyma<>(czyma:=.t.)
                    kwota:=-kwota
-                   setpos(win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1))
-                   dispout(if(hb_cdpIsUTF8(),'↔',chr(0x1D)))
+                   eval({|r,c,a|a:=hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD'),hb_DispOutAtBox(r,c,hb_UTF8ToStrBox('↔')),hb_gtInfo( HB_GTI_BOXCP,a)},win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1))
+                   //@ win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1) BOX '↔' UNICODE
                 endif
                 kwota-=af[i]
               ELSE
@@ -1025,8 +1013,8 @@ endif
               IF XOR("-"$s,"X"$s .and. af[i]<0)
                 if czyma<>(czyma:=.f.)
                    kwota:=-kwota
-                   setpos(win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1))
-                   dispout(if(hb_cdpIsUTF8(),'↔',chr(0x1D)))
+                   eval({|r,c,a|a:=hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD'),hb_DispOutAtBox(r,c,hb_UTF8ToStrBox('↔')),hb_gtInfo( HB_GTI_BOXCP,a)},win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1))
+                   //@ win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1) BOX '↔' UNICODE
                 endif
                 kwota-=af[i]
               ELSE

@@ -644,28 +644,10 @@ DO CASE
 #ifdef A_MYSZ
    case _skey=14
         if bx=1 .and. dx=row() .and. cx=_scol1+7
-#ifndef __HARBOUR__
-            sysint(51,1)
-            sysint(51,10,0,0,7168+18)
-            do while bx#0
-              sysint(51,3,@bx)
-            enddo
-            sysint(51,10,0,-1,30464)
-            sysint(51,2)
-#endif
             przeg(-1,_s,@ent,@stat_ord)
 
 #ifdef A_OLZA
         elseif doc_opcja .and. bx=1 .and. dx=row() .and. cx=_scol1-1
-#ifndef __HARBOUR__
-            sysint(51,1)
-            sysint(51,10,0,0,7168+16)
-            do while bx#0
-              sysint(51,3,@bx)
-            enddo
-            sysint(51,10,0,-1,30464)
-            sysint(51,2)
-#endif
             set order to 3
             przeg(2,_s,@ent,@stat_ord)
 

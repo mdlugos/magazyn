@@ -1,9 +1,7 @@
 #include "set.ch"
 #include "inkey.ch"
 #include "getexitm.ch"
-#ifdef __HARBOUR__
 #include "hbgtinfo.ch"
-#endif
 
 ANNOUNCE GETSYS
 
@@ -104,16 +102,12 @@ end sequence
 return (oldupdated)
 *************************
 stat proc fixbuff(g,x)
-#ifdef __HARBOUR__
 local a:=g:pos
   g:buffer:=x
   g:varput(g:untransform())
   g:reset()
   g:clear:=.f.
   g:pos:=a
-#else
-  g:buffer:=x
-#endif
 g:display()
 g:changed:=.t.
 return
@@ -153,7 +147,6 @@ local NumFlag:=.f.,b,x,y,key,mfl,maxlth:=0
 #ifdef A_MYSZ
       b:=x:=y:=0
       MSHOW()
-#ifdef __HARBOUR__
       do while (key:=INKey(0, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN ),key>=K_MINMOUSE .and. key<=K_MAXMOUSE)
          x:=mcol()
          y:=mrow()
@@ -164,19 +157,8 @@ local NumFlag:=.f.,b,x,y,key,mfl,maxlth:=0
          endif
          key:=0
          if .t.
-#else
-      do while (key:=inkey(.1))=0
-         sysint(51,3,@b,@x,@y)
-         if b#0
-            x:=int(x/8+.1)
-            y:=int(y/8+.1)
-#endif
             if get:row=y .and. get:col<=x .and. get:col+len(tran(get:original,get:picture))>x
-#ifdef __HARBOUR__
                if !get:HasFocus
-#else
-               if !get:HasFocus .or. mfl
-#endif
                   loop
                endif
                MHIDE()
@@ -385,7 +367,6 @@ local bKeyBlock
 
     endif
 
-#ifdef __HARBOUR__
 
   case (key == K_ALT_K)
 
@@ -416,8 +397,6 @@ local bKeyBlock
     get:Home()
     get:DelEnd()
 
-#endif
-
   otherwise
     cKey := hb_keyChar(key)
     if (key >= 32 .and. !ckey == "") .or. ;
@@ -441,9 +420,7 @@ local bKeyBlock
               get:Overstrike(cKey)
             endif
             NumFlag:=.t.
-#ifdef __HARBOUR__
             get:changed:=.t.
-#endif
           elseif cKey='-'
             get:todecpos()
             if get:pos>get:decpos
@@ -788,13 +765,6 @@ local exitState, ret := .t. ,b
 #ifdef A_MYSZ
   case ( exitState == GE_MOUSE )
     if mysz[1]=2
-#ifndef __HARBOUR__
-       b:=2
-       MSHOW()
-       do while b#0
-          sysint(51,3,@b)
-       enddo
-#endif
        MHIDE()
        ret := .f.
     else
@@ -1027,10 +997,8 @@ local oldPos := LastPos
   end
 return ( OldPos )
 
-#ifdef __HARBOUR__
 PROCEDURE __SetFormat( bFormat )
   RETURN
-#endif
 
 /***
 *  Updated()
@@ -1249,13 +1217,10 @@ return
 static proc getchr(get,expandable)
    static bl:=''
    local k,m,n,sc,lc,TXT,getlist:={},prevlen,b:={0,0},bp:=2,ll,osk:={}
+   local bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
    memvar r1,c1,r2,c2,defa,l,c,cl,cc,ch,ww
    private r1,c1,r2,c2,l,c,cl,cc,ch:=.f.,ww:=.f.
-#ifdef __HARBOUR__
    ll:=1020
-#else
-   ll:=254
-#endif
 
   m:=if(get:picture=NIL,40,max(40,val(subs(get:picture,1+at("S",get:picture)))))
   if expandable
@@ -1303,24 +1268,20 @@ static proc getchr(get,expandable)
         SET COLOR TO I
         @ r1,c1+3  say 'WPIS WIELOWIERSZOWY'
         @ r2,c1+3 say 'Esc'
-        SAYl "^"+if(HB_CDPISUTF8(),"→", chr(0x1b)) 
-        SAYl "^"+if(HB_CDPISUTF8(),"←", chr(0x1a)) 
-        SAYl 'Hom'
+        @ r2,c1+7 BOX "^→" UNICODE 
+        @ r2,c1+10 BOX "^←" UNICODE 
+        @ r2,c1+13 SAY 'Hom'
         SAYl 'End'
         sayl 'PgU'
         sayl 'PgD'
         sayl '^Y'
         sayl '^W'
         sayl "F2"
-
+        hb_gtInfo( HB_GTI_BOXCP, bcp)
         SET COLOR TO W
 
-#ifdef __HARBOUR__
 osk:=HB_SETKEYSAVE()
 #command RESET KEY <key> [TO <new>] => setkey(<key>,[<{new}>])
-#else
-#command RESET KEY <key> [TO <new>] => aadd(osk,{<key>,setkey(<key>,[<{new}>])})
-#endif
 
   RESET KEY K_INS TO SetCursor(if(set(_SET_INSERT,!SET(_SET_INSERT)),1,2))
   RESET KEY K_CTRL_RET
@@ -1366,14 +1327,10 @@ osk:=HB_SETKEYSAVE()
            b[3-bp]:=b[bp]
         endif
         bl:=subs(txt,min(b[1],b[2]),abs(b[2]-b[1]))
-#ifdef __HARBOUR__
         hb_gtInfo( HB_GTI_CLIPBOARDDATA, bl )
-#endif
         //restscreen(cl,cc,cl,cc,hiattr(savescreen(cl,cc,cl,cc)))
        elseif k='K'
-#ifdef __HARBOUR__
         bl:= hb_gtInfo( HB_GTI_CLIPBOARDDATA )
-#endif
         txt:=stuff(txt,k:=mlctopos(txt,ll,l,c,2,ww),0,bl)
         n:=len(bl)
         if b[1]>k
@@ -1387,17 +1344,13 @@ osk:=HB_SETKEYSAVE()
         endif
        elseif k="E"
         if !ch
-#ifdef __HARBOUR__
            hb_gtInfo( HB_GTI_CLIPBOARDDATA, bl )
-#endif
            txt:=stuff(txt,min(b[1],b[2]),abs(b[2]-b[1]),"")
            ch:=.t.
         endif
        elseif k="M"
         if !ch
-#ifdef __HARBOUR__
            hb_gtInfo( HB_GTI_CLIPBOARDDATA, bl )
-#endif
            txt:=stuff(txt,k:=mlctopos(txt,ll,l,c,2,ww),0,bl)
            n:=len(bl)
            if b[1]>k
@@ -1422,11 +1375,7 @@ osk:=HB_SETKEYSAVE()
            ll:=c2-c1-3
         else
            txt:=strtran(txt,chr(141)+chr(10))
-#ifdef __HARBOUR__
            ll:=1020
-#else
-           ll:=254
-#endif
         endif
         loop
     elseif k=K_CTRL_END .or. k=K_F10 .or. k=GE_WRITE
@@ -1434,11 +1383,7 @@ osk:=HB_SETKEYSAVE()
     endif
     exit
   enddo
-#ifdef __HARBOUR__
   HB_SETKEYSAVE(osk)
-#else
-  aeval(osk,{|x|setkey(x[1],x[2])})
-#endif
   if k=GE_WRITE
         k:=strtran(txt,chr(141)+chr(10))
         if expandable
@@ -1476,10 +1421,8 @@ FUNC gufunc(mode,line,column)
         c:=column
         cl:=row()
         cc:=col()
-#ifdef __HARBOUR__
         cc-=c1+1
         cl-=r1+1
-#endif
         return K_CTRL_END
      endif
      ch:=mode=2

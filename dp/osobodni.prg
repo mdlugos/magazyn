@@ -304,7 +304,7 @@ static procedure dok1(_f)
 
  set cursor off
  SET COLOR TO (_sbkgr)
-  scroll(0,_fco1,0,_fco2)
+  hb_scroll(0,_fco1,0,_fco2)
   @ 0,_fco1,3,_fco2 BOX UNICODE '╔═╗║║ ║║ '
   @ 0,_fco1+1 say "SPIS OSÓB KORZYSTAJĄCYCH Z POSIŁKU" UNICODE
   @ 1,2 say "Ilość" UNICODE

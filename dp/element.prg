@@ -15,11 +15,7 @@ MEMVAR CHANGED,diety,posilki,grupy
 #define D_MYSZ
 #endif
 
-#ifdef __HARBOUR__
 #define D_REST 4
-#else
-#define D_REST 2
-#endif
 *************
 proc elementy
 

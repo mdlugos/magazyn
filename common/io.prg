@@ -13,9 +13,6 @@
 #ifdef A_MYSZ
 static apro:={}
 #endif
-#ifndef __HARBOUR__
-request errorsys
-#endif
 
 
 
@@ -67,7 +64,6 @@ function xor(a,b)
 return if(a,!b,b)
 //#endif
 ******************
-#ifdef __HARBOUR__
 func netdo(ip,port,timeout,block)
 local a,ad,socket,s
 
@@ -98,28 +94,6 @@ end
 hb_inetClose(socket)
 
 return .t.
-#else
-function DiskName()
-local i
-i:=6400
-sysint(33,@i)
-Return chr(65+i%256)
-
-function hb_at(a,b,c)
-local x
-c:=max(1,c)
-x:=at(a,subs(b,c))
-if x>0
-   x+=c-1
-endif
-return x
-*******************
-function stod(s)
-local d:=set(_SET_DATEFORMAT,'YYYY.MM.DD'),r
-r:=ctod(tran(s,'@R ####.##.##'))
-set(_SET_DATEFORMAT,d)
-return r
-#endif
 ******************
 function sign(x)
 return if(x<0,-1,if(x>0,1,0))
@@ -401,22 +375,10 @@ function alarm(txt,parr,i)
   endif
   do while .t.
      ?? chr(7)
-#ifdef __HARBOUR__
      txt:=' '
      fread(0,@txt,1)
      txt:=upper(txt)
      i:=ascan(parr,txt)
-#else
-     i:=8*256
-     sysint(33,@i)
-     i%=256 //al
-     if i#0
-        txt:=upper(chr(i))
-        i:=ascan(parr,txt)
-     else
-        sysint(33,8*256)
-     endif
-#endif
      if i#0
         ?? txt
         exit
@@ -588,47 +550,7 @@ function dtov(d)
 return DTOV(d)
 ******************************
 FUNCTION KIBORD(txt)
-#ifdef __HARBOUR__
   HB_KEYINS(txt)
-/*
-local a:={},b
-
-do while (b:=inkey(,INKEY_ALL))#0
-   aadd(a,b)
-enddo
-
-set typeahead to max(len(a)+hb_blen(txt),set(_SET_TYPEAHEAD))
-if valtype(txt)='A'
-  aeval(txt,{|x|hb_keyput(x)})
-else
-  KEYBOARD txt
-endif
-
-aeval(a,{|x|hb_keyput(x)})
-*/
-#else
-local k
-if valtype(txt)='A'
-  k:=txt
-  txt:=''
-  aeval(k,{|x|txt+=chr(x)})
-endif
-DO WHILE (k:=nextkey())#0
-   if k>0 .and. k<256
-      txt+=CHR(Inkey())
-   elseif k=K_F10
-      inkey()
-      txt+=chr(K_CTRL_L)
-   else
-       clear typeahead
-       tone(130,3)
-       exit
-   endif
-ENDDO
-
-set typeahead to max(len(txt),set(_SET_TYPEAHEAD))
-KEYBOARD txt
-#endif
 RETURN(.t.)
 ***************************
 function window(rown,coln,color)
@@ -720,11 +642,7 @@ FUNCTION tak(_prompth,r,c,l,l1,col) // zadaje pytanie
 
 local    _x,_x1,_pm1,_scr,_c,_cur:=setcursor(0),k,b
 
-#ifdef __HARBOUR__
 k:=hb_setkeyget(K_F10,@b)
-#else
-k:=setkey(K_F10,{||kibord(chr(K_ENTER))})
-#endif
 
 _x1 = LEN(_prompth)
 
@@ -1243,7 +1161,6 @@ endif
       if key#K_ENTER
          MSHOW()
          b:=0
-#ifdef __HARBOUR__
          do while (key:=inkey(0, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN + HB_INKEY_GTEVENT ),key>=K_MINMOUSE .and. key<=K_MAXMOUSE )
              if key=1002
                 b:=1
@@ -1256,16 +1173,6 @@ endif
              y:=mrow()
              key:=0
              fpass:=.f.
-#else
-         do while (key:=inkey(.1))=0
-            sysint(51,3,@b,@x,@y)
-            x:=int(x/8+.1)
-            y:=int(y/8+.1)
-            if b=0
-               fpass:=.f.
-               loop
-            endif
-#endif
             _p:=ascan(array,{|pr|y=pr[1] .and. x>=pr[2] .and. x<pr[2]+len(pr[3])})
             if b=2 .or. b=1 .and. _p=0
                if fpass
@@ -1310,17 +1217,6 @@ endif
             p:=_p
          endif
          if b=1
-#ifdef __HARBOUR__
-            //inkey(0,INKEY_LUP)
-#else
-            sysint(51,10,0,0,7419)
-            MSHOW()
-            do while b#0
-              sysint(51,3,@b)
-            enddo
-            MHIDE()
-            sysint(51,10,0,-1,30464)
-#endif
             key:=K_ENTER
          endif
       elseif (ckey:=upper(chr(key)),key:=ascan(array,{|pr|upper(ltrim(pr[3]))=ckey}))#0
@@ -1403,7 +1299,6 @@ do while .t.
       MSHOW()
 
       b:=0
-#ifdef __HARBOUR__
       key:=inkey(0,INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)
       if key=1002
          b:=1
@@ -1415,19 +1310,6 @@ do while .t.
          key:=14
       endif
       fpass:=.f.
-#else
-      do while (key:=inkey(.1))=0
-         sysint(51,3,@b,@x,@y)
-         if b=0
-            fpass:=.f.
-            loop
-         endif
-         x:=int(x/8+.1)
-         y:=int(y/8+.1)
-         key:=14
-         exit
-      enddo
-#endif
       MHIDE()
 
       do case
@@ -1455,15 +1337,6 @@ do while .t.
               ld:=1
            elseif valtype(a2)="L" .and. a2 .or. valtype(a2)="A" .and. a2[p]
               p+=y-row()
-#ifndef __HARBOUR__
-              sysint(51,1)
-              sysint(51,10,0,0,7419)
-              do while b#0
-                sysint(51,3,@b)
-              enddo
-              sysint(51,10,0,-1,30464)
-              sysint(51,2)
-#endif
               exit
            endif
          case key==K_DOWN

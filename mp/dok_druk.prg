@@ -85,7 +85,6 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,wart_vat,;
 #endif
 
 #ifdef A_DRUKCOMP
-#ifdef __HARBOUR__
 #define EVLINE(buf,lbl,lc) while j>0 .and. j<=lc .and. (valtype(buf[j])#"C" .or. buf[j]<>lbl);
    ;self:=evline(buf,j++,@x);
    ;IF self<>NIL;
@@ -95,18 +94,6 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,wart_vat,;
      ;x:=&(self[1]);
    ;END;
 ;END
-#else
-#define EVLINE(buf,lbl,lc) while j>0 .and. j<=lc .and. (valtype(buf[j])#"C" .or. buf[j]<>lbl);
-   ;self:=evline(buf,j++,@x);
-   ;IF self<>NIL;
-     ;IF self[3]<>NIL;
-        ;x:=Self[3];
-        ;PRIVATE &x;
-     ;END;
-     ;x:=&(self[1]);
-   ;END;
-;END
-#endif
 #define dok_p_r dok_def[1]
 #define dok_zew dok_def[2]
 #define dok_ew  dok_def[8]
@@ -316,12 +303,7 @@ private gt
       IF self==NIL
       ELSE
        IF self[3]<>NIL
-#ifdef __HARBOUR__
          __mvPrivate(Self[3])
-#else
-         x:=Self[3]
-         PRIVATE &x
-#endif
        ENDIF
        x:=&(self[1])
       ENDIF
@@ -2264,7 +2246,6 @@ return RET
 #endif
 *******************
 #undef EVLINE
-#ifdef __HARBOUR__
 #define EVLINE(buf,lbl,lc) while j>0 .and. j<=lc .and. (j=1 .or. valtype(buf[j-1])#"C" .or. buf[j-1]<>lbl);
    ;self:=evline(buf,j++,@x);
    ;IF self<>NIL;
@@ -2274,18 +2255,6 @@ return RET
      ;x:=&(self[1]);
    ;END;
 ;ENDDO
-#else
-#define EVLINE(buf,lbl,lc) while j>0 .and. j<=lc .and. (j=1 .or. valtype(buf[j-1])#"C" .or. buf[j-1]<>lbl);
-   ;self:=evline(buf,j++,@x);
-   ;IF self<>NIL;
-     ;IF self[3]<>NIL;
-        ;x:=Self[3];
-        ;PRIVATE &x;
-     ;END;
-     ;x:=&(self[1]);
-   ;END;
-;ENDDO
-#endif
 *****************************
 func w_zes(it_zesmnu)
 memvar _sbnorm,defa,strona

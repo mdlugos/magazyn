@@ -100,6 +100,7 @@ memvar it_menudod
 
       case m = 4 .and. iS_spec
           hAslo_spec(10)
+#if 0          
     @ 12,0
     ?? "Swap: " + LTRIM(STR(MEMORY(0)))
     ?? ", Lg object: " + LTRIM(STR(MEMORY(1)))
@@ -109,16 +110,14 @@ memvar it_menudod
     ?? ", FM: " + LTRIM(STR(MEMORY(101)))
     ?? ", FREE SWAP: " + LTRIM(STR(MEMORY(103)))
     ?? ", FREE CONV: " + LTRIM(STR(MEMORY(104)))
-#ifdef __HARBOUR__
     ?? ", MEMORY USED: "+ LTRIM(STR(MEMORY(1001)))
     ?? ", MEMORY USED MAX: "+ LTRIM(STR(MEMORY(1002)))
     ?? ", MAX STACK ITEMS: "+ LTRIM(STR(MEMORY(1003)))
     ?? ", MEMORY STACK: "+ LTRIM(STR(MEMORY(1004)))
     ?? ", STACK ITEMS: "+ LTRIM(STR(MEMORY(1005)))
-#endif
+#endif    
           browse()
       case m = 5
-#ifdef __HARBOUR__
 #ifdef PLWIN
     #include   'hbgtinfo.ch'
       aczojs({"98x32","80x25 (Norm)",hb_UTF8ToStr("Zmieniaj ilość linii"),hb_UTF8ToStr("Zmieniaj wielkość czcionki"),hb_UTF8ToStr("Pełny ekran (Alt+Enter)")},"",@m)
@@ -147,70 +146,6 @@ memvar it_menudod
            else
               setmode(25,80)
            endif
-#endif
-#else
-        if isega() .or. alarm(hb_UTF8ToStr("NIE DOSTĘPNE NA MONITORZE TYPU HERCULES"))=NIL
-           m:=1
-/*
-           aczojs({"80x25 (Norm)","80x28","80x43","80x50","80x60","132x25","132x28","132x43","132x50","132x60"},"",@m)
-           if m>0
-           --m
-           xsetmode({25,28,43,50,60}[m%5+1],{80,132}[int(m/5)+1])
-           endif
-
-*/
-           aczojs({"80x25 (Norm)","80x30","80x43","80x50","80x60","132x25","132x30","132x43","132x50","132x60"},"",@m)
-           sysint(16,3)
-           setmode(25,80)
-           a:=hex2N('4F02')
-           if m<2
-              setmode(25,80)
-           elseif m=2
-                  sysint(16,36)
-           elseif m=3
-                  setmode(43,80)
-           elseif m=4
-                  setmode(50,80)
-           elseif m=5
-                  sysint(16,@a,hex2n('108'))
-                  /*if a#79
-                     sysint(16,104) //80x60
-                  endif*/
-           elseif m=6
-                  sysint(16,@a,hex2n('109')) //132x25
-                  /*if a#79
-                     sysint(16,85)
-                  endif*/
-           elseif m=7
-                  //sysint(16,33) //132x30
-           elseif m=8
-                  sysint(16,@a,hex2n('10A')) //132x43
-                  /*if a#79
-                     sysint(16,84) //132x43
-                  endif*/
-           elseif m=9
-                  sysint(16,@a,hex2n('10B')) //132x50
-                  /*if a#79
-                     sysint(16,101) //132x50
-                  endif*/
-           elseif m=10
-                  sysint(16,@a,hex2n('10C')) //132x60
-                  /*if a#79
-                     sysint(16,100) //132x60
-                  endif*/
-           endif
-           setmode(,)
-           if maxcol()<79
-              sysint(16,3)
-              setmode(25,80)
-              setmode(25,80)
-           endif
-           init screen
-*
-#ifdef A_MYSZ
-           sysint(51,0)
-#endif
-         endif
 #endif
 
       case m = 6

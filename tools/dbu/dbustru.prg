@@ -131,7 +131,7 @@ ELSE
 ENDIF
 
 * clear and frame window
-scroll(8, 20, 23, 59, 0)
+hb_scroll(8, 20, 23, 59, 0)
 @ 8, 20, 23, 59 BOX M->frame
 
 * establish window heading
@@ -150,7 +150,7 @@ DO WHILE .NOT. q_check()
 
 		CASE keystroke = 999
 			* draw window
-			scroll(13, 21, 22, 58, 0)			&& clear window
+			hb_scroll(13, 21, 22, 58, 0)			&& clear window
 			rec1 = RECNO()						&& first record in window
 			fill_row = 13						&& first row to fill
 
@@ -421,8 +421,8 @@ DO WHILE .NOT. q_check()
 				SKIP -1
 
 				IF cur_row = 13
-					* scroll required
-					scroll(13, 21, 22, 58, -1)
+					* hb_scroll required
+					hb_scroll(13, 21, 22, 58, -1)
 
 					* fill the blank row
 					stru_row(13)
@@ -471,8 +471,8 @@ DO WHILE .NOT. q_check()
 				ENDIF
 
 				IF cur_row = 22
-					* scroll required
-					scroll(13, 21, 22, 58, 1)
+					* hb_scroll required
+					hb_scroll(13, 21, 22, 58, 1)
 
 					* fill the blank row
 					stru_row(22)
@@ -708,8 +708,8 @@ DO WHILE .NOT. q_check()
 						field_len WITH 10,field_dec WITH 0
 
 				IF cur_row < 22
-					* scroll down for insert
-					scroll((cur_row), 21, 22, 58, -1)
+					* hb_scroll down for insert
+					hb_scroll((cur_row), 21, 22, 58, -1)
 
 				ENDIF
 
@@ -747,8 +747,8 @@ DO WHILE .NOT. q_check()
 			ELSE
 
 				IF cur_row < 22
-					* scroll bottom part of window up
-					scroll((cur_row), 21, 22, 58, 1)
+					* hb_scroll bottom part of window up
+					hb_scroll((cur_row), 21, 22, 58, 1)
 
 				ENDIF
 

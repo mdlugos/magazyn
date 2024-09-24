@@ -432,8 +432,8 @@ DO CASE
 
 	CASE M->ch_draw
 		* update the screen for channel "n"..clear windows
-		scroll(row_a[2], column[M->n], row_x[2], column[M->n] + 11, 0)
-		scroll(row_a[3], column[M->n], row_x[3], column[M->n] + 11, 0)
+		hb_scroll(row_a[2], column[M->n], row_x[2], column[M->n] + 11, 0)
+		hb_scroll(row_a[3], column[M->n], row_x[3], column[M->n] + 11, 0)
 
 		* display the specified file name "dbf_num"
 		@ row_a[1],column[M->n] + 2 SAY pad(name(dbf[M->dbf_num]), 8)
@@ -476,14 +476,14 @@ DO CASE
 					* insert
 
 					IF ch_el[2] + row_x[2] - ch_cur_row[2] = afull(M->ch_ntx)
-						* last filename will scroll off the window
+						* last filename will hb_scroll off the window
 						@ row_x[2], column[M->n] + 11 SAY M->more_down
 
 					ENDIF
 
 					IF ch_cur_row[2] < row_x[2]
-						* open a blank row..scroll down
-						scroll(ch_cur_row[2], column[M->n] + 1,;
+						* open a blank row..hb_scroll down
+						hb_scroll(ch_cur_row[2], column[M->n] + 1,;
 									row_x[2], column[M->n] + 10, -1)
 
 					ENDIF
@@ -545,14 +545,14 @@ DO CASE
 					* insert
 
 					IF ch_el[3] + row_x[3] - ch_cur_row[3] = afull(M->ch_field_n)
-						* last fieldname will scroll off the window
+						* last fieldname will hb_scroll off the window
 						@ row_x[3], column[M->n] + 11 SAY M->more_down
 
 					ENDIF
 
 					IF ch_cur_row[3] < row_x[3]
-						* open a blank row..scroll down
-						scroll(ch_cur_row[3], column[M->n] + 1,;
+						* open a blank row..hb_scroll down
+						hb_scroll(ch_cur_row[3], column[M->n] + 1,;
 									row_x[3], column[M->n] + 10, -1)
 
 					ENDIF
@@ -629,8 +629,8 @@ DO CASE
 				n_files = M->n_files - 1
 
 				IF ch_cur_row[2] < row_x[2]
-					* scroll up to remove filename from screen
-					scroll(ch_cur_row[2],column[M->n] + 1,;
+					* hb_scroll up to remove filename from screen
+					hb_scroll(ch_cur_row[2],column[M->n] + 1,;
 								row_x[2],column[M->n] + 9,1)
 
 				ENDIF
@@ -653,8 +653,8 @@ DO CASE
 				array_del(M->ch_field_n,ch_el[3])
 
 				IF ch_cur_row[3] < row_x[3]
-					* scroll up to remove fieldname from screen
-					scroll(ch_cur_row[3],column[M->n] + 1,;
+					* hb_scroll up to remove fieldname from screen
+					hb_scroll(ch_cur_row[3],column[M->n] + 1,;
 								row_x[3],column[M->n] + 10,1)
 
 				ENDIF
@@ -1542,7 +1542,7 @@ pos_r = column[1] + M->width
 rel_buff = SAVESCREEN(8, column[1] - 1, 23, M->pos_r + 1)
 
 * clear and frame the window
-scroll(8, column[1] - 1, 23, M->pos_r + 1, 0)
+hb_scroll(8, column[1] - 1, 23, M->pos_r + 1, 0)
 @ 8, column[1] - 1, 23, M->pos_r + 1 BOX M->frame
 
 * display the heading and bar line
@@ -1646,8 +1646,8 @@ DO WHILE .NOT. q_check()
 			array_ins(M->t_relate, M->c_el)
 
 			IF M->c_row < 21
-				* make room on screen..scroll down 2 lines
-				scroll(M->c_row, column[1], 22, M->pos_r - 1, -2)
+				* make room on screen..hb_scroll down 2 lines
+				hb_scroll(M->c_row, column[1], 22, M->pos_r - 1, -2)
 
 			ELSE
 				* clear the last row
@@ -1688,8 +1688,8 @@ DO WHILE .NOT. q_check()
 				t_relate[LEN(M->t_relate)] = M->lt
 
 				IF M->c_row < 21
-					* close the gap on the screen..scroll up 2 lines
-					scroll(M->c_row, column[1], 22, M->pos_r - 1, 2)
+					* close the gap on the screen..hb_scroll up 2 lines
+					hb_scroll(M->c_row, column[1], 22, M->pos_r - 1, 2)
 
 				ELSE
 					* erase the deleted relation from screen
@@ -1742,7 +1742,7 @@ DO WHILE .NOT. q_check()
 
 			IF M->c_row < 21
 				* close the gap on the screen
-				scroll(M->c_row, column[1], 22, M->pos_r - 1, 2)
+				hb_scroll(M->c_row, column[1], 22, M->pos_r - 1, 2)
 
 			ELSE
 				* last row erase the deleted relation from screen
@@ -1775,8 +1775,8 @@ DO WHILE .NOT. q_check()
 				c_row = M->c_row - 2
 
 			ELSE
-				* scroll entire window down 2 lines
-				scroll(11, column[1], 22, M->pos_r - 1, -2)
+				* hb_scroll entire window down 2 lines
+				hb_scroll(11, column[1], 22, M->pos_r - 1, -2)
 
 				* fill in the top row
 				disp_relation(11, M->c_el, color7)
@@ -1810,8 +1810,8 @@ DO WHILE .NOT. q_check()
 				c_row = M->c_row + 2
 
 			ELSE
-				* scroll entire window up 2 lines
-				scroll(11, column[1], 22, M->pos_r - 1, 2)
+				* hb_scroll entire window up 2 lines
+				hb_scroll(11, column[1], 22, M->pos_r - 1, 2)
 
 				* definitely more up
 				@ 11,M->pos_r SAY M->more_up
@@ -1896,7 +1896,7 @@ PARAMETERS start_el
 PRIVATE i
 
 * clear the window
-scroll(11, column[1], 22, M->pos_r, 0)
+hb_scroll(11, column[1], 22, M->pos_r, 0)
 
 i = 0
 

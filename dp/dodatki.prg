@@ -31,7 +31,7 @@ SET COLOR TO GR+/GR
 if !isCOLOR()
    set color to W
 endif
-@ 17,maxcol()/2-39 TO 19,maxcol()/2+39 DOUBLE //BOX '╔═╗║╝═╚║ '
+@ 17, maxcol()/2-39, 19, maxcol()/2+39 BOX UNICODE '╔═╗║╝═╚║ '
 
 if isCOLOR()
    SET COLOR TO W+/GR
@@ -60,6 +60,8 @@ endif
 #endif
 SETKEY(4,{||NIL})
 SETKEY(19,{||KIBORD(CHR(27)+CHR(5)+CHR(13))})
+
+
     MENU TO MENUPOM
 SET KEY 19 TO
 SET KEY 4 TO

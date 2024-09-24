@@ -296,7 +296,6 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
 #ifdef A_MYSZ
         MSHOW()
         bx:=cx:=dx:=0
-#ifdef __HARBOUR__
         _skey:=INKey(_skey, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)
         if _skey>=K_MINMOUSE .and. _skey<=K_MAXMOUSE
            if _skey=1002
@@ -324,26 +323,6 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
         elseif _skey= K_ALT_RIGHT
               _skey:=K_CTRL_RIGHT
         endif
-#else
-#ifdef D_LAN
-        _stxt:=seconds()+_skey
-        do while (_skey:=inkey(.1))=0 .and. _stxt>seconds()
-#else
-        do while (_skey:=inkey(.1))=0
-#endif
-         sysint(51,3,@bx,@cx,@dx)
-         if bx#0
-            cx:=int(cx/8+.1)
-            dx:=int(dx/8+.1)
-            _skey:=14
-            sysint(51,2)
-            RESTORE LINE _sm+_srow1-1
-            sysint(51,1)
-            exit
-         endif
-         myszflag:=.t.
-        enddo
-#endif
         MHIDE()
 #else
 #ifdef D_LAN
@@ -470,11 +449,7 @@ return .f.
 ***********************************
 *OBSŁUGA MYSZY
 ************************************
-#ifdef __HARBOUR__
 #define D_REST 4
-#else
-#define D_REST 2
-#endif
 #ifdef A_MYSZ
 func mysz(_s,bx,cx,dx,myszflag)
 local ret,scrlok
@@ -502,7 +477,6 @@ local ret,scrlok
                   dispend()
                   MSHOW()
                endif
-#ifdef __HARBOUR__
                bx:=inkey(0,INKEY_MOVE + INKEY_LUP)
                if bx=1003
                   bx:=0
@@ -511,11 +485,6 @@ local ret,scrlok
                endif
                cx:=max(0,min(maxcol(),mcol()))
                dx:=max(0,min(maxrow(),mrow()))
-#else
-               sysint(51,3,@bx,@cx,@dx)
-               cx:=int(cx/8+.5)
-               dx:=int(dx/8+.5)
-#endif
             enddo
             sysint(51,10,0,-1,30464)
             MHIDE()
@@ -550,15 +519,6 @@ local ret,scrlok
                    ALTERNATE LINE dx BUFFER _sprpt ATTRIB 119
               endif
             endif
-#ifndef __HARBOUR__
-            sysint(51,1)
-            sysint(51,10,0,0,7419)
-            do while bx#0
-              sysint(51,3,@bx)
-            enddo
-            sysint(51,10,0,-1,30464)
-            sysint(51,2)
-#endif
             return evakey(13,_s)
          endif
 
@@ -764,9 +724,6 @@ FUNCTION _stop(_s)
     ENDIF
 
 RETURN .f.
-#ifdef __HARBOUR__
-#include "dbinfo.ch"
-#endif
 
 FUNCTION _sbot(_s)
     local _skey,_stxt
@@ -872,7 +829,7 @@ FUNCTION _sznak(_s,_skey)
         --_sm
         if l>_sm
           _si-=l
-          scroll(_srow1,_scol1-1,_srow2,_scol2,l-_sm)
+          hb_scroll(_srow1,_scol1-1,_srow2,_scol2,l-_sm)
           _srow1+=_sm
           _srow2:=_srow1+_si
           RESTSCREEN(_srow2+1,_scol1-1,_srowe,_scol2,SUBSTR(_scr,1+(_srow2+1-_srowb)*(_scoln+2)*D_REST))
@@ -881,7 +838,7 @@ FUNCTION _sznak(_s,_skey)
           @ _srow1-1,_scol1+_snagkol SAY RNTO2(_snagl) COLOR _SRAMKA
         else
           _srow1+=l
-          scroll(_srow1,_scol1,_srow2-1,_scol2-1,-min(_sm-l,_si-_sm))
+          hb_scroll(_srow1,_scol1,_srow2-1,_scol2-1,-min(_sm-l,_si-_sm))
           _srow1+=min(_sm-l,_si-_sm)
           _si-=l+min(_sm-l,_si-_sm)
           _srow2:=_srow1+_si
@@ -1042,7 +999,7 @@ IF _si<_srown
     ++_srow2
    ELSE
     --_srow1
-    SCROLL(_srow1-1,_scol1-1,_srow2-1,_scol2,1)
+    hb_scroll(_srow1-1,_scol1-1,_srow2-1,_scol2,1)
   ENDIF
   @ _srow2-1,_scol1-1,_srow2,_scol2 BOX UNICODE '│ ││┘─└│' COLOR _SRAMKA
   @ _srow2,_scol1+_snagkol SAY RSTO1(_snagl) COLOR _SRAMKA
@@ -1054,7 +1011,7 @@ IF _si<_srown
     _sbf=.F.
   ENDIF
   ADEL(_srec,1)
-  SCROLL(_srow1,_scol1,_srow2-1,_scol2-1,1)
+  hb_scroll(_srow1,_scol1,_srow2-1,_scol2-1,1)
 ENDIF
 _srec[_si]:=RECNO()
 @ _srow2-1,_scol1 say padr(eval(_sprompt,d,_s),_scol2-COL())
@@ -1068,7 +1025,7 @@ local d:=if(_si=0,2,if(_si=_srown,-3,-1))
 IF _si<_srown
   IF _srow1=_srowb+1
     ++_srow2
-    SCROLL(_srow1,_scol1-1,_srow2,_scol2,-1)
+    hb_scroll(_srow1,_scol1-1,_srow2,_scol2,-1)
    ELSE
     --_srow1
   ENDIF
@@ -1081,7 +1038,7 @@ IF _si<_srown
     @ _srow2,_scol1+_snagkol SAY RSTO1(_snagl) COLOR _SRAMKA
     _sef=.F.
   ENDIF
-  SCROLL(_srow1,_scol1,_srow2-1,_scol2-1,-1)
+  hb_scroll(_srow1,_scol1,_srow2-1,_scol2-1,-1)
 ENDIF
 AINS(_srec,1)
 _srec[1]=RECNO()
@@ -1095,13 +1052,8 @@ FUNCTION _Sexpgd(D,_s,b,e)
 local crsr:=0,obf:=_sbf,oef:=_sef
 
 #ifdef A_MYSZ
-#ifdef __HARBOUR__
   #define D_MYSZNE NEXTKEY(INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)#0
   #define D_MYSZE NEXTKEY(INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)=0
-#else
-  #define D_MYSZNE (NEXTKEY()#0 .or.(b:=0,sysint(51,3,@b),b#0))
-  #define D_MYSZE (NEXTKEY()=0 .and.(b:=0,sysint(51,3,@b),b=0))
-#endif
 #else
   #define D_MYSZNE nextkey()#0
   #define D_MYSZE nextkey()=0
@@ -1250,7 +1202,7 @@ endif
           DO WHILE _si<_srown .AND. D_MYSZE .and. _skip(-1,0,_s)
             ++_sm
             ++_srow2
-            SCROLL(_srow1,_scol1-1,_srow2,_scol2,-1)
+            hb_scroll(_srow1,_scol1-1,_srow2,_scol2,-1)
             @ _srow1-1,_scol1-1,_srow1,_scol2 BOX UNICODE '┌─┐││ ││' COLOR _SRAMKA
             @ _srow1-1,_scol1+_snagkol SAY RNTO1(_snagl) COLOR _SRAMKA
             obf:=.f.
@@ -1266,7 +1218,7 @@ endif
           --_srow1
           ++_si
           _srec[_si]=RECNO()
-          SCROLL(_srow1-1,_scol1-1,_srow2-1,_scol2,1)
+          hb_scroll(_srow1-1,_scol1-1,_srow2-1,_scol2,1)
           @ _srow2-1,_scol1-1,_srow2,_scol2 BOX UNICODE '│ ││┘─└│' COLOR _SRAMKA
           @ _srow2,_scol1+_snagkol SAY RSTO1(_snagl) COLOR _SRAMKA
           @ _srow2-1,_scol1 say padr(eval(_sprompt,1,_s),_scol2-COL())
@@ -1444,11 +1396,7 @@ do while EvaldB(_swar,_spocz,_skon) .and. !BOF() .and. !EOF()
        return .f.
     endif
 #ifdef A_MYSZ
-#ifdef __HARBOUR__
   elseif (k:=NEXTKEY(INKEY_KEYBOARD + INKEY_LDOWN+ INKEY_RDOWN),!hb_keyChar(k)=="") .and. k<>bl .or. k>=K_MINMOUSE .and. k<=K_MAXMOUSE .and. (bl:=if(k=1002,1,2),k:=0,.t.)
-#else
-  elseif (k:=NEXTKEY())#0 .and. k#bl .or. bl=0 .and. (sysint(51,3,@bl),bl#0)
-#endif
 #else
   elseif (k:=nextkey())#0 .and. k#bl
 #endif

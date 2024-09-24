@@ -287,7 +287,7 @@ endif
   @ 9,1,22,78 BOX UNICODE '╔═╗║╝═╚║' color 'RG+/BG'
   @ 9,3 SAY 'Wpisywanie nowej, poprawianie lub kasowanie starej Karty Materiału' UNICODE color 'RG+/BG'
   SET COLOR TO BG+/B
-  SCROLL(10,2,21,77,0)
+  hb_scroll(10,2,21,77,0)
 
 #ifdef A_JMO
   #define smiaR(x,d) if(miar_opcja,tran(int(x/(lam:=i_lam(d))->przel),"#### ###")+if(x%(lam)->przel=0,"","r"+tran(abs(x)%(lam)->przel,"@B ###")),x)

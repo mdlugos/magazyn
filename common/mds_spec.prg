@@ -28,7 +28,7 @@ else
 endif
   skf2:=setkey(-1,{|a,x|a:=listfields(sel,{},{}),x:=0,if(aczojs(a[1],"",@x,a[2],"Wybierz pola"),(txt:=trim(txt),txt+=if(""=txt,""," + ")+trim(a[1,x]),updated(.t.)),)})
   ? "Proszę określić, które z dostępnych pól mają być listowane."
-  ? "Sciągawka pod [F2]. Listing od bieżącej pozycji w dół.    Scroll Lock - płynny."
+  ? "Sciągawka pod [F2]. Listing od bieżącej pozycji w dół.    hb_scroll Lock - płynny."
   ?
   ?
   listfi(sel)
@@ -120,7 +120,7 @@ endif
   _skip(1,0,_s)
   setcancel(.f.)
   DBEval( {|t,l|scrltxt(),t:=trim(eval(txt,0,_s,.t.)),scrltxt(),qqout(strtran(left(t,l:=maxcol()-col()),I,"|")),;
-    if(len(t)>l,(if(row()=maxrow(),(scrllf()/*,scroll(0,0,row(),maxcol(),1),setpos(row(),maxcol()-len(t)+l)*/),/*setpos(row()+1,maxcol()-len(t)+l)*/),qqout(subs(t,l+1))),),;
+    if(len(t)>l,(if(row()=maxrow(),(scrllf()/*,hb_scroll(0,0,row(),maxcol(),1),setpos(row(),maxcol()-len(t)+l)*/),/*setpos(row()+1,maxcol()-len(t)+l)*/),qqout(subs(t,l+1))),),;
     if(row()=maxrow(),scrllf(),),qout(),scrltxt()},lfor,{||scrltxt(), EvaldB(_swar,_spocz,_skon).AND.inkey()#27},,, .T. )
   end sequence
   scrllf()
@@ -218,16 +218,12 @@ ELSEIF valtype(_s)='A' .and. ReadkeY()#K_ESC .AND.! _sfilt==txt
   refresh(1,_s)
   if !r
       adel(_srec,_sm)
-      scroll(_srow1+_sm-1,_scol1-1,_srow2,_scol2,1)
+      hb_scroll(_srow1+_sm-1,_scol1-1,_srow2,_scol2,1)
       --_si
       if _sm>_si .and. _si>0
          --_sm
       endif
-#ifdef __HARBOUR__
 #define D_REST 4
-#else
-#define D_REST 2
-#endif
       RESTSCREEN(_srow2,_scol1-1,_srow2,_scol2,SUBSTR(_scr,1+(_srow2-_srowb)*(_scoln+2)*D_REST))
       --_srow2
       _sprpt:=savescreen(_sm+_srow1-1,_scol1,_sm+_srow1-1,_scol2-1)
@@ -380,7 +376,7 @@ stat func _srap(txt,_s)
             if ReadkeY()=K_ESC
                break(NIL)
             endif
-            scroll(0,0,1,maxcol())
+            hb_scroll(0,0,1,maxcol())
             if _sfilb#NIL
                if _sfor=NIL
                  lfor:=_sfilb

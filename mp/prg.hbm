@@ -1,6 +1,6 @@
 -oma -w1 -m -n
 #-debug -inc -rebuild
-#-gui -gtwvt
+-gui -gtwvt
 -gtwin
 -lhbwin hbwin.hbc
 #-lelzabdr
@@ -21,4 +21,4 @@ main ind_val dok dm_valid dok_druk dok_pr dodatki druk_zes indeksy
 ../common/mds_spec
 ../common/frmrun
 ../common/getsys
-../common/jpk
+#../common/jpk

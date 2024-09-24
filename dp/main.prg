@@ -161,6 +161,7 @@ setkey(K_F7,{|x|x:=setkey(K_F7,),aczojs(zaw_ar({},,,relewy->(dtos(data)+posilek+
 
 DO WHILE .T.
 *************************************
+a := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
 
 
 if isCOLOR()
@@ -192,13 +193,14 @@ endif
           @ maxrow()-1,25 SAY "POMOC  f2 - f7 BEZPŚREDNI DOSTĘP DO DANYCH esc WYJŚCIE" UNICODE color if(isCOLOR(),_sbnorm,"W+")
 
       SET COLOR TO I
-          @ maxrow()-1,2 SAY if(HB_CDPISUTF8(),'►',chr(0x10))
-          @ maxrow()-1,4 SAY if(HB_CDPISUTF8(),'◄',chr(0x11))
-          @ maxrow()-1,6 SAY if(HB_CDPISUTF8(),'◄',chr(0x11))+ hb_UTF8ToStr('┘')
+          @ maxrow()-1,2 BOX '►' UNICODE
+          @ maxrow()-1,4 BOX '◄' UNICODE
+          @ maxrow()-1,6 BOX '◄┘' UNICODE
           @ maxrow()-1,22 SAY "F1"
           @ maxrow()-1,32 SAY "F2"
           @ maxrow()-1,37 SAY "F7"
           @ maxrow()-1,68 say "Esc"
+      hb_gtInfo( HB_GTI_BOXCP, a)
 
       SET MESSAGE TO 5 CENTER
 
@@ -292,9 +294,7 @@ set device to screen
 IF tak(hb_UTF8ToStr("CZY ARCHIWOWAĆ"),18,,.t.,.F.)
 #ifdef A_BACKUP
     CLOSE ALL
-#ifdef __HARBOUR__
     hb_idlesleep(0.2)
-#endif
     __RUN( A_BACKUP )
 #else
     ERRORLEVEL(41)

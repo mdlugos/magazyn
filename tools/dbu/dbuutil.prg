@@ -317,7 +317,7 @@ winbuff = SAVESCREEN(M->wt, M->wl, M->wt + M->wh + 1, M->wl + 45)
 
 * clear and frame the window (fixed width, variable height and location)
 saveColor := SetColor(M->colorNorm)
-scroll(M->wt, M->wl, M->wt + M->wh + 1, M->wl + 45, 0)
+hb_scroll(M->wt, M->wl, M->wt + M->wh + 1, M->wl + 45, 0)
 @ M->wt, M->wl, M->wt + M->wh + 1, M->wl + 45 BOX frame
 
 * initialize, display, and report position
@@ -713,7 +713,7 @@ DO CASE
 
 	CASE M->sysparam = 1
 		* clear and frame the list portion of the box
-		scroll(M->wt + 1, M->wl + M->l_rel - 1, M->wt + M->wh, M->wl + 44, 0)
+		hb_scroll(M->wt + 1, M->wl + M->l_rel - 1, M->wt + M->wh, M->wl + 44, 0)
 		@ M->wt, M->wl + M->l_rel - 2, M->wt + M->wh + 1, M->wl + 45;
 		BOX M->lframe
 

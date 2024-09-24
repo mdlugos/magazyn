@@ -90,7 +90,7 @@ static PROCEDURE MDOK1(_f)
 
  SET CURSOR OFF
  SET COLOR TO (_SBKGR)
-  scroll(0,_fco1,0,_fco2)
+  hb_scroll(0,_fco1,0,_fco2)
   @ 0,_fco1,3,_fco2 BOX UNICODE '╔═╗║║ ║║ '
   @ 0,_fco1+1 SAY "JADŁOSPIS" UNICODE
   @ 1,10 say "Ilość" UNICODE
@@ -249,7 +249,7 @@ local a:={},b:={},i
    endif
    g:killfocus()
    a:=savescreen(_fk,_fco1+5,_fk+_fskip-1,_fco2-1)
-   scroll(_fk,_fco1+5,_frow+_fskip*(_fl-_fj+1)-1,_fco2-1,-_fskip)
+   hb_scroll(_fk,_fco1+5,_frow+_fskip*(_fl-_fj+1)-1,_fco2-1,-_fskip)
    restscreen(_fk,_fco1+5,_fk+_fskip-1,_fco2-1,a)
    g:exitState:=GE_TOP
    g:setfocus()

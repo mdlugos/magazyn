@@ -56,7 +56,12 @@ ENDIF
    hb_DispOutAt( nTop + 1, nLeft + 1, Space( nRight - nLeft - 1 ) )
 
    oB := TBrowseDB( nTop + 2, nLeft + 1, nBottom - 1, nRight - 1 )
-   oB:HeadSep := " " + hb_UTF8ToStrBox( "═" )
+   oB:HeadSep := hb_UTF8ToStrBox( " ═" )
+
+   //oB:headSep := hb_UTF8ToStrBox( "═╤═" )
+   //oB:colSep  := hb_UTF8ToStrBox( " │ " )
+   //oB:footSep := hb_UTF8ToStrBox( "═╧═" )
+   
 
    oB:skipBlock := {|x| Skipped(x, lAppend)}
 
@@ -238,8 +243,8 @@ ENDIF
       i = 1
       txt=IndexkeY(i)
       scr_buf = SAVESCREEN(8, 1, 19, 78)
-      scroll(8, 1, 19, 78, 0)
-      @ 9,3,18,76 BOX HB_B_DOUBLE_SINGLE_UNI COLOR "W+"
+      hb_scroll(8, 1, 19, 78, 0)
+      @ 9,3,18,76 BOX UNICODE "╒═╕│╛═╘│" COLOR "W+"
       @ 11,5 say "Podaj  numer  klucza  indeksowego  (Esc - bez indeksowania)" UNICODE
       do while .not. empty(txt)
           @ 11+i,5 prompt str(i,1)+" - " + LEFT(txt, 66)
@@ -305,7 +310,7 @@ ENDIF
 
       scr_buf = SAVESCREEN(8, 1, 19, 78)
 
-      scroll(8, 1, 19, 78, 0)
+      hb_scroll(8, 1, 19, 78, 0)
       set color to W+
 #ifdef __PLATFORM__DOS      
       @ 9,3,18,76 BOX UNICODE "┌═┐│┘═└│" COLOR "W+"
@@ -751,7 +756,7 @@ return (nCount)
 
 **************************************
 PROCEDURE POWR_DBED
-
+local bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
   @ maxrow()-1,0  CLEAR
   @ maxrow()-1,0  SAY '   -wyjście     -edycja      -filtr    -pokaż ukryte       -ukryj rekord' UNICODE
   @ maxrow(),27 SAY '- nawigacja       -szybkie szukanie'
@@ -760,15 +765,16 @@ PROCEDURE POWR_DBED
   @ maxrow()-1,26 say "F9"  COLOR "I"
   @ maxrow()-1,37 SAY 'F2'  COLOR "I"
   @ maxrow()-1,56 SAY 'Del'  COLOR "I"
-  @ maxrow(),0  SAY if(HB_CDPISUTF8(),'↑', chr(0x18)) COLOR "I"
-  @ maxrow(),2  SAY if(HB_CDPISUTF8(),'↓', chr(0x19)) COLOR "I"
-  @ maxrow(),4  SAY if(HB_CDPISUTF8(),'→', chr(0x1a)) COLOR "I"
-  @ maxrow(),6  SAY if(HB_CDPISUTF8(),'←', chr(0x1b)) COLOR "I"
+  @ maxrow(),0  BOX '↑' UNICODE COLOR "I"
+  @ maxrow(),2  BOX '↓' UNICODE COLOR "I"
+  @ maxrow(),4  BOX '→' UNICODE COLOR "I"
+  @ maxrow(),6  BOX '←' UNICODE COLOR "I"
   @ maxrow(),8  SAY 'Home'  COLOR "I"
   @ maxrow(),13 SAY 'End'  COLOR "I"
   @ maxrow(),17 SAY 'PgUp'  COLOR "I"
   @ maxrow(),22 SAY 'PgDn'  COLOR "I"
   @ maxrow(),42 SAY 'F3'  COLOR "I"
+  hb_gtInfo( HB_GTI_BOXCP, bcp)
 
 RETURN
 
@@ -786,10 +792,10 @@ PROCEDURE POWR_GET
   @ maxrow()-1,9  SAY 'PgDn' COLOR "I"
   @ maxrow()-1,47 SAY 'Esc' COLOR "I"
   @ maxrow(),0  SAY 'Ins' COLOR "I"
-  @ maxrow(),47  SAY if(HB_CDPISUTF8(),'↑', chr(0x18)) COLOR "I"
-  @ maxrow(),50  SAY if(HB_CDPISUTF8(),'↓', chr(0x19)) COLOR "I"
-  @ maxrow(),53  SAY if(HB_CDPISUTF8(),'→', chr(0x1a)) COLOR "I"
-  @ maxrow(),55  SAY if(HB_CDPISUTF8(),'←', chr(0x1b)) COLOR "I"
+  @ maxrow(),47  BOX '↑' UNICODE COLOR "I"
+  @ maxrow(),50  BOX '↓' UNICODE COLOR "I"
+  @ maxrow(),53  BOX '→' UNICODE COLOR "I"
+  @ maxrow(),55  BOX '←' UNICODE COLOR "I"
   @ maxrow(),57 SAY 'Home' COLOR "I"
   @ maxrow(),62 SAY 'End' COLOR "I"
 

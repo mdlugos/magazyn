@@ -12,11 +12,7 @@ field posilek,danie,ilosc,gramatura,jedn,skladnik,nazwa,indx_mat,przel,dieta,gra
 #else
 #define D_MYSZ
 #endif
-#ifdef __HARBOUR__
 #define D_REST 4
-#else
-#define D_REST 2
-#endif
 *****************
 func rec_in(deep,n)
 

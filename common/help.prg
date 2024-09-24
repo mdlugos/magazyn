@@ -1,11 +1,14 @@
 #include "set.ch"
 #include "inkey.ch"
+#include "hbgtinfo.ch"
 
 procedure help(pro)
 memvar c1,c2,r1,r2,defa,l,c,cl,cc,ww,ch,oprn
 
 local hrow,hcol,hwbuf,lastcolor,htext,curs,rins,skh,skins,txt
 local osk:={},ll,m,n,getlist:={},k,b:={0,0},bp:=2
+local bcp
+
 static bl:=''
 private c1,c2,r1,r2,l,c,cl,cc,ww:=.t.,ch:=.f.
 
@@ -81,12 +84,13 @@ endif
 
         * clear window and draw box
         lastcolor = SETCOLOR("RB+/GR")
-        scroll(r1,c1,r2,c2, 0)
+        hb_scroll(r1,c1,r2,c2, 0)
+        bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
         @ r1+1,c1+2,r2-1,c2-2 BOX UNICODE '┌─┐│┘─└│'
         SET COLOR TO I
         @ r2-1,c1+ 3 say 'Esc'
-        @ r2-1,c1+ 7 SAY "^"+if(HB_CDPISUTF8(),"→", chr(0x1b)) 
-        @ r2-1,c1+10 SAY "^"+if(HB_CDPISUTF8(),"←", chr(0x1a)) 
+        @ r2-1,c1+ 7 BOX "^→" UNICODE 
+        @ r2-1,c1+10 BOX "^←" UNICODE 
         @ r2-1,c1+13 SAY 'Hom'
         @ r2-1,c1+17 SAY 'End'
         @ r2-1,c1+21 say 'PgU'
@@ -95,19 +99,17 @@ endif
         @ r2-1,c1+34 say '^End'
         @ r2-1,c1+39 say '^PgU'
         @ r2-1,c1+44 say '^PgD'
-        @ r2-1,c1+49 SAY if(HB_CDPISUTF8(),'◄',chr(0x11))+ hb_UTF8ToStr('─┘') // Enter
+        @ r2-1,c1+49 BOX '◄─┘' UNICODE // Enter
         @ r2-1,c1+53 say '^Y'
         @ r2-1,c1+56 say '^W'
         @ r1+1,c1+ 3  say ' P O M O C '
         @ r1+1,c2- 2-len(htext) say htext
         set color to (if(iscolor(),"GR+/GR","W"))
+        hb_gtInfo( HB_GTI_BOXCP, bcp)
 
-#ifdef __HARBOUR__
+
 osk:=HB_SETKEYSAVE()
 #command RESET KEY <key> [TO <new>] => setkey(<key>,[<{new}>])
-#else
-#command RESET KEY <key> [TO <new>] => aadd(osk,{<key>,setkey(<key>,[<{new}>])})
-#endif
 
   RESET KEY K_INS TO SetCursor(if(set(_SET_INSERT,!SET(_SET_INSERT)),1,2))
   RESET KEY K_F1
@@ -235,22 +237,14 @@ osk:=HB_SETKEYSAVE()
            ll:=C2-C1-5
         else
            txt:=strtran(txt,chr(141)+chr(10))
-#ifdef __HARBOUR__
            ll:=1020
-#else
-           ll:=254
-#endif
         endif
         loop
     endif
     exit
   enddo
 
-#ifdef __HARBOUR__
   HB_SETKEYSAVE(osk)
-#else
-  aeval(osk,{|x|setkey(x[1],x[2])})
-#endif
         * restore window
         RESTSCREEN(r1,c1,r2,c2, hwbuf)
 
@@ -287,9 +281,7 @@ FUNC hufunc(mode,line,column)
         c:=column
         cl:=row()
         cc:=col()
-#ifdef __HARBOUR__
         cc-=c1+3
-#endif
         return K_CTRL_END
      endif
      ch:=mode=2

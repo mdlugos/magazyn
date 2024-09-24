@@ -2760,7 +2760,7 @@ DO CASE
                  x:=''
                endif
             endif
-            n_ksef:=pad(if(empty(x),'',left(x,10)+'-'+left(dtos(da),6)),DM->(hb_fieldlen('nr_ksef'))
+            n_ksef:=pad(if(empty(x),'',left(x,10)+'-'+left(dtos(da),6)),DM->(hb_fieldlen('nr_ksef')))
 #endif
          endif
 #endif
