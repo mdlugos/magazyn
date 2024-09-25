@@ -631,7 +631,7 @@ local nKey
       nKey := K_UP
     end
 
-  elseif ( nKey == K_ENTER .or. (nKey >= 32 .and. nKey <= 255) )
+  elseif ( nKey == K_ENTER .or. ! hb_keyChar( nKey ) == "") //  (nKey >= 32 .and. nKey <= 255) )
     // return key or type out..move right
     nKey := K_RIGHT
 

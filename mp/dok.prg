@@ -422,7 +422,7 @@ private HLINK
 #ifdef A_LPNUM
     _flpmax:=D_LPVAL(replicate('9',A_LPNUM))
 #else
-    _flpmax:=D_LPVAL(chr(255))
+    _flpmax:=D_LPVAL(HB_UCHAR(0x0A0))
 #endif
   endif
 #ifdef A_DOKCOMP

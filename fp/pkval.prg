@@ -699,7 +699,7 @@ eval(b:gobottomblock)
 #ifdef A_LPNUM
 if pozycja=repl('9',A_LPNUM)
 #else
-if pozycja=chr(255)
+if pozycja=HB_UCHAR(0x0A0)
 #endif
    alarm(hb_UTF8ToStr("Osiągnięto maksimum ilości pozycji pojedynczego dokumentu !"),,3,3)
    goto r
@@ -760,7 +760,7 @@ else
 #ifdef A_LPNUM
 if pozycja=repl('9',A_LPNUM)
 #else
-if pozycja=chr(255)
+if pozycja=HB_UCHAR(0x0A0)
 #endif
    alarm(hb_UTF8ToStr("Osiągnięto maksimum ilości pozycji pojedynczego dokumentu !"),,3,3)
    goto k
