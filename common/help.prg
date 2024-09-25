@@ -7,7 +7,7 @@ memvar c1,c2,r1,r2,defa,l,c,cl,cc,ww,ch,oprn
 
 local hrow,hcol,hwbuf,lastcolor,htext,curs,rins,skh,skins,txt
 local osk:={},ll,m,n,getlist:={},k,b:={0,0},bp:=2
-local bcp
+//local bcp
 
 static bl:=''
 private c1,c2,r1,r2,l,c,cl,cc,ww:=.t.,ch:=.f.
@@ -85,7 +85,7 @@ endif
         * clear window and draw box
         lastcolor = SETCOLOR("RB+/GR")
         hb_scroll(r1,c1,r2,c2, 0)
-        bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
+        //bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
         @ r1+1,c1+2,r2-1,c2-2 BOX UNICODE '┌─┐│┘─└│'
         SET COLOR TO I
         @ r2-1,c1+ 3 say 'Esc'
@@ -105,7 +105,7 @@ endif
         @ r1+1,c1+ 3  say ' P O M O C '
         @ r1+1,c2- 2-len(htext) say htext
         set color to (if(iscolor(),"GR+/GR","W"))
-        hb_gtInfo( HB_GTI_BOXCP, bcp)
+        //hb_gtInfo( HB_GTI_BOXCP, bcp)
 
 
 osk:=HB_SETKEYSAVE()

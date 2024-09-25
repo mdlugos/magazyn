@@ -9,6 +9,7 @@
 
 main rejestry konta kontr dok pkval dziennik dok_druk dodatki
 
+../common/tbrowse
 ../common/dm_form
 ../common/io
 ../common/error

@@ -360,7 +360,7 @@ DO WHILE .T.
 
 
    DO WHILE .T. // PETLA GLOWNA DLA DANEGO MAGAZYNU
-      a := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
+      //a := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
 
   SET CURSOR OFF
 
@@ -429,7 +429,7 @@ endif
 #ifndef PLWIN
     dispend()
 #endif
-      hb_gtInfo( HB_GTI_BOXCP, a)
+      //hb_gtInfo( HB_GTI_BOXCP, a)
       menu:=level1
       MENU TO menu
 

@@ -35,11 +35,11 @@ local i,n,t
 SET(_SET_DEBUG,.t.)
 ErrorBlock( {|e| DefError(e)} )
 
-REQUEST HB_LANG_PL, HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8MD, HB_CODEPAGE_PLMAZ //, HB_CODEPAGE_UTF16LE
-#ifdef A_UNICODE
-  hb_gtInfo( HB_GTI_BOXCP, D_CDP)
+REQUEST HB_LANG_PL, HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8MD
+#if 1 //def A_UNICODE
+  hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
 #else
-  //browse musi mieć BOXCP tego samego rodzaju co główną bo left/right/substr
+  //browse musi mieć BOXCP tego samego rodzaju co główną bo left/right/substr w tbrowse
   REQUEST HB_CODEPAGE_PLMAZ
   hb_gtInfo( HB_GTI_BOXCP, 'PLMAZ')
 #endif

@@ -161,7 +161,7 @@ setkey(K_F7,{|x|x:=setkey(K_F7,),aczojs(zaw_ar({},,,relewy->(dtos(data)+posilek+
 
 DO WHILE .T.
 *************************************
-a := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
+//a := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
 
 
 if isCOLOR()
@@ -200,7 +200,7 @@ endif
           @ maxrow()-1,32 SAY "F2"
           @ maxrow()-1,37 SAY "F7"
           @ maxrow()-1,68 say "Esc"
-      hb_gtInfo( HB_GTI_BOXCP, a)
+//      hb_gtInfo( HB_GTI_BOXCP, a)
 
       SET MESSAGE TO 5 CENTER
 

@@ -1217,7 +1217,7 @@ return
 static proc getchr(get,expandable)
    static bl:=''
    local k,m,n,sc,lc,TXT,getlist:={},prevlen,b:={0,0},bp:=2,ll,osk:={}
-   local bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
+   //local bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
    memvar r1,c1,r2,c2,defa,l,c,cl,cc,ch,ww
    private r1,c1,r2,c2,l,c,cl,cc,ch:=.f.,ww:=.f.
    ll:=1020
@@ -1277,7 +1277,7 @@ static proc getchr(get,expandable)
         sayl '^Y'
         sayl '^W'
         sayl "F2"
-        hb_gtInfo( HB_GTI_BOXCP, bcp)
+        //hb_gtInfo( HB_GTI_BOXCP, bcp)
         SET COLOR TO W
 
 osk:=HB_SETKEYSAVE()

@@ -756,7 +756,7 @@ return (nCount)
 
 **************************************
 PROCEDURE POWR_DBED
-local bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
+//local bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
   @ maxrow()-1,0  CLEAR
   @ maxrow()-1,0  SAY '   -wyjście     -edycja      -filtr    -pokaż ukryte       -ukryj rekord' UNICODE
   @ maxrow(),27 SAY '- nawigacja       -szybkie szukanie'
@@ -774,7 +774,7 @@ local bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
   @ maxrow(),17 SAY 'PgUp'  COLOR "I"
   @ maxrow(),22 SAY 'PgDn'  COLOR "I"
   @ maxrow(),42 SAY 'F3'  COLOR "I"
-  hb_gtInfo( HB_GTI_BOXCP, bcp)
+//  hb_gtInfo( HB_GTI_BOXCP, bcp)
 
 RETURN
 
@@ -782,6 +782,7 @@ RETURN
 
 **************************************
 PROCEDURE POWR_GET
+//local bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
 
   @ maxrow()-1,0  CLEAR
   @ maxrow()-1,0  SAY     '             -wyjście z pola z zapisem zmian      -wyjscie z przywr.starej wart.' UNICODE
@@ -799,6 +800,7 @@ PROCEDURE POWR_GET
   @ maxrow(),57 SAY 'Home' COLOR "I"
   @ maxrow(),62 SAY 'End' COLOR "I"
 
+//  hb_gtInfo( HB_GTI_BOXCP, bcp)
  RETURN
 ************
 func mkcolumn(m)

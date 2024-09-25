@@ -501,7 +501,7 @@ func dok //append - .t. append blank .f. - noedit
 #endif
            adw[i,o]:=main->konto
            if main->czyma=.t.
-              eval({|a|a:=hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD'),hb_DispOutAtBox(row(),col(),hb_UTF8ToStrBox('↔')),hb_gtInfo( HB_GTI_BOXCP,a)})
+              hb_DispOutAtBox(row(),col(),hb_UTF8ToStrBox('↔'))
            endif
         else
            adw[i,o]:=pad(ad[AD_POLA,i,AP_KTWN+p],A_KTL)
@@ -560,8 +560,7 @@ func dok //append - .t. append blank .f. - noedit
         #endif
            adm[i,o]:=main->konto
            if main->czyma=.f.
-              eval({|r,c,a|a:=hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD'),hb_DispOutAtBox(r,c,hb_UTF8ToStrBox('↔')),hb_gtInfo( HB_GTI_BOXCP,a)},win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1))
-              //@ win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1) BOX '↔' UNICODE
+              @ win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1) BOX '↔' UNICODE
            endif
         else
            adm[i,o]:=pad(ad[AD_POLA,i,AP_KTMA+p],A_KTL)
@@ -956,8 +955,7 @@ endif
               IF XOR("-"$r,"X"$r .and. af[i]<0)
                 if czyma<>(czyma:=.t.)
                    kwota:=-kwota
-                   eval({|r,c,a|a:=hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD'),hb_DispOutAtBox(r,c,hb_UTF8ToStrBox('↔')),hb_gtInfo( HB_GTI_BOXCP,a)},win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1))
-                   //@ win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1) BOX '↔' UNICODE
+                   @ win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1) BOX '↔' UNICODE
                 endif
                 kwota-=af[i]
               ELSE
@@ -1013,8 +1011,7 @@ endif
               IF XOR("-"$s,"X"$s .and. af[i]<0)
                 if czyma<>(czyma:=.f.)
                    kwota:=-kwota
-                   eval({|r,c,a|a:=hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD'),hb_DispOutAtBox(r,c,hb_UTF8ToStrBox('↔')),hb_gtInfo( HB_GTI_BOXCP,a)},win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1))
-                   //@ win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1) BOX '↔' UNICODE
+                   @ win[1]+k,win[2]+17+A_WAL+((o-1)*2+1)*(A_KTL+1) BOX '↔' UNICODE
                 endif
                 kwota-=af[i]
               ELSE

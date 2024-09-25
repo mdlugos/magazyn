@@ -2,6 +2,8 @@
 #define hb_UTF8ToStr(x) x
 #endif
 
+#define hb_UTF8ToStrBox(x) x
+
 #ifndef EvAlDb
   #define EvAlDb(x) &(x)
 #endif
