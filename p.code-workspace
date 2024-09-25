@@ -9,8 +9,8 @@
 	],
 	"settings": {
 		"files.associations": {
-			"*.ch": "c",
-			"*.h": "c"
+			"*.h": "c",
+			"*.ch": "harbour"
 		}
 	}
 }
