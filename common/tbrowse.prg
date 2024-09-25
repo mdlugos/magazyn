@@ -1306,6 +1306,10 @@ METHOD doConfigure() CLASS TBrowse
       cType  := ValType( xValue )
       nWidth := iif( cType $ "CMNDTL", ;
                      Len( Transform( xValue, iif( HB_ISSTRING( oCol:picture ), oCol:picture, NIL ) ) ), 0 )
+
+      // below some calculations of length BOX characters
+      cOldCP := hb_cdpSelect( hb_gtInfo( HB_GTI_BOXCP ) )
+
       cColSep := oCol:colSep
       IF cColSep == NIL
          cColSep := ::cColSep
@@ -1325,11 +1329,7 @@ METHOD doConfigure() CLASS TBrowse
       aCol[ _TBCI_CELLWIDTH   ] := nWidth
       aCol[ _TBCI_CELLPOS     ] := 0
       aCol[ _TBCI_COLSEP      ] := cColSep
-
-      cOldCP:=hb_cdpSelect(hb_gtInfo( HB_GTI_BOXCP ))
       aCol[ _TBCI_SEPWIDTH    ] := Len( cColSep )
-      hb_cdpSelect(cOldCP)
-
       aCol[ _TBCI_HEADSEP     ] := cHeadSep
       aCol[ _TBCI_FOOTSEP     ] := cFootSep
       aCol[ _TBCI_DEFCOLOR    ] := _COLDEFCOLORS( oCol:defColor, Len( ::aColors ) )
@@ -1391,6 +1391,10 @@ METHOD doConfigure() CLASS TBrowse
          ENDIF
 #endif
       ENDIF
+
+      // BOX calc finished
+      hb_cdpSelect( cOldCP )
+
    NEXT
 
    nHeight := Max( _TBR_COORD( ::n_Bottom ) - _TBR_COORD( ::n_Top ), 0 )
