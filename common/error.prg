@@ -752,7 +752,7 @@ if ""=cMessage
 
   // add subsystem name if available
   if ( ValType(e:subsystem) $ "MC" )
-    cMessage += e:subsystem
+    cMessage += hb_UTF8ToStr(e:subsystem)
   end
 
 
@@ -764,7 +764,7 @@ if ""=cMessage
 
   // add error description if available
   if ( ValType(e:description) $ "MC" )
-    cMessage += ("  " + e:description)
+    cMessage += ("  " + hb_UTF8ToStr(e:description))
   end
 
 
@@ -773,7 +773,7 @@ if ""=cMessage
     cMessage += (": " + e:filename)
   endif
   if ( !Empty(e:operation) )
-    cMessage += (": " + e:operation)
+    cMessage += (": " + hb_UTF8ToStr(e:operation))
     if !Empty(e:args)
        cMessage+="("
        aeval(e:args,{|x,y|y:=valtype(x),cMessage+=y+IF(y$"MCA",ltrim(str(len(x))),'')+if(y$'ABOU','',IF(y$"MC",':"'+left(x,10)+'"',":"+alltrim(TCVT(x))))+', '})

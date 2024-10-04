@@ -49,7 +49,11 @@
 #define A_SET_DAT   GERMAN
 #define A_SHORTIND
 #define STANY     indx_mat
+#ifdef A_UNICODE
 #define A_SUMK    -28441314785
+#else
+#define A_SUMK    -32508120377
+#endif
 #define A_KOMU_N  "Firma Usług Informatycznych Marek Długosz"
 #define A_KOMU_A  "Cieszyn, ul. Równa 16"
 #define A_AUTOR   "A.D. 1991-2024, Marek Długosz, Cieszyn, ul. Równa 16, tel. 338522553"
