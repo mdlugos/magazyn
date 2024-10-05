@@ -1,3 +1,4 @@
+#include "hbgtinfo.ch"
 #include "ar.ch"
 #ifndef A_LAN
 #define DatY MEMVAR
@@ -118,22 +119,21 @@ memvar it_menudod
 #endif    
           browse()
       case m = 5
-#ifdef PLWIN
-    #include   'hbgtinfo.ch'
-      aczojs({"98x32","80x25 (Norm)",hb_UTF8ToStr("Zmieniaj ilość linii"),hb_UTF8ToStr("Zmieniaj wielkość czcionki"),hb_UTF8ToStr("Pełny ekran (Alt+Enter)")},"",@m)
-      do case
-      case m<2
-        SetMode(32,98)
-      case m=2
-        SetMode(25,80)
-      case m=3
-        hb_gtInfo( HB_GTI_RESIZEMODE, HB_GTI_RESIZEMODE_ROWS )
-      case m=4
-        hb_gtInfo( HB_GTI_RESIZEMODE, HB_GTI_RESIZEMODE_FONT )
-      case m=5
-        hb_gtInfo( HB_GTI_ISFULLSCREEN, ! hb_gtInfo( HB_GTI_ISFULLSCREEN ) )
-      endcase
-#else
+         if hb_gtInfo( HB_GTI_ISGRAPHIC )
+            aczojs({"98x32","80x25 (Norm)",hb_UTF8ToStr("Zmieniaj ilość linii"),hb_UTF8ToStr("Zmieniaj wielkość czcionki"),hb_UTF8ToStr("Pełny ekran (Alt+Enter)")},"",@m)
+            do case
+            case m<2
+            SetMode(32,98)
+            case m=2
+            SetMode(25,80)
+            case m=3
+            hb_gtInfo( HB_GTI_RESIZEMODE, HB_GTI_RESIZEMODE_ROWS )
+            case m=4
+            hb_gtInfo( HB_GTI_RESIZEMODE, HB_GTI_RESIZEMODE_FONT )
+            case m=5
+            hb_gtInfo( HB_GTI_ISFULLSCREEN, ! hb_gtInfo( HB_GTI_ISFULLSCREEN ) )
+            endcase
+         else
            m:=2
            aczojs({"80x25 (Norm)","80x43","80x50","128x50"},"",@m)
 
@@ -145,8 +145,8 @@ memvar it_menudod
               setmode(50,128)
            else
               setmode(25,80)
-           endif
-#endif
+            endif
+         endif
 
       case m = 6
    if stary_rok#NIL

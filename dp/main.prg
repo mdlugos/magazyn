@@ -8,9 +8,7 @@ memvar apcomp,p_pcl,landscape
 memvar oprn
 #endif
 #include "inkey.ch"
-#ifdef PLWIN
-    #include   "hbgtinfo.ch"
-#endif
+#include   "hbgtinfo.ch"
 #ifdef A_ELZ
 request descend
 #endif
@@ -21,9 +19,7 @@ PROCEDURE MAIN(parametr)
 
 local scr_menu,menu,i,txt,a
 
-#ifdef PLWIN
    hb_gtInfo( HB_GTI_WINTITLE , "Dieta" )
-#endif
 #ifdef A_WIN_PRN
    public oprn
 #endif

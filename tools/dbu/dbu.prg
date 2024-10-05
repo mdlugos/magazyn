@@ -74,14 +74,12 @@ PROCEDURE Dbu( param1, param2, param3 )
       rddsetdefault( "DBFNTX" )
    ENDIF
 
-   REQUEST HB_LANG_PL
-   REQUEST HB_CODEPAGE_PL852M
-   REQUEST HB_CODEPAGE_UTF8MD
+   REQUEST HB_LANG_PL, HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8MD
+   hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
+   HB_CDPSELECT('UTF8MD')
    HB_LANGSELECT('PL')
-   hb_cdpSelect( 'UTF8MD' )
-   hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD' )
-   ! CHCP 65001 > NUL
-   Set( _SET_DBCODEPAGE,'PL852M')
+   SET(_SET_DBCODEPAGE, 'PL852M')
+   SET(_SET_DEBUG,.t.) //alt_d on
    
    SetKey( K_ALT_V, {|| hb_gtInfo( HB_GTI_CLIPBOARDPASTE, .T. ) } )
    hb_gtInfo( HB_GTI_COMPATBUFFER, .F. ) //before save screen

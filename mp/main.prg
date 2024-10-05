@@ -1,3 +1,5 @@
+#include   "hbgtinfo.ch"
+
 #ifdef A_ODBIORCY
 #error ODBIORCY not supported
 #endif
@@ -68,9 +70,6 @@ memvar  landscape,p_rown,p_colnl,p_rownl,p_land,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COL
 memvar netio
 #endif
 
-#ifdef PLWIN
-    #include   'hbgtinfo.ch'
-#endif
 
 MEMVAR  oprn,year2bckp,mag_biez,mag_poz,magazyny,adres_mag,mag_link,_sbkgr,_sbnorm,;
         dok_par,dokumenty,firma_n,DOK_ROZCH,dok_zewn,dok_zby,dok_fak,dok_ewid,dok_vat,;
@@ -95,9 +94,7 @@ memvar bckp,parametr,mag_biez,operator
 local scr_menu,txt,mlog,a,mf:=.f.,i,menu
 
 public defa,oprn
-#ifdef PLWIN
    hb_gtInfo( HB_GTI_WINTITLE , "Magazyn" )
-#endif
 
 if parametr='MAGDEF='
    defa:=subs(parametr,8)
@@ -371,9 +368,7 @@ if iscolor()
 else
   set color to w
 endif
-#ifndef PLWIN
     dispbegin()
-#endif
    CLEAR screen
       ? padc(firma_n,maxcol())
 
@@ -381,16 +376,8 @@ endif
 if iscolor()
       SET COLOR TO (_sbkgr)
 endif
-/*
-#ifdef PLWIN
-          @ 4,maxcol()/2-29 CLEAR TO 7,maxcol()/2+30
-          @ 4,maxcol()/2-4 SAY " M E N U "
-          @ 4,maxcol()/2-29 TO 7,maxcol()/2+30
-#else
-*/
           @ 4,maxcol()/2-29,7,maxcol()/2+30 BOX UNICODE "╔═╗║╝═╚║ "
           @ 4,maxcol()/2-4 SAY " M E N U " COLOR if(iscolor(),_sbkgr,"W+")
-//#endif
 
           @ maxrow()-2,0,maxrow(),maxcol() BOX UNICODE "╔═╗║╝═╚║ "
 
@@ -426,9 +413,7 @@ endif
       @ 6,maxcol()/2+8  PROMPT "Zestawienia"  UNICODE MESSAGE 'Wydruki zestawień.'
       @ 6,maxcol()/2+20 PROMPT "Pozostałe"    UNICODE MESSAGE 'Dodatkowe funkcje programu.'
 
-#ifndef PLWIN
     dispend()
-#endif
       //hb_gtInfo( HB_GTI_BOXCP, a)
       menu:=level1
       MENU TO menu

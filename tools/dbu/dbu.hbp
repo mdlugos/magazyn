@@ -3,8 +3,10 @@
 #-gttrm
 -i../../common
 dbu.prg
+../../common/mlcfunc.c 
 ../../common/cppl852m.c
 ../../common/cp_utf8m.c
+../../common/tbrowse.prg
 dbucopy.prg
 dbuedit.prg
 dbuhelp.prg

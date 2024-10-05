@@ -638,7 +638,7 @@ HB_FUNC( HB_MLEVAL )
                nColPos = nCol;
             }
 
-            nRepl = ch == HB_CHAR_HT ? nTabSize - ( nCol % nTabSize ) -1 : 0;
+            nRepl = ( ch == HB_CHAR_HT ) ? nTabSize - ( nCol % nTabSize ) -1 : 0;
 
             if( ch == ' ' || ch == HB_CHAR_HT )
             {

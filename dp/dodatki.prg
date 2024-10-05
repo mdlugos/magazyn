@@ -1,5 +1,7 @@
-#undef A_ELZ
 #include "set.ch"
+#include "hbgtinfo.ch"
+
+#undef A_ELZ
 
 #ifndef ZAP_BIEZ
  #define ZAP_BIEZ "W"
@@ -139,55 +141,55 @@ DO CASE
       if isega()
       setpos(11,maxcol()/2+25)
       m:=1
-#ifdef PLWIN
-    #include   'hbgtinfo.ch'
-      aczojs({"98x32","80x25 (Norm)",hb_UTF8ToStr("Zmieniaj ilość linii"),hb_UTF8ToStr("Zmieniaj wielkość czcionki"),hb_UTF8ToStr("Pełny ekran (Alt+Enter)")},"",@m)
-      do case
-      case m<2
-        SetMode(32,98)
-      case m=2
-        SetMode(25,80)
-      case m=3
-        hb_gtInfo( HB_GTI_RESIZEMODE, HB_GTI_RESIZEMODE_ROWS )
-      case m=4
-        hb_gtInfo( HB_GTI_RESIZEMODE, HB_GTI_RESIZEMODE_FONT )
-      case m=5
-        hb_gtInfo( HB_GTI_ISFULLSCREEN, ! hb_gtInfo( HB_GTI_ISFULLSCREEN ) )
-      endcase
-#else
-      aczojs({"80x25 (Norm)","80x30","80x43","80x50","80x60","132x25","132x30","132x43","132x50","132x60"},"",@m)
-      sysint(16,3)
-      setmode(25,80)
-      if m<2
-        setmode(25,80)
-      elseif m=2
-        sysint(16,36)
-      elseif m=3
-        setmode(43,80)
-      elseif m=4
-        setmode(50,80)
-      elseif m=5
-        //sysint(16,38) //80x60
-        sysint(16,20226,264)
-      elseif m=6
-        sysint(16,20226,265) //132x25
-        //sysint(16,32)
-      elseif m=7
-        sysint(16,33) //132x30
-      elseif m=8
-        //sysint(16,34) //132x43
-        sysint(16,20226,266)
-      elseif m=9
-        sysint(16,20226,267) //132x50
-      elseif m=10
-        //sysint(16,35) //132x60
-        sysint(16,20226,268)
-      endif
-      setmode(,)
-      if maxcol()<79
+      if hb_gtInfo( HB_GTI_ISGRAPHIC )
+         aczojs({"98x32","80x25 (Norm)",hb_UTF8ToStr("Zmieniaj ilość linii"),hb_UTF8ToStr("Zmieniaj wielkość czcionki"),hb_UTF8ToStr("Pełny ekran (Alt+Enter)")},"",@m)
+         do case
+         case m<2
+         SetMode(32,98)
+         case m=2
+         SetMode(25,80)
+         case m=3
+         hb_gtInfo( HB_GTI_RESIZEMODE, HB_GTI_RESIZEMODE_ROWS )
+         case m=4
+         hb_gtInfo( HB_GTI_RESIZEMODE, HB_GTI_RESIZEMODE_FONT )
+         case m=5
+         hb_gtInfo( HB_GTI_ISFULLSCREEN, ! hb_gtInfo( HB_GTI_ISFULLSCREEN ) )
+         endcase
+      else
+         aczojs({"80x25 (Norm)","80x30","80x43","80x50","80x60","132x25","132x30","132x43","132x50","132x60"},"",@m)
          sysint(16,3)
          setmode(25,80)
+         if m<2
          setmode(25,80)
+         elseif m=2
+         sysint(16,36)
+         elseif m=3
+         setmode(43,80)
+         elseif m=4
+         setmode(50,80)
+         elseif m=5
+         //sysint(16,38) //80x60
+         sysint(16,20226,264)
+         elseif m=6
+         sysint(16,20226,265) //132x25
+         //sysint(16,32)
+         elseif m=7
+         sysint(16,33) //132x30
+         elseif m=8
+         //sysint(16,34) //132x43
+         sysint(16,20226,266)
+         elseif m=9
+         sysint(16,20226,267) //132x50
+         elseif m=10
+         //sysint(16,35) //132x60
+         sysint(16,20226,268)
+         endif
+         setmode(,)
+         if maxcol()<79
+            sysint(16,3)
+            setmode(25,80)
+            setmode(25,80)
+         endif
       endif
 #endif
       init screen

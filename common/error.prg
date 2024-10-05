@@ -67,7 +67,7 @@ endif
 ErrorBlock( {|e| DefError(e)} )
 
 hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
-#ifdef PLWIN
+if hb_gtInfo( HB_GTI_ISGRAPHIC )
    hb_gtInfo( HB_GTI_FONTNAME , "Lucida Console" )
    hb_gtInfo( HB_GTI_FONTWIDTH, 10  )
    hb_gtInfo( HB_GTI_FONTSIZE , 20 )
@@ -76,11 +76,8 @@ hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
    SetCursor( 0 )
    hb_gtInfo( HB_GTI_CLOSABLE, .t. )
    hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
-#else 
-      //hb_Run('chcp 65001 > nul')
-      //hb_SetTermCP( 'UTF8MD')
-#endif
-   //SET(_SET_DEBUG, .t.)
+endif
+
 #ifdef A_ADS
    #ifdef __PLATFORM__WINDOWS
       #include "ads.ch"
@@ -183,7 +180,7 @@ CLEAR screen
 @ 2,0 say padc(firma_a,maxcol())
 @ 16,0 say padc(a,maxcol())
 //@ 20,0 say padc("Program napisano w języku CLIPPER 5.01, numer licencji: CDX 218558",maxcol())
-@ 20,0 say padc(wersja()+', kompilator: '+version(1),maxcol())
+@ 20,0 say padc(wersja()+' '+hb_gtInfo(HB_GTI_VERSION)+', kompilator: '+version(1),maxcol())
 #ifdef A_LAN
 @ 22,0 say padc(trim("WERSJA SIECIOWA "+os()+" "+netname()),maxcol())
 #else
@@ -200,16 +197,6 @@ MHIDE()
 #endif
 #endif
 return
-
-
-#ifdef PLWIN
-PROCEDURE HB_GTSYS()
-
-   REQUEST HB_GT_WVT_DEFAULT
-   REQUEST HB_GT_WIN
-
-   RETURN
-#endif
 
 /***
 *  DefError()

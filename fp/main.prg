@@ -28,9 +28,6 @@ EXTERNAL __RUN
 EXTERNAL STOD
 memvar it_level1,defa,stary_rok
 
-#ifdef PLWIN
-    #include   'hbgtinfo.ch'
-#endif
 
 PROCEDURE MAIN(parametr,menu)
 
@@ -45,12 +42,10 @@ memvar  landscape,p_rown,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COLN,P_BON,P_BOFF,P_UON,P_
 
 memvar  rejestry
 
-#ifdef PLWIN
 #ifdef A_PENS
    hb_gtInfo( HB_GTI_WINTITLE , "Pens" )
 #else
    hb_gtInfo( HB_GTI_WINTITLE , "Fi-Ks" )
-#endif
 #endif
 
 setpos(3,0)
