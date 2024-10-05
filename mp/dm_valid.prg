@@ -128,7 +128,7 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,ilosc_f,dost_odb,kontrahent
 #define D_LP1 '1'
 #define D_LPVAL(x) (HB_BCODE(x)-48)
 #define D_LPSTR(x) str(D_LPVAL(x),3)
-#define D_LPPUT(x) HB_BCHAR(x+48)
+#define D_LPPUT(x) binfieldput('POZYCJA',HB_BCHAR(x+48),.t.)
 #endif
 #ifdef A_FA
   field proc_VAT

@@ -225,6 +225,7 @@ DO CASE
       if isega()
       setpos(11,maxcol()/2+25)
       m:=1
+//#ifdef __PLATFORM__WINDOWS      
       if hb_gtInfo( HB_GTI_ISGRAPHIC )
          aczojs({"98x32","80x25 (Norm)",hb_UTF8ToStr("Zmieniaj ilość linii"),hb_UTF8ToStr("Zmieniaj wielkość czcionki"),hb_UTF8ToStr("Pełny ekran (Alt+Enter)")},"",@m)
          do case
@@ -240,6 +241,7 @@ DO CASE
          hb_gtInfo( HB_GTI_ISFULLSCREEN, ! hb_gtInfo( HB_GTI_ISFULLSCREEN ) )
          endcase
       else
+//#endif
          aczojs({"80x25 (Norm)","80x30","80x43","80x50","80x60","132x25","132x30","132x43","132x50","132x60"},"",@m)
          sysint(16,3)
          setmode(25,80)
@@ -280,7 +282,9 @@ DO CASE
             setmode(25,80)
             setmode(25,80)
          endif
+//#ifdef __PLATFORM__WINDOWS      
       endif
+//#endif
       init screen
 #ifdef A_MYSZ
       sysint(51,0)

@@ -68,9 +68,14 @@ ErrorBlock( {|e| DefError(e)} )
 
 hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
 if hb_gtInfo( HB_GTI_ISGRAPHIC )
+#ifdef __PLATFORM__UNIX   
+   hb_gtInfo( HB_GTI_FONTSEL,'-*-fixed-medium-r-*-*-18-*-*-*-*-*-iso10646-1')
+   // 29,27,21,20,18,15,14,13,12,11,10,9,8,7,6
+#else
    hb_gtInfo( HB_GTI_FONTNAME , "Lucida Console" )
    hb_gtInfo( HB_GTI_FONTWIDTH, 10  )
    hb_gtInfo( HB_GTI_FONTSIZE , 20 )
+#endif   
    //hb_gtInfo( HB_GTI_WINTITLE , "Rozruch" )
    hb_gtInfo( HB_GTI_ALTENTER, .T. )  // allow alt-enter for full screen
    SetCursor( 0 )

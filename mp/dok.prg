@@ -116,9 +116,9 @@ field  data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,numer_kol,;
 #else
 #define D_LP0 '0'
 #define D_LP1 '1'
-#define D_LPVAL(x) (asc(x)-48)
+#define D_LPVAL(x) (HB_BCODE(x)-48)
 #define D_LPSTR(x) str(asc(x)-48,3)
-#define D_LPPUT(x) chr(x+48)
+#define D_LPPUT(x) binfieldput('POZYCJA',HB_BCHAR(x+48),.t.)
 #endif
 #ifndef A_IZ
   #define ilosc_f ilosc

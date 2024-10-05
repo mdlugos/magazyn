@@ -2112,7 +2112,7 @@ func evaldb(...)
    endif
 return r
 *****************
-func binfieldput(f,x)
+func binfieldput(f,x,lval)
    local t,b
    if valtype(x)='C'
       t:=hb_FieldType(f)
@@ -2122,7 +2122,10 @@ func binfieldput(f,x)
          // przy tłumaczeniu z powrotem się skróci, ale i tak będzie przyciasno
       endif
    endif
-return HB_FieldPut(f,x)
+   if empty(lval)
+   return HB_FieldPut(f,x)
+   endif
+return x 
 
 func binfieldget(f)
    local x := hb_fieldget(f),t

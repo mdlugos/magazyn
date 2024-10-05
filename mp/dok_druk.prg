@@ -70,7 +70,7 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,wart_vat,;
 #define D_LP1 '1'
 #define D_LPVAL(x) (HB_BCODE(x)-48)
 #define D_LPSTR(x) str(D_LPVAL(x),3)
-#define D_LPPUT(x) HB_BCHAR(x+48)
+#define D_LPPUT(x) binfieldput('POZYCJA',HB_BCHAR(x+48),.t.)
 #endif
 
 #ifdef A_HPDF

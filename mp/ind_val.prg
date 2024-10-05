@@ -1456,7 +1456,6 @@ field ilosc,data,smb_dow,nr_dowodu,pozycja,nr_zlec
 #ifdef A_LPNUM
 #define D_LP0 str(0,A_LPNUM) //'  0'
 #define D_LP1 str(1,A_LPNUM) //'  1'
-#define D_LPPUT(x) str(x,A_LPNUM)
 #define D_LPVAL(x) val(x)
 #define D_LPSTR(x) str(D_LPVAL(x),3)
 #define D_LPSTR1(x) str(D_LPVAL(x),1)
@@ -1466,7 +1465,6 @@ field ilosc,data,smb_dow,nr_dowodu,pozycja,nr_zlec
 #define D_LPVAL(x) (HB_BCODE(x)-48)
 #define D_LPSTR(x) str(HB_BCODE(x)-48,3)
 #define D_LPSTR1(x) x
-#define D_LPPUT(x) chr(x+48)
 #endif
 local sel,prptxt
 #ifdef A_WA
