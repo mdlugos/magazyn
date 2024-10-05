@@ -32,22 +32,42 @@ local i,n,t
 //  #endif
 #endif
 
-SET(_SET_DEBUG,.t.)
+REQUEST HB_LANG_PL, HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8MD
+  hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
+
+//browse musi mieć BOXCP tego samego rodzaju co główną bo left/right/substr w tbrowse
+//  REQUEST HB_CODEPAGE_PLMAZ
+//  hb_gtInfo( HB_GTI_BOXCP, 'PLMAZ')
+
+  HB_CDPSELECT(D_CDP)
+  HB_LANGSELECT('PL')
+
+  //SET(_SET_CODEPAGE, D_CDP )
+  SET(_SET_DBCODEPAGE, PC852 )
+
+//header w UTF8 ale suma wyliczona dla kodowania PC852
+
+a:=hb_UTF8ToStr(a)
+f:=hb_UTF8ToStr(f)
+fa:=hb_UTF8ToStr(fa)
+
+t:=a+f+fa
+n:=int(hb_blen(t)/4)*4
+for i:=1 to n step 4
+  sc+=bin2l(hb_bsubstr(t,i,4))
+next
+
+SET(_SET_DEBUG,.t.) //alt_d on
+
+if sc#0
+  altd()
+  quit
+endif
+
 ErrorBlock( {|e| DefError(e)} )
 
-REQUEST HB_LANG_PL, HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8MD
-#if 1 //def A_UNICODE
-  hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
-#else
-  //browse musi mieć BOXCP tego samego rodzaju co główną bo left/right/substr w tbrowse
-  REQUEST HB_CODEPAGE_PLMAZ
-  hb_gtInfo( HB_GTI_BOXCP, 'PLMAZ')
-#endif
-  hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
-  SET(_SET_LANGUAGE,'PL')
-  SET(_SET_CODEPAGE, D_CDP )
-  SET(_SET_DBCODEPAGE, PC852 )
-  #ifdef PLWIN
+hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
+#ifdef PLWIN
    hb_gtInfo( HB_GTI_FONTNAME , "Lucida Console" )
    hb_gtInfo( HB_GTI_FONTWIDTH, 10  )
    hb_gtInfo( HB_GTI_FONTSIZE , 20 )
@@ -56,10 +76,10 @@ REQUEST HB_LANG_PL, HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8MD
    SetCursor( 0 )
    hb_gtInfo( HB_GTI_CLOSABLE, .t. )
    hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
-  #else 
+#else 
       //hb_Run('chcp 65001 > nul')
       //hb_SetTermCP( 'UTF8MD')
-  #endif
+#endif
    //SET(_SET_DEBUG, .t.)
 #ifdef A_ADS
    #ifdef __PLATFORM__WINDOWS
@@ -103,22 +123,6 @@ SET DATE    A_SET_DAT
 SET EPOCH TO year(date())-98
 SET CENTURY ON
 
-//header w UTF8 ale suma wylicozna dla kodowania PC852
-
-a:=hb_UTF8ToStr(a)
-f:=hb_UTF8ToStr(f)
-fa:=hb_UTF8ToStr(fa)
-
-t:=a+f+fa
-n:=int(hb_blen(t)/4)*4
-for i:=1 to n step 4
-  sc+=bin2l(hb_bsubstr(t,i,4))
-next
-
-if sc#0
-  altd()
-  quit
-endif
 
 public _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,defa,firma_n:=f,firma_a:=fa
 
@@ -752,7 +756,7 @@ if ""=cMessage
 
   // add subsystem name if available
   if ( ValType(e:subsystem) $ "MC" )
-    cMessage += hb_UTF8ToStr(e:subsystem)
+    cMessage += e:subsystem
   end
 
 
@@ -764,7 +768,7 @@ if ""=cMessage
 
   // add error description if available
   if ( ValType(e:description) $ "MC" )
-    cMessage += ("  " + hb_UTF8ToStr(e:description))
+    cMessage += ("  " + e:description)
   end
 
 
@@ -773,7 +777,7 @@ if ""=cMessage
     cMessage += (": " + e:filename)
   endif
   if ( !Empty(e:operation) )
-    cMessage += (": " + hb_UTF8ToStr(e:operation))
+    cMessage += (": " + e:operation)
     if !Empty(e:args)
        cMessage+="("
        aeval(e:args,{|x,y|y:=valtype(x),cMessage+=y+IF(y$"MCA",ltrim(str(len(x))),'')+if(y$'ABOU','',IF(y$"MC",':"'+left(x,10)+'"',":"+alltrim(TCVT(x))))+', '})
