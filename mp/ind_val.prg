@@ -779,7 +779,7 @@ endif
 #else
     SAYl 'Info:'
 #endif
-    GETl id picture "@KS"+ltrim(str(78-col()))
+    GETl id picture "@KS"+lTrim(sTr(78-col()))
     if valtype(info)='M'
       atail(getlist):cargo:=.t.
     endif  

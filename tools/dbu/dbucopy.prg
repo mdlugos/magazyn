@@ -603,7 +603,7 @@ DO CASE
 		* normal display
 		@ M->wt + M->for_row + 2, M->wl + 2;
 		SAY "SCOPE  " + pad(IF(M->how_many = 0, "ALL",;
-							"NEXT " + LTRIM(STR(M->how_many))), 20)
+							"NEXT " + lTrim(sTr(M->how_many))), 20)
 
 		IF M->sysparam = 1
 			* report position
@@ -616,7 +616,7 @@ DO CASE
 		SetColor(M->colorHilite)
 		@ M->wt + M->for_row + 2, M->wl + 9;
 		SAY pad(IF(M->how_many = 0,;
-				   "ALL", "NEXT " + LTRIM(STR(M->how_many))), 20)
+				   "ALL", "NEXT " + lTrim(sTr(M->how_many))), 20)
 
 	CASE M->sysparam = 4
 		* selected
@@ -662,7 +662,7 @@ DO CASE
 				to_ok()
 				@ M->wt + M->for_row + 2, M->wl + 9;
 				SAY pad(IF(M->how_many = 0, "ALL", "NEXT " +;
-						LTRIM(STR(M->how_many))), 20)
+						lTrim(sTr(M->how_many))), 20)
 
 			ELSE
 

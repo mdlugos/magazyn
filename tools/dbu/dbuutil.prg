@@ -1449,7 +1449,7 @@ IF M->menu_func <> 0
 
 ENDIF
 
-IF LTRIM(STR(M->menu_func)) $ M->exit_str
+IF lTrim(sTr(M->menu_func)) $ M->exit_str
 	* selection requires a top level branch
 	sysfunc = M->menu_func
 	func_sel = M->menu_sel

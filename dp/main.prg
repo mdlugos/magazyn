@@ -390,7 +390,7 @@ return
 *****************
 func wersja()
 #ifdef __DATE__
-return 'Wersja: 2.'+ltrim(str(stod(__DATE__)-stod('20100101')))
+return 'Wersja: 2.'+lTrim(sTr(stod(__DATE__)-stod('20100101')))
 #else
 return 'Wersja: 2.2'
 #endif

@@ -972,13 +972,13 @@ public  p_rown,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COLN,P_BON,P_BOFF,P_UON,P_UOFF,;
 */
       P_SUPON := chr(0x1B)+'(s7.0V'
       P_SUPOFF:= chr(0x1B)+'(s12.0V'
-      p_margin:= {|x|chr(0x1B)+'&'+'a'+ltrim(str(x,3))+'L'}
-      p_col   := {|x|chr(0x1B)+'&'+'a'+ltrim(str(x,3))+'C'}
+      p_margin:= {|x|chr(0x1B)+'&'+'a'+lTrim(sTr(x))+'L'}
+      p_col   := {|x|chr(0x1B)+'&'+'a'+lTrim(sTr(x))+'C'}
 
       P_PON   := chr(0x1B)+"(s1P"
       P_POFF  := chr(0x1B)+"(s0P"
       P_HALFPAGE:={||''}
-      P_LPI   := {|x|chr(0x1B)+'&'+'l'+ltrim(str(x))+'D'}
+      P_LPI   := {|x|chr(0x1B)+'&'+'l'+lTrim(sTr(x))+'D'}
       //P_PORT  := {|x|if(landscape=(landscape:=x),'',chr(0x1B)+"&l"+IF(x,"1","0")+"O"))}
       P_LAND  := {|x|if(MEMVAR->landscape=(MEMVAR->landscape:=!(x=.f.)),'',chr(0x1B)+"&"+"l"+IF(MEMVAR->landscape,"1","0")+"O")}
       p_cpi:={|n|chr(0x1B)+"(s"+{"0p5H","0p6H","0p8.33H","0p10H","0p12H","0p15H","0p16.67H","0p20H","1P"}[n]}
@@ -1870,7 +1870,7 @@ local txt,i,j,k,o,osk,getlist:={}
     if i<win[4]-win[2]-1
        txt:=pad(txt,win[4]-win[2]-1)
     endif
-    @ win[1]+1,win[2]+1 GET txt PICTURE "@S"+ltrim(str(win[4]-win[2]-1))
+    @ win[1]+1,win[2]+1 GET txt PICTURE "@S"+lTrim(sTr(win[4]-win[2]-1))
     kibord(chr(K_END))
     read
   endif

@@ -6,7 +6,6 @@
 #define I hb_UTF8ToStr("│")
 
 #ifndef A_MKNK
-  //#define A_MKNK(x) eval({|y|mknk:=min(5,max(mknk,len(ltrim(str(y))))),pad(str(y,mknk),5)},x)
   #define A_MKNK(x) str(x,4)+' '
 #endif
 #ifdef A_KASA
@@ -1061,7 +1060,7 @@ procedure dok11(_f)
     @ row(),11+col() say nazwisko picture "@S20K"
 #endif
     @ row(),9+col() say nr_spec picture "@S18K"
-    @ row(),12+col() say transport picture "@KS"+ltrim(str(_fco2-col()-3))
+    @ row(),12+col() say transport picture "@KS"+lTrim(sTr(_fco2-col()-3))
     setpos(row()+1,1)
 #endif
 #ifdef A_KSEF
@@ -1273,7 +1272,7 @@ procedure dok2(_f,getlist)
     @ row(),11+col() get nazwis picture "@S20K"
 #endif
     @ row(),9+col() get sp picture "@S18K"
-    @ row(),12+col() get st picture "@KS"+ltrim(str(_fco2-col()-3))
+    @ row(),12+col() get st picture "@KS"+lTrim(sTr(_fco2-col()-3))
       atail(getlist):cargo:=.t.
     endif
 #endif
@@ -2037,9 +2036,9 @@ proc dok4(_f,getlist,_s)
       #define NZBEG 24
       #undef  NZPIC
 #ifdef A_SB
-      #define NZPIC "@KS" +ltrim(str(min(hb_fieldlen('nr_zlec'),21-NIMBEG-len( INDEXPIC ))))
+      #define NZPIC "@KS" +lTrim(sTr(min(hb_fieldlen('nr_zlec'),21-NIMBEG-len( INDEXPIC ))))
 #else
-      #define NZPIC "@KS" +ltrim(str(min(hb_fieldlen('nr_zlec'),33-NIMBEG-len( INDEXPIC ))))
+      #define NZPIC "@KS" +lTrim(sTr(min(hb_fieldlen('nr_zlec'),33-NIMBEG-len( INDEXPIC ))))
 #endif
 #endif
       #define NZVAL aczojs(stanowis[mag_poz])
@@ -3924,9 +3923,9 @@ for j=1 to len(itot)
       loop
    endif
 #ifdef A_IZ
-   devout(ltrim(str(itot[j,2]+if(lam#NIL.and.itot[j,1]=(lam)->jm,pm*if(_fnowy,il,il-if(dok_ew="E",main->ilosc,main->ilosc_f)),0),16,3))+" "+trim(itot[j,1]),_sbkgr)
+   devout(lTrim(sTR(itot[j,2]+if(lam#NIL.and.itot[j,1]=(lam)->jm,pm*if(_fnowy,il,il-if(dok_ew="E",main->ilosc,main->ilosc_f)),0),16,3))+" "+trim(itot[j,1]),_sbkgr)
 #else
-   devout(ltrim(str(itot[j,2]+if(lam#NIL.and.itot[j,1]=(lam)->jm,pm*if(_fnowy,il,il-main->ilosc),0),16,3))+" "+trim(itot[j,1]),_sbkgr)
+   devout(lTrim(sTR(itot[j,2]+if(lam#NIL.and.itot[j,1]=(lam)->jm,pm*if(_fnowy,il,il-main->ilosc),0),16,3))+" "+trim(itot[j,1]),_sbkgr)
 #endif
    setpos(row(),col()+1)
 next

@@ -171,7 +171,7 @@ reuse()
 
 txt:={}
 IF DISKSPACE(if(":"$defa,asc(upper(defa))-64,))<1000000
-   aadd(txt,message("TYLKO "+ltrim(STR(DISKSPACE(if(":"$defa,asc(upper(defa))-64,))))+hb_UTF8ToStr(" BAJTÓW;WOLNEGO MIEJSCA NA DYSKU !")))
+   aadd(txt,message("TYLKO "+lTrim(sTr(DISKSPACE(if(":"$defa,asc(upper(defa))-64,))))+hb_UTF8ToStr(" BAJTÓW;WOLNEGO MIEJSCA NA DYSKU !")))
 ENDIF
 
 IF DATE()-45>DatY->D_Z_MIES1
@@ -573,7 +573,7 @@ return
 *****************
 func wersja()
 #ifdef __DATE__
-return 'Wersja: 2.'+ltrim(str(stod(__DATE__)-stod('20100101')))
+return 'Wersja: 2.'+lTrim(sTr(stod(__DATE__)-stod('20100101')))
 #else
 return 'Wersja: 2.'
 #endif

@@ -185,9 +185,9 @@ static proc mDOK4(_f,getlist,deep)
      lock
   endif
   //@ _fk, 15 SAY chr(29)
-  @ _fk, _fco1+6 GET dan PICTURE "@KS"+ltrim(str(49-A_DILTH)) VALID {|r,k|if(r:changed.and.fpstart=0,fpstart:=1,),k:=setkey(-8,NIL),r:=danval(_f,getlist) .and. showgram(_f),setkey(-8,k),r}
+  @ _fk, _fco1+6 GET dan PICTURE "@KS"+lTrim(sTr(49-A_DILTH)) VALID {|r,k|if(r:changed.and.fpstart=0,fpstart:=1,),k:=setkey(-8,NIL),r:=danval(_f,getlist) .and. showgram(_f),setkey(-8,k),r}
   //SAYL chr(9)
-  @ _fk, 69-A_DILTH GET DIE PICTURE "@KS"+LTRIM(STR(A_DILTH)) VALID {|g|if(g:changed.and.fpstart=0,fpstart:=2,),dival(g).and.showgram(_f)}
+  @ _fk, 69-A_DILTH GET DIE PICTURE "@KS"+HB_MACRO2STRING(A_DILTH) VALID {|g|if(g:changed.and.fpstart=0,fpstart:=2,),dival(g).and.showgram(_f)}
 #ifdef A_DODATKI
   //SAYL chr(9)
   @ _fk, 70 GET ilp PICTURE D_ILPIC VALID showgram(_f) SEND block:={|x|if(x<>NIL,ilp:=if(round(x-ipcalc(die),1)<>0,x,0),if(ilp=0,ipcalc(die),ilp))}

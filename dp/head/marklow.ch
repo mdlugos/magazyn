@@ -1,4 +1,8 @@
 #include "lan.ch"
+#ifdef __PLATFORM__WINDOWS
+#define A_WIN_PRN eval(MEMVAR->do_getoprn)
+#endif
+
 #define ZAP_BIEZ MEMVAR->zap_biez
 #define MAG_BIEZ '10'
 #define A_NORMY
@@ -21,7 +25,6 @@
 #define A_PRINT(x) eval(memvar->do_print,x)
 #define A_PCL
 #define A_XPRN
-#define A_WIN_PRN eval(MEMVAR->do_getoprn)
 #define A_PRINT(x) eval(MEMVAR->do_print,x)
 #define A_GETLPT eval(MEMVAR->do_getlpt)
 #define isPrinter() .t.

@@ -417,7 +417,7 @@ stat proc edok2(_f,getlist)
   ig:=ELEMENTY->ignoruj
   now:=if(nowy,"NOWY   ","POPRAWA")
   @ 1,_fco1+2 get now picture "@K" valid {||nowy:=if(now=" ",!nowy,nowy),now:=if(nowy,"NOWY   ","POPRAWA"),.t.}
-  @ 2,_fco1+2 get NA picture "@KS"+ltrim(str(_fco2-_fco1-9))
+  @ 2,_fco1+2 get NA picture "@KS"+lTrim(sTr(_fco2-_fco1-9))
   getl jed picture "@K"
 #ifdef PROC_EN
   getl ig picture "@Y"
@@ -520,7 +520,7 @@ stat proc eDOK4(_f,getlist,deep)
       na:=dieta
     endif
 
-    @ _fk,_fco1+6 GET na PICTURE "@KS"+ltrim(str(A_DILTH)) valid {|g|dival(g)}
+    @ _fk,_fco1+6 GET na PICTURE "@KS"+HB_MACRO2STRING(A_DILTH) valid {|g|dival(g)}
     GETL za_mi picture "#####.###"
     GETL za_ma picture "#####.###"
      __setproc(procname(0))

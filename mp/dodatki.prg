@@ -158,17 +158,6 @@ DO CASE
    CASE m=5 .and. iS_spec
 
     hAslo_spec(21)
-
-   #include "hbmemory.ch"
-   if MEMORY( HB_MEM_STATISTICS ) != 0
-     @ 23,0 SAY "Swap: " + LTRIM(STR(MEMORY(HB_MEM_CHAR))) +;
-      ", Lg object: " + LTRIM(STR(MEMORY(HB_MEM_BLOCK))) +;
-      ", Run: " + LTRIM(STR(MEMORY(HB_MEM_RUN))) +;
-      ", EMM: " + LTRIM(STR(MEMORY(HB_MEM_EMS))) +;
-      ", FM: " + LTRIM(STR(MEMORY(HB_MEM_FM))) +;
-      ", Idle Conven: " + LTRIM(STR(MEMORY(HB_MEM_CONV)))
-   endif
-
     browse()
 
    CASE m=6
@@ -1210,7 +1199,6 @@ endif
     close databases
     set default to (defa+"roboczy"+HB_ps())
 
-#define NTRIM(n)    ( LTrim(Str(n)) )
   ?
   ? hb_UTF8ToStr("Błąd ")
 
@@ -1222,7 +1210,7 @@ endif
 
   // add subsystem's error code if available
   if ( ValType(w:subCode) == "N" )
-    ?? "/" + NTRIM(w:subCode)
+    ?? "/" + hb_ntos(w:subCode)
   end
 
 
@@ -1242,7 +1230,7 @@ endif
   end
 
   if ( !Empty(w:osCode) )
-    ? ";(DOS Error " + NTRIM(w:osCode) + ")"
+    ? ";(DOS Error " + hb_ntos(w:osCode) + ")"
   end
 
   ? "Kasowanie kartoteki TMP."
@@ -1385,7 +1373,7 @@ jm_o:=TAK("CZY W ALTERNATYWNEJ JEDNOSTCE MIARY",,,miar_opcja,.F.)
   exec {++ile,wat+=WartosC} while NR_MAG+index=gal
 #define D_WAOUT(x) strpic(WartosC,10,A_ZAOKR,"@E ")
 
-@ 11,10 say "Ta gałąź liczy "+LTRIM(STR(ILE))+" pozycji, "+LTRIM(STR(INT(ILE/30+.99)))+" arkuszy." UNICODE
+@ 11,10 say "Ta gałąź liczy "+lTrim(sTr(ILE))+" pozycji, "+lTrim(sTr(INT(ILE/30+.99)))+" arkuszy." UNICODE
 seek gal
 ark=1
 @ 13,30 say "Od arkusza numer:" get ark picture "@K 99" valid ark<1+ile/30 .and. ark>0

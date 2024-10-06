@@ -148,7 +148,7 @@ elseif key=K_INS .or. key=43
 #endif
            getlist[i]:cargo:=.t.
            getlist[i]:postblock:={|g|if(g:changed,g:varput(trim(g:buffer)),),.t.}
-           getlist[i]:picture:="@S"+ltrim(str(a))
+           getlist[i]:picture:="@S"+lTrim(sTr(a))
         elseif b[i,4] = 2
            getlist[i]:picture:="@E"
         endif

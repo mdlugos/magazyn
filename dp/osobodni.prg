@@ -148,7 +148,7 @@ local getlist,a,b,c,d,scr
         Getlist:={}
         @ _skey[1]+1,_skey[2]+15 get choicef picture "@! NNN" valid {||a:=if(choicef='J  ',choiced,space(RELEWY->(hb_fieldlen('dieta')))),b:=if(choicef='J  ',choiceg,' '),getlist[2]:display(),getlist[3]:display(),.t.}
         @ _skey[1]+1,_skey[2]+30 get c picture "#"  //when choicef='J  '
-        @ _skey[1]+3,_skey[2]+14 get a picture "@!KS"+LTRIM(STR(A_DILTH)) valid {|r|r:=dival(,@a),if(r,choiced:=a,),r} when choicef='J  '
+        @ _skey[1]+3,_skey[2]+14 get a picture "@!KS"+HB_MACRO2STRING(A_DILTH) valid {|r|r:=dival(,@a),if(r,choiced:=a,),r} when choicef='J  '
 #ifdef A_GOCZ
 #ifndef A_WO_JAD
  #define A_WO_JAD '  3'

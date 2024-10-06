@@ -154,7 +154,7 @@ stat proc sdok2(_f,getlist,deep)
 #ifdef A_KODY
   @  3,_fco1+len(A_KODY)+4  get kw WHEN .f. COLOR _sbnorm
   if !nowy .and. fieldpos('OPIS')<>0
-    getl op PICTURE "@S"+ltrim(str(_fco2-col()-1)) WHEN .f. COLOR _sbnorm
+    getl op PICTURE "@S"+lTrim(sTr(_fco2-col()-1)) WHEN .f. COLOR _sbnorm
   endif
 #else
 #ifdef A_ELZ

@@ -107,7 +107,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
 #endif         
          _fl:=_fi
          _fk:=_frow+_fskip*(_fi-_fj)
-         job:=right(ltrim(str(_fi,6,0)),4)
+         job:=right(lTrim(sTr(_fi)),4)
          @ _fk,_fco1+max(0,4-len(job)) say job+'.' color _sbkgr
          getlist:={}
          SET COLOR TO (_SNORM)
@@ -168,7 +168,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
       rmpos:=_fpos
       if stat
          _fpos:=0
-         job:=right(ltrim(str(_fi,6,0)),4)
+         job:=right(lTrim(sTr(_fi)),4)
          @ _fk,_fco1 BOX '║   .' UNICODE color _sbkgr
          @ _fk,_fco1+max(0,4-len(job)) say job color _sbkgr
          eval(_fmainget,_f,getlist)
@@ -301,7 +301,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                        *********
                        _fkey:=_fi
                        do while _fk<=_frow+_fskip*(_fl-_fj)
-                          job:=right(ltrim(str(_fkey++,6,0)),4)
+                          job:=right(lTrim(sTr(_fkey++)),4)
                           @ _fk,_fco1 BOX '║   .' UNICODE color _sbkgr
                           @ _fk,_fco1+max(0,4-len(job)) say job color _sbkgr
                           //@ _fk,_fco1+1 say str(_fkey++,3)+'.' color _sbkgr

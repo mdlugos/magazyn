@@ -131,12 +131,12 @@ stat proc rdok2(_f,getlist)
 #ifdef posIlki
   #undef posIlki
 #endif
-  @  1,_fco1+3 get NA picture "@KS"+ltrim(str(_fco2-_fco1-4))
+  @  1,_fco1+3 get NA picture "@KS"+lTrim(sTr(_fco2-_fco1-4))
   @  2,_fco1+2 get now picture "@K" valid {||nowy:=if(now=" ",!nowy,nowy),now:=if(nowy,"NOWY   ","POPRAWA"),.t.}
   @  2,_fco1+21 get gra picture "@K" valid {||gra:=padl(trim(gra),4),.t.}
   @  2,_fco1+26 get jed picture "@K"
-  @  2,_fco1+38 get die picture "@KS"+ltrim(str(A_DILTH)) VALID {|g|dival(g)}
-  @  3,_fco1+2  get op picture "@KS"+ltrim(str(_fco2-_fco1-3)) send cargo:=.t.
+  @  2,_fco1+38 get die picture "@KS"+HB_MACRO2STRING(A_DILTH) VALID {|g|dival(g)}
+  @  3,_fco1+2  get op picture "@KS"+lTrim(sTr(_fco2-_fco1-3)) send cargo:=.t.
   __setproc(procname(0))
 return
 ************
@@ -263,7 +263,7 @@ stat proc RDOK4(_f,getlist,deep)
 
     @ _fk,_fco1+6 GET na PICTURE "@KS20" VALID {|k,r|if(k:changed.and.fpstart=0,fpstart:=1,),k:=setkey(-8,NIL),r:=surval(_f,getlist,@na,@poprec,oldrec,startrec,.f.) .and. showzaw(_f),setkey(-8,k),r}
     GETL il picture "####.##" valid {|k|if(k:changed.and.fpstart=0,fpstart:=2,),showzaw(_f)}
-    @ _fk,_fco2-A_DILTH-1 GET di PICTURE "@KS"+ltrim(str(A_DILTH)) valid {|g|if(g:changed.and.fpstart=0,fpstart:=3,),dival(g)}
+    @ _fk,_fco2-A_DILTH-1 GET di PICTURE "@KS"+HB_MACRO2STRING(A_DILTH) valid {|g|if(g:changed.and.fpstart=0,fpstart:=3,),dival(g)}
      __setproc(procname(0))
   //if startrec#0
      aeval(getlist,{|g|g:reader:={|g|setkey(-8,{|p,g|g:=getactive(),p:=setkey(-8,NIL),f9(g,_f,getlist),setkey(-8,p)}),getreader(g),setkey(-8,NIL)}})

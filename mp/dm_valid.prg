@@ -23,7 +23,7 @@
 #define I hb_UTF8ToStr("│")
 
 #ifndef A_MKNK
-  #define A_MKNK(x) eval({|y|mknk:=min(5,max(mknk,len(ltrim(str(y))))),pad(str(y,mknk),5)},x)
+  #define A_MKNK(x) eval({|y|mknk:=min(5,max(mknk,len(lTrim(sTr(y))))),pad(str(y,mknk),5)},x)
 #endif
 
 #define compNk(x,y) (strtran(x,' ')==strtran(y,' '))
@@ -156,7 +156,7 @@ FUNCTION nk(_f,g)
    // nie ma prawa byc niewpisane DEFAULT mknk TO 4
 
    rf:=val(nk)
-   l:=len(ltrim(str(rf)))
+   l:=len(lTrim(sTr(rf)))
    if rf<>0 .and. l<mknk .and. l=len(trim(nk))
       nk:=A_MKNK(rf)
    endif
@@ -2950,7 +2950,7 @@ PROCEDURE FIRM_EDIT(n,_s)
 #else
       SAYL 'Nr:' GET n picture "@K" valid {|g|empty(n) .or.(n:=str(val(n),A_NRLTH),.t.)}
 #endif
-      SAYL 'Nazwa:' GET f picture "@KS"+ltrim(str(s[4]-col()-1))
+      SAYL 'Nazwa:' GET f picture "@KS"+lTrim(sTr(s[4]-col()-1))
       @ s[1]+4,s[2]+2 SAY 'Nazwa pełna firmy:' UNICODE
       @ s[1]+4,s[2]+21 GET b[1] PICTURE '@K' WHEN {|g|if(empty(b[1]),b[1]:=pad(f,len(b[1])),),.t.}
       @ s[1]+5,s[2]+21 GET b[2] PICTURE '@K'
@@ -3232,19 +3232,19 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
 #else
       @ 12,_scol1 GET n picture "@K" valid {|g|empty(n) .or.(n:=str(val(n),A_NRLTH),.t.)}
 #endif
-      GETl f picture "@KS"+ltrim(str(_scoln-A_NRLTH-1))
+      GETl f picture "@KS"+lTrim(sTr(_scoln-A_NRLTH-1))
 #ifdef A_FFULL
       getlist[2]:postblock:={||if(empty(b),(b:=pad(f,len(b)),getlist[3]:display()),),.t.}
       @ 11,_scol1+A_NRLTH+2 SAY 'Nazwa skrócona firmy:' UNICODE
       @ 12,_scol2-20 SAY 'Nazwa pełna firmy:' UNICODE
-      @ 13,_scol1 GET b PICTURE '@KS'+ltrim(str(_scol2-col()))
+      @ 13,_scol1 GET b PICTURE '@KS'+lTrim(sTr(_scol2-col()))
       @ 14,_scol1+1 SAY 'Adres:'
-      GETL a PICTURE '@KS'+ltrim(str(_scol2-col()))
+      GETL a PICTURE '@KS'+lTrim(sTr(_scol2-col()))
       setpos(15,_scol1)
 #else
       @ 11,_scol1+A_NRLTH+2 SAY 'Nazwa firmy'
       @ 14,_scol1+1 SAY 'Kod,Miasto' GET a PICTURE '@K !'+replicate("X",_scoln-12)
-      @ 16,_scol1+1 SAY 'ulica i nr' GET b PICTURE '@KS'+ltrim(str(_scoln-12))
+      @ 16,_scol1+1 SAY 'ulica i nr' GET b PICTURE '@KS'+lTrim(sTr(_scoln-12))
 #endif
 #ifdef A_TPD
       SAYL "T.p. dni:" GET tp PICTURE "@K###"
@@ -3260,23 +3260,23 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
       SAYL 'Nazwisko:' GET nzw picture "@K"
 #endif
 #ifdef A_REGON
-      SAYl 'REGON:' GET r picture "@KS"+ltrim(str(_scol2-col(),2))
+      SAYl 'REGON:' GET r picture "@KS"+lTrim(sTr(_scol2-col()))
 #endif
      setpos(row()+1,_scol1)
      SAYL 'Uwagi'
 #ifdef A_KHKONTO
-      SAYL "Konto:" GET k picture "@KS"+ltrim(str(_scol2-col()-8,2))
+      SAYL "Konto:" GET k picture "@KS"+lTrim(sTr(_scol2-col()-8))
 #endif
-      @ row()+1,_scol1 GET u PICTURE '@KS'+ltrim(str(_scoln)) send cargo:=.t.
+      @ row()+1,_scol1 GET u PICTURE '@KS'+lTrim(sTr(_scoln)) send cargo:=.t.
 #ifdef A_WL
       if row()>=19
-        atail(getlist):picture:= '@KS'+ltrim(str(_scoln-10))
+        atail(getlist):picture:= '@KS'+lTrim(sTr(_scoln-10))
         setpos(row(),_scol2-10)
       else
         setpos(row()+1,_scol1)
       endif
       DEFAULT h TO 'n/n'
-      SAYL "BL" GET h PICTURE "@KS"+ltrim(str(_scol2-col(),2)) VALID {||if(empty(h),(h:=getwl(i,),if(h='n/n',,kibord(chr(10))),.f.),.t.)}
+      SAYL "BL" GET h PICTURE "@KS"+lTrim(sTr(_scol2-col())) VALID {||if(empty(h),(h:=getwl(i,),if(h='n/n',,kibord(chr(10))),.f.),.t.)}
 #endif      
       set color to (_snorm)
       do while .t.

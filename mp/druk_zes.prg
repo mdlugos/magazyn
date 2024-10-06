@@ -61,7 +61,7 @@ memvar P_12LPI,P_6LPI,P_SUPON,P_SUPOFF,P_UON,P_UOFF,p_rown,p_coln,p_rownl,p_coln
 #ifdef A_PCL
 #undef P_ROWN
 #undef P_COLN
-#define P_MARGIN {|x,y|HB_BCHAR(0x1B)+'&'+'a'+ltrim(str(x,3))+'L'}
+#define P_MARGIN {|x,y|HB_BCHAR(0x1B)+'&'+'a'+lTrim(sTr(x))+'L'}
 #define P_LAND {|x|if((landscape:=x),'',HB_BCHAR(0x1B)+"&"+"l"+IF(x,"1","0")+"O")}
 #define P_ROWN if(landscape,42,58)
 #define P_COLN if(landscape,113,78)
@@ -152,7 +152,7 @@ FIELD WARTOSC,ILOSC,DATA,INDEX,nr_mag,smb_dow,nr_dowodu,pozycja,nr_zlec,dost_odb
 #ifdef D_GRAM
 #ifdef NAZWA
 #undef NAZWA
-#define NAZWA (trim(nazwa)+" "+trim(rodz_opak)+" "+ltrim(str(gram)))
+#define NAZWA (trim(nazwa)+" "+trim(rodz_opak)+" "+lTrim(sTr(gram)))
 #endif
 #endif
 

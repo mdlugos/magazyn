@@ -30,7 +30,7 @@ memvar  p_rown,p_cpi,p_pcl,P_4XON,P_4XOFF,P_COLN,P_BON,P_BOFF,P_UON,P_UOFF,P_36L
 #define P_LAND   if(!landscape .and. (landscape:=.t.),chr(27)+'&'+'l1O','')
 #define P_BON   chr(27)+"(s3B"
 #define P_BOFF  chr(27)+"(s0B"
-#define P_MARGIN {|x|chr(27)+'&'+'a'+ltrim(str(x,3))+'L'}
+#define P_MARGIN {|x|chr(27)+'&'+'a'+lTrim(sTr(x))+'L'}
 #else
 #define P_PCL  .f.
 #define P_ROWN  60
@@ -474,8 +474,8 @@ if "J"$choicef
                       select dania
 #ifdef A_DODATKI
                       IF menu->ile_pos<>0 .and. Round(menu->ile_pos-ipcalc(menu->dieta),1)<>0
-                      a+=len(ltrim(str(menu->ile_pos)))+1
-                      ?? rec[j,3]+=if(empty(gramatura+jedn),memoline(nazwa,a:=int(P_COLN/2)-a-1),memoline(nazwa,a:=int(P_COLN/2)-a-10)+gramatura+' '+jedn)+" "+spec(p_bon)+Spec(p_uon)+ltrim(str(menu->ile_pos))+p_uoff+p_boff+"|"
+                      a+=len(lTrim(sTr(menu->ile_pos)))+1
+                      ?? rec[j,3]+=if(empty(gramatura+jedn),memoline(nazwa,a:=int(P_COLN/2)-a-1),memoline(nazwa,a:=int(P_COLN/2)-a-10)+gramatura+' '+jedn)+" "+spec(p_bon)+Spec(p_uon)+lTrim(sTr(menu->ile_pos))+p_uoff+p_boff+"|"
                       else
 #endif
                       ?? rec[j,3]+=if(empty(gramatura+jedn),memoline(nazwa,a:=int(P_COLN/2)-a-1),memoline(nazwa,a:=int(P_COLN/2)-a-10)+gramatura+' '+jedn)+"|"
@@ -1130,7 +1130,6 @@ do while data=da .and. posilek=po
        endif
 
           c:=''
-          //elementy->(aeval(b,{|x|dbseek(x[1],.f.),if(nazwa='*',c+=' '+ltrim(str(val(x[1])%100,3)),)}))
           elementy->(aeval(b,{|x|dbseek(x[1],.f.),if(nazwa='*',c+=' '+trim(subs(nazwa,3)),)}))
           if !empty(c)
              ?? spec(ccpi(8)+p_supon+p_bon),'*'+c
@@ -1181,7 +1180,6 @@ do while data=da .and. posilek=po
           seek menu->danie
           exec zawar->(mal(b,sklad->ilosc,.t.)) rest for dind(di,dieta) .and. surowce->(dbseek(sklad->skladnik)) while danie==menu->danie
           select dania
-          //elementy->(aeval(b,{|x|dbseek(x[1],.f.),if(nazwa='*',c+=' '+ltrim(str(val(x[1])%100,3)),)}))
           elementy->(aeval(b,{|x|dbseek(x[1],.f.),if(nazwa='*',c+=' '+trim(subs(nazwa,3)),)}))
 
        endif

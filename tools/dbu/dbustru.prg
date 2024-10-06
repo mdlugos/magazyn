@@ -793,7 +793,7 @@ DO WHILE .NOT. q_check()
 			prev_rec = RECNO()
 
 			* update field/record number on screen
-			@ 9,field_col[1] + 26 SAY "Field " + pad(LTRIM(STR(RECNO())), 5)
+			@ 9,field_col[1] + 26 SAY "Field " + pad(lTrim(sTr(RECNO())), 5)
 
 			IF n > 4 //l_usr[AT(field_type, "CNDLM")]
 				* check for n out of range

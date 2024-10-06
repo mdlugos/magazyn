@@ -544,7 +544,7 @@ local lFresh, nCursSave, mGetVar, nLen
   oGet := GetNew(Row(), Col(),{|x| if(PCount() == 0, mGetVar, mGetVar := x)},"mGetVar",oCol:picture,oB:colorSpec)
 
   if oCol:cargo=.t. .or. hb_fieldlen(oCol:heading) >= maxcol() - 1
-     oGet:picture:="@S"+ltrim(str(maxcol()-1,3))
+     oGet:picture:="@S"+lTrim(sTr(maxcol()-1))
      oGet:cargo:=oCol:cargo // expandable field
   endif
   // refresh flag
@@ -697,8 +697,8 @@ local nTop, nRight
   else
     // normal record..display Recno()/LastRec() and Deleted()
     @ nTop, nRight - 40 say if(set(_SET_DELETED),"          ",If(Deleted(), " <Ukryty> ", "<Widoczny>"))
-    @ nTop, nRight - 20 say padr(Ltrim(Str(Recno())) + "/" +;
-                  Ltrim(Str(LastRec())), 15) +;
+    @ nTop, nRight - 20 say padr(lTrim(sTr(Recno())) + "/" +;
+                  lTrim(sTr(LastRec())), 15) +;
                 If(oB:hitTop, hb_UTF8ToStr("<góra>"), "      ")
   end
 
@@ -1005,7 +1005,7 @@ endif
 do while .t.
    b:stabilize()
    if b:stable
-      key:=ltrim(str(frow))
+      key:=lTrim(sTr(frow))
       @ 0,1+maxcol()-len(key) SAY key COLOR _sramka
       key:=inkey(0)
    else

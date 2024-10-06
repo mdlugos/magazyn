@@ -212,9 +212,9 @@ func dok //append - .t. append blank .f. - noedit
     setpos(win[1]+k,win[2])
     #ifdef A_DSPLIT
     SAYL ad[AD_SMB]
-    getl d_d picture "@!K" send block:={|x,y,z|if(pcount()=0,d_d,d_d:=if((z:=val(x))<>0 .and. (y:=len(ltrim(str(z))))<5 .and. len(trim(x))=y ,A_MKNK(val(x)),x))}
+    getl d_d picture "@!K" send block:={|x,y,z|if(pcount()=0,d_d,d_d:=if((z:=val(x))<>0 .and. (y:=len(lTrim(sTr(z))))<5 .and. len(trim(x))=y ,A_MKNK(val(x)),x))}
     #else
-    getl d_d picture "@!K" send block:={|x,y,z|if(pcount()=0,d_d,d_d:=if(empty(x),x,(x:=subs(x,3),d_d:=ad[AD_SMB]+if((z:=val(x))<>0 .and. (y:=len(ltrim(str(z))))<5 .and. len(trim(x))=y ,A_MKNK(val(x)),x))))}
+    getl d_d picture "@!K" send block:={|x,y,z|if(pcount()=0,d_d,d_d:=if(empty(x),x,(x:=subs(x,3),d_d:=ad[AD_SMB]+if((z:=val(x))<>0 .and. (y:=len(lTrim(sTr(z))))<5 .and. len(trim(x))=y ,A_MKNK(val(x)),x))))}
     #endif
     sayl "Data:" get da valid {|g|da>DatY->d_z_mies1 .and. year(da)=year(DatY->d_z_rok+1) .or. (alarm("Data poza dopuszczalnym zakresem !"),g:undo(),.f.)}
     sayl "Link:" get l_k picture "@!K"
@@ -283,7 +283,7 @@ func dok //append - .t. append blank .f. - noedit
               txt:="@EK"+txt
            endif
         elseif (s[2]='M' .or. s[3]>n) .and. empty(txt)
-           txt:="@S"+ltrim(str(n))
+           txt:="@S"+lTrim(sTr(n))
         endif
 
         IF ad[AD_POLA,i,AP_NAME]=','
@@ -294,7 +294,7 @@ func dok //append - .t. append blank .f. - noedit
           SAYL subs(ad[AD_POLA,i,AP_NAME],2)+' '
           n:=win[4]-col()
           if (s[2]='M' .or. s[3]>n) .and. empty(ad[AD_POLA,i,AP_PICTURE])
-             txt:="@S"+ltrim(str(n))
+             txt:="@S"+lTrim(sTr(n))
           endif
         ELSEIF ad[AD_POLA,i,AP_NAME]='.'
           ++k
@@ -401,7 +401,7 @@ func dok //append - .t. append blank .f. - noedit
               txt:="@EK"+txt
            endif
         elseif (s[2]='M' .or. s[3]>n) .and. empty(txt)
-           txt:="@S"+ltrim(str(n))
+           txt:="@S"+lTrim(sTr(n))
         endif
 
         if !m .and.  k>=p
@@ -413,7 +413,7 @@ func dok //append - .t. append blank .f. - noedit
                     key:=win[2]
                     n+=col()-win[2]
                     if (s[2]='M' .or. s[3]>n) .and. empty(ad[AD_POLA,i,AP_PICTURE])
-                      txt:="@S"+ltrim(str(n))
+                      txt:="@S"+lTrim(sTr(n))
                     endif
                   elseif key<=p
                     key:=col()
@@ -445,7 +445,7 @@ func dok //append - .t. append blank .f. - noedit
           endif
           SAYL subs(ad[AD_POLA,i,AP_NAME],2)+' '
           if (s[2]='M' .or. s[3]>n) .and. empty(ad[AD_POLA,i,AP_PICTURE])
-             txt:="@S"+ltrim(str(n))
+             txt:="@S"+lTrim(sTr(n))
           endif
         ELSEIF ad[AD_POLA,i,AP_NAME]='.'
           key:=col()
@@ -544,7 +544,7 @@ func dok //append - .t. append blank .f. - noedit
         //setpos(win[1]+k,win[4]-A_KTL-1)
         s:="@!K"
         IF win[4]-col()<A_KTL
-           s+="S"+LTRIM(STR(win[4]-col()))
+           s+="S"+lTrim(sTr(win[4]-col()))
         ENDIF
         br:=_GET_( adm[i,o],"adm,"+alltrim(ad[AD_POLA,i,AP_FIELD])+","+str(o,1),s,,)
         s:=subs(ad[AD_POLA,i,AP_POZMA+p],2)

@@ -379,19 +379,19 @@ local aZap:={{},{},{}},rec,mes,d,e,f:={},i,j
 #ifdef A_ZAP_DAN
                  aadd(aZap[1],{surowce->(recno()),d,dania->(recno()),menu->(recno())})
                  aadd(aZap[2],{ilosc,e})
-                 aadd(aZap[3],trim(surowce->nazwa)+" ("+left(dania->nazwa,at(" ",dania->nazwa)-1)+") "+strtran(ltrim(str(e*ilosc/surowce->przel,8,3)),".000","")+" "+trim(surowce->jmaG))
+                 aadd(aZap[3],trim(surowce->nazwa)+" ("+left(dania->nazwa,at(" ",dania->nazwa)-1)+") "+hb_ntoc(e*ilosc/surowce->przel,3)+" "+trim(surowce->jmaG))
 #else
 #ifdef A_DISUM
               i:=ascan(aZap[1],surowce->(recno()))
               if i<>0 .and. round(azap[2,i,1]-ilosc,3)=0 .and. diand(d,subs(azap[1,i],3),f)=HB_UCHAR(0x0A0)
                  aZap[1,i,2]:=dior(d,azap[1,i,2],f)
                  aZap[2,i,2]+=e
-                 aZap[3,i]+=",("+left(dania->nazwa,at(" ",dania->nazwa)-1)+") "+strtran(ltrim(str(e*ilosc/surowce->przel,8,3)),".000","")+" "+trim(surowce->jmaG)
+                 aZap[3,i]+=",("+left(dania->nazwa,at(" ",dania->nazwa)-1)+") "+hb_ntoc(e*ilosc/surowce->przel,3)+" "+trim(surowce->jmaG)
               else
 #endif
                  aadd(aZap[1],{surowce->(recno()),d})
                  aadd(aZap[2],{ilosc,e})          //e*ilosc/surowce->przel)
-                 aadd(aZap[3],trim(surowce->nazwa)+" ("+left(dania->nazwa,at(" ",dania->nazwa)-1)+") "+strtran(ltrim(str(e*ilosc/surowce->przel,8,3)),".000","")+" "+trim(surowce->jmaG))
+                 aadd(aZap[3],trim(surowce->nazwa)+" ("+left(dania->nazwa,at(" ",dania->nazwa)-1)+") "+hb_ntoc(e*ilosc/surowce->przel,3)+" "+trim(surowce->jmaG))
 #ifdef A_DISUM
             endif
 #endif
@@ -558,7 +558,7 @@ static proc zDOK4(_f,getlist,deep)
   GETL dan PICTURE "@KS"+str(_fco1+20-A_DILTH,2) VALID danval(_f,getlist)
 #endif
   GETL na PICTURE "@KS"+str(_fco1+44-A_DILTH-col(),2) VALID {|k,r,p|if(k:changed.and.fpstart=0,fpstart:=1 D_G,),p:=setkey(-8,NIL),k:=setkey(-7,NIL),r:=surval(_f,getlist,@na,@poprec,oldrec,startrec,aflag,@apos),setkey(-7,k),setkey(-8,p),if(r,(setpos(_fk,_fco2-16),dispout(surowce->jmaG,_sbkgr),if(ip*gram=0,,il:=ip*gram/surowce->przel),getlist[3 D_G]:display()),),r}
-  @ _fk,_fco2-26-A_DILTH GET di picture "@KS"+ltrim(str(A_DILTH)) valid {|g,r|r:=!g:changed .or. dival(g),if(g:changed .and. r,(ip:=ipcalc(di,dania->danie),setpos(_fk,_fco2 -5 ),dispout(tran(ip,D_ILPIC),_sbkgr),if(gram=0,(gram:=il*surowce->przel/ip,getlist[4 D_G]:display()),(il:=ip*gram/surowce->przel,getlist[3 D_G]:display()))),),showwar(_f),r}
+  @ _fk,_fco2-26-A_DILTH GET di picture "@KS"+HB_MACRO2STRING(A_DILTH) valid {|g,r|r:=!g:changed .or. dival(g),if(g:changed .and. r,(ip:=ipcalc(di,dania->danie),setpos(_fk,_fco2 -5 ),dispout(tran(ip,D_ILPIC),_sbkgr),if(gram=0,(gram:=il*surowce->przel/ip,getlist[4 D_G]:display()),(il:=ip*gram/surowce->przel,getlist[3 D_G]:display()))),),showwar(_f),r}
   @ _fk,_fco2-25 GET il PICTURE '@K ####.###' VALID {|k|if(k:changed.and.fpstart=0,fpstart:=3 D_G,),gram:=il*surowce->przel/ip,getlist[4 D_G]:display(),showwar(_f)}
   @ _fk,_fco2-11 get gram PICTURE "###.##" VALID {|k|!k:changed.or.(il:=ip*gram/surowce->przel,getlist[3 D_G]:display(),showwar(_f))}
   @ _fk,_fco2 -5 say ip PICTURE D_ILPIC color _sbkgr

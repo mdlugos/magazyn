@@ -772,7 +772,7 @@ if ""=cMessage
     cMessage += (": " + e:operation)
     if !Empty(e:args)
        cMessage+="("
-       aeval(e:args,{|x,y|y:=valtype(x),cMessage+=y+IF(y$"MCA",ltrim(str(len(x))),'')+if(y$'ABOU','',IF(y$"MC",':"'+left(x,10)+'"',":"+alltrim(TCVT(x))))+', '})
+       aeval(e:args,{|x,y|y:=valtype(x),cMessage+=y+IF(y$"MCA",lTrim(sTr(len(x))),'')+if(y$'ABOU','',IF(y$"MC",':"'+left(x,10)+'"',":"+alltrim(TCVT(x))))+', '})
        cMessage:=left(cMessage,len(cMessage)-2)+")"
     endif
   end

@@ -380,7 +380,7 @@ get:=getnew(row(),col(),{|x|if(x=NIL,v,v:=x)},,"@!K")
 if i=2
    get:block:={|x|if(x=NIL,v:=ident,ident:=v:=x)}
    get:name:='ident'
-   get:picture:="@KS"+ltrim(str(A_IDENT))
+   get:picture:="@KS"+lTrim(sTr(A_IDENT))
 
 elseif i=3
    v:=konto
@@ -643,7 +643,7 @@ if kwota#0 .or. !empty(p:=linksto(k))
       goto p[1]
       if empty(p:=linksto(k))
          lock recno()
-         ALARM(hb_UTF8ToStr('PROSZĘ WYKONAĆ KONTROLĘ SALD!;Konto: ')+trim(konto)+hb_UTF8ToStr(' nie zagadza się o: ')+ltrim(str(kwota)))
+         ALARM(hb_UTF8ToStr('PROSZĘ WYKONAĆ KONTROLĘ SALD!;Konto: ')+trim(konto)+hb_UTF8ToStr(' nie zagadza się o: ')+lTrim(sTr(kwota)))
          kwota:=0
       endif
       goto r

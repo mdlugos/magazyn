@@ -954,7 +954,7 @@ local i
 
   if ( get:subscript <> NIL )
     for i := 1 to len(get:subscript)
-      name += "[" + ltrim(str(get:subscript[i])) + "]"
+      name += "[" + lTrim(sTr(get:subscript[i])) + "]"
     next
   end
 
@@ -1141,7 +1141,7 @@ static proc getval(get)
         if t=0
           t:=space(50)
         else
-          t:=ltrim(str(t,l,l-get:decpos))+space(50)
+          t:=lTrim(sTr(t))+space(50)
         endif
      else
         t:=str(t,l+20,l-get:decpos+20)

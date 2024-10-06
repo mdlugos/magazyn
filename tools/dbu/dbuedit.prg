@@ -584,7 +584,7 @@ local cColorSave, cCurrAlias, lNoFilter, nWaSave, nCType
    else
       /* normal record..display recno()/lastrec() and deleted() */
       @ 9,28 say if(Deleted(), "<Deleted>", "         ")
-      @ 9,58 say Pad(Ltrim(Str(Recno())) + "/" + Ltrim(Str(Lastrec())),15)+;
+      @ 9,58 say Pad(lTrim(sTr(Recno())) + "/" + lTrim(sTr(Lastrec())),15)+;
                If(oB:hitTop, " <bof>", if(oB:hitBottom, " <eof>", "      "))
    end
 

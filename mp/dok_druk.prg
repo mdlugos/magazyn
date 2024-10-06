@@ -763,9 +763,9 @@ private gt
         endif
         df := dfprint(D_LPSTR(p)+'$l'+trim(left(na,40))+HB_BCHAR(13)+str(il_f,11,3)+HB_BCHAR(13)+HB_BCHAR(k+64)+'/'+str(WDFGR(1,ce,val(pv),.t.)/100,10,2)+'/'+str(D_DF,10,2)+'/')
    #else
-        x:={'trline','na'+trim(na),'vt'+str(k-1,1),'pr'+ltrim(str(WDFGR(1,ce,val(pv),.t.),10))}
+        x:={'trline','na'+trim(na),'vt'+str(k-1,1),'pr'+lTrim(sTR(WDFGR(1,ce,val(pv),.t.),10,0))}
         if il_f<>1
-           aadd(x,'il'+ltrim(str(il_f,11,3)))
+           aadd(x,'il'+lTrim(sTR(il_f,11,3)))
         endif
         df := dfprint(x)
    #endif
@@ -1102,7 +1102,7 @@ private gt
   #ifdef A_THERMAL
          if df .and. (k:=' ',dfprint('1;0;1;0$e1'+left(operator,1)+subs(operator,1+at(' ',operator),1)+HB_BCHAR(13)+"#"+nr_mag+smb_dow+nr_dowodu+HB_BCHAR(13)+str(x,10,2)+'/'+str(D_DF,10,2)+'/',@k).and.HB_BCODE(k)%8=5)
   #else
-         if df .and. (x=0 .or. dfprint({'trpayment','ty0','wa'+ltrim(str(x*100,10))})) .and. dfprint({'trend','to'+ltrim(str(D_DF*100,10))})
+         if df .and. (x=0 .or. dfprint({'trpayment','ty0','wa'+lTrim(sTR(x*100,10,0))})) .and. dfprint({'trend','to'+lTrim(sTR(D_DF*100,10,0))})
   #endif
  #else
             if x#0
@@ -2910,7 +2910,7 @@ oprn:=D_HWPRN
       ENDIF
       if p>D_LP1
 #ifdef A_GRAM
-        ?? "WAGA: "+ltrim(str(gt,10,2))+" kg",spec(HB_BCHAR(13))
+        ?? "WAGA: "+lTrim(sTR(gt,10,2))+" kg",spec(HB_BCHAR(13))
 #endif
         ?? ccpi(7)+space(wp17-11),spec(P_BON),cpad("RAZEM:",11,17,1),spec(P_BOFF)
         if len(was)>1
@@ -3447,7 +3447,7 @@ wp17:=0
    if dok_war#"-"
     if p>D_LP1
 #ifdef A_GRAM
-      ?? "WAGA: "+ltrim(str(gt,10,2))+" kg",spec(HB_BCHAR(13))
+      ?? "WAGA: "+lTrim(sTR(gt,10,2))+" kg",spec(HB_BCHAR(13))
 #endif
       ?? ccpi(7)+space(wp17),ccpi(5)+space(wp12),ccpi(4)+space(wp10-15)+strpic(ut,15,A_ZAOKR,"@E ")
       ?

@@ -1,7 +1,7 @@
 -odi -w1 -m -n
 #-debug -inc -rebuild
 #-gui -gtxwc
--gttrm
+#-gttrm
 #-lhbcups hbcups.hbc 
 #-lhbhpdf hbhpdf.hbc
 

@@ -2167,7 +2167,7 @@ ok = .F.
 DO WHILE .NOT. M->ok
 	* accept input of key expression
 	k_trim = enter_rc(M->k_trim, M->row_n + 1, column[M->i] + 2,;
-					  127, "@KS" + LTRIM(STR(M->pos_r - column[M->i] - 2)),;
+					  127, "@KS" + lTrim(sTr(M->pos_r - column[M->i] - 2)),;
 					  M->color1)
 
 	* empty expression will abort, else must be correct type
@@ -2294,7 +2294,7 @@ PRIVATE key, ntx
 
 IF M->need_ntx
 	* index may be specified but not set
-	ntx = "ntx" + LTRIM(STR(SELECT()))
+	ntx = "ntx" + lTrim(sTr(SELECT()))
 
 	* read key directly from file
 	key = ntx_key(&ntx[1])
@@ -2875,7 +2875,7 @@ put_line(cur_dir)
 
 APPEND BLANK
 REPLACE item_name WITH "n_files"
-put_line(LTRIM(STR(n_files)))
+put_line(lTrim(sTr(n_files)))
 
 i = 1
 

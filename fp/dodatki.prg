@@ -101,22 +101,6 @@ memvar it_menudod
 
       case m = 4 .and. iS_spec
           hAslo_spec(10)
-#if 0          
-    @ 12,0
-    ?? "Swap: " + LTRIM(STR(MEMORY(0)))
-    ?? ", Lg object: " + LTRIM(STR(MEMORY(1)))
-    ?? ", Run: " + LTRIM(STR(MEMORY(2)))
-    ?? ", VM: " + LTRIM(STR(MEMORY(3)))
-    ?? ", EMS: " + LTRIM(STR(MEMORY(4)))
-    ?? ", FM: " + LTRIM(STR(MEMORY(101)))
-    ?? ", FREE SWAP: " + LTRIM(STR(MEMORY(103)))
-    ?? ", FREE CONV: " + LTRIM(STR(MEMORY(104)))
-    ?? ", MEMORY USED: "+ LTRIM(STR(MEMORY(1001)))
-    ?? ", MEMORY USED MAX: "+ LTRIM(STR(MEMORY(1002)))
-    ?? ", MAX STACK ITEMS: "+ LTRIM(STR(MEMORY(1003)))
-    ?? ", MEMORY STACK: "+ LTRIM(STR(MEMORY(1004)))
-    ?? ", STACK ITEMS: "+ LTRIM(STR(MEMORY(1005)))
-#endif    
           browse()
       case m = 5
          if hb_gtInfo( HB_GTI_ISGRAPHIC )

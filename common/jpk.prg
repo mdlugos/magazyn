@@ -631,7 +631,7 @@ local node
       /*
           group := mxmlNewElement( jpk, "DziennikCtrl")
                node   := mxmlNewElement( group, 'LiczbaWierszyDziennika' )
-          mxmlNewText( node,,ltrim(str(lp)))
+          mxmlNewText( node,,lTrim(sTr(lp)))
                node   := mxmlNewElement( group, 'SumaKwotOperacji' )
           mxmlNewText( node,,ltrim(tran(aj/100,)))
       */
@@ -712,7 +712,7 @@ local node
       if pcount()=0
          group := mxmlNewElement( jpk, "DziennikCtrl")
                node   := mxmlNewElement( group, 'LiczbaWierszyDziennika' )
-          mxmlNewText( node,,ltrim(str(lp)))
+          mxmlNewText( node,,lTrim(sTr(lp)))
                node   := mxmlNewElement( group, 'SumaKwotOperacji' )
           mxmlNewText( node,,ltrim(tran(aj/100,)))
          aj:=lp:=NIL
@@ -729,7 +729,7 @@ local node
       aj += round(kwota*100,0)
 
      node   := mxmlNewElement( group, 'LpZapisuDziennika' )
-          mxmlNewText( node,,ltrim(str(lp)))
+          mxmlNewText( node,,lTrim(sTr(lp)))
 
      node   := mxmlNewElement( group, 'NrZapisuDziennika' )
           mxmlNewText( node,,alltrim(nr))
@@ -771,7 +771,7 @@ local node
       if kt_wn=NIL .and. kt_ma=NIL
          group := mxmlNewElement( jpk, "KontoZapisCtrl")
                node   := mxmlNewElement( group, 'LiczbaWierszyKontoZapisj' )
-          mxmlNewText( node,,ltrim(str(lp)))
+          mxmlNewText( node,,lTrim(sTr(lp)))
 
                node   := mxmlNewElement( group, 'SumaWinien' )
           mxmlNewText( node,,ltrim(tran(kwota_wn:=aj[1]/100,)))
@@ -808,7 +808,7 @@ local node
       aj[2] += round(kwota_ma*100,0)
 
      node   := mxmlNewElement( group, 'LpZapisu' )
-          mxmlNewText( node,,ltrim(str(lp)))
+          mxmlNewText( node,,lTrim(sTr(lp)))
 
      node   := mxmlNewElement( group, 'NrZapisu' )
           mxmlNewText( node,,alltrim(nr))
@@ -926,7 +926,7 @@ else
 #if D_WARIANT == 2
       mxmlNewText( node,, if(empty(kor),"1","2"))
 #else
-      mxmlNewText( node,,ltrim(str(kor,3,0)))
+      mxmlNewText( node,,lTrim(sTr(kor)))
 #endif
 
      node := mxmlNewElement( element, "DataWytworzeniaJPK")
@@ -1038,7 +1038,7 @@ func jpk_vatdeklaracja(wariant, deklaracja, na, ar)
         deklaracja := a
         a := NIL
         if !empty(ar)
-          aeval( ar, {|x,y| y:='P_'+ltrim(str(y + D_SPRZEDOFFSET))+' ' ,if(empty(x),, deklaracja[y] := x)})
+          aeval( ar, {|x,y| y:='P_'+lTrim(sTr(y + D_SPRZEDOFFSET))+' ' ,if(empty(x),, deklaracja[y] := x)})
         endif
 
       deklaracja['P_37 '] := hb_hgetdef(deklaracja,'P_10 ',0) +;

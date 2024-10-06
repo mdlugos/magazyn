@@ -4,6 +4,14 @@
 
 #define hb_UTF8ToStrBox(x) x
 
+#define lTrim(x) x
+#define sTR(x,y,z) hb_ntoC(x,z)
+//#define stR(x,y) hb_ntoC(x,0)
+#define sTr(x) hb_nTos(x)
+
+#define HB_MACRO2STRING(x) [x]
+
+
 #ifndef EvAlDb
   #define EvAlDb(x) &(x)
 #endif

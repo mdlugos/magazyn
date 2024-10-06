@@ -907,7 +907,7 @@ local j,x
                 endif
                 x:=(b:GetColumn(j+1)):Width
                 if right(k:picture,1)='S'
-                   k:picture+=ltrim(str(x))
+                   k:picture+=lTrim(sTr(x))
                 endif
                 if "S"$k:picture
                    k:cargo:=.t.

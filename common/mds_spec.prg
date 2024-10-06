@@ -32,7 +32,7 @@ endif
   ?
   ?
   listfi(sel)
-  getlist:={getnew(3,0,{|x|if(x=NIL,txt,txt:=x)},"txt","@KS"+ltrim(str(maxcol()+1,3)))}
+  getlist:={getnew(3,0,{|x|if(x=NIL,txt,txt:=x)},"txt","@KS"+lTrim(sTr(maxcol()+1)))}
   getlist[1]:cargo:=.t.
   older:=errorblock({|e|eval(older,e),if(e:severity>1,break(e),.f.)})
   DO WHILE .T.
@@ -164,7 +164,7 @@ sel=select()
   setkey(-1,{|a,x|a:=filfields(sel,{},{}),x:=0,if(aczojs(a[1],"",@x,a[2],"Wybierz pola"),(txt:=trim(txt),txt+=if(""=txt,""," .i. ")+trim(a[1,x]),updated(.t.)),)})
 txt:=if(valtype(_s)='A',_sfilt,_s)
 OLDER:=errorblock({|e|eval(older,e),if(e:severity>1,break(e),.f.)})
-getlist:={getnew(4,0,{|x|if(x=NIL,txt,txt:=x)},"txt","@KS"+ltrim(str(maxcol()+1,3)))}
+getlist:={getnew(4,0,{|x|if(x=NIL,txt,txt:=x)},"txt","@KS"+lTrim(sTr(maxcol()+1)))}
 getlist[1]:cargo:=.t.
 do while .t.
 #ifdef A_HBGET
@@ -256,13 +256,13 @@ local i,j,pole,fi,txt,ars:=dbstruct()
    fi:=fieldget(i)
    do case
    case left(ars[i,2],1)$"NB"
-    txt:= pole+"="+ltrim(str(fi))
+    txt:= pole+"="+lTrim(sTr(fi))
    case left(ars[i,2],1)=="C" .and. ars[i,3]=8 .and. ars[i,1]="D_"
     txt:= "BIN2D(BINFIELDGET(["+trim(ars[i,1])+"]))"
     IF sel!=select()
        txt:=CHR(64+SELECT())+'->('+txt+')'
     ENDIF
-    txt += "="+ltrim(str(bin2d(BINFIELDGET(i))))
+    txt += "="+lTrim(sTr(bin2d(BINFIELDGET(i))))
    case left(ars[i,2],1)$"CQMW"
     txt:= pole+'="'+left(fi,10)+'"'
    case ars[i,2]=="L"
@@ -370,7 +370,7 @@ stat func _srap(txt,_s)
            txt:=trim(txt)+'.frm'
            @ 0,0 say "Dodatkowy tytuł" UNICODE
            tyt:=if(""=_sfilt,IF(_sfor=NIL,"","Raport z wybranych pozycji"),"Raport z wybranych pozycji, kryterium wyboru: "+_sfilt)+" "
-           @ 1,0 get tyt picture "@KS"+ltrim(str(maxcol(),3)) send cargo:=.t.
+           @ 1,0 get tyt picture "@KS"+lTrim(sTr(maxcol())) send cargo:=.t.
            begin sequence
             read
             if ReadkeY()=K_ESC
