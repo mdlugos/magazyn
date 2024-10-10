@@ -1,7 +1,8 @@
 -odi -w1 -m -n
 #-debug -inc -rebuild
--gui -gtwvt
--lhbwin hbwin.hbc
+#-gui -gtwvt
+hbwin.hbc
+rddads.hbc
 
 -i../common
 ../common/mlcfunc.c ../common/cppl852m.c ../common/cp_utf8m.c

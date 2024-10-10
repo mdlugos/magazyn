@@ -1579,7 +1579,7 @@ field haslo_spec,magazyn,magazynier
       loop
     endif
     txt+=hb_keyChar(m)
-    ?? if(HB_CDPISUTF8(),"♦",chr(4))
+    ?? iif(hb_cdpIsUTF8(),"♦",chr(4))
   enddo
     set cursor off
    select 0

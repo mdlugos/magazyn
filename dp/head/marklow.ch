@@ -2,6 +2,8 @@
 #ifdef __PLATFORM__WINDOWS
 #define A_WIN_PRN eval(MEMVAR->do_getoprn)
 #endif
+#define A_ADS 1
+#define A_CDX ADSCDX
 
 #define ZAP_BIEZ MEMVAR->zap_biez
 #define MAG_BIEZ '10'
@@ -9,7 +11,7 @@
 #define A_SUMOS 3
 #define A_GREX
 #define PC852 'PL852M'
-#define PLWIN
+//#define PLWIN
 //#define A_WAGI
 #define PROC_EN memvar->proc_en
 #define A_WO_JAD '  3'
@@ -17,7 +19,6 @@
 //#define A_POLOWA
 #define A_DILTH 9
 #define A_ZAP_DAN
-#define A_CDX DBFCDX
 #define UpP(x) UPPER(x)
 #command INIT SCREEN =>
 #command INIT PRINTER => specout(eval(MEMVAR->p_init,wasbad))

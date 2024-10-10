@@ -27,8 +27,8 @@ else
   txt:=old
 endif
   skf2:=setkey(-1,{|a,x|a:=listfields(sel,{},{}),x:=0,if(aczojs(a[1],"",@x,a[2],"Wybierz pola"),(txt:=trim(txt),txt+=if(""=txt,""," + ")+trim(a[1,x]),updated(.t.)),)})
-  ? "Proszę określić, które z dostępnych pól mają być listowane."
-  ? "Sciągawka pod [F2]. Listing od bieżącej pozycji w dół.    hb_scroll Lock - płynny."
+  ? hb_UTF8ToStr("Proszę określić, które z dostępnych pól mają być listowane.")
+  ? hb_UTF8ToStr("Sciągawka pod [F2]. Listing od bieżącej pozycji w dół.")  //    Scroll Lock - płynny."
   ?
   ?
   listfi(sel)
@@ -52,7 +52,7 @@ endif
          bl:=errornew()
          bl:severity:=2
          bl:canretry:=.t.
-         bl:description:="Wartość wyrażenia nie jest typu tekstowego."
+         bl:description:=hb_UTF8ToStr("Wartość wyrażenia nie jest typu tekstowego.")
          eval(older,bl)
          break
       endif
@@ -137,7 +137,7 @@ endif
   endif
 #endif
   endif
-  wait "Koniec, naciśnij klawisz"+chr(7)
+  wait hb_UTF8ToStr("Koniec, naciśnij klawisz")+chr(7)
   RESTore SCREEN FROM hwbuf
   refresh(,_s)
 
@@ -155,8 +155,8 @@ SAVE SCREEN to hwbuf
 clS
       * clear window and draw box
 sel=select()
-?? 'Dostępne relacje: =,#,$,<,>,<=,>= ; Dostępne operacje logicze: .i., .lub., .nie.'
-? 'Dostępne nazwy pod [F2] '
+?? hb_UTF8ToStr('Dostępne relacje: =,#,$,<,>,<=,>= ; Dostępne operacje logicze: .i., .lub., .nie.')
+? hb_UTF8ToStr('Dostępne nazwy pod [F2] ')
 ? "Jaki filtr ?"
 ?
 ?
@@ -187,7 +187,7 @@ do while .t.
          b:=errornew()
          b:severity:=2
          b:canretry:=.t.
-         b:description:="Wartość wyrażenia nie jest typu prawda/fałsz."
+         b:description:=hb_UTF8ToStr("Wartość wyrażenia nie jest typu prawda/fałsz.")
          eval(older,b)
          break
       endif
@@ -212,7 +212,7 @@ ELSEIF valtype(_s)='A' .and. ReadkeY()#K_ESC .AND.! _sfilt==txt
   ELSE
     _sfilb:=hb_macroBlock(txt)
     if !r
-       @ _srow1+_sm-1,_scol1 say padc("PROSZĘ CZEKAĆ",_scoln) UNICODE COLOR "*"+_slinia
+       @ _srow1+_sm-1,_scol1 say padc(hb_UTF8ToStr("PROSZĘ CZEKAĆ"),_scoln) UNICODE COLOR "*"+_slinia
     endif
   ENDIF
   refresh(1,_s)
@@ -362,7 +362,7 @@ stat func _srap(txt,_s)
      _sl=LEN(_SDIR)
      
      if _sl>0
-        ?? "Raport od bieżącej pozycji w dół, wybierz gotową formę wydruku",txt
+        ?? hb_UTF8ToStr("Raport od bieżącej pozycji w dół, wybierz gotową formę wydruku"),txt
         txt:="        "
         aczojs(_sdir,@txt,0)
         @ 0,0
@@ -411,7 +411,7 @@ stat func _srap(txt,_s)
            endif
            scrllf()
            setcancel(.t.)
-           wait "Koniec, naciśnij klawisz"+chr(7)
+           wait hb_UTF8ToStr("Koniec, naciśnij klawisz")+chr(7)
            RETURN .t.
         endif
         @ 0,0 clear to 1,maxcol()

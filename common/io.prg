@@ -230,7 +230,7 @@ s:=select(alias)
               skip (order-1)
             endif
             select (s)
-          if indeks->baza==c
+          if trim(indeks->baza)==c
             ordlistadd(a+ordbagext())
             ordsetfocus(order)
             if empty(ordbagname(order))

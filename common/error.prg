@@ -101,7 +101,7 @@ endif
       SET AXS LOCKING ON
    #ifdef PC852
       #ifndef __PLATFORM__UNIX
-         AdsSetCharType(ADS_OEM,.t.)
+         //AdsSetCharType(ADS_OEM,.t.)
       #endif
    #endif
 #else

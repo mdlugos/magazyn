@@ -1,12 +1,12 @@
 -oma -w1 -m -n
 #-debug -inc -rebuild
--gui -gtwvt
+#-gui -gtwvt
 -gtwin
--lhbwin hbwin.hbc
+hbwin.hbc
 #-lelzabdr
--lhbzebra hbzebra.hbc
-
--lhbmxml hbmxml.hbc
+#-lhbzebra hbzebra.hbc
+rddads.hbc
+hbmxml.hbc
 -i../common
 ../common/mlcfunc.c ../common/cppl852m.c ../common/cp_utf8m.c
 main ind_val dok dm_valid dok_druk dok_pr dodatki druk_zes indeksy
