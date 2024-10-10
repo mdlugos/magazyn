@@ -17,7 +17,7 @@
 ******
 #include "dbinfo.ch"
 #include "dbstrux.prg"
-#define hb_UTF8ToStr(x) x
+//#define hb_UTF8ToStr(x) x
 
 PROCEDURE modi_stru
 local saveColor
@@ -79,7 +79,7 @@ filename = ""			&& variable for "filebox" function
 
 * sigle row templates
 empty_row = hb_UTF8ToStr( "           │           │       │    " )
-not_empty = hb_UTF8ToStr( "           │ Character │    10 │    " )
+not_empty = hb_UTF8ToStr( "           │ C         │    10 │    " )
 
 IF .NOT. EMPTY(M->cur_dbf)
 	* modify structure
@@ -849,7 +849,7 @@ DO WHILE .NOT. q_check()
 		CASE local_func = 1
 			* "help" selected from pull down menu..keystroke = 0
 			local_func = 0
-			DO syshelp
+			syshelp()
 
 		OTHERWISE
 			* get new keystroke

@@ -10,7 +10,7 @@
 */
 
 #define INDEXEXT() strtran(lower(indexext()),".cdx",".idx")
-#define hb_UTF8ToStr(x) x
+//#define hb_UTF8ToStr(x) x
 
 ******
 *	set_view
@@ -353,7 +353,7 @@ DO WHILE .NOT. q_check()
 
 		CASE M->local_func = 1
 			* "help" selected from pull-down menu
-			DO syshelp
+			syshelp()
 			keystroke = 0
 
 		OTHERWISE
@@ -1842,7 +1842,7 @@ DO WHILE .NOT. q_check()
 
 		CASE M->local_func = 1
 			* "help" selected from pull-down menu
-			DO syshelp
+			syshelp()
 			keystroke = 0
 
 		OTHERWISE
@@ -2092,7 +2092,7 @@ DO WHILE .NOT. (M->j > 0 .AND. M->stroke = 13)
 
 		CASE M->stroke = 28
 			* "help" selected from pull-down menu
-			DO syshelp
+			syshelp()
 			stroke = 0
 
 		OTHERWISE

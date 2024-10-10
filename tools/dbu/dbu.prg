@@ -19,7 +19,7 @@ REQUEST DBFCDX
 // Uncomment to update the obsolete declaration:
 #xtranslate DECLARE => PRIVATE
 #define INDEXEXT() strtran(lower(indexext()),".cdx",".idx")
-#define hb_UTF8ToStr(x) x
+// #define hb_UTF8ToStr(x) x
 
 PROCEDURE Dbu( param1, param2, param3 )
 
@@ -62,23 +62,44 @@ PROCEDURE Dbu( param1, param2, param3 )
    // Combine all the command line params together
    param1 := param1 + "~" + param2 + "~" + param3 + "~"
 
+   altd()
+
    // Process the command line parameters where com_line will contain the
    // view/file name to open and param2 will contain the color directive
    param3 := ParseCommLine( param1 )
    com_line := param3[1]
    param2   := param3[2]
 
-   IF "-cdx" $ Lower( hb_cmdLine() )
-      rddsetdefault( "DBFCDX" )
-   ELSE
-      rddsetdefault( "DBFNTX" )
-   ENDIF
+   REQUEST HB_LANG_PL, HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8MD, HB_CODEPAGE_PLMAZ
 
-   REQUEST HB_LANG_PL, HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8MD
-   hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
-   HB_CDPSELECT('UTF8MD')
+#ifdef ADS_CH_
+   IF "-ads" $ Lower( hb_cmdLine() )
+      rddRegister( "ADS", 1 )
+      AdsSetFileType( iif( "-cdx" $ Lower( hb_cmdLine() ), ADS_CDX, ADS_NTX) )
+      rddSetDefault( "ADS")
+      SET CHARTYPE TO ANSI
+      SET SERVER LOCAL
+      SET AXS LOCKING OFF
+      SET RIGHTS CHECKING OFF
+      hb_gtInfo( HB_GTI_BOXCP, 'PLMAZ')
+      HB_CDPSELECT('PL852M')
+   ELSE
+#endif
+      hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
+      HB_CDPSELECT('UTF8MD')
+
+      IF "-cdx" $ Lower( hb_cmdLine() )
+         rddsetdefault( "DBFCDX" )
+      ELSE
+         rddsetdefault( "DBFNTX" )
+      ENDIF
+   
+#ifdef ADS_CH_
+   ENDIF
+#endif
    HB_LANGSELECT('PL')
    SET(_SET_DBCODEPAGE, 'PL852M')
+
    SET(_SET_DEBUG,.t.) //alt_d on
    
    SetKey( K_ALT_V, {|| hb_gtInfo( HB_GTI_CLIPBOARDPASTE, .T. ) } )
@@ -91,7 +112,7 @@ PROCEDURE Dbu( param1, param2, param3 )
 
    Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
 
-   IF (ISCOLOR() .OR. "/C" $ UPPER(param2)) .AND. .NOT. "/M" $ UPPER(param2)
+   IF (ISCOLOR() .OR. "-C" $ UPPER(param2)) .AND. .NOT. "-M" $ UPPER(param2)
       * make it pretty
       color1 = "W+/B,N/W,B"                      && normal
       color2 = "B/W"                             && item hilite
@@ -718,7 +739,7 @@ PROCEDURE Dbu( param1, param2, param3 )
           sysmenu()
 
           IF M->local_func = 1
-        DO syshelp
+           syshelp()
 
           ENDIF
        ENDIF
@@ -783,10 +804,10 @@ FUNCTION ParseCommLine( cStr )
     cStr   := SUBSTR( cStr, ++nPos )
 
     DO CASE
-    CASE ( UPPER(cToken) == "/E" )
+    CASE ( UPPER(cToken) == "-E" )
        NetMode( .F. )
 
-    CASE ( UPPER(cToken) $ "/C/M" )
+    CASE ( UPPER(cToken) $ "-C-M" )
        aRet[2] := cToken
 
     CASE !( cToken == "" )

@@ -1,4 +1,4 @@
-#-lrddads -lace32 rddads.hbc
+rddads.hbc
 #-gui -gtwvt
 #-gttrm
 -i../../common
