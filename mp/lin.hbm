@@ -1,10 +1,10 @@
 -oma -w1 -m -n
 #-debug -inc -rebuild
-#-gui 
 #-gtxwc
 #-gttrm
 #-lhbcups hbcups.hbc 
 #-lhbhpdf hbhpdf.hbc
+rddads.hbc
 
 -lhbmxml hbmxml.hbc
 -i../common

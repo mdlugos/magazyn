@@ -1,4 +1,12 @@
-#-lrddads -lace32 rddads.hbc
+-inc
+-rebuild
+-debug
+-optim- 
+
+#-w3 -es2
+#-c=gnu90
+
+rddads.hbc
 #-gui -gtwvt
 #-gttrm
 -i../../common

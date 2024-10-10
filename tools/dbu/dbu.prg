@@ -14,12 +14,12 @@
 #include "inkey.ch"
 #include "set.ch"
 
-REQUEST DBFCDX
+REQUEST DBFCDX, VFPCDX, ADS
 
 // Uncomment to update the obsolete declaration:
 #xtranslate DECLARE => PRIVATE
 #define INDEXEXT() strtran(lower(indexext()),".cdx",".idx")
-#define hb_UTF8ToStr(x) x
+// #define hb_UTF8ToStr(x) x
 
 PROCEDURE Dbu( param1, param2, param3 )
 
@@ -68,17 +68,44 @@ PROCEDURE Dbu( param1, param2, param3 )
    com_line := param3[1]
    param2   := param3[2]
 
-   IF "-cdx" $ Lower( hb_cmdLine() )
-      rddsetdefault( "DBFCDX" )
-   ELSE
-      rddsetdefault( "DBFNTX" )
-   ENDIF
+   REQUEST HB_LANG_PL, HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8MD, HB_CODEPAGE_PLMAZ
+   SET(_SET_DBCODEPAGE, 'PL852M')
 
-   REQUEST HB_LANG_PL, HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8MD
+#ifdef ADS_CH_
+   IF "-ads" $ Lower( hb_cmdLine() )
+      //rddRegister( "ADS", 1 )
+      rddSetDefault( "ADS")
+
+      IF "-cdx" $ Lower( hb_cmdLine() )
+         SET FILETYPE TO CDX
+      elseif "-vfp" $ Lower( hb_cmdLine() )
+         SET FILETYPE TO VFP
+      else   
+         SET FILETYPE TO NTX
+      endif
+
+      SET CHARTYPE TO ANSI
+      SET SERVER LOCAL
+      SET AXS LOCKING ON
+      SET RIGHTS CHECKING ON
+   ELSE
+#endif
+      IF "-cdx" $ Lower( hb_cmdLine() )
+         rddsetdefault( "DBFCDX" )
+      elseif "-vfp" $ Lower( hb_cmdLine() )
+         rddsetdefault( "VFPCDX" )
+      ELSE
+         rddsetdefault( "DBFNTX" )
+      ENDIF
+   
+#ifdef ADS_CH_
+   ENDIF
+#endif
    hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
    HB_CDPSELECT('UTF8MD')
    HB_LANGSELECT('PL')
    SET(_SET_DBCODEPAGE, 'PL852M')
+
    SET(_SET_DEBUG,.t.) //alt_d on
    
    SetKey( K_ALT_V, {|| hb_gtInfo( HB_GTI_CLIPBOARDPASTE, .T. ) } )
@@ -91,7 +118,7 @@ PROCEDURE Dbu( param1, param2, param3 )
 
    Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
 
-   IF (ISCOLOR() .OR. "/C" $ UPPER(param2)) .AND. .NOT. "/M" $ UPPER(param2)
+   IF (ISCOLOR() .OR. "-C" $ UPPER(param2)) .AND. .NOT. "-M" $ UPPER(param2)
       * make it pretty
       color1 = "W+/B,N/W,B"                      && normal
       color2 = "B/W"                             && item hilite
@@ -429,7 +456,10 @@ PROCEDURE Dbu( param1, param2, param3 )
       IF .NOT. EMPTY(com_line)
     * command line file exists
 
-    IF RAT(".vew", Lower(com_line)) = LEN(com_line) - 3
+     altd()
+     cdbg()
+
+     IF RAT(".vew", Lower(com_line)) = LEN(com_line) - 3
        * assume a valid .VEW file
        view_file = com_line
        set_from(.F.)                        && restore view
@@ -718,7 +748,7 @@ PROCEDURE Dbu( param1, param2, param3 )
           sysmenu()
 
           IF M->local_func = 1
-        DO syshelp
+           syshelp()
 
           ENDIF
        ENDIF
@@ -783,10 +813,10 @@ FUNCTION ParseCommLine( cStr )
     cStr   := SUBSTR( cStr, ++nPos )
 
     DO CASE
-    CASE ( UPPER(cToken) == "/E" )
+    CASE ( UPPER(cToken) == "-E" )
        NetMode( .F. )
 
-    CASE ( UPPER(cToken) $ "/C/M" )
+    CASE ( UPPER(cToken) $ "-C-M" )
        aRet[2] := cToken
 
     CASE !( cToken == "" )
@@ -837,6 +867,16 @@ FUNCTION GetHelpFile()
    END
 
    RETURN ( cFile )
+
+#pragma BEGINDUMP
+#include "signal.h"
+#include "hbapi.h"
+
+HB_FUNC ( CDBG )
+{
+   //raise(SIGTRAP);
+}
+#pragma ENDDUMP   
 
 
 

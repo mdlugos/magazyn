@@ -13,7 +13,7 @@
 #include "memoedit.ch"
 
 #define TB_REFRESH_RATE    5     // Wait 5 seconds between tbrowse refreshes
-#define hb_UTF8ToStr(x) x
+//#define hb_UTF8ToStr(x) x
 
 
 /***
@@ -431,7 +431,7 @@ memvar keystroke,help_code,func_sel,cur_area,cur_dbf,field_list,frame,;
 
             case local_func == 1
                /* help requested */
-               DO syshelp
+               syshelp()
 
             case local_func == 7
                /* move option selected..only the primary can be moved */
@@ -492,7 +492,7 @@ memvar keystroke,local_func
       do case
       case local_func == 1
          /* help requested */
-         do syshelp
+         syshelp()
 
       case keystroke == K_INS
          /* insert key pressed */

@@ -1,7 +1,6 @@
 -oma -w1 -m -n
 #-debug -inc -rebuild
-#-gui -gtwvt
--gtwin
+#-gtwvt
 hbwin.hbc
 #-lelzabdr
 #-lhbzebra hbzebra.hbc

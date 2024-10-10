@@ -10,7 +10,7 @@
 */
 
 #define INDEXEXT() strtran(lower(indexext()),".cdx",".idx")
-#define hb_UTF8ToStr(x) x
+//#define hb_UTF8ToStr(x) x
 
 ******
 *	setup()
@@ -362,7 +362,7 @@ DO WHILE M->state <> 0 .AND. M->state <> 4
 
 				CASE M->local_func = 1
 					* "help" selected from pull-down menu
-					DO syshelp
+					syshelp()
 
 				CASE q_check()
 					* process aborted
@@ -785,7 +785,7 @@ DO CASE
 
 					IF M->local_func = 1
 						* "help" selected from pull-down menu
-						DO syshelp
+						syshelp()
 
 					ENDIF
 

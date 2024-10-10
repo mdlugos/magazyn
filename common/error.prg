@@ -84,9 +84,6 @@ if hb_gtInfo( HB_GTI_ISGRAPHIC )
 endif
 
 #ifdef A_ADS
-   #ifdef __PLATFORM__WINDOWS
-      #include "ads.ch"
-   #endif
       REQUEST ADS
       RddRegister( "ADS", 1 )
       rddsetdefault("ADS")
@@ -97,13 +94,7 @@ endif
       SET FILETYPE TO NTX
    #endif
       AdsSetServerType( A_ADS )
-      //  /* ADS_LOCAL_SERVER + */ ADS_REMOTE_SERVER )
       SET AXS LOCKING ON
-   #ifdef PC852
-      #ifndef __PLATFORM__UNIX
-         //AdsSetCharType(ADS_OEM,.t.)
-      #endif
-   #endif
 #else
    #ifdef A_CDX
       REQUEST A_CDX
