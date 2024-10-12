@@ -1,6 +1,6 @@
 #ifndef __PLATFORM__DOS
   #define A_KSEF
-  //#define A_UNICODE 'UTF8MD'
+  #define A_UNICODE 'UTF8MD'
   #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
 #endif
 
