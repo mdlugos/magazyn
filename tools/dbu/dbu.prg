@@ -62,8 +62,6 @@ PROCEDURE Dbu( param1, param2, param3 )
    // Combine all the command line params together
    param1 := param1 + "~" + param2 + "~" + param3 + "~"
 
-   altd()
-
    // Process the command line parameters where com_line will contain the
    // view/file name to open and param2 will contain the color directive
    param3 := ParseCommLine( param1 )
@@ -81,8 +79,8 @@ PROCEDURE Dbu( param1, param2, param3 )
       SET SERVER LOCAL
       SET AXS LOCKING OFF
       SET RIGHTS CHECKING OFF
-      hb_gtInfo( HB_GTI_BOXCP, 'PLMAZ')
-      HB_CDPSELECT('PL852M')
+      hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
+      HB_CDPSELECT('UTF8MD')
    ELSE
 #endif
       hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')

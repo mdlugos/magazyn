@@ -234,7 +234,6 @@ return .t.
 stat proc sdok3(_f)
   local skl
   field jedN
-  altd()
   if updated()
       keyp:=skladnik
       if startrec=0
@@ -401,7 +400,6 @@ RETURN
 stat proc f9(g,_f,getlist)
    local r:=elementy->(recno()),curprompt,s:=surowce->(recno()),are:=select()
    oldrec:=recno()
-   altd()
    if startrec=0
       poprec:=0
       if surowce(.f.)

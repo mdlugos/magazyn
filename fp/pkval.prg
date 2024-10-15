@@ -17,7 +17,6 @@ field sald_bie_m,sald_bie_w,syntet,khflag
 memvar da
 proc rejf9(ar,ad,f9dok,gl)
 local stat,i,f,g,h,a
-altd()
    stat:=push_stat()
    IF !EMPTY(f9dok)
       sel(ar[AR_DBF],1)

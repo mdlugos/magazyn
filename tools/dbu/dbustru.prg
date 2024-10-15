@@ -305,15 +305,8 @@ DO WHILE .NOT. q_check()
 				CASE n = 3
 					* get is for field_len
 
-					IF field_type = "C"
-						* get Clipper extended field length into memvar
-						len_temp = (256 * field_dec) + field_len
-
-					ELSE
-						* normal field_len
-						len_temp = field_len
-
-					ENDIF
+					* normal field_len
+					len_temp = field_len
 
 					* get the new length
 					SetColor(M->color1)
@@ -325,23 +318,7 @@ DO WHILE .NOT. q_check()
 					IF menu_key() = 0
 						* no menu request
 
-						IF field_type = "C"
-							* put Clipper extended field length into len/dec
-							REPLACE field_len WITH (len_temp % 256)
-							REPLACE field_dec WITH INT(len_temp / 256)
-
-						ELSE
-
-							IF len_temp < 256
-								* may not be a valid length
-								REPLACE field_len WITH len_temp
-
-							ELSE
-								* entry not accepted
-								keystroke = 0
-
-							ENDIF
-						ENDIF
+						REPLACE field_len WITH len_temp
 					ENDIF
 
 				CASE n = 4
@@ -912,12 +889,6 @@ PARAMETERS fill_row
 SAY field_name + hb_UTF8ToStr( " │ " ) + pad(field_type,9)+ hb_UTF8ToStr( " │ " )
 //SAY field_name + hb_UTF8ToStr( " │ " ) + data_type[AT(field_type, "CNDLM")] + hb_UTF8ToStr( " │ " )
 
-IF field_type = "C"
-	* display Clipper extended field length
-	@ fill_row,field_col[3] SAY STR(((256 * field_dec) + field_len), 4) +;
-								hb_UTF8ToStr( " │    " )
-
-ELSE
 	* normal field length
 	@ fill_row,field_col[3] SAY STR(field_len, 4) + hb_UTF8ToStr( " │    " )
 
@@ -926,7 +897,6 @@ ELSE
 		@ fill_row,field_col[4] SAY field_dec
 
 //	ENDIF
-ENDIF
 
 RETURN 0
 
@@ -950,17 +920,8 @@ DO CASE
 		@ cur_row,field_col[2] SAY pad(field_type,9)
 
 	CASE n = 3
-
-		IF field_type = "C"
-			* display Clipper extended field length
-			@ cur_row,field_col[n] SAY STR(((256 * field_dec) +;
-										   field_len),4)
-
-		ELSE
-			* normal field_len
-			@ cur_row,field_col[n] SAY STR(field_len,4)
-
-		ENDIF
+		* normal field_len
+		@ cur_row,field_col[n] SAY STR(field_len,4)
 
 	CASE n = 4
 		* field_dec
@@ -1086,51 +1047,6 @@ ENDIF
 IF status = 0
 	* test for valid field_len
 
-	IF field_type = "C"
-		test_num = (256 * field_dec) + field_len
-
-		IF test_num <= 0 .OR. test_num > 1024
-			* invalid field width
-			status = 3
-			err_msg = "Invalid Field Width"
-
-			IF keystroke = 24
-				* force error display for illegal down arrow
-				disp_err = .T.
-
-			ENDIF
-		ENDIF
-
-	ELSE
-
-		IF field_len <= 0 .OR. field_len > 19
-			* invalid field width
-			status = 3
-			err_msg = "Invalid Field Width"
-
-			IF keystroke = 24
-				* force error display for illegal down arrow
-				disp_err = .T.
-
-			ENDIF
-		ENDIF
-	ENDIF
-ENDIF
-
-IF field_type = "N" .AND. status = 0
-	* test for valid field_dec
-
-	IF field_dec > IF(field_len < 3, 0, IF(field_len > 17, 15, field_len - 2))
-		* invalid decimal width
-		status = 4
-		err_msg = "Invalid Decimal Width"
-
-		IF keystroke = 24
-			* force error display for illegal down arrow
-			disp_err = .T.
-
-		ENDIF
-	ENDIF
 ENDIF
 
 IF status > 0 .AND. disp_err

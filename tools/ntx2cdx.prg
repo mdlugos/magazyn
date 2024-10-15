@@ -26,8 +26,6 @@ erase (set(_SET_DEFAULT)+"tmp.dbf")
 erase (set(_SET_DEFAULT)+"tmp.dbt")
 erase (set(_SET_DEFAULT)+"tmp.fpt")
 
-altd()
-
 if file(set(_SET_DEFAULT)+db)
    CHGDAT(db)
 else

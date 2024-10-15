@@ -535,7 +535,6 @@ if dbseek(key)
    i:=""
    j:=""
    aeval(darr,{|x,y|if(txt#(txt:=x[1]),++s,),y:=right(x[1],1),if(y$i,,(++s,i+=y)),y:=subs(x[1],-2,1),if(y$j,,(++s,j+=y))})
-   altd()
    ?? ccpi(4)
    if s+prow()+5>P_ROWN .and. s+10<P_ROWN
 #ifdef A_WADO
