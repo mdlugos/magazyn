@@ -69,8 +69,6 @@ FUNCTION __dbCopyXStruct( cFileName )
       __dbCreate( cFileName, , , .F. )
 
       AEval( aStruct, {| aField | ;
-         iif( aField[ DBS_TYPE ] == "C" .AND. aField[ DBS_LEN ] > 255, ;
-            ( aField[ DBS_DEC ] := Int( aField[ DBS_LEN ] / 256 ), aField[ DBS_LEN ] := aField[ DBS_LEN ] % 256 ), ), ;
          dbAppend(), ;
          FIELD->FIELD_NAME := aField[ DBS_NAME ], ;
          FIELD->FIELD_TYPE := aField[ DBS_TYPE ], ;
@@ -140,10 +138,6 @@ FUNCTION __dbCreate( cFileName, cFileFrom, cRDD, lNew, cAlias, cCodePage, nConne
 
          /* Type detection is more in sync with dbCreate() logic in Harbour, as lowercase "C"
             and padded/continued strings ("C ", "C...") are also accepted. */
-
-         AEval( aStruct, {| aField | iif( hb_LeftEqI( aField[ DBS_TYPE ], "C" ) .AND. aField[ DBS_DEC ] != 0, ;
-            ( aField[ DBS_LEN ] += aField[ DBS_DEC ] * 256, ;
-              aField[ DBS_DEC ] := 0 ), NIL ) } )
 
          dbCreate( cFileName, aStruct, cRDD, lNew, cAlias, , cCodePage, nConnection )
 

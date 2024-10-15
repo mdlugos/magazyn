@@ -3956,7 +3956,7 @@ next
 #endif
 #ifdef A_WA
 if !empty(getlist)
-@ _fk+1,52 say if(chg_cen,"■","√") UNICODE color _sbkgr
+@ _fk+1,52 BOX if(chg_cen,"■","√") UNICODE color _sbkgr
 endif
 if dok_war="+".or.(!empty(getlist).and.ascan(getlist,{|x|x:name="wa"})#0)
    clr:=_sunsel
@@ -4110,7 +4110,7 @@ func showvat(_f)
       wt:=round(wt,A_ZAOKR)
    endif
    @ _fk,53 say cz picture WAPIC COLOR _sunsel
-   @ _fk,52 say if(wz=WPZ(pm*il*cz),"√","■") color _sbkgr
+   @ _fk,52 BOX if(wz=WPZ(pm*il*cz),"√","■") UNICODE color _sbkgr
    @ _fk,66 say wz picture WAPIC COLOR _sunsel
 #ifdef A_AUTOMAR
 //#ifdef cenA_zaK

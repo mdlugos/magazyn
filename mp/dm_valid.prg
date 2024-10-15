@@ -630,9 +630,9 @@ endif
                    if empty(indexord())
                      w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
-                       index on &v tag main_ind eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v tag main_ind eval {||dispout(hb_UTF8ToStr("°")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
-                       index on &v for &u tag main_ind eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v for &u tag main_ind eval {||dispout(hb_UTF8ToStr("°")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      endif
                      //break
                    endif
@@ -641,9 +641,9 @@ endif
                      index on &v to (defa+y+HB_ps()+'main_ind')
                      w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
-                       index on &v to (defa+y+HB_ps()+'main_ind') eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') eval {||dispout(hb_UTF8ToStr("°")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
-                       index on &v to (defa+y+HB_ps()+'main_ind') for &u eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') for &u eval {||dispout(hb_UTF8ToStr("°")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      endif
                      //break
                    else
@@ -750,9 +750,9 @@ endif
                    if empty(indexord())
                      w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
-                       index on &v tag main_ind eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v tag main_ind eval {||dispout(hb_UTF8ToStr("°")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
-                       index on &v tag main_ind for &u eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v tag main_ind for &u eval {||dispout(hb_UTF8ToStr("°")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      endif
                      //break
                    endif
@@ -761,9 +761,9 @@ endif
                      index on &v to (defa+y+HB_ps()+'main_ind')
                      w:=MESSAGE("Odtwarzanie skorowidza main_ind, baza: "+defa+y+HB_ps()+"main.dbf,;klucz: "+v+";.")
                      if empty(u)
-                       index on &v to (defa+y+HB_ps()+'main_ind') eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') eval {||dispout(hb_UTF8ToStr("°")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      else
-                       index on &v to (defa+y+HB_ps()+'main_ind') for &u eval {||dispout(hb_UTF8ToStr("▒")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
+                       index on &v to (defa+y+HB_ps()+'main_ind') for &u eval {||dispout(hb_UTF8ToStr("°")),message(1),.t.} every int(1+lastrec()/(w[4]-w[2]-2))
                      endif
                      //break
                    else

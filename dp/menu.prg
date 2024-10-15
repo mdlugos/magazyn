@@ -375,7 +375,7 @@ if ilp=0
    @ _fk, 75 SAY ' ' color _sbkgr
    return .t.
 endif
-@ _fk, 75 SAY '■' UNICODE color _sbkgr
+@ _fk, 75 BOX '■' UNICODE color _sbkgr
 #else
   @ _fk, 70 SAY ipcalc(die) PICTURE D_ILPIC COLOR _sbkgr
 #endif
