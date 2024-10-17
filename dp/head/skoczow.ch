@@ -1,4 +1,4 @@
-//#define A_UNICODE 'UTF8MD'
+//#define A_UNICODE 'UTF8EX'
 #include "lan.ch"
 #define A_DDBF
 #command INIT SCREEN => //__run("font852")

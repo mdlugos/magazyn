@@ -1,6 +1,6 @@
 #ifndef __PLATFORM__DOS
   #define A_KSEF
-  //#define A_UNICODE 'UTF8MD'
+  //#define A_UNICODE 'UTF8EX'
   #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
 #endif
 
@@ -21,7 +21,7 @@
 //#define A_ADS 1
 //#define UpP(x) uPp(x,A_UNICODE)
 
-//upper z UTF8MD już gotowe, podobnie z PL852M
+//upper z UTF8EX już gotowe, podobnie z PL852M
 #define UpP(x) UPPER(x)
 #define PC852 'PL852M'
 //#define A_CDX VFPCDX

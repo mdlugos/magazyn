@@ -1,11 +1,11 @@
-#ifdef A_UNICODE
-   #define D_CDP 'UTF8MD'
-#else
-   #define D_CDP 'PL852M'
-#endif
-
 #undef PC852
-#define PC852 'PL852M'
+#define PC852 'PL852'
+
+#ifdef A_UNICODE
+   #define D_CDP 'UTF8EX'
+#else
+   #define D_CDP PC852
+#endif
 
 #ifdef A_EXT
 request A_EXT
@@ -32,8 +32,8 @@ local i,n,t
 //  #endif
 #endif
 
-REQUEST HB_LANG_PL, HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8MD
-  hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
+REQUEST HB_LANG_PL, HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8EX
+  hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
 
 //browse musi mieć BOXCP tego samego rodzaju co główną bo left/right/substr w tbrowse
 //  REQUEST HB_CODEPAGE_PLMAZ

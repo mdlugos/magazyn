@@ -756,7 +756,7 @@ return (nCount)
 
 **************************************
 PROCEDURE POWR_DBED
-//local bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
+//local bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
   @ maxrow()-1,0  CLEAR
   @ maxrow()-1,0  SAY '   -wyjście     -edycja      -filtr    -pokaż ukryte       -ukryj rekord' UNICODE
   @ maxrow(),27 SAY '- nawigacja       -szybkie szukanie'
@@ -782,7 +782,7 @@ RETURN
 
 **************************************
 PROCEDURE POWR_GET
-//local bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
+//local bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
 
   @ maxrow()-1,0  CLEAR
   @ maxrow()-1,0  SAY     '             -wyjście z pola z zapisem zmian      -wyjscie z przywr.starej wart.' UNICODE

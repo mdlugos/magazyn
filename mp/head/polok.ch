@@ -1,11 +1,13 @@
 #ifdef __PLATFORM__WINDOWS
   #define PLWIN
-//    #define A_WIN_PRN eval(memvar->do_getoprn)
+  #define A_WIN_PRN eval(memvar->do_getoprn)
   #define A_ZEBRA
   #define A_EXT hb_hextonum, hb_numtohex, curdir
-  #define A_WIN_PRN .f.
 #endif
-//#define A_UNICODE 'UTF8MD'
+//#define A_UNICODE 'UTF8EX'
+//#define A_KSEF
+//#define A_REGON
+//#define A_TPD
 #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
 #define A_BACKUP MEMVAR->backup
 #define A_VIEWCZAK
@@ -41,7 +43,6 @@
 #define DTOV(dat) tran(subs(dtos(dat),5),"@R ##.##")
 #define DatE() MEMVAR->dzisiaj
 #define A_FK 12
-#define A_KSEF
 #define A_F9
 #define A_A
 #define A_WA
@@ -100,8 +101,6 @@
 #define A_FFULL
 #define A_FDO
 #define A_ANKER
-#define A_REGON
-#define A_TPD
 #define A_KODY "Kod"
 #define A_ENAZ
 #define A_MINUS

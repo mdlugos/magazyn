@@ -157,7 +157,7 @@ setkey(K_F7,{|x|x:=setkey(K_F7,),aczojs(zaw_ar({},,,relewy->(dtos(data)+posilek+
 
 DO WHILE .T.
 *************************************
-//a := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
+//a := hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
 
 
 if isCOLOR()

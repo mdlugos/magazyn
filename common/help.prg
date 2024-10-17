@@ -85,7 +85,7 @@ endif
         * clear window and draw box
         lastcolor = SETCOLOR("RB+/GR")
         hb_scroll(r1,c1,r2,c2, 0)
-        //bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8MD')
+        //bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
         @ r1+1,c1+2,r2-1,c2-2 BOX UNICODE '┌─┐│┘─└│'
         SET COLOR TO I
         @ r2-1,c1+ 3 say 'Esc'
