@@ -335,7 +335,7 @@ endif
   #endif
  #endif
  #ifdef D_CZ
-      devout(", cena "+tran(cenA_zaK,WAPICT)+" zł.")
+      devout(", cena "+tran(cenA_zaK,WAPICT)+hb_UTF8ToStr(" zł."))
   #ifdef A_CENVAT
      sayl "Brutto: "+tran(cenA_zaK*(100+val(indx_mat->proc_vat))/100,WAPICT)
   #endif
@@ -817,12 +817,12 @@ endif
 #endif
 #ifdef A_7
 #ifdef A_KAMIX
-    @ 16,43 SAY "Cena1 brutto za 1 "+trim(j_o)+': '+ltrim(tran(c1*p*(1+val(pv)*.01),WAPICT))+' zł'
+    @ 16,43 SAY "Cena1 brutto za 1 "+trim(j_o)+': '+ltrim(tran(c1*p*(1+val(pv)*.01),WAPICT))+hb_UTF8ToStr(' zł')
 #else
 #ifdef A_CENVAT
-    @ 16,43 SAY "Cena brutto za 1 "+trim(j_o)+': '+ltrim(tran(ce*p,WAPICT))+' zł'
+    @ 16,43 SAY "Cena brutto za 1 "+trim(j_o)+': '+ltrim(tran(ce*p,WAPICT))+hb_UTF8ToStr(' zł')
 #else
-    @ 16,43 SAY "Cena brutto za 1 "+trim(j_o)+': '+ltrim(tran(ce*p*(1+val(pv)*.01),WAPICT))+' zł'
+    @ 16,43 SAY "Cena brutto za 1 "+trim(j_o)+': '+ltrim(tran(ce*p*(1+val(pv)*.01),WAPICT))+hb_UTF8ToStr(' zł')
 #endif
 #endif
 #endif
@@ -1238,7 +1238,7 @@ endif
         DO WHILE INDEX=INDX_MAT->INDEX
 #ifdef A_WA
            IF (WARTOSC#0 .OR. STAN#0).and. nr_mag#txt
-              aadd(mes,message("STAN NIEZEROWY NA MAGAZYNIE:;"+MAGAZYNY[max(1,ascan(magazyny,NR_MAG))]+";"+str(STAN)+" "+INDX_MAT->JM+" "+tran(WARTOSC,WAPIC)+" zł."))
+              aadd(mes,message("STAN NIEZEROWY NA MAGAZYNIE:;"+MAGAZYNY[max(1,ascan(magazyny,NR_MAG))]+";"+str(STAN)+" "+INDX_MAT->JM+" "+tran(WARTOSC,WAPIC)+hb_UTF8ToStr(" zł.")))
 #else
            IF STAN#0 .and. nr_mag#txt
               aadd(mes,message("STAN NIEZEROWY NA MAGAZYNIE:;"+MAGAZYNY[max(1,ascan(magazyny,NR_MAG))]+";"+str(STAN)+" "+INDX_MAT->JM))

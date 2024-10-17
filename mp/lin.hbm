@@ -2,11 +2,11 @@
 #-debug -inc -rebuild
 #-gtxwc
 #-gttrm
-#-lhbcups hbcups.hbc 
+hbcups.hbc 
 #-lhbhpdf hbhpdf.hbc
-rddads.hbc
+#rddads.hbc
 
--lhbmxml hbmxml.hbc
+hbmxml.hbc
 -i../common
 #../common/mlcfunc.c ../common/cppl852m.c ../common/cp_utf8m.c
 main ind_val dok dm_valid dok_druk dok_pr dodatki druk_zes indeksy
