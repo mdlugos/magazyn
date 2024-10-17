@@ -6,11 +6,11 @@
 #-lhbhpdf hbhpdf.hbc
 
 -i../common
-../common/mlcfunc.c ../common/cppl852m.c ../common/cp_utf8m.c
+#../common/mlcfunc.c ../common/cppl852m.c ../common/cp_utf8m.c
 
 main osobodni menu recept zapot surowce druki element dodatki
 
-../common/tbrowse
+#../common/tbrowse
 ../common/dm_form
 ../common/io
 ../common/error

@@ -8,7 +8,8 @@
 
 -w3 -es2
 
--c=gnu90
--lfbclient
--i${hb_with_firebird}
-${hb_name} ../common/firebird.c ../common/tfirebrd.prg ../common/cppl852m.c ../common/cp_utf8m.c
+hbfbird.hbc
+
+${hb_name}
+# ../common/firebird.c ../common/tfirebrd.prg 
+#../common/cppl852m.c ../common/cp_utf8m.c

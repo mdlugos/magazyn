@@ -1,4 +1,4 @@
-//hbmk2 -gtnul dbf2fb tfirebrd hbfbird.hbc ../common/cppl852m.c ../common/cp_utf8m.c 
+//hbmk2 -gtnul dbf2fb tfirebrd hbfbird.hbc 
 
 #command DEFAULT <x> TO <y> => IF (<x>)=NIL;<x>:=<y>;ENDIF
 

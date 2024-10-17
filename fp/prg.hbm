@@ -10,11 +10,11 @@
 #-debug -inc -rebuild
 
 -i../common
-../common/mlcfunc.c ../common/cppl852m.c ../common/cp_utf8m.c
+#../common/mlcfunc.c ../common/cppl852m.c ../common/cp_utf8m.c
 
 main rejestry konta kontr dok pkval dziennik dok_druk dodatki
 
-../common/tbrowse
+#../common/tbrowse
 ../common/dm_form
 ../common/io
 ../common/error

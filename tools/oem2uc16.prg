@@ -1,4 +1,4 @@
-//hbmk2 -debug -inc -rebuild -i../common -dSIMPLE -u+../mp/head/moj.ch -gtnul 8522utf ../../harbour/contrib/rddmisc/vfpcdx.prg ../common/error ../common/io_2 ../common/io ../common/cppl852m.c ../common/cp_utf8m.c
+//hbmk2 -debug -inc -rebuild -i../common -dSIMPLE -u+../mp/head/moj.ch -gtnul 8522utf ../../harbour/contrib/rddmisc/vfpcdx.prg ../common/error ../common/io_2 ../common/io 
 #include "simpleio.ch"
 #include "set.ch"
 #include "dbinfo.ch"
@@ -14,7 +14,7 @@ SET(_SET_DBCODEPAGE,'PL852')
 
 request DBFCDX
 */
-//SET(_SET_CODEPAGE,'PL852M')
+//SET(_SET_CODEPAGE,'PL852')
 SET DELETED ON
 
 IF empty(db)
