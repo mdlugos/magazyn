@@ -32,7 +32,7 @@ local i,n,t
 //  #endif
 #endif
 
-REQUEST HB_LANG_PL, HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8EX
+REQUEST HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_UTF8EX
   hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
 
 //browse musi mieć BOXCP tego samego rodzaju co główną bo left/right/substr w tbrowse

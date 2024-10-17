@@ -27,7 +27,7 @@ PROCEDURE Main( ... )
    REQUEST HB_LANG_PL
    HB_LANGSELECT('PL')
    REQUEST HB_CODEPAGE_UTF8EX
-   REQUEST HB_CODEPAGE_PL852M
+   REQUEST HB_CODEPAGE_PL852
    HB_CDPSELECT('UTF8EX')
 
    rddSetDefault( "DBFNTX" )
@@ -173,7 +173,7 @@ static procedure chgdat(cFile, cTable, lCreateTable)
    IF File(strtran(cFile,subs(cFile,-3),'fpt'))
      i:='DBFCDX'
    ENDIF
-   dbUseArea( .f., i, cFile, cTable,.F., .T. ,'PL852M')
+   dbUseArea( .f., i, cFile, cTable,.F., .T. ,'PL852')
    if indexord()<>0
       SET ORDER TO 0
       GO TOP

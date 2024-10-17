@@ -4,7 +4,7 @@ PRIVATE mieso:=.f.
 PRIVATE mtxt:=''
 PRIVATE duplikat:=dok_kop>5
 ;_SET_OSCODEPAGE 115
-set(115,'PL852M')
+set(115,'PL852')
 dok_kop:=dok_kop%5
 ;oprn:=.t.
 lpt:=""

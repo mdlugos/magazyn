@@ -68,8 +68,8 @@ PROCEDURE Dbu( param1, param2, param3 )
    com_line := param3[1]
    param2   := param3[2]
 
-   REQUEST HB_LANG_PL, HB_CODEPAGE_PL852M, HB_CODEPAGE_UTF8EX, HB_CODEPAGE_PLMAZ
-   SET(_SET_DBCODEPAGE, 'PL852M')
+   REQUEST HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_UTF8EX, HB_CODEPAGE_PLMAZ
+   SET(_SET_DBCODEPAGE, 'PL852')
 
 #ifdef ADS_CH_
    IF "-ads" $ Lower( hb_cmdLine() )
@@ -104,7 +104,7 @@ PROCEDURE Dbu( param1, param2, param3 )
    hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
    HB_CDPSELECT('UTF8EX')
    HB_LANGSELECT('PL')
-   SET(_SET_DBCODEPAGE, 'PL852M')
+   SET(_SET_DBCODEPAGE, 'PL852')
 
    SET(_SET_DEBUG,.t.) //alt_d on
    
