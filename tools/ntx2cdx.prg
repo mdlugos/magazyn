@@ -1,7 +1,7 @@
 //hbmk2 ntx2cdx -gtnul
 #include "simpleio.ch"
 #include "set.ch"
-request DBFCDX
+REQUEST FPTCDX
 PROCEDURE mdx2cdx(DB)
 Local i:=0
 request HB_CODEPAGE_PL852,HB_CODEPAGE_UTF8EX,HB_LANG_PL
@@ -10,7 +10,7 @@ SET(_SET_DBCODEPAGE,'PL852')
 REQUEST HB_LANG_PL
 HB_LANGSELECT('PL')
 
-rddSetDefault('DBFCDX')
+rddSetDefault('FPTCDX')
 
 SET DELETED ON
 

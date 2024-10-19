@@ -89,7 +89,7 @@ endif
       rddsetdefault("ADS")
 
    #ifdef A_CDX
-      SET FILETYPE TO CDX
+      SET FILETYPE TO VFP
    #else
       SET FILETYPE TO NTX
    #endif
@@ -97,7 +97,7 @@ endif
       SET AXS LOCKING ON
 #else
    #ifdef A_CDX
-      REQUEST A_CDX
+      REQUEST FPTCDX
       SET RDD DEFAULT TO A_CDX
    #else
       REQUEST DBFNTX
