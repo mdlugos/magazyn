@@ -14,7 +14,7 @@
 #include "inkey.ch"
 #include "set.ch"
 
-REQUEST DBFCDX, VFPCDX, ADS
+REQUEST VFPCDX, ADS
 
 // Uncomment to update the obsolete declaration:
 #xtranslate DECLARE => PRIVATE

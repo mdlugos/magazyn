@@ -15,6 +15,17 @@
 #define TB_REFRESH_RATE    5     // Wait 5 seconds between tbrowse refreshes
 //#define hb_UTF8ToStr(x) x
 
+static proc FieldWBlock(cFieldName, nWa)
+Local k := (nWa)->(FieldPos(cFieldName)), l
+
+SWITCH Left((nWa)->(hb_FieldType(k)),1)
+CASE "M"
+   RETURN bColBlock := {||'  <Memo>  '}
+CASE "Q"
+   l := (nWa)->(FieldLen(k))
+   RETURN bColBlock := {|x|(nWa)->(if(x=NIL,PadR(FieldGet(k),FieldLen(k)),FieldPut(k,Trim(x))))}
+ENDSWITCH
+RETURN bColBlock := {|x|(nWa)->(if(PCount()=0,FieldGet(k),FieldPut(k,x)))}
 
 /***
 *   browse
@@ -23,7 +34,7 @@
 */
 proc browse
 
-local i,j,nHelpSave,cNtx,cFieldArray,cFieldName,nWa,cMemo,oB,nRec,;
+local i,j,k,nHelpSave,cNtx,cFieldArray,cFieldName,nWa,cMemo,oB,oC,nRec,;
    cBrowseBuf,nPrimeArea,nHsepRow,cEditField,bAlias,cAlias,nCType,;
    cHead,lMore,lCanAppend,cMemoBuff,aMoveExp,cPrimeDbf,;
    nColorSave,lAppend,lGotKey,lKillAppend,bColBlock
@@ -124,14 +135,10 @@ memvar keystroke,help_code,func_sel,cur_area,cur_dbf,field_list,frame,;
       end
 
       /* memos are handled differently */
-      if ( ValType(&cEditField) == "M" )
-         bColBlock := &("{|| '  <Memo>  '}")
-      else
-         bColBlock := FieldWBlock(cFieldName, nWa)
-      end
+      bColBlock := FieldWBlock(cFieldName, nWa)
 
       /* add one column */
-      oB:addColumn(TBColumnNew(cHead, bColBlock))
+      oB:addColumn( TBColumnNew(cHead, bColBlock) ) 
    next
 
    /* initialize parts of screen not handled by TBrowse */

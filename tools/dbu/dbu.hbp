@@ -7,10 +7,12 @@
 #-c=gnu90
 
 rddads.hbc
-#-gui -gtwvt
+
+#-gui -gtxwc
 #-gttrm
 -i../../common
 dbu.prg
+../../../harbour/contrib/rddmisc/vfpcdx.prg
 #../../common/mlcfunc.c 
 #../../common/cppl852m.c
 #../../common/cp_utf8m.c
