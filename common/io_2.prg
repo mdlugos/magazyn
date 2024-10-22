@@ -2127,15 +2127,17 @@ func binfieldput(f,x,lval)
    endif
 return x 
 
-func binfieldget(f)
+static func binfieldget(f,lval) // .t. - do not padr with spaces
    local x := hb_fieldget(f),t
    if valtype(x)='C'
       t:=hb_FieldType(f)
       if !(left(t,1) $ 'PWG' .or. subs(t,3,1) $ 'UB')
          x := hb_translate(x,,dbinfo(DBI_CODEPAGE)) //odwrotne tłumacznie do tego co przy odczycie
       endif
-      // to działa zależy jaka aktualna strona kodowa
-      x := x + space(hb_FieldLen(f) - len(x))
+      if empty(lval)
+         // to działa zależy jaka aktualna strona kodowa
+         x := x + space(hb_FieldLen(f) - len(x))
+      endif
    endif
 return x
 *****************

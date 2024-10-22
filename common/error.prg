@@ -81,6 +81,10 @@ if hb_gtInfo( HB_GTI_ISGRAPHIC )
    SetCursor( 0 )
    hb_gtInfo( HB_GTI_CLOSABLE, .t. )
    hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
+#ifdef __PLATFORM__WINDOWS
+else
+   setmode(min(maxrow()+1,Round((maxcol()+1)*5/16,0)),maxcol()+1)
+#endif   
 endif
 
 #ifdef A_ADS
@@ -169,7 +173,6 @@ else // MDA, VGA MONO
   _sunsel:="W+"
   SET COLOR TO W,I,,W,W+
 endif
-setmode(min(maxrow()+1,Round((maxcol()+1)*5/16,0)),maxcol()+1)
 INIT SCREEN
 CLEAR screen
 @ 1,0 say padc("program dla:     "+firma_n+space(17),maxcol())

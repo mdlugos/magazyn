@@ -16,7 +16,7 @@
   #define A_ZEBRA
 #endif
 #define A_CDX VFPCDX
-//#define A_ADS 1
+#define A_ADS 1
 
 //#define UpP(x) uPp(x,A_UNICODE)
 

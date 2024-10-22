@@ -62,6 +62,28 @@ PROCEDURE Dbu( param1, param2, param3 )
    // Combine all the command line params together
    param1 := param1 + "~" + param2 + "~" + param3 + "~"
 
+   if hb_gtInfo( HB_GTI_ISGRAPHIC )
+#ifdef __PLATFORM__UNIX   
+      hb_gtInfo( HB_GTI_FONTSEL,'-*-fixed-medium-r-*-*-18-*-*-*-*-*-iso10646-1')
+      // 29,27,21,20,18,15,14,13,12,11,10,9,8,7,6
+#else
+      hb_gtInfo( HB_GTI_FONTNAME , "Lucida Console" )
+      hb_gtInfo( HB_GTI_FONTWIDTH, 10  )
+      hb_gtInfo( HB_GTI_FONTSIZE , 20 )
+#endif   
+      //hb_gtInfo( HB_GTI_WINTITLE , "Rozruch" )
+      hb_gtInfo( HB_GTI_ALTENTER, .T. )  // allow alt-enter for full screen
+      SetCursor( 0 )
+      hb_gtInfo( HB_GTI_CLOSABLE, .t. )
+      hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
+#ifdef __PLATFORM__WINDOWS
+   else
+      // avoid vertical scrolling in windows 
+      setmode(min(maxrow()+1,Round((maxcol()+1)*5/16,0)),maxcol()+1)
+#endif
+   endif
+
+
    // Process the command line parameters where com_line will contain the
    // view/file name to open and param2 will contain the color directive
    param3 := ParseCommLine( param1 )
