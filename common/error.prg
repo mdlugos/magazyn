@@ -40,10 +40,13 @@ REQUEST HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_UTF8EX
 //  hb_gtInfo( HB_GTI_BOXCP, 'PLMAZ')
 
   HB_CDPSELECT(D_CDP)
-  HB_LANGSELECT('PL')
+  hb_SetTermCP( hb_cdpTerm() )
+  Set(_SET_OSCODEPAGE, hb_cdpOS())
 
   //SET(_SET_CODEPAGE, D_CDP )
   SET(_SET_DBCODEPAGE, PC852 )
+
+  HB_LANGSELECT('PL')
 
 //header w UTF8 ale suma wyliczona dla kodowania PC852
 
@@ -91,7 +94,8 @@ endif
       REQUEST ADS
       RddRegister( "ADS", 1 )
       rddsetdefault("ADS")
-
+      AdsSetCharType( ADS_ANSI, .F.)  //oemtranslation = false
+      //SET CHARTYPE TO ANSI  //  Set( _SET_OSCODEPAGE, hb_cdpOS() ) has to be set already
    #ifdef A_CDX
       SET FILETYPE TO VFP
    #else
