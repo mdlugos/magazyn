@@ -2099,9 +2099,9 @@ ELSE
             if dok_i .and. FIRMY->(dbseek(DM->(D_KH),.f.))
                ?? "|"+FIRMY->ident
 #ifdef A_FFULL
-               ?? "|"+left(firmy->longname,70)+left(firmy->adres,50)
+               ?? "|"+padr(firmy->longname,70)+padr(firmy->adres,50)
 #else
-               ?? "|"+left(firmy->nazwa,70)+left(firmy->adres,50)
+               ?? "|"+padr(firmy->nazwa,70)+padr(firmy->adres,50)
 #endif
             else
                ?? "|"+pad(nr_faktury,13)+"|"+left(dm->dost_odb,120)
@@ -2874,9 +2874,9 @@ ELSE
             if dok_i .and. FIRMY->(dbseek(DM->(D_KH),.f.))
                ?? "|"+FIRMY->ident
 #ifdef A_FFULL
-               ?? "|"+left(firmy->longname,70)+left(firmy->adres,50)
+               ?? "|"+padr(firmy->longname,70)+padr(firmy->adres,50)
 #else
-               ?? "|"+left(firmy->nazwa,70)+left(firmy->adres,50)
+               ?? "|"+padr(firmy->nazwa,70)+padr(firmy->adres,50)
 #endif
             else
                ?? pad("|",14)+"|"+dm->dost_odb
@@ -5033,16 +5033,16 @@ ENDIF
 #ifdef A_PCL
 #ifdef A_FFULL
         ? "|"+nr_kpr+"|"+str(day(data),3)+"  |"+padr(if(dok_par[mag_poz,r,1]="F",D_SUBDOK,nr_faktury),10)+;
-          "|"+if(FIRMY->(dbseek(DM->(D_KH))),left(FIRMY->D_FFULL,39)+"|"+left(FIRMY->adres,35),padr(dost_odb,75))+;
+          "|"+if(FIRMY->(dbseek(DM->(D_KH))),padr(FIRMY->D_FFULL,39)+"|"+padr(FIRMY->adres,35),padr(dost_odb,75))+;
           "|"+padr(subs(dokumenty[mag_poz,r],F_SUBDOK),20)
 #else
         ? "|"+nr_kpr+"|"+str(day(data),3)+"  |"+padr(if(dok_par[mag_poz,r,1]="F",D_SUBDOK,nr_faktury),10)+;
-          "|"+if(FIRMY->(dbseek(DM->(D_KH))),left(FIRMY->D_FFULL,39)+"|"+left(alltrim(left(FIRMY->adres,24))+','+subs(FIRMY->adres,25),35),padr(dost_odb,75))+;
+          "|"+if(FIRMY->(dbseek(DM->(D_KH))),padr(FIRMY->D_FFULL,39)+"|"+padr(alltrim(left(FIRMY->adres,24))+','+subs(FIRMY->adres,25),35),padr(dost_odb,75))+;
           "|"+padr(subs(dokumenty[mag_poz,r],F_SUBDOK),20)
 #endif
 #else
         ? "|"+nr_kpr+"|"+str(day(data),3)+"  |"+padr(if(dok_par[mag_poz,r,1]="F",D_SUBDOK,nr_faktury),12)+;
-          "|"+if(FIRMY->(dbseek(DM->(D_KH))),left(FIRMY->D_FFULL,44)+"|"+left(FIRMY->adres,44),padr(dost_odb,89))+;
+          "|"+if(FIRMY->(dbseek(DM->(D_KH))),padr(FIRMY->D_FFULL,44)+"|"+padr(FIRMY->adres,44),padr(dost_odb,89))+;
           "|"+padr(subs(dokumenty[mag_poz,r],F_SUBDOK),23)
 #endif
 #undef D_SUBDOK

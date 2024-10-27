@@ -2523,10 +2523,10 @@ DO CASE
       SET ORDER TO TAG FIRM_NUM
       sel('KH','KH')
       SET RELATION TO str(N1,A_NRLTH) INTO FIRMY
-      _sprompt:={||str(n1,A_NRLTH)+if(""=uwagi,I,"*")+n15+I+longname}
+      _sprompt:={||str(n1,A_NRLTH)+if(""=uwagi,I,"*")+n15+I+ufieldget([longname])}
 #else
 #ifdef A_FFULL
-      _sprompt:={||numer_kol+if(""=uwagi,I,"*")+nazwa+I+longname}
+      _sprompt:={||numer_kol+if(""=uwagi,I,"*")+nazwa+I+ufieldget([longname])}
 #else
       _sprompt:={||numer_kol+if(""=uwagi,I,"*")+nazwa}
 #endif
@@ -2564,7 +2564,7 @@ DO CASE
                           re:=trim(subs(re,_skey+2))+', '+left(re,_skey-1)
                        endif
                        goto lastrec()+1
-                       FIRM_EDIT(numer_kol,_s,pad(txt['name'],hb_fieldlen('nazwa')),pad(txt['name'],hb_fieldlen('longname')),pad(re,hb_fieldlen('adres')),pad(txt['nip'],hb_fieldlen('ident')),h)
+                       FIRM_EDIT(numer_kol,_s,pad(txt['name'],hb_fieldlen([nazwa])),pad(txt['name'],hb_fieldlen([longname])),pad(re,hb_fieldlen([adres])),pad(txt['nip'],hb_fieldlen([ident])),h)
                        return .f.
                   endif
 #endif
@@ -2687,7 +2687,7 @@ DO CASE
                   SET ORDER TO TAG FIRM_LNG
 
                   if indexord()>2 .and. dbSEEK(_spocz)
-                     _sbeg:=A_NRLTH+3+hb_fieldlen('nazwa')
+                     _sbeg:=A_NRLTH+3+hb_fieldlen([nazwa])
                      if _spocz=UpP(trim(longname))
                         return gfirma(13,_s,getlist)
                      endif
@@ -2696,7 +2696,7 @@ DO CASE
                      _slth:=0
                      _sfilt:='['+txt+']$UPPER(longname)'
                      _sfilb:={||txt$UPPER(longname)}
-                     _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,I,"*")+nazwa+I+longname,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+                     _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,I,"*")+nazwa+I+ufieldget([longname]),if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
                   endif
 #else
                   _spocz:=''
@@ -2721,12 +2721,12 @@ DO CASE
       kh:=numer_kol
       getlist[1]:display()
 #ifdef A_FFULL
-         D_O:=pad(trim(nazwa)+" * "+longname,dm->(hb_fieldlen('dost_odb')))
+         D_O:=pad(trim(nazwa)+" * "+longname,dm->(hb_fieldlen([dost_odb])))
 #else
 #ifdef A_OLZBY
          d_o:=nazwa
 #else
-         d_o:=PAD(nazwa,dm->(hb_fieldlen('dost_odb')))
+         d_o:=PAD(nazwa,dm->(hb_fieldlen([dost_odb])))
 #endif
 #endif
 #ifdef A_FA
@@ -3118,7 +3118,7 @@ stat func nipval(i,n)
 field longname
 local ord:=ordsetfocus('firm_nip'),rec:=recno()
 set filter to rec#recno()
-if !dbseek(strtran(i,'-','')) .or. !szukam({1,4,maxrow(),,1,0,'Inne firmy o tym NIPie:',{||numer_kol+I+nazwa+I+longname},,strtran(i,'-','')})
+if !dbseek(strtran(i,'-','')) .or. !szukam({1,4,maxrow(),,1,0,'Inne firmy o tym NIPie:',{||numer_kol+I+nazwa+I+ufieldget([longname])},,strtran(i,'-','')})
    dbgoto(rec)
 else
    lock

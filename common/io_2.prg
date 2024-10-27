@@ -2112,6 +2112,13 @@ func evaldb(...)
    endif
 return r
 *****************
+func ufieldget(f)
+   local n := fieldpos(f), x := fieldget(n)
+   if valtype(x)='C'
+      x += space(FieldLen(n) - hb_ULen(x))
+   endif
+return x
+*****************
 func binfieldput(f,x,lval)
    local t,b
    if valtype(x)='C'
@@ -2126,7 +2133,7 @@ func binfieldput(f,x,lval)
    return HB_FieldPut(f,x)
    endif
 return x 
-
+*******************************
 func binfieldget(f,lval) // .t. - do not padr with spaces
    local x := hb_fieldget(f),t
    if valtype(x)='C'
@@ -2136,7 +2143,7 @@ func binfieldget(f,lval) // .t. - do not padr with spaces
       endif
       if empty(lval)
          // to działa zależy jaka aktualna strona kodowa
-         x := x + space(hb_FieldLen(f) - len(x))
+         x += space(hb_FieldLen(f) - hb_ULen(x))
       endif
    endif
 return x

@@ -577,7 +577,7 @@ procedure dok1(_f)
 #endif
       if dok_kh.and.firMy->(dbseek(kh))
 #ifdef A_FFULL
-         d_o:=PAD(firMy->(trim(nazwa)+" * "+longname),hb_fieldlen('DOST_ODB'))
+         d_o:=PAD(firMy->(trim(nazwa)+" * "+longname),hb_fieldlen([DOST_ODB]))
 #ifdef A_AF
          KH->(dbseek(kh))
 #endif
@@ -585,7 +585,7 @@ procedure dok1(_f)
 #ifdef A_OLZBY
          d_o:=firMy->nazwa
 #else
-         d_o:=PAD(firMy->nazwa,hb_fieldlen('DOST_ODB'))
+         d_o:=PAD(firMy->nazwa,hb_fieldlen([DOST_ODB]))
 #endif
 #endif
 #ifdef A_KSEF
@@ -598,7 +598,7 @@ procedure dok1(_f)
            x:=''
          endif
       endif
-      n_ksef:=pad(if(empty(x),'',left(x,10)+'-'+left(dtos(da),6)),hb_fieldlen('nr_ksef'))
+      n_ksef:=pad(if(empty(x),'',left(x,10)+'-'+left(dtos(da),6)),hb_fieldlen([nr_ksef]))
          endif
 #endif
       else
