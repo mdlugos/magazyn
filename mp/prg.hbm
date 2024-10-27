@@ -4,7 +4,7 @@
 hbwin.hbc
 #-lelzabdr
 hbzebra.hbc
-#rddads.hbc
+rddads.hbc
 hbmxml.hbc
 -i../common
 #../common/mlcfunc.c ../common/cppl852m.c ../common/cp_utf8m.c

@@ -2127,7 +2127,7 @@ func binfieldput(f,x,lval)
    endif
 return x 
 
-static func binfieldget(f,lval) // .t. - do not padr with spaces
+func binfieldget(f,lval) // .t. - do not padr with spaces
    local x := hb_fieldget(f),t
    if valtype(x)='C'
       t:=hb_FieldType(f)

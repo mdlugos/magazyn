@@ -17,8 +17,10 @@ request A_EXT
 #include "error.ch"
 #include "inkey.ch"
 #include "hbgtinfo.ch"
-init proc esys()
 
+REQUEST HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_UTF8EX
+
+init proc esys()
 
 memvar _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,firma_n,firma_a,defa,pcl
 local sc:=A_SUMK,a:=A_AUTOR,f:=A_KOMU_N,fa:=A_KOMU_A
@@ -32,22 +34,11 @@ local i,n,t
 //  #endif
 #endif
 
-REQUEST HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_UTF8EX
-  hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
 
 //browse musi mieć BOXCP tego samego rodzaju co główną bo left/right/substr w tbrowse
 //  REQUEST HB_CODEPAGE_PLMAZ
 //  hb_gtInfo( HB_GTI_BOXCP, 'PLMAZ')
-
   HB_CDPSELECT(D_CDP)
-  hb_SetTermCP( hb_cdpTerm() )
-  Set(_SET_OSCODEPAGE, hb_cdpOS())
-
-  //SET(_SET_CODEPAGE, D_CDP )
-  SET(_SET_DBCODEPAGE, PC852 )
-
-  HB_LANGSELECT('PL')
-
 //header w UTF8 ale suma wyliczona dla kodowania PC852
 
 a:=hb_UTF8ToStr(a)
@@ -67,28 +58,37 @@ if sc#0
   quit
 endif
 
-ErrorBlock( {|e| DefError(e)} )
+  if hb_gtInfo( HB_GTI_ISGRAPHIC )
+  #ifdef __PLATFORM__UNIX   
+     hb_gtInfo( HB_GTI_FONTSEL,'-*-fixed-medium-r-*-*-18-*-*-*-*-*-iso10646-1')
+     // 29,27,21,20,18,15,14,13,12,11,10,9,8,7,6
+  #else
+     hb_gtInfo( HB_GTI_FONTNAME , "Lucida Console" )
+     hb_gtInfo( HB_GTI_FONTWIDTH, 10  )
+     hb_gtInfo( HB_GTI_FONTSIZE , 20 )
+  #endif   
+     //hb_gtInfo( HB_GTI_WINTITLE , "Rozruch" )
+     hb_gtInfo( HB_GTI_ALTENTER, .T. )  // allow alt-enter for full screen
+     SetCursor( 0 )
+     hb_gtInfo( HB_GTI_CLOSABLE, .t. )
+     hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
+  #ifdef __PLATFORM__WINDOWS
+  else
+     setmode(min(maxrow()+1,Round((maxcol()+1)*5/16,0)),maxcol()+1)
+  #endif   
+  endif
+  hb_SetTermCP( hb_cdpTerm() )
+  Set(_SET_OSCODEPAGE, hb_cdpOS())
 
-hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
-if hb_gtInfo( HB_GTI_ISGRAPHIC )
-#ifdef __PLATFORM__UNIX   
-   hb_gtInfo( HB_GTI_FONTSEL,'-*-fixed-medium-r-*-*-18-*-*-*-*-*-iso10646-1')
-   // 29,27,21,20,18,15,14,13,12,11,10,9,8,7,6
-#else
-   hb_gtInfo( HB_GTI_FONTNAME , "Lucida Console" )
-   hb_gtInfo( HB_GTI_FONTWIDTH, 10  )
-   hb_gtInfo( HB_GTI_FONTSIZE , 20 )
-#endif   
-   //hb_gtInfo( HB_GTI_WINTITLE , "Rozruch" )
-   hb_gtInfo( HB_GTI_ALTENTER, .T. )  // allow alt-enter for full screen
-   SetCursor( 0 )
-   hb_gtInfo( HB_GTI_CLOSABLE, .t. )
-   hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
-#ifdef __PLATFORM__WINDOWS
-else
-   setmode(min(maxrow()+1,Round((maxcol()+1)*5/16,0)),maxcol()+1)
-#endif   
-endif
+  //SET(_SET_CODEPAGE, D_CDP )
+  SET(_SET_DBCODEPAGE, PC852 )
+
+  HB_LANGSELECT('pl')
+
+  hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
+  hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
+  
+ErrorBlock( {|e| DefError(e)} )
 
 #ifdef A_ADS
       REQUEST ADS
@@ -210,20 +210,17 @@ local i, cMessage:="", aOptions:={}, nChoice,r,t,n,bk,h,f,a,b,c,d
 field nazwa,baza,klucz,path,plik,for,unique,descend
 static s:=0,ee:=NIL
 
-   HB_CDPSELECT(D_CDP)
-// put messages to STDERR
+  HB_CDPSELECT(D_CDP)
   if e:severity=NIL
      e:severity:=ES_ERROR
   endif
 
   if ee#NIL .and. e:severity > ES_WARNING
-  // display message and traceback
+
 #ifndef SIMPLE
   set color to w
   set cursor on
 #endif
-
-
 
 // used below
 
