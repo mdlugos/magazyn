@@ -2583,7 +2583,7 @@ DO CASE
 #ifdef A_FA
           case _spocz='?'
                select DM
-               set order to "DM_NAZ"
+               set order to tag DM_NAZ
                re:=recno()
                begin sequence
                   dbseek(txt:=if(upper(IndexkeY(0))='NR_MAG',mag_biez,'')+subs(_spocz,2))
@@ -2627,7 +2627,7 @@ DO CASE
 #ifdef A_AF
                set order to tag KH
 #else
-               set order to "FIRM_NUM"
+               set order to tag FIRM_NUM
 #endif
                re:=recno()
                if dbseek(_spocz)
@@ -2651,7 +2651,7 @@ DO CASE
 #ifdef A_AF
                set order to tag KH2
 #else
-               SET ORDER TO "FIRM_NAZ"
+               SET ORDER TO TAG FIRM_NAZ
 #endif
           otherwise
                _sbeg:=A_NRLTH+2
@@ -2660,7 +2660,7 @@ DO CASE
                if dbSEEK(_spocz)
                   if _spocz=UpP(trim(n15))
 #else
-               SET ORDER TO "FIRM_NAZ"
+               SET ORDER TO TAG FIRM_NAZ
                if dbSEEK(_spocz)
                   if _spocz=UpP(trim(nazwa))
 #endif
@@ -2697,6 +2697,9 @@ DO CASE
                      _sfilt:='['+txt+']$UPPER(longname)'
                      _sfilb:={||txt$UPPER(longname)}
                      _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,I,"*")+nazwa+I+ufieldget([longname]),if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+                     if indexord()=0
+                        SET ORDER TO TAG FIRM_NAZ
+                     endif
                   endif
 #else
                   _spocz:=''
