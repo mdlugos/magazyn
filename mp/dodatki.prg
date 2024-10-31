@@ -120,8 +120,8 @@ DO CASE
          #define D_Z3 nowy->d_z_rok
 #else
          txt:=getlines(memoread(txt+"daty.ini"))
-         #define D_Z1 &(subs(txt[1],at(':=',txt[1])+2))
-         #define D_Z3 &(subs(txt[3],at(':=',txt[3])+2))
+         #define D_Z1 &(SubStr(txt[1],at(':=',txt[1])+2))
+         #define D_Z3 &(SubStr(txt[3],at(':=',txt[3])+2))
 #endif
          if D_Z1#D_Z3
             alarm(hb_UTF8ToStr("Otwarcie niemożliwe;Nowy rok jest zamknięty do ")+dtoc(D_Z1)+" .")
@@ -363,7 +363,7 @@ IF dz1>DatY->d_z_mies1
      #define D_Z1 stary->d_z_mies1
 #else
      m:=getlines(memoread(defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty.ini"))[1]
-     #define D_Z1 &(subs(m,at(':=',m)+2))
+     #define D_Z1 &(SubStr(m,at(':=',m)+2))
 #endif
      if D_Z1<DatY->d_z_rok
         alarm("Najpierw zamknij rok"+str(year(D_Z1+D_OLZA),5)+hb_UTF8ToStr(" !;Nie można teraz zamknąć roku")+str(year(DatY->d_z_rok+D_OLZA),5)+" !")
@@ -700,7 +700,7 @@ if stary_rok=dz1
 #else
      use
      m:=getlines(memoread(dz2+"daty.ini"))[1]
-     #define D_Z1 &(subs(m,at(':=',m)+2))
+     #define D_Z1 &(SubStr(m,at(':=',m)+2))
 #endif
    set color to (_sel)
    ? hb_UTF8ToStr("SPRAWDZENIE ZGODNOŚCI STANU KOŃCOWEGO I BILANSU OTWARCIA NOWEGO ROKU.")+chr(7)
@@ -1001,7 +1001,7 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
      mkdir(defa+"archiwum")
      ?
      ? "Przenoszenie starych danych do katalogu ARCHIWUM:"
-     AEVAL(DIRECTORY(defa+"kopia.*"),{|X|if(file(defa+"archiwum"+HB_ps()+"kopi"+str(year(DatY->d_z_mies1),4)+subs(x[1],at(".",x[1]))),,(QOUT(X[1]),frename(defa+X[1],defa+"archiwum"+HB_ps()+"kopi"+str(year(DatY->d_z_mies1),4)+subs(x[1],at(".",x[1])))))})
+     AEVAL(DIRECTORY(defa+"kopia.*"),{|X|if(file(defa+"archiwum"+HB_ps()+"kopi"+str(year(DatY->d_z_mies1),4)+SubStr(x[1],at(".",x[1]))),,(QOUT(X[1]),frename(defa+X[1],defa+"archiwum"+HB_ps()+"kopi"+str(year(DatY->d_z_mies1),4)+SubStr(x[1],at(".",x[1])))))})
 
 
    begin sequence

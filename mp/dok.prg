@@ -290,7 +290,7 @@ endif
       SET RELATION TO
   if nk#NIL
 #ifdef wtoT
-    nkp:=subs(nk,6)
+    nkp:=SubStr(nk,6)
     if empty(nkp) .and. D_LPVAL(pozycja)>maxrow() .and. pozycja>=D_LP1
        nkp:=pozycja
     endif
@@ -352,7 +352,7 @@ endif
             return
          endif
          r:=ascan(dokumenty[MAG_POZ],dok)
-         dm->sub_dok:=subs(dok,3)
+         dm->sub_dok:=SubStr(dok,3)
       endif
     endif
     pm:=if(dok_p_r="P",1,-1)
@@ -492,7 +492,7 @@ procedure dok1(_f)
       IF !BOF() .and. KEY_DOK=KEY_PAR //zerowka tez dobra na wzór
           x:=5
           for i:=5 to 1 step -1
-            s:=subs(nr_dowodU,i,1)
+            s:=SubStr(nr_dowodU,i,1)
             if isdigit(s)
                exit
             endif
@@ -509,7 +509,7 @@ procedure dok1(_f)
           DEFAULT mknk TO i
           p:=recno()
             for x:=i-1 to 1 step -1
-              s:=subs(nr_dowodU,x,1)
+              s:=SubStr(nr_dowodU,x,1)
               if !isdigit(s)
                 if s<>' '
                   exit
@@ -531,10 +531,10 @@ procedure dok1(_f)
           while !BOF() .and. KEY_DOK=KEY_PAR .and. pozycja=D_LP0 D_WAR D_LAN
             skip -1
           enddo
-          if x>0 .and. str(1+val(subs(nr_dowodU,x+1)),i-x)='*'
+          if x>0 .and. str(1+val(SubStr(nr_dowodU,x+1)),i-x)='*'
              --x
           endif
-          nk:=left(nr_dowodU,x)+str(1+val(subs(nr_dowodU,x+1)),i-x)+subs(nr_dowodU,i+1)
+          nk:=left(nr_dowodU,x)+str(1+val(SubStr(nr_dowodU,x+1)),i-x)+SubStr(nr_dowodU,i+1)
           goto p
       else
         DEFAULT mknk TO 4
@@ -593,7 +593,7 @@ procedure dok1(_f)
       x:=strtran(firmy->ident,'-')
       if !isdigit(x)
          if x='PL'
-           x:=subs(x,3)
+           x:=SubStr(x,3)
          else
            x:=''
          endif
@@ -632,11 +632,11 @@ procedure dok1(_f)
       data_dost:=dd
 #ifdef A_KSEF
       nr_ksef:=n_ksef
-      binfieldput('KSEF',xml_ksef)
+      ufieldput('KSEF',xml_ksef)
 #endif
       wtoT:=0
 #ifdef A_SUBDOK
-      sub_dok:=subs(dok,3)
+      sub_dok:=SubStr(dok,3)
 #endif
 #ifdef A_VAT
       wart_vat:=0
@@ -663,7 +663,7 @@ procedure dok1(_f)
       if mknk=NIL
           x:=5
           for i:=5 to 1 step -1
-            s:=subs(nr_dowodU,i,1)
+            s:=SubStr(nr_dowodU,i,1)
             if isdigit(s)
                exit
             endif
@@ -686,7 +686,7 @@ procedure dok1(_f)
       n_f:=nr_faktury
 #ifdef A_KSEF
       n_ksef:=nr_ksef
-      xml_ksef:=BINFIELDGET('KSEF')
+      xml_ksef:=ufieldget('KSEF')
 #endif
 #ifdef A_DATAVAT
       dv:=data_vat
@@ -774,7 +774,7 @@ procedure dok1(_f)
 #endif
 #ifdef A_FA
 #ifdef A_NVAT
-  chgpos:=!nowydm .and. subs(dok,2)#"K"
+  chgpos:=!nowydm .and. SubStr(dok,2)#"K"
 #endif
 /**********
   if nowydm .and. dok_p_r="F"
@@ -867,7 +867,7 @@ _frow:=2
   #define WBR(w,v) (w+v)
  #endif
  #define ZAG(w,v) ROUND(WBR(w,v)-zap-zac,A_ZAOKR)
-       if subs(dok,2)="K"
+       if SubStr(dok,2)="K"
           @ 3,2 say "Dokument poprawiany z dnia:"
        endif
        @ 3,50 say "VAT"
@@ -1065,7 +1065,7 @@ procedure dok11(_f)
 #endif
 #ifdef A_KSEF
     @ _frow-1,11 SAY nr_ksef
-    @ _frow-1,50 SAY binfieldget('KSEF') picture "@S28"
+    @ _frow-1,50 SAY ufieldget('KSEF') picture "@S28"
 #endif
     @ _frow,2 say pad(uwagi,76)
     return
@@ -1104,7 +1104,7 @@ procedure dok11(_f)
 #endif
 #ifdef A_KSEF
     @ _frow-2,11 SAY nr_ksef
-    @ _frow-2,50 SAY binfieldget('KSEF') picture "@S28"
+    @ _frow-2,50 SAY ufieldget('KSEF') picture "@S28"
 #endif
     @  _frow,73 say nk  PICTURE "XXXXX"
 
@@ -1127,7 +1127,7 @@ procedure dok2(_f,getlist)
     if dok_kh
        get:postblock:={|g|szukam({1,14,maxrow(),,1,0,'FIRMY',,{|_skey,_s|gfirma(_skey,_s,getlist)},TRIM(d_o)})}
     elseif dok_zew="W" .and. dok="M"
-       get:postblock:={||!empty(subs(d_o,3)).or.aczojs(magazyny),.t.}
+       get:postblock:={||!empty(SubStr(d_o,3)).or.aczojs(magazyny),.t.}
 #ifdef A_MULTIDI
     elseif dok$dok_di .and. mag_biez=A_MAGDI
        d:=aclone(stanowis[mag_poz])
@@ -1147,7 +1147,7 @@ procedure dok2(_f,getlist)
 #define D_MM mag_biez+
 #endif
 
-    if subs(dok,2)="K"
+    if SubStr(dok,2)="K"
       @ 4,2 GET n_f PICTURE "@K!S13" valid {|x|x:=recno(),empty(n_f).and.szukam({1,1,maxrow(),,1,0,'DOKUMENTY',{||smb_dow+nr_dowodu+I+dtoc(data)+I+dost_odb},{|_skey,_s|(_sret:=_skey=13).or._skey=27.or._skey=0.and.(if(val(d_o)=0,,_sfor:={||dost_odb=hb_bleft(d_o,A_NRLTH)}),dbseek(D_MM '',,.t.),dbskip(),.f.)},D_MM ''}).and.(dd:=data,n_f:=pad(KEY_DOK+nr_dowodu,hb_fieldlen('nr_faktury')),updated(.t.),.t.),dbgoto(x),.t.}
       @ 4,16 GET dd
 //#ifndef A_NVAT
@@ -1182,7 +1182,7 @@ procedure dok2(_f,getlist)
       @ 4,16 GET dd VALID {|g|if(dataval(dd),(if(g:original=da.and.da#dd ,(da:=dd,x:=g,aeval(getlist,{|g|if(g:name=='da',(g:display(),eval(g:postblock,x)),)})  ),)),),.t.}
     endif
 #ifdef A_NVAT
-      if chgpos .and. subs(dok,2)#"K"
+      if chgpos .and. SubStr(dok,2)#"K"
          SELECT MAIN
          SET ORDER TO TAG MAIN_NRK
          SEEK DM->(KEY_DOK+NR_DOWODU)
@@ -1215,8 +1215,8 @@ procedure dok2(_f,getlist)
           select DM
 #ifdef A_A
           x:=dbstruct()
-          aeval(x,{|x,y,z|if(x[2]$'BN'.and.x[1]='WART_NET',(vat(lower(subs(x[1],9)),,@z),fieldput(y,Round(z,0)/100)),)})
-          aeval(x,{|x,y,z|if(x[2]$'BN'.and.x[1]='WART_VAT',(vat(lower(subs(x[1],9)),@z,),fieldput(y,Round(z,0)/100)),)})
+          aeval(x,{|x,y,z|if(x[2]$'BN'.and.x[1]='WART_NET',(vat(lower(SubStr(x[1],9)),,@z),fieldput(y,Round(z,0)/100)),)})
+          aeval(x,{|x,y,z|if(x[2]$'BN'.and.x[1]='WART_VAT',(vat(lower(SubStr(x[1],9)),@z,),fieldput(y,Round(z,0)/100)),)})
           //aeval(avat,{|x|dm->(fieldput(fieldpos('wart_net'+ltrim(x[1])),x[3]/100)),if(val(x[1])#0,dm->(fieldput(fieldpos('wart_vat'+ltrim(x[1])),round(x[2],0)/100)),)})
 #endif
           REPLACE wartosc WITH txt/100
@@ -1437,7 +1437,7 @@ memvar exp_od,exp_do
       POZYCJA := D_LPPUT(_flp)
       nr_dowodu := nk //STR(nk,5)
 #ifdef A_SUBDOK
-      sub_dok:=subs(dok,3)
+      sub_dok:=SubStr(dok,3)
 #endif
       NOWYDM := .F.
       goto recno()
@@ -1581,7 +1581,7 @@ memvar exp_od,exp_do
 #endif
            SEEK DM->(KEY_DOK+NR_DOWODU)
            if dok_kon="&:"
-           x:=&("{||nz:=nr_zlec,MAIN->NR_ZLEC:="+trim(subs(dok_kon,3))+"}")
+           x:=&("{||nz:=nr_zlec,MAIN->NR_ZLEC:="+trim(SubStr(dok_kon,3))+"}")
 #ifndef A_LAN
            dbeval(x,,{||KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu)})
 #else
@@ -1591,9 +1591,9 @@ memvar exp_od,exp_do
            else
            i:=len(EvAlDb(IndexKey(3)))-hb_fieldlen('index')-A_NRLTH-10
 #ifndef A_LAN
-           replace nr_zlec with left(nr_zlec,i)+kh while KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu) for c==subs(nr_zlec,i+1,A_NRLTH)
+           replace nr_zlec with left(nr_zlec,i)+kh while KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu) for c==SubStr(nr_zlec,i+1,A_NRLTH)
 #else
-           replace nr_zlec with left(nr_zlec,i)+kh while KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu) for c==subs(nr_zlec,i+1,A_NRLTH) .and. reclock(.F.,hb_UTF8ToStr("NIE POTRAFIĘ ZMIENIĆ NUMERU KONTA POZYCJI")+D_LPSTR(POZYCJA) ,.F.)
+           replace nr_zlec with left(nr_zlec,i)+kh while KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu) for c==SubStr(nr_zlec,i+1,A_NRLTH) .and. reclock(.F.,hb_UTF8ToStr("NIE POTRAFIĘ ZMIENIĆ NUMERU KONTA POZYCJI")+D_LPSTR(POZYCJA) ,.F.)
            unlock
 #endif
            endif
@@ -1649,7 +1649,7 @@ memvar exp_od,exp_do
 
 #ifdef A_OLZA
  if dok_zew="W" .and. ""#dok_kon
-    NZ:=subs(SK,4,1)+IF(SK="50","00",if(sk="52","11","  "))+RIGHT(SK,2)+"0000"
+    NZ:=SubStr(SK,4,1)+IF(SK="50","00",if(sk="52","11","  "))+RIGHT(SK,2)+"0000"
  ENDIF
 #endif
 #ifdef A_KSEF
@@ -1710,9 +1710,9 @@ begin sequence
           c:=ROUND(c/i,A_ZAOKR)
           if i#0
 #ifdef STANY
-             indx_mat->(dbseek(subs(txt,a+1),.f.))
+             indx_mat->(dbseek(SubStr(txt,a+1),.f.))
 #else
-             indx_mat->(dbseek(subs(txt,a+3),.f.))
+             indx_mat->(dbseek(SubStr(txt,a+3),.f.))
 #endif
              lam:=i_lam(da)
              x:="   "
@@ -1733,7 +1733,7 @@ begin sequence
        if y
          message(mes)
          mes:='Nie rozliczone:'
-         aeval(darr,{|x|if("<#>"$x,mes+=";"+subs(x,44),)})
+         aeval(darr,{|x|if("<#>"$x,mes+=";"+SubStr(x,44),)})
          mes+=hb_UTF8ToStr(';Naciśnij klawisz...')
          mes:=message(mes)
          tone(130,3)
@@ -1750,9 +1750,9 @@ begin sequence
           c:=ROUND(c/i,A_ZAOKR)
           if i#0
 #ifdef STANY
-             indx_mat->(dbseek(subs(txt,a+1),.f.))
+             indx_mat->(dbseek(SubStr(txt,a+1),.f.))
 #else
-             indx_mat->(dbseek(subs(txt,a+3),.f.))
+             indx_mat->(dbseek(SubStr(txt,a+3),.f.))
 #endif
              lam:=i_lam(da)
              aadd(darr,indx_mat->index+" "+str(pm*i,10,ILDEC)+" "+(lam)->jm+" po "+str(c,10,A_ZAOKR)+hb_UTF8ToStr(" zł ")+str(j,3)+" X "+trim((lam)->nazwa))
@@ -1792,10 +1792,10 @@ begin sequence
           j:=recno()
           sel(TRIM(INDEKS->baza),"ZAP_REL",.t.)
           INDEKS->(dbgoto(j))
-          j:=Trim(SUBS(d_o,2,1))
+          j:=Trim(SubStr(d_o,2,1))
 #ifdef A_ONEPOS
           IF EMPTY(j)
-             j:=SUBS(d_o,a+2)
+             j:=SubStr(d_o,a+2)
              j:=LEFT(j,AT(' ',j)-1)
           ENDIF
 #endif
@@ -1819,7 +1819,7 @@ begin sequence
               if j=0
                  ++i
               else
-                 darr[i]:=left(darr[i],k)+str(val(subs(darr[i],k+1))+val(subs(darr[j],k+1)),8,3)
+                 darr[i]:=left(darr[i],k)+str(val(SubStr(darr[i],k+1))+val(SubStr(darr[j],k+1)),8,3)
                  adel(darr,j)
                  asize(darr,len(darr)-1)
               endif
@@ -1827,7 +1827,7 @@ begin sequence
           c:=main->(hb_fieldlen('nr_zlec'))+1
           k:=surowce->(hb_fieldlen('skladnik'))
           for i:=1 to len(darr)-2
-              if i+1<(j:=ascan(darr,{|x|subs(darr[i],c,k)=subs(x,c,k)},max(i+1,++j)))
+              if i+1<(j:=ascan(darr,{|x|SubStr(darr[i],c,k)=SubStr(x,c,k)},max(i+1,++j)))
                  txt:=darr[j]
                  adel(darr,j)
                  ains(darr,i+1)
@@ -1838,8 +1838,8 @@ begin sequence
           for i:=1 to len(darr)
               message(10)
               j:=darr[i]
-              SUROWCE->(dbseek(subs(j,c,k),.f.))
-              darr[i]:=surowce->indx_mat+" "+left(j,c-1)+" "+left(surowce->nazwa,40)+HB_UCHAR(0x00A0)+subs(j,-8)+" "+surowce->jmag
+              SUROWCE->(dbseek(SubStr(j,c,k),.f.))
+              darr[i]:=surowce->indx_mat+" "+left(j,c-1)+" "+left(surowce->nazwa,40)+HB_UCHAR(0x00A0)+SubStr(j,-8)+" "+surowce->jmag
           next
           if (dpos:=min(_flp+1,len(darr)))=1
              @ _frow+2,5 say 'Zapotrzebowanie na ten dzień pod [F8]' UNICODE color _sbkgr
@@ -1925,7 +1925,7 @@ begin sequence
 #ifdef A_CIEZKO
               if surowce->skladnik==skladnik
                  --i
-                 darr[i]:=surowce->indx_mat+" WS     "+surowce->nazwa+HB_UCHAR(0x00A0)+str(ilosc+val(subs(darr[i],-13)),8,3)+" "+surowce->jmag
+                 darr[i]:=surowce->indx_mat+" WS     "+surowce->nazwa+HB_UCHAR(0x00A0)+str(ilosc+val(SubStr(darr[i],-13)),8,3)+" "+surowce->jmag
                  adel(darr,i+1)
                  asize(darr,len(darr)-1)
               else
@@ -1937,7 +1937,7 @@ begin sequence
 #ifdef A_DODATKI
               if surowce->skladnik==skladnik .and. j==posilek
                  --i
-                 darr[i]:=surowce->indx_mat+" W"+posilek+"     "+surowce->nazwa+HB_UCHAR(0x00A0)+str(ilosc+val(subs(darr[i],-13)),8,3)+" "+surowce->jmag
+                 darr[i]:=surowce->indx_mat+" W"+posilek+"     "+surowce->nazwa+HB_UCHAR(0x00A0)+str(ilosc+val(SubStr(darr[i],-13)),8,3)+" "+surowce->jmag
                  adel(darr,i+1)
                  asize(darr,len(darr)-1)
               else
@@ -1948,7 +1948,7 @@ begin sequence
 #else
               if surowce->skladnik==skladnik .and. j==posilek .and. k==dieta
                  --i
-                 darr[i]:=surowce->indx_mat+" "+pad("W"+posilek+dieta,main->(hb_fieldlen('nr_zlec')))+" "+surowce->nazwa+HB_UCHAR(0x00A0)+str(ilosc+val(subs(darr[i],-13)),9,3)+" "+surowce->jmag
+                 darr[i]:=surowce->indx_mat+" "+pad("W"+posilek+dieta,main->(hb_fieldlen('nr_zlec')))+" "+surowce->nazwa+HB_UCHAR(0x00A0)+str(ilosc+val(SubStr(darr[i],-13)),9,3)+" "+surowce->jmag
                  adel(darr,i+1)
                  asize(darr,len(darr)-1)
               else
@@ -2173,11 +2173,11 @@ local txt,j,x,s:=0,si:='',gzl,y,z,a
 */
 #ifdef A_ODDO
          if dok$dok_zb
-           il:=pm*val(subs(nim,hb_fieldlen('index')+2))
+           il:=pm*val(SubStr(nim,hb_fieldlen('index')+2))
 #ifdef A_KASA
-           nz:=subs(nim,44)
-           pv:=subs(nim,20,2)
-           cz:=val(subs(nim,24,10))
+           nz:=SubStr(nim,44)
+           pv:=SubStr(nim,20,2)
+           cz:=val(SubStr(nim,24,10))
            wa:=pm*val(right(nim,10))
            if wa<>0
               ce:=ck:=wa/il
@@ -2190,18 +2190,18 @@ local txt,j,x,s:=0,si:='',gzl,y,z,a
              chg_cen:=.t.
            endif
 #endif
-           @ _fk,5 SAY subs(nim,9,46)
+           @ _fk,5 SAY SubStr(nim,9,46)
 //#undef A_ODDO //po co to ?
 #else //kasa
 //#undef D_DIETA_OR_ODDO
-           cz:=val(subs(nim,hb_fieldlen('index')+21,10))
+           cz:=val(SubStr(nim,hb_fieldlen('index')+21,10))
 if dok_p_r="F"
            wz:=W(pm*il,cz,val(pv),dok_df)
 else
            wz:=WPZ(pm*il*cz)
 endif
-           @ _fk,5 SAY subs(nim,hb_fieldlen('index')+35,46)
-           @ _fk+1,48 SAY subs(nim,hb_fieldlen('index')+13,4)
+           @ _fk,5 SAY SubStr(nim,hb_fieldlen('index')+35,46)
+           @ _fk+1,48 SAY SubStr(nim,hb_fieldlen('index')+13,4)
            select STANY
            set order to 2
            dbseek(mag_biez+left(nim,hb_fieldlen('index')),.f.)
@@ -2220,12 +2220,12 @@ endif
 #endif //oddo
 #ifdef A_DIETA //#else  //oddo
          if dok$dok_di
-           il:=-val(subs(nim,rat(HB_UCHAR(0x00A0),nim)+1))
-           nz:=subs(nim,hb_fieldlen('index')+2,hb_fieldlen('nr_zlec'))
+           il:=-val(SubStr(nim,rat(HB_UCHAR(0x00A0),nim)+1))
+           nz:=SubStr(nim,hb_fieldlen('index')+2,hb_fieldlen('nr_zlec'))
            @ _fk+1,48 say right(nim,4)
-           txt:=subs(nim,hb_fieldlen('INDEX')+2+hb_fieldlen('nr_zlec')+1)
+           txt:=SubStr(nim,hb_fieldlen('INDEX')+2+hb_fieldlen('nr_zlec')+1)
            j:=rat(HB_UCHAR(0x00A0),txt)
-           txt:=left(nim,hb_fieldlen('INDEX')+2)+trim(nz)+' '+TRIM(left(txt,j-1))+' '+subs(txt,j+1)
+           txt:=left(nim,hb_fieldlen('INDEX')+2)+trim(nz)+' '+TRIM(left(txt,j-1))+' '+SubStr(txt,j+1)
            @ _fk+2,1 SAY "ZAPOTRZEBOWANIE: "+txt+space(60-len(txt)) color _sbkgr
            nim:=pad(left(nim,hb_fieldlen('index')),46)
            select STANY
@@ -2451,7 +2451,7 @@ endif
             if _fnowy
                nz:=left(txt[1],a)
 #ifndef A_NOMZ
-               if dok_zew#"W" .and. (dok_kon#"?" .or. !empty(kh)) .and. empty(subs(nz,a-A_NRLTH+1,A_NRLTH))
+               if dok_zew#"W" .and. (dok_kon#"?" .or. !empty(kh)) .and. empty(SubStr(nz,a-A_NRLTH+1,A_NRLTH))
                  nz:=left(nz,a-A_NRLTH)+kh
                endif
 #endif
@@ -2464,12 +2464,12 @@ endif
 #else
 #ifdef A_KOBSUR
             j:postblock:=if(dok_kon="?".and.empty(kh),{||aczojs(zaMowienie[MAG_POZ])},{|g,x,y|y:=.t.,x:=nz,aczojs(zaMowienie[MAG_POZ],@x) .AND.;
-                  (if(empty(subs(x,a-A_NRLTH+1,A_NRLTH)),;
+                  (if(empty(SubStr(x,a-A_NRLTH+1,A_NRLTH)),;
                   (nz#(nz:=left(x,a-A_NRLTH)+kh).and.updated(@y)),;
                   (nz:=x)#g:original.and.updated(@y)),y) .and. nzval(g,_f,getlist)})
 #else
             j:postblock:=if(dok_kon="?".and.empty(kh),{||aczojs(zaMowienie[MAG_POZ])},{|g,x,y|y:=.t.,x:=nz,aczojs(zaMowienie[MAG_POZ],@x) .AND.;
-                  (if(empty(subs(x,a+1-A_NRLTH,A_NRLTH)),;
+                  (if(empty(SubStr(x,a+1-A_NRLTH,A_NRLTH)),;
                   (nz#(nz:=padr(left(x,a-A_NRLTH)+kh,hb_fieldlen('NR_ZLEC'))).and.updated(@y)),;
                   (nz:=x)#g:original.and.updated(@y)),y)})
 #endif
@@ -2854,9 +2854,9 @@ local pos:=dpos,x
        if p="DOK4" .and. (dflag:=aczojs(darr,@nim,@pos,,hb_UTF8ToStr("Zbiorówka:")))
           dpos:=pos
           nim:=darr[dpos]
-          @ _fk,5 SAY subs(nim,hb_fieldlen('index')+35,46) color _sbkgr
-          il:=pm*val(subs(nim,hb_fieldlen('index')+2))
-          cz:=val(subs(nim,hb_fieldlen('index')+21))
+          @ _fk,5 SAY SubStr(nim,hb_fieldlen('index')+35,46) color _sbkgr
+          il:=pm*val(SubStr(nim,hb_fieldlen('index')+2))
+          cz:=val(SubStr(nim,hb_fieldlen('index')+21))
           NIM:=left(nim,hb_fieldlen('index'))
           select STANY
           set order to 2
@@ -2963,7 +2963,7 @@ static proc azapchoice(g,_f,getlist)
 &:_bv:={|g,a|a:=eval(g:block),g:=g:subscript,a:=a[g[1]],a[6]:=round(a[5]*a[4],2),a[8]:=round(a[6]*(a[7]+100)/100,2),.t.}
 &:_bp:={|x|x[1]:=if(Empty(x[1]),'      ',x[1]),x[2]:=if(Empty(x[2]),'    ',x[2]),x[4]:=if(empty(x[4]),0,val(strtran(x[4],',','.'))),x[5]:=if(empty(x[5]),0,val(strtran(x[5],',','.'))),x[7]:=if(empty(x[7]),0,val(x[7])),x[6]:=round(x[5]*x[4],2),x[8]:=round(x[6]*(x[7]+100)/100,2),indx_mat->(dbseek(mag_biez+left(x[2],4),.f.)),x[9]:=left(indx_mat->nazwa,30)}
 &:_bva:={|g,a,r,x|a:=eval(g:block),r:=g:subscript,a:=a[r[1]],a[2]:=indx_mat->index,a[9]:=left(indx_mat->nazwa,16),a[7]:=val(indx_mat->proc_vat),a[3]:=indx_mat->jm,a[5]:=indx_mat->cena_zak,eval(_bv,g)}
-&:_bvi:={|g,v,r,a,s|if(empty(subs(v,9)),(s:=push_stat(),a:=array(11),a[10]:=UPPER(Trim(v)),a[11]:=.t.,r:=katalog(a,g),if(r,eval(_bva,g),),pop_stat(s),r),.t.)}
+&:_bvi:={|g,v,r,a,s|if(empty(SubStr(v,9)),(s:=push_stat(),a:=array(11),a[10]:=UPPER(Trim(v)),a[11]:=.t.,r:=katalog(a,g),if(r,eval(_bva,g),),pop_stat(s),r),.t.)}
 &:_ap:={'@K',,,'@KZ ######.###','@EKZ ####.##','@EZ #####.##','@KZ ##','@EZ ######.##'}
 &:_sb0:={|y,z|_txt:=_txt+AllTrim(Tran(y,_ap[z]))+';'}
 &:_sb1:={|x|aeval(x,_sb0),_txt:=_txt+chr(13)+chr(10)}
@@ -2978,9 +2978,9 @@ static proc azapchoice(g,_f,getlist)
           nim:=darr[dpos]
 #ifdef A_ODDO
           if dok$dok_zb
-          @ _fk,5 SAY subs(nim,hb_fieldlen('index')+35,46) color _sbkgr
-          il:=pm*val(subs(nim,hb_fieldlen('index')+2))
-          cz:=val(subs(nim,hb_fieldlen('index')+21))
+          @ _fk,5 SAY SubStr(nim,hb_fieldlen('index')+35,46) color _sbkgr
+          il:=pm*val(SubStr(nim,hb_fieldlen('index')+2))
+          cz:=val(SubStr(nim,hb_fieldlen('index')+21))
           NIM:=left(nim,hb_fieldlen('index'))
           select STANY
           set order to 2
@@ -3009,13 +3009,13 @@ endif
        if dok$dok_di
           dpush:=.t.
 #ifdef A_KASA
-          @ _fk,5 SAY subs(nim,hb_fieldlen('index')+2,46)
+          @ _fk,5 SAY SubStr(nim,hb_fieldlen('index')+2,46)
 #else
-          il:=-val(subs(nim,rat(HB_UCHAR(0x00A0),nim)+1))
-          nz:=subs(nim,hb_fieldlen('index')+2,main->(hb_fieldlen('nr_zlec')))
-          txt:=subs(nim,hb_fieldlen('INDEX')+main->(hb_fieldlen('nr_zlec'))+3)
+          il:=-val(SubStr(nim,rat(HB_UCHAR(0x00A0),nim)+1))
+          nz:=SubStr(nim,hb_fieldlen('index')+2,main->(hb_fieldlen('nr_zlec')))
+          txt:=SubStr(nim,hb_fieldlen('INDEX')+main->(hb_fieldlen('nr_zlec'))+3)
           p:=rat(HB_UCHAR(0x00A0),txt)
-          txt:=left(nim,hb_fieldlen('INDEX')+2)+trim(nz)+' '+trim(left(txt,p-1))+subs(txt,p)
+          txt:=left(nim,hb_fieldlen('INDEX')+2)+trim(nz)+' '+trim(left(txt,p-1))+SubStr(txt,p)
           if _fi>=_flp
              @ _fk+2,1 SAY "ZAPOTRZEBOWANIE: "+txt+space(60-len(txt)) color _sbkgr
           else
@@ -3229,7 +3229,7 @@ local rcrd,j,a,b,c,d,comdm,ames:={},x,y,z,cx,px
         MAIN->dzial:=indx_mat->INFO
 #endif
         if dok_kon="&:"
-           nz:=&(trim(subs(dok_kon,3)))
+           nz:=&(trim(SubStr(dok_kon,3)))
            @ _fk+1,NZBEG say nz PICTURE NZPIC color _sbkgr
         endif
         nz:=nr_zlec:=UpP(nz)
@@ -3675,7 +3675,7 @@ else
           commit in DM
         endif
       elseif dok_kon="&:"
-         x:=trim(subs(dok_kon,3))
+         x:=trim(SubStr(dok_kon,3))
          (&x,x:=NIL)
       ENDIF
 

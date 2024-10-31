@@ -30,7 +30,7 @@
 #define A_GETLPT eval(MEMVAR->do_getlpt)
 #define isPrinter() .t.
 #define A_15CPI
-#define DTOV(dat) tranr(subs(dtos(dat),5),"##.##")
+#define DTOV(dat) tranr(SubStr(dtos(dat),5),"##.##")
 #define A_SET_DAT GERMAN
 #define A_DDBF
 #define STANY   INDX_MAT

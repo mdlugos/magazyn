@@ -504,7 +504,7 @@ use (di+"DATY") readonly shared
 #else
    txt:=asize(getlines(memoread(di+"daty.ini")),3)
    for i:=1 to 3
-     txt[i]:=&(subs(txt[i],at(":=",txt[i])+2))
+     txt[i]:=&(SubStr(txt[i],at(":=",txt[i])+2))
    next i
 #define zmienna1 txt[1]
 #define zmienna2 txt[2]
@@ -526,7 +526,7 @@ use (di+"DATY") readonly shared
 #else
    txt:=asize(getlines(memoread(di+"daty.ini")),3)
    for i:=1 to 3
-     txt[i]:=&(subs(txt[i],at(":=",txt[i])+2))
+     txt[i]:=&(SubStr(txt[i],at(":=",txt[i])+2))
    next i
 #endif
 endif
@@ -595,7 +595,7 @@ select relewy
 seek dtos(od)
 w:=IndexkeY()
 bir:={||&w}
-w:=strtran(strtran(UpP(w),'POSILEK','SUBS(NR_ZLEC,2,1)'),'DIETA','SUBS(NR_ZLEC,3)')
+w:=strtran(strtran(UpP(w),'POSILEK','SubStr(NR_ZLEC,2,1)'),'DIETA','SubStr(NR_ZLEC,3)')
 bit:={||&w}
 
 USE TMP NEW EXCLUSIVE
@@ -603,11 +603,11 @@ carry_key:="";tot_rec:=tot_w:=0
 BEGIN SEQUENCE
 ordcreate('TMP','TMP',w,bit)
 DO WHILE relewy->( data<=do .and. !eof() ) .or. data<=do .and. !eof()
-  //TXT:=trim(DTOS(DATA)+subs(nr_zlec,2))
+  //TXT:=trim(DTOS(DATA)+SubStr(nr_zlec,2))
   TXT:=dseek(,'data,nr_zlec',data,Trim(nr_zlec))
   da:=data
-  ko:=subs(nr_zlec,2,1)
-  di:=trim(subs(nr_zlec,3))
+  ko:=SubStr(nr_zlec,2,1)
+  di:=trim(SubStr(nr_zlec,3))
   IF !eof() .and. ( RELEWY->(eval(bir))>eval(bit) .or. relewy->(eof()) )
     if ascan(posilki,ko)=0 .or. !dival(,di)
       print(1)
@@ -661,7 +661,7 @@ DO WHILE relewy->( data<=do .and. !eof() ) .or. data<=do .and. !eof()
 #endif
   ENDIF
   w:=0
-  IF RELEWY->(dseek(,'data,posilek,dieta',data,posilek,trim(dieta)))==txt  //dtos(data)+subs(nr_zlec,2)
+  IF RELEWY->(dseek(,'data,posilek,dieta',data,posilek,trim(dieta)))==txt  //dtos(data)+SubStr(nr_zlec,2)
      exec {||w-=wartosc} WHILE dseek(,'data,nr_zlec',data,Trim(nr_zlec))==TXT REST
      w:=ROUND(w,2)
   ENDIF
@@ -721,7 +721,7 @@ DO WHILE relewy->( data<=do .and. !eof() ) .or. data<=do .and. !eof()
      set print off
      skip
   enddo
-  if carry_key#dtos(data)+posilek .and. carry_key#dtos(TMP->data)+subs(TMP->nr_zlec,2,1)
+  if carry_key#dtos(data)+posilek .and. carry_key#dtos(TMP->data)+SubStr(TMP->nr_zlec,2,1)
      aeval(carry_di,{|b|i:=b,aeval(carry,{|a|if(dind(i[1],a[1]),i[2]+=i[3]*a[2]/a[3],)})})
      i:=recno()
      goto tot_rec
@@ -731,9 +731,9 @@ DO WHILE relewy->( data<=do .and. !eof() ) .or. data<=do .and. !eof()
 
        REPLACE wartosc WITH w
 #ifdef A_GREX
-       IF ile_pos#0 .AND. W=0 .and. dieta>='0' .and. subs(dieta,2)='/' .and. subs(dieta,3)>='0' .and. empty(subs(dieta,4))
+       IF ile_pos#0 .AND. W=0 .and. dieta>='0' .and. SubStr(dieta,2)='/' .and. SubStr(dieta,3)>='0' .and. empty(SubStr(dieta,4))
 #else
-       IF ile_pos#0 .AND. W=0 .and. dieta>='0' .and. empty(subs(dieta,2))
+       IF ile_pos#0 .AND. W=0 .and. dieta>='0' .and. empty(SubStr(dieta,2))
 #endif
          PRINT(1)
          ?? DAta,posilek,dieta,STRPIC(W,12,A_ZAOKR,"@E "),Ile_pos

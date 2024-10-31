@@ -918,9 +918,9 @@ static i,b,lth
        else
          eol:=0
        endif
-//       eol:=if(subs(b,r,1)=chr(10),1,0)
+//       eol:=if(SubStr(b,r,1)=chr(10),1,0)
 //#else
-//       eol:=if(subs(b,r-1,2)=nl,2,0)
+//       eol:=if(SubStr(b,r-1,2)=nl,2,0)
 //#endif
        do while n<1 .and. l#0
           l:=HB_BRAT(chr(10),HB_BLEFT(b,r-eol))
@@ -979,7 +979,7 @@ endif
   j:=0
   txt:=sk(.t.,a,h)
   b:=tbrowseNew(0,0,maxrow(),maxcol())
-  c:=tbcolumnNew("",{||subs(txt,j+1)})
+  c:=tbcolumnNew("",{||SubStr(txt,j+1)})
 c:width:=maxcol()+1
 b:addcolumn(c)
 b:skipblock:={|x|txt:=sk(@x,a,h),frow+=x,x}

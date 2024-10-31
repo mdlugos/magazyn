@@ -51,7 +51,7 @@ PROCEDURE Main( ... )
 
       CASE cTok == "-d"
          cDataBase := Lower(hb_PValue( i++ ))
-         if ! subs(cDataBase,-4,1) == '.'
+         if ! SubStr(cDataBase,-4,1) == '.'
             cDatabase := '/db/' + cDatabase + '.fdb'
          endif
 
@@ -170,7 +170,7 @@ return f
 static procedure chgdat(cFile, cTable, lCreateTable)
    LOCAL oTable, oRecord, aDbfStruct, i, j, cQuery, v, t, f
    ? cFile
-   IF File(strtran(cFile,subs(cFile,-3),'fpt'))
+   IF File(strtran(cFile,SubStr(cFile,-3),'fpt'))
      i:='DBFCDX'
    ENDIF
    dbUseArea( .f., i, cFile, cTable,.F., .T. ,'PL852')

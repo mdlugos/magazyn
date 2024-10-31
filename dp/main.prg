@@ -26,7 +26,7 @@ local scr_menu,menu,i,txt,a
 public defa
 
 if parametr='DIETADEF='
-   defa:=subs(parametr,10)
+   defa:=SubStr(parametr,10)
    parametr:=NIL
 else
    defa:=getenv("DIETADEF")
@@ -47,7 +47,7 @@ if curdir()=HB_ps()
 endif
 #endif
 
-aeval(defa,{|x,j,i|defa[j]:=if(x='.'+HB_ps(),a+subs(x,3),if(x='..'+HB_ps().and.(i:=rat(HB_ps(),left(a,len(a)-1)))>0,left(a,i)+subs(x,4),x))})
+aeval(defa,{|x,j,i|defa[j]:=if(x='.'+HB_ps(),a+SubStr(x,3),if(x='..'+HB_ps().and.(i:=rat(HB_ps(),left(a,len(a)-1)))>0,left(a,i)+SubStr(x,4),x))})
 
 menu:=.f.
 aeval(defa,{|x,j,i|if(lower(a)=lower(x),(menu:=.t.,defa[j]:=if((i:=len(x))=0,a,left(a,i))),)})

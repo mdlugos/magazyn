@@ -62,22 +62,22 @@ local getlist,a,b,c,d,scr
     if alias()="RELEWY"
        _sfor:={||dieta=" "}
        if [at(] $ lower(INDEXKEY(0))
-          _sp2s:={|x|if(len(x)<=8,x,dseek(,'data,posilek,dieta',stod(left(x,8)),subs(x,9,1),subs(x,10)))}
-          _ss2p:={|x|left(x,8)+if(len(x)>8,subs(posstr,asc(subs(x,9))%16,1)+subs(x,10),'')}
+          _sp2s:={|x|if(len(x)<=8,x,dseek(,'data,posilek,dieta',stod(left(x,8)),SubStr(x,9,1),SubStr(x,10)))}
+          _ss2p:={|x|left(x,8)+if(len(x)>8,SubStr(posstr,asc(SubStr(x,9))%16,1)+SubStr(x,10),'')}
           _spform:={|p,l|tranr(Eval(_ss2p,p,l),hb_UTF8ToStr("####.##.##│X│")+repl("X",A_DILTH))}
        endif
     elseif ordsetfocus()="MAIN_KOD"
        if [at(] $ lower(INDEXKEY(0))
-          _sp2s:={|x|if(len(x)<=11,x,dseek(,'kod_osoby,data,posilek,dieta',left(x,3),stod(subs(x,4,8)),subs(x,12,1),subs(x,13)))}
-          _ss2p:={|x|left(x,11)+if(len(x)>11,subs(posstr,asc(subs(x,12))%16,1)+subs(x,13),'')}
+          _sp2s:={|x|if(len(x)<=11,x,dseek(,'kod_osoby,data,posilek,dieta',left(x,3),stod(SubStr(x,4,8)),SubStr(x,12,1),SubStr(x,13)))}
+          _ss2p:={|x|left(x,11)+if(len(x)>11,SubStr(posstr,asc(SubStr(x,12))%16,1)+SubStr(x,13),'')}
           _spform:={|p,l|tranr(Eval(_ss2p,p,l),hb_UTF8ToStr("XXX│####.##.##│X"))}
        else
           _spform:={|p|tranR(p,hb_UTF8ToStr("XXX│####.##.##│X"))}
        endif
     else
        if [at(] $ lower(INDEXKEY(0))
-          _sp2s:={|y,l,x,n|x:=right(y,l),n:=len(y)-l,y:=left(y,n),y+if(len(x)<=8,x,subs(dseek(,'data,posilek,dieta',stod(left(x,8)),subs(x,9,1),subs(x,10)),n+1))}
-          _ss2p:={|y,l,x,n|x:=right(y,l),n:=len(y)-l,y:=left(y,n),y+left(x,8)+if(len(x)>8,subs(posstr,asc(subs(x,9))%16,1)+subs(x,10),'')}
+          _sp2s:={|y,l,x,n|x:=right(y,l),n:=len(y)-l,y:=left(y,n),y+if(len(x)<=8,x,SubStr(dseek(,'data,posilek,dieta',stod(left(x,8)),SubStr(x,9,1),SubStr(x,10)),n+1))}
+          _ss2p:={|y,l,x,n|x:=right(y,l),n:=len(y)-l,y:=left(y,n),y+left(x,8)+if(len(x)>8,SubStr(posstr,asc(SubStr(x,9))%16,1)+SubStr(x,10),'')}
           _spform:={|p,l|tranr(right(Eval(_ss2p,p,l),l),hb_UTF8ToStr("####.##.##│X│")+repl("X",A_DILTH))}
        endif
     endif
@@ -277,7 +277,7 @@ else
   #define D_LAN wart_tot=0
 #endif
      SELECT RELEWY
-     seek dseek(,'data,posilek,dieta',stod(left(keyp,8)),subs(keyp,9,1),'')
+     seek dseek(,'data,posilek,dieta',stod(left(keyp,8)),SubStr(keyp,9,1),'')
      delete while keyp=dtos(data)+posilek for D_LAN
      changed:=.t.
   endif
@@ -647,9 +647,9 @@ proc evfxar(a,b)
   LOCAL d:=dieta,w:=WART_TOT,il:=ILE_POS,c
 
 #ifdef A_GREX
-  if d>='0' .and. subs(d,2)='/' .and. subs(d,3)>='0' .and. empty(subs(d,4))
+  if d>='0' .and. SubStr(d,2)='/' .and. SubStr(d,3)>='0' .and. empty(SubStr(d,4))
 #else
-  if d>='0' .and. empty(subs(d,2))
+  if d>='0' .and. empty(SubStr(d,2))
 #endif
     if w<>0 .or. il<>0
       aadd(b,{trim(d),w,il})

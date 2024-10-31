@@ -865,15 +865,15 @@ return(MEMOLINE( cString, nLineLength, nLineNumber, nTabSize, lWrap ))
 static func precomp(ret,bfor,bwhile)
 
    if ret='&:'
-      ret:=&(trim(subs(ret,3)))
+      ret:=&(trim(SubStr(ret,3)))
       if valtype(ret)="B"
          ret:=eval(ret)
       endif
    ELSEIF ret="FOR:"
-      bfor:=&(trim(subs(ret,5)))
+      bfor:=&(trim(SubStr(ret,5)))
       ret:=""
    elseif ret="WHILE:"
-      bwhile:=&(trim(subs(ret,7)))
+      bwhile:=&(trim(SubStr(ret,7)))
       ret:=""
    endif
 

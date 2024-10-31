@@ -7,7 +7,7 @@ field smb_dow,nr_dowodu
 #else
 field dowod
 #define smb_doW dowod
-#define nr_dowodU subs(dowod,3)
+#define nr_dowodU SubStr(dowod,3)
 #endif
 #ifndef A_IDENT
   #define A_IDENT len(FIELD->ident)
@@ -20,7 +20,7 @@ local stat,i,f,g,h,a
    stat:=push_stat()
    IF !EMPTY(f9dok)
       sel(ar[AR_DBF],1)
-      seek(subs(f9dok,3,5))
+      seek(SubStr(f9dok,3,5))
    ENDIF
    if rejbrow(ar,.t.)
     f9dok:=ar[AR_SMB]+lp
@@ -198,17 +198,17 @@ local  c,key,chg:=.f.,k:=ar[AR_SMB]+l_p,kol,f9rec,f9arr,i
        b:colpos:=2
 
        b:gotopblock:={||b:cargo[1]:=if(dbseek(k,.f.),recno(),0)}
-       b:gobottomblock:={||dbseek(left(k,6)+chr(asc(subs(k,7))+1)),dbskip(-1),b:cargo[2]:=if(rejestr+lp#k,(dbgoto(0),0),recno())}
+       b:gobottomblock:={||dbseek(left(k,6)+chr(asc(SubStr(k,7))+1)),dbskip(-1),b:cargo[2]:=if(rejestr+lp#k,(dbgoto(0),0),recno())}
        b:skipblock:={|n|bskip(b,n,k)}
        b:cargo:={0,0}
        eval(b:gotopblock)
     else //bo mi się k zmienia
        b:gotopblock:={||b:cargo[1]:=if(dbseek(k,.f.),recno(),0)}
-       b:gobottomblock:={||dbseek(left(k,6)+chr(asc(subs(k,7))+1)),dbskip(-1),b:cargo[2]:=if(rejestr+lp#k,(dbgoto(0),0),recno())}
+       b:gobottomblock:={||dbseek(left(k,6)+chr(asc(SubStr(k,7))+1)),dbskip(-1),b:cargo[2]:=if(rejestr+lp#k,(dbgoto(0),0),recno())}
        b:skipblock:={|n|bskip(b,n,k)}
     endif
        b:gotopblock:={||b:cargo[1]:=if(dbseek(k,.f.),recno(),0)}
-       b:gobottomblock:={||dbseek(left(k,6)+chr(asc(subs(k,7))+1)),dbskip(-1),b:cargo[2]:=if(rejestr+lp#k,(dbgoto(0),0),recno())}
+       b:gobottomblock:={||dbseek(left(k,6)+chr(asc(SubStr(k,7))+1)),dbskip(-1),b:cargo[2]:=if(rejestr+lp#k,(dbgoto(0),0),recno())}
        b:skipblock:={|n|bskip(b,n,k)}
 
        c:=array(31)

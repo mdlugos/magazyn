@@ -220,7 +220,7 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
    ap:=getlines(POLA)
    l:=len(ap)
    do while 1<=l .and. ap[1]="&:"
-      (&(subs(ap[1],3)),adel(ap,1),--l)
+      (&(SubStr(ap[1],3)),adel(ap,1),--l)
    enddo
    for i:=1 to l
       ap[i]:=asize(getlines(ap[i],";"),6)
@@ -446,7 +446,7 @@ if "J"$choicef
          j:=left(posil[k],1)
          IF dbseek(key+j)
             ++i
-            ?? spec(P_BON)+padc(subs(posil[k],3),int(P_COLN/2))
+            ?? spec(P_BON)+padc(SubStr(posil[k],3),int(P_COLN/2))
             ?? spec(P_BOFF)
             rec[i]:={j,recno(),''}
          elseif k<l
@@ -534,7 +534,7 @@ if dbseek(key)
    txt:=""
    i:=""
    j:=""
-   aeval(darr,{|x,y|if(txt#(txt:=x[1]),++s,),y:=right(x[1],1),if(y$i,,(++s,i+=y)),y:=subs(x[1],-2,1),if(y$j,,(++s,j+=y))})
+   aeval(darr,{|x,y|if(txt#(txt:=x[1]),++s,),y:=right(x[1],1),if(y$i,,(++s,i+=y)),y:=SubStr(x[1],-2,1),if(y$j,,(++s,j+=y))})
    ?? ccpi(4)
    if s+prow()+5>P_ROWN .and. s+10<P_ROWN
 #ifdef A_WADO
@@ -555,7 +555,7 @@ if dbseek(key)
     for j=1 to l
         afill(il[j],0)
         afill(rec,0)
-        ?? cpad(subs(posil[j],2),10,,3)
+        ?? cpad(SubStr(posil[j],2),10,,3)
     next
     ?? spec(P_UOFF)
     ?? ccpi(4)
@@ -580,7 +580,7 @@ if dbseek(key)
        if j=1
          w+=ile_pos
        endif
-       if i=len(darr) .or. subs(darr[i+1,1],A_SUMOS+1)#kod_osoby+chr(k+64)+chr(s+64)
+       if i=len(darr) .or. SubStr(darr[i+1,1],A_SUMOS+1)#kod_osoby+chr(k+64)+chr(s+64)
 #else
        if i=len(darr) .or. darr[i+1,1]#kod_osoby+chr(k+64)+chr(s+64)
 #endif
@@ -621,7 +621,7 @@ if dbseek(key)
          loop
       endif
       ? space(if(l<5,5,0))
-      ?? ccpi(cpi)+padl(subs(diety[j],1),32)
+      ?? ccpi(cpi)+padl(SubStr(diety[j],1),32)
       aeval(il,{|x|qqout("|"+tran(x[j+1],D_ILPIC)+"   ")})
       ?? ccpi(4)
    next
@@ -635,7 +635,7 @@ if dbseek(key)
          loop
       endif
       ? space(if(l<5,5,0))
-      ?? ccpi(cpi)+padl(subs(grupy[j],1),32)
+      ?? ccpi(cpi)+padl(SubStr(grupy[j],1),32)
       aeval(txt,{|x|qqout("|"+tran(x[j+1],D_ILPIC)+"   ")})
       ?? ccpi(4)
    next
@@ -706,7 +706,7 @@ if dbseek(key)
 #endif
           for j=1 to l
               ?? '|'
-              ?? cpad(subs(posil[j],3),9,,1)
+              ?? cpad(SubStr(posil[j],3),9,,1)
           next
           ?? '|'
           specout(P_UOFF)
@@ -754,7 +754,7 @@ if dbseek(key)
 #endif
              for j=1 to l
               ?? '|'
-              ?? cpad(subs(posil[j],3),9,,1)
+              ?? cpad(SubStr(posil[j],3),9,,1)
              next
              ?? '|'
              specout(P_UOFF)
@@ -882,8 +882,8 @@ set console off
  print()
 endif
 if !empty(gr) .and. di>='0' .and. len(di)=2
- wydruk_ja(subs(di,1,1),gr,a,wo,1,.t.)
- wydruk_ja(subs(di,2,1),gr,b,wo,1,.t.)
+ wydruk_ja(SubStr(di,1,1),gr,a,wo,1,.t.)
+ wydruk_ja(SubStr(di,2,1),gr,b,wo,1,.t.)
  d:=if(len(a)<len(b),a,b)
  if max(len(a),len(b))>67-len(x)
     aadd(d,'')
@@ -948,7 +948,7 @@ DEFAULT kop TO 1
 if valtype(wo)<>'N'
    wo:=if(wo,3,0)
 endif
-IF empty(di) .or. !empty(subs(di,2))
+IF empty(di) .or. !empty(SubStr(di,2))
    wo-=wo%4
 else
 
@@ -973,7 +973,7 @@ for kop:=kop to 1 step -1
 #endif
 if !empty(gr)
 ? spec(if(P_PCL,chr(27)+"(s1p14V",'')+P_BON)
-? subs(grupy[ascan(grupy,gr)],1)
+? SubStr(grupy[ascan(grupy,gr)],1)
 ?? spec(P_BOFF+if(P_PCL,chr(27)+"(s12v0P",''))
 endif
 ?
@@ -984,7 +984,7 @@ if !empty(di)
 
 #if 1
 //def A_GOCZ
-if di>='0' .and. empty(subs(di,2))
+if di>='0' .and. empty(SubStr(di,2))
   txt:=dietylong[ascan(diety,left(di,1))]
   ? memoline(txt,35,1,,.t.)
   for i:=2 to mlcount(txt,35,,.t.)
@@ -994,7 +994,7 @@ else
   ? 'Dieta: '+di
 endif
 #else
-? 'Dieta:',if(di>='0'.and.empty(subs(di,2)),subs(diety[ascan(diety,left(di,1))],1),di)
+? 'Dieta:',if(di>='0'.and.empty(SubStr(di,2)),SubStr(diety[ascan(diety,left(di,1))],1),di)
 #endif
 ?
 endif
@@ -1033,7 +1033,7 @@ do while data=da .and. posilek=po
 #ifdef A_GREX
    j:=relewy->(recno())
    relewy->(dbseek(dseek(,'data,posilek,dieta',da,po,'0')))
-   relewy->(dbeval({|y|y:=left(dieta,3),if(dind(y,di).and.dind(y,menu->dieta).and.(empty(gr).or.dind(y,'/'+gr)),txt+=','+y,)},{||left(dieta,1)>='0'.and.subs(dieta,2,1)='/'.and.subs(dieta,3,1)>='0'.and.empty(subs(dieta,4))},{||data=da .and. posilek=po}))
+   relewy->(dbeval({|y|y:=left(dieta,3),if(dind(y,di).and.dind(y,menu->dieta).and.(empty(gr).or.dind(y,'/'+gr)),txt+=','+y,)},{||left(dieta,1)>='0'.and.SubStr(dieta,2,1)='/'.and.SubStr(dieta,3,1)>='0'.and.empty(SubStr(dieta,4))},{||data=da .and. posilek=po}))
    relewy->(dbgoto(j))
    if empty(txt)
       skip
@@ -1064,7 +1064,7 @@ do while data=da .and. posilek=po
    if h
      ?? spec(p_7lpi)
      ?
-     ? spec(P_UON+P_BON)+subs(posilki[i],2)
+     ? spec(P_UON+P_BON)+SubStr(posilki[i],2)
      ?? spec(P_BOFF+P_UOFF)
 #ifdef A_WO_JAD
      if wo>0
@@ -1129,7 +1129,7 @@ do while data=da .and. posilek=po
        endif
 
           c:=''
-          elementy->(aeval(b,{|x|dbseek(x[1],.f.),if(nazwa='*',c+=' '+trim(subs(nazwa,3)),)}))
+          elementy->(aeval(b,{|x|dbseek(x[1],.f.),if(nazwa='*',c+=' '+trim(SubStr(nazwa,3)),)}))
           if !empty(c)
              ?? spec(ccpi(8)+p_supon+p_bon),'*'+c
              ?? spec(p_boff+p_supoff+ccpi(4))
@@ -1149,12 +1149,12 @@ do while data=da .and. posilek=po
   if go=.t.
   else
 #endif
-  if di>='0' .and. empty(subs(di,2))
+  if di>='0' .and. empty(SubStr(di,2))
      ?? space(12)
   elseif len(trim(dieta))#1
      ?? padr(dieta,12)
   else
-     ?? subs(diety[ascan(diety,trim(dieta))],1,11)+" "
+     ?? SubStr(diety[ascan(diety,trim(dieta))],1,11)+" "
   endif
 #ifdef A_GOCZ
   endif
@@ -1179,7 +1179,7 @@ do while data=da .and. posilek=po
           seek menu->danie
           exec zawar->(mal(b,sklad->ilosc,.t.)) rest for dind(di,dieta) .and. surowce->(dbseek(sklad->skladnik)) while danie==menu->danie
           select dania
-          elementy->(aeval(b,{|x|dbseek(x[1],.f.),if(nazwa='*',c+=' '+trim(subs(nazwa,3)),)}))
+          elementy->(aeval(b,{|x|dbseek(x[1],.f.),if(nazwa='*',c+=' '+trim(SubStr(nazwa,3)),)}))
 
        endif
        ?? spec(p_12lpi)
@@ -1524,7 +1524,7 @@ stat func osprint(txt,l,od,do,aip,awp,anp,igr,wgr,an,strona)
         if ++l>1
         ? space(P_COLN-53)
         endif
-        ?? cpad(subs(grupy[i],1,10)+" "+subs(posilki[j],3,10)+" "+subs(diety[k],1,10),32,10,1),str(il,6 D_ILPOZ1),strpic(wa,12,A_ZAOKR,"@E ")
+        ?? cpad(SubStr(grupy[i],1,10)+" "+SubStr(posilki[j],3,10)+" "+SubStr(diety[k],1,10),32,10,1),str(il,6 D_ILPOZ1),strpic(wa,12,A_ZAOKR,"@E ")
 #ifdef A_NARZUT
         if anp<>NIL
           ?? strpic(anp[i,j,k],12,A_ZAOKR,"@EZ ")
@@ -1671,7 +1671,7 @@ endif
   endif
 #endif
 endif
-            ? subs(grupy[i],3,10),subs(posilki[j],3,10),subs(diety[k],1,10),str(igr[i,j,k],6 D_ILPOZ1),strpic(wgr[i,j,k],12,A_ZAOKR,"@E "),strpic(wgr[i,j,k]/igr[i,j,k],7,A_ZAOKR,"@E ",.t.)
+            ? SubStr(grupy[i],3,10),SubStr(posilki[j],3,10),SubStr(diety[k],1,10),str(igr[i,j,k],6 D_ILPOZ1),strpic(wgr[i,j,k],12,A_ZAOKR,"@E "),strpic(wgr[i,j,k]/igr[i,j,k],7,A_ZAOKR,"@E ",.t.)
             itot[i,j]+=igr[i,j,k]
             wtot[i,j]+=wgr[i,j,k]
          endif
@@ -1688,7 +1688,7 @@ endif
 #endif
          im:=max(itot[i,j],im)
          if m>1
-            ? subs(grupy[i],3,10),subs(posilki[j],3,10),space(8),str(itot[i,j],8 D_ILPOZ1),strpic(wtot[i,j],12,A_ZAOKR,"@E "),strpic(wtot[i,j]/itot[i,j],7,A_ZAOKR,"@E ",.t.)
+            ? SubStr(grupy[i],3,10),SubStr(posilki[j],3,10),space(8),str(itot[i,j],8 D_ILPOZ1),strpic(wtot[i,j],12,A_ZAOKR,"@E "),strpic(wtot[i,j]/itot[i,j],7,A_ZAOKR,"@E ",.t.)
          endif
          ?? " *"
       endif
@@ -1702,7 +1702,7 @@ endif
       if l>1
          ?
 #ifdef A_WAGI
-         ? padl(Trim(subs(grupy[i],1))+hb_UTF8ToStr(" OSOBODNI W/G WAG POSIŁKOW:"),30),str(ipw,8 D_ILPOZ1),strpic(wp,12,A_ZAOKR,"@E "),strpic(wp/ipw,7,A_ZAOKR,"@E ",.t.)
+         ? padl(Trim(SubStr(grupy[i],1))+hb_UTF8ToStr(" OSOBODNI W/G WAG POSIŁKOW:"),30),str(ipw,8 D_ILPOZ1),strpic(wp,12,A_ZAOKR,"@E "),strpic(wp/ipw,7,A_ZAOKR,"@E ",.t.)
 #ifdef A_NARZUT
          cp:=Round(Round(100*wp/ip,0)*narzuty[i],-2)/10000
 #endif
@@ -1808,7 +1808,7 @@ do while da<=do
 #else
          specout(ccpi(7))
 #endif
-         ? subs(posilki[i],3)+": "
+         ? SubStr(posilki[i],3)+": "
          flag:=.f.
          do while key1=dtos(data)+posilek
             if flag
@@ -1842,7 +1842,7 @@ do while da<=do
    flag:=.f.
    do while !eof()
       select zapot
-      dbseek(dseek(,'skladnik,data,posilek,dieta',surowce->skladnik,stod(left(key1,8)),subs(key1,9),''))
+      dbseek(dseek(,'skladnik,data,posilek,dieta',surowce->skladnik,stod(left(key1,8)),SubStr(key1,9),''))
       sum ilosc/relewy->ile_pos*surowce->przel to t rest while skladnik==surowce->skladnik .and. dtos(data)+posilek=key1
       if t#0
          if flag
@@ -1966,7 +1966,7 @@ strona:=1
 ? hb_UTF8ToStr("na podstawie zapotrzebowań, na jedną osobę, średnio dziennie.")
 ? "dieta:",d
 if ""#p
-   ?? hb_UTF8ToStr(', posiłek:'),subs(posilki[ascan(posilki,p)],3)
+   ?? hb_UTF8ToStr(', posiłek:'),SubStr(posilki[ascan(posilki,p)],3)
 endif
 ?? ', dni:',str(dni,3)
 ?
@@ -2033,7 +2033,7 @@ strona:=1
       half:=array(l)
       ? spec(P_BON)
       for i:=1 to l
-         ?? padc(subs(posilki[i],3),26)
+         ?? padc(SubStr(posilki[i],3),26)
       next
       ? spec(P_BOFF)
    endif
@@ -2084,7 +2084,7 @@ do while data<=do .and. !eof()
 #else
          ? ccpi(7)
 #endif
-         ?? subs(posilki[i],3)+": "
+         ?? SubStr(posilki[i],3)+": "
          specout(P_BOFF)
          //setprc(prow(),pcol()-5)
          flag:=.f.

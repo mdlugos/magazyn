@@ -81,7 +81,7 @@ if key=0
 #ifndef A_STL
 #define A_STL 3
 #endif
-      _sprompt:={||DTOV(data)+I+pad(if(_sbeg=7,ident,right(trim(ident),A_IDENT)),A_IDENT)+I+rejestr+I+lp+"/"+LP(pozycja)+I+pad(subs(konto,A_STL+1),2*A_KTL-A_WAL)+hb_UTF8ToStr("║")+strpic(if(czyma,0,kwota),A_WAL,2,"@EZ ")+I+strpic(if(czyma,kwota,0),A_WAL,2,"@EZ ")}
+      _sprompt:={||DTOV(data)+I+pad(if(_sbeg=7,ident,right(trim(ident),A_IDENT)),A_IDENT)+I+rejestr+I+lp+"/"+LP(pozycja)+I+pad(SubStr(konto,A_STL+1),2*A_KTL-A_WAL)+hb_UTF8ToStr("║")+strpic(if(czyma,0,kwota),A_WAL,2,"@EZ ")+I+strpic(if(czyma,kwota,0),A_WAL,2,"@EZ ")}
       _sfor:=NIL
       _slth:=0 //2
       _sbeg:=1
@@ -96,7 +96,7 @@ if key=0
          if l=A_STL
             SET ORDER TO TAG MAIN_KS
          else
-           txt:="left(konto,"+str(l,1)+")+subs(dtos(data),5)"
+           txt:="left(konto,"+str(l,1)+")+SubStr(dtos(data),5)"
            ordsetfocus("X"+s)
            if ordsetfocus()<>"X"+s
              w:=MESSAGE("Tworzenie skorowidza dla konta syntetycznego "+s+";"+trim(konta->nazwa)+".;nazwa: MAIN_TMP baza: MAIN.DBF, klucz: "+txt+".;.")

@@ -235,7 +235,7 @@ memvar pm,dok_di
 #ifndef STANY
  #ifdef A_OBR
   #define LARTXT left(if(polka=" ",if(nr_rys=" ",nazwA,left(nazwA,37)+if(len(trim(nazwA))>37,chr(26)," ")+nr_rys),if(nr_rys=" ",left(nazwA,38)+;
-if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26)," ")+left(nr_rys,7)+" ")+polka) ,45) + if(""=INDX_MAT->UWAGI,RET,"&")+subs(STANY->NR_MAG,2)
+if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26)," ")+left(nr_rys,7)+" ")+polka) ,45) + if(""=INDX_MAT->UWAGI,RET,"&")+SubStr(STANY->NR_MAG,2)
  #else
   #define LARTXT pad(nazwA,44)+IF(""=INDX_MAT->UWAGI,ret,"&")+STANY->NR_MAG
  #endif
@@ -547,9 +547,9 @@ DO CASE
          _sfilb:={||txt$UPPER(INDX_MAT->naZwa)}
          _spocz:=left(_spocz,len(_spocz)-len(txt))
 #ifdef A_ZAZNACZ
-         _sprompt:={|d,s,z,x,l,k,c|c:={_snorm,"GR+/N+","R+/N+","G+/N+","GB+/N+","BR+/N",12,13,14,15}[indx_mat->zaznacz+1],x:=lpeoma(s),if(z=.t.,x,(l:=if(empty(txt),0,at(txt,UpP(x))),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+         _sprompt:={|d,s,z,x,l,k,c|c:={_snorm,"GR+/N+","R+/N+","G+/N+","GB+/N+","BR+/N",12,13,14,15}[indx_mat->zaznacz+1],x:=lpeoma(s),if(z=.t.,x,(l:=if(empty(txt),0,at(txt,UpP(x))),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(SubStr(x,l,k),_sel),devout(SubStr(x,l+k),c),''))}
 #else
-         _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=lpeoma(s),if(z=.t.,x,(l:=if(empty(txt),0,at(txt,UpP(x))),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+         _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=lpeoma(s),if(z=.t.,x,(l:=if(empty(txt),0,at(txt,UpP(x))),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(SubStr(x,l,k),_sel),devout(SubStr(x,l+k),c),''))}
 #endif
  #endif
 #else
@@ -774,7 +774,7 @@ DO CASE
               set relation to index+mag_biez into STANY
               _sfilt:='STANY->NR_MAG="'+mag_biez+'"'
               _sfilb:=hb_macroBlock(_sfilt)
-              _spocz:=subs(_spocz,3)
+              _spocz:=SubStr(_spocz,3)
            else
               set relation to index into STANY
            endif

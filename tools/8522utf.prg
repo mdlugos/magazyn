@@ -21,7 +21,7 @@ IF empty(db)
 ENDIF
 SET DELETED ON
 SET DEFAULT TO (LEFT(DB,RAT(hb_ps(),DB)))
-db:=subs(db,RAT(hb_ps(),DB)+1)
+db:=SubStr(db,RAT(hb_ps(),DB)+1)
 AEVAL(DIRECTORY(SET(_SET_DEFAULT)+DB+"*.dbf"),{|X|CHGDAT(X[1])})
 ?
 ********************

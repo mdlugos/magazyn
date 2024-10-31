@@ -462,7 +462,7 @@ static s:=0,ee:=NIL
           if !empty(indeks->path)
              a:=trim(indeks->path)
              IF a="&:"
-                a:=trim(&(subs(a,3)))
+                a:=trim(&(SubStr(a,3)))
              ENDIF
              a:=expand(a)
              if right(a,1)<>HB_ps()
@@ -543,7 +543,7 @@ static s:=0,ee:=NIL
           if !empty(indeks->path)
              c:=trim(indeks->path)
              if c="&:"
-                c:=&(subs(c,3))
+                c:=&(SubStr(c,3))
              endif
              c:=expand(c)
              if right(c,1)<>HB_ps()
@@ -589,12 +589,12 @@ static s:=0,ee:=NIL
           return .f.
        endif
 #else
-    locate while trim(BAZA)==b FOR {||d:=trim(nazwa), (i:=Lower(expand(d)))==Lower(subs(e:filename,-len(i)-4,len(i)))}
+    locate while trim(BAZA)==b FOR {||d:=trim(nazwa), (i:=Lower(expand(d)))==Lower(SubStr(e:filename,-len(i)-4,len(i)))}
     if found()
           if !empty(path)
              a:=trim(path)
              if a="&:"
-                a:=&(subs(a,3))
+                a:=&(SubStr(a,3))
              endif
              t:=expand(a)
              if right(t,1)<>HB_ps()
@@ -822,7 +822,7 @@ local txt:='',y,x,a
            x:=trim(path)
            if !empty(x)
              if x="&:"
-                x:=trim(&(subs(x,3)))
+                x:=trim(&(SubStr(x,3)))
              endif
              x:=expand(x)
              if right(x,1)<>HB_ps()

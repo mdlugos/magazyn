@@ -49,7 +49,7 @@ IF(duplikat,wwout('       DUPLIKAT z dnia '+dtoc(dzisiaj)),)
 ? '     tel. '+IF(smb_dow='FE','(0048)','')+'338514895'
 ?
 ?
-? f,{||spec('(s24V')},trim(subs(dok_naz,4)),alltrim(nr_dowodu)+'/'+str(year(data),4),{||spec('(s12V')}
+? f,{||spec('(s24V')},trim(SubStr(dok_naz,4)),alltrim(nr_dowodu)+'/'+str(year(data),4),{||spec('(s12V')}
 IF empty(e:=trim(field->nr_ksef)) .or. empty(g:=field->ksef) THEN H3
 ? '  Nr KSeF:',e
 ?? spec(P_12LPI)+spec('(s+6V')
@@ -74,12 +74,12 @@ IF EMPTY(a) THEN HPL
 aeval(a,{|x|wout(f,alltrim(x))},2)
 :HPL
 ? '  płatność:',f,if(przelewem+czekiem#0,if(czekiem<>0,'kartą','przelewem w terminie do dnia: '+dtoc(termin_p)),'gotówką')
-?? spec('&'+'a82C')+'Data sprzedaży:',data_dost,IF(subs(smb_dow,2)#'K' .and. data>data_dost,'- '+dtoc(data),'')
-IF subs(smb_dow,2)='K' THEN FK1X
+?? spec('&'+'a82C')+'Data sprzedaży:',data_dost,IF(SubStr(smb_dow,2)#'K' .and. data>data_dost,'- '+dtoc(data),'')
+IF SubStr(smb_dow,2)='K' THEN FK1X
 if(empty(nr_faktury),NIL,wout('Dok. wydania:',f,nr_faktury,{||spec(chr(10))}))
 JUMP HX
 :FK1X
-? 'dotyczy f-ry:',f,trim(if(nr_faktury=' 1',subs(nr_faktury,3),nr_faktury)),'z dnia',data_dost
+? 'dotyczy f-ry:',f,trim(if(nr_faktury=' 1',SubStr(nr_faktury,3),nr_faktury)),'z dnia',data_dost
 :HX
 ?
 ??  spec('(s0P')+spec('(s16.67H')+spec('(s10V')+spec(p_8lpi)
@@ -95,7 +95,7 @@ IF prow()<69 THEN P2
 ? space(74)+'╚═════════╝'
 setprc(0,0)
 ?? spec(chr(13))+spec(chr(12))
-?? firma_n,TRIM(subs(dok_naz,3)),ltrim(dm->nr_dowodu)+'/'+str(year(dm->data)%100,2),'Cieszyn, dn.',dm->data,'strona:'+str(strona,2)
+?? firma_n,TRIM(SubStr(dok_naz,3)),ltrim(dm->nr_dowodu)+'/'+str(year(dm->data)%100,2),'Cieszyn, dn.',dm->data,'strona:'+str(strona,2)
 ?  '┌══┬═════════════════════════════════════┬════════════┬════┬═══════┬══════╦═════════╦══════════╦═════════╗'
 ?  '│  │                                     │   Symbol   │    │       │ Cena ║ Wartość ║ w tym VAT║ Wartość ║'
 ?  '│Lp│ Nazwa towaru                        │   PKWiU    │J.m.│ Ilość │'+if(DM->smb_dow#'FE','brutto║brutto','      ║      ')+' zł║ % i kwota║ netto   ║'
@@ -123,7 +123,7 @@ IF prow()<63 THEN L2X
 ?? '                             ╚═════════╩══════════╩═════════╝'
 setprc(0,0)
 ?? spec(chr(13))+spec(chr(12))
-?? +firma_n,TRIM(subs(dok_naz,3)),ltrim(dm->nr_dowodu)+'/'+str(year(dm->data)%100,2),'Cieszyn, dn.',dm->data,'strona:'+str(strona,2)
+?? +firma_n,TRIM(SubStr(dok_naz,3)),ltrim(dm->nr_dowodu)+'/'+str(year(dm->data)%100,2),'Cieszyn, dn.',dm->data,'strona:'+str(strona,2)
 ?  '                                                             Ciąg dalszy ze strony:'+str(strona-1,2)
 ?  '┌═════════════════════════════════════════════════════════════════════════╦═════════╦══════════╦═════════╗'
 ?  '│                                                                         ║ Wartość ║ w tym VAT║ Wartość ║'
@@ -151,7 +151,7 @@ a:=0
 STOPKA
 ?? spec('(s10H')+spec(p_6lpi)
 TEXT if(""=uwagi,'',strtran(';'+uwagi+';',";",chr(13)+chr(10)))
-IF subs(smb_dow,2)='K' THEN FK2X
+IF SubStr(smb_dow,2)='K' THEN FK2X
 ?
 ?? spec('(s1P')+spec('(s3B')+spec('(s14V')
 ?? 'DO ZAPŁATY:    ',tran(wt,"@E ####,###.##"),'zł'

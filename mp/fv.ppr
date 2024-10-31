@@ -26,7 +26,7 @@ IF(fa=NIL,IF(op=NIL,,(oprn:=op,op:=NIL,set(23,pr))),(op:=oprn,oprn:=NIL,pr:=set(
 ?  'Nr rachunku: 62 1050 1083 1000 0001 0087 7026'
 ? spec(eval(p_margin,3))
 ? spec(p_4xon)
-? trim(subs(dok_naz,3))+' '+smb_dow+ltrim(nr_dowodu)
+? trim(SubStr(dok_naz,3))+' '+smb_dow+ltrim(nr_dowodu)
 ? spec(p_4xoff)
 ?
 g:=hb_jsondecode(field->ksef)
@@ -49,11 +49,11 @@ if(empty(b:=memoline(a,75,3,8,.t.)),,wout(b))
 ? '       NIP:',firmy->ident
 ?
 TEXT strtran(firmy->uwagi,";",chr(13)+chr(10))
-IF data=data_dost .and. subs(smb_dow,2)#'K' THEN H1
+IF data=data_dost .and. SubStr(smb_dow,2)#'K' THEN H1
 ? '                     Data dostawy towaru lub wykonania usługi:',data_dost
-IF subs(smb_dow,2)#'K' THEN H1
+IF SubStr(smb_dow,2)#'K' THEN H1
 ?
-? '   Dotyczy:',TRIM(IF(NR_FAKTURY=' 1',SUBS(NR_FAKTURY,3),nr_faktury)),'z dnia',data_dost
+? '   Dotyczy:',TRIM(IF(NR_FAKTURY=' 1',SubStr(NR_FAKTURY,3),nr_faktury)),'z dnia',data_dost
 TEXT strtran(uwagi,";",chr(13)+chr(10))
 :H1
 ?  ccpi(5)
@@ -62,7 +62,7 @@ TEXT strtran(uwagi,";",chr(13)+chr(10))
 ? repl("-",88)
 :H2
 POZYCJE
-? subs(p,3)
+? SubStr(p,3)
 IF !EMPTY(uwagi) THEN P1
 ?? '  '
 ?? ccpi(9)+(c:=nazwa)
@@ -103,7 +103,7 @@ JUMP L
 :L1
 STOPKA
 ?? ccpi(4)
-IF subs(smb_dow,2)#'K' THEN S1
+IF SubStr(smb_dow,2)#'K' THEN S1
 ?? padl(if(wt>=0,'Kwota zwiększenia wartości bez podatku: ','Kwota zmniejszenia wartości bez podatku: '),42)+tran(abs(wt),"@E ##,###.##")
 ? padl(if(vt>=0,'Kwota zwiększenia podatku należnego: ','Kwota zmniejszenia podatku należnego: '),42)+tran(abs(vt),"@E ##,###.##")
 ? repl("-",54)
@@ -148,7 +148,7 @@ IF c=NIL THEN S6
 DevPos(win[1]+7,win[2]+3),DevOutPict("Generuję link weryfikacyjny:",,"W/BG")
 Field->nr_ksef:=FIELD->nr_faktury:=c
 e:=b['invoiceHash','hashSHA','value'],MEMVAR->ksef_api+'web/verify/'+c+'/'+URLENCODE(e)
-|x|DevPos(win[1]+7,win[2]+3),DevOutPict(left(x,64),,"W/BG"),DevPos(win[1]+8,win[2]+3),DevOutPict(subs(x,65),,"W/BG"),FIELD->ksef:=hb_jsonencode({'Nr'=>c,'Plik'=>a,'Base64'=>e,'Url'=>x,'Fa'=>fa},.t.)
+|x|DevPos(win[1]+7,win[2]+3),DevOutPict(left(x,64),,"W/BG"),DevPos(win[1]+8,win[2]+3),DevOutPict(SubStr(x,65),,"W/BG"),FIELD->ksef:=hb_jsonencode({'Nr'=>c,'Plik'=>a,'Base64'=>e,'Url'=>x,'Fa'=>fa},.t.)
 fa:=NIL
 DevPos(win[3]-1,win[2]+3),DevOutPict('Gotowe!',,"W/BG")
 ;INKEY(0)

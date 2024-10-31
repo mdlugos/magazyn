@@ -97,7 +97,7 @@ public defa,oprn
    hb_gtInfo( HB_GTI_WINTITLE , "Magazyn" )
 
 if parametr='MAGDEF='
-   defa:=subs(parametr,8)
+   defa:=SubStr(parametr,8)
    parametr:=mag_biez
    mag_biez:=operator
    operator:=''
@@ -136,7 +136,7 @@ if curdir()=HB_ps()
 endif
 #endif
 
-aeval(defa,{|x,j,i|defa[j]:=if(x='.'+HB_ps(),a+subs(x,3),if(x='..'+HB_ps().and.(i:=rat(HB_ps(),left(a,len(a)-1)))>0,left(a,i)+subs(x,4),x))})
+aeval(defa,{|x,j,i|defa[j]:=if(x='.'+HB_ps(),a+SubStr(x,3),if(x='..'+HB_ps().and.(i:=rat(HB_ps(),left(a,len(a)-1)))>0,left(a,i)+SubStr(x,4),x))})
 
 menu:=.f.
 aeval(defa,{|x,j,i|if(lower(a)=lower(x),(menu:=.t.,defa[j]:=if((i:=len(x))=0,a,left(a,i))),)})
@@ -155,7 +155,7 @@ defa:=atail(defa)
 
 #ifdef A_DIETA
 if parametr='DIETADEF='
-   a:=subs(parametr,10)
+   a:=SubStr(parametr,10)
    parametr:=mag_biez
    mag_biez:=operator
    operator:=''
@@ -906,7 +906,7 @@ field index
      do while inirestold(@txt)
        i:=at(':=',txt)
        if i>0
-         aadd(a,{left(txt,i-1),type(subs(txt,i+2)),10,2})
+         aadd(a,{left(txt,i-1),type(SubStr(txt,i+2)),10,2})
        endif
      enddo
      dbcreate('daty',a)

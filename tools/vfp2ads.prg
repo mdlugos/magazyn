@@ -23,7 +23,7 @@ ENDIF
 i:=RAT(hb_ps(),db)
 
 SET DEFAULT TO (LEFT(DB,i))
-db:=subs(db,i+1)
+db:=SubStr(db,i+1)
 
 erase (set(_SET_DEFAULT)+"tmp.dbf")
 erase (set(_SET_DEFAULT)+"tmp.dbt")
@@ -49,7 +49,7 @@ LOCAL h,st
    USE (DB) READONLY EXCLUSIVE VIA 'FPTCDX'
    st:=dbstruct()
    ?? DB+" "
-   aeval(st,{|x,i|outstd(x[1]:=lower(trim(x[1])),''),iif(x[2]='M', x[2]:='W',iif(subs(x[2],3)='U' .or. x[2]=='C' .and. x[3]>36, (x[2]:='Q:B',x[3]:=min(254,9*x[3]/8)),))})
+   aeval(st,{|x,i|outstd(x[1]:=lower(trim(x[1])),''),iif(x[2]='M', x[2]:='W',iif(SubStr(x[2],3)='U' .or. x[2]=='C' .and. x[3]>36, (x[2]:='Q:B',x[3]:=min(254,9*x[3]/8)),))})
    //db:=alias() keep it in the same case
    altd()
    dbcreate("tmp",st)

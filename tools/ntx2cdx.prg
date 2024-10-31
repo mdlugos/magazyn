@@ -20,7 +20,7 @@ ENDIF
 i:=RAT(hb_ps(),db)
 
 SET DEFAULT TO (LEFT(DB,i))
-db:=subs(db,i+1)
+db:=SubStr(db,i+1)
 
 erase (set(_SET_DEFAULT)+"tmp.dbf")
 erase (set(_SET_DEFAULT)+"tmp.dbt")

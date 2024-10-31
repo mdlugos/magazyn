@@ -201,7 +201,7 @@ local NumFlag:=.f.,b,x,y,key,mfl,maxlth:=0
     // de-activate the GET
     if get:HasFocus
       if get:type$"CM" .and. valtype(get:cargo)="L" .and. get:cargo
-         @ get:row,get:col say space(min(maxlth,val(subs(get:picture,1+at("S",get:picture))))) color getlines(get:colorspec,',')[1]
+         @ get:row,get:col say space(min(maxlth,val(SubStr(get:picture,1+at("S",get:picture))))) color getlines(get:colorspec,',')[1]
       endif
       get:KillFocus()
     else
@@ -318,7 +318,7 @@ local bKeyBlock
       get:changed:=.t.
 
     if get:type $ "CM" .and. valtype(get:cargo)="L" .and. get:cargo;
-     .and. empty(subs(get:buffer,get:pos))
+     .and. empty(SubStr(get:buffer,get:pos))
      fixbuff(get,left(get:buffer,get:pos))
     endif
 
@@ -327,7 +327,7 @@ local bKeyBlock
       get:changed:=.t.
 
     if get:type $ "CM" .and. valtype(get:cargo)="L" .and. get:cargo;
-     .and. empty(subs(get:buffer,get:pos))
+     .and. empty(SubStr(get:buffer,get:pos))
      fixbuff(get,left(get:buffer,get:pos))
     endif
 
@@ -335,7 +335,7 @@ local bKeyBlock
     get:DelWordRight()
       get:changed:=.t.
     if get:type $ "CM" .and. valtype(get:cargo)="L" .and. get:cargo;
-     .and. empty(subs(get:buffer,get:pos))
+     .and. empty(SubStr(get:buffer,get:pos))
      fixbuff(get,left(get:buffer,get:pos))
     endif
 
@@ -343,7 +343,7 @@ local bKeyBlock
     get:DelEnd()
       get:changed:=.t.
     if get:type $ "CM" .and. valtype(get:cargo)="L" .and. get:cargo;
-     .and. empty(subs(get:buffer,get:pos))
+     .and. empty(SubStr(get:buffer,get:pos))
      fixbuff(get,left(get:buffer,get:pos))
     endif
 
@@ -351,7 +351,7 @@ local bKeyBlock
     get:DelWordLeft()
       get:changed:=.t.
     if get:type $ "CM" .and. valtype(get:cargo)="L" .and. get:cargo;
-     .and. empty(subs(get:buffer,get:pos))
+     .and. empty(SubStr(get:buffer,get:pos))
      fixbuff(get,left(get:buffer,get:pos))
     endif
 
@@ -432,7 +432,7 @@ local bKeyBlock
 #ifdef A_JMO
         elseif get:type="N" .and. "r."$get:buffer .and. ! (NumFlag=.f.) .and. isdigit(cKey)
            if get:pos<get:decpos
-              fixbuff(get,subs(stuff(get:buffer,get:pos+1,0,cKey),2))
+              fixbuff(get,SubStr(stuff(get:buffer,get:pos+1,0,cKey),2))
               NumFlag:=(get:pos=get:decpos-2)
            else
               fixbuff(get,stuff(stuff(get:buffer,get:decpos+1,1,""),get:pos,0,cKey))
@@ -443,7 +443,7 @@ local bKeyBlock
 #endif
         elseif get:type="N" .and. get:pos<get:decpos .and. isdigit(cKey) .and. !(NumFlag=.f.)
            if get:picture=NIL .or. get:picture="@" .and. !" "$get:picture
-              fixbuff(get,subs(stuff(get:buffer,get:pos+1,0,cKey),2))
+              fixbuff(get,SubStr(stuff(get:buffer,get:pos+1,0,cKey),2))
            else
               a:=get:untransform()
               b:=if(get:minus.or.a<0,-1,1)
@@ -1146,7 +1146,7 @@ static proc getval(get)
      else
         t:=str(t,l+20,l-get:decpos+20)
         for k:=len(t) to l step -1
-           if subs(t,k,1)<>'0'
+           if SubStr(t,k,1)<>'0'
               exit
            endif
         next k
@@ -1222,7 +1222,7 @@ static proc getchr(get,expandable)
    private r1,c1,r2,c2,l,c,cl,cc,ch:=.f.,ww:=.f.
    ll:=1020
 
-  m:=if(get:picture=NIL,40,max(40,val(subs(get:picture,1+at("S",get:picture)))))
+  m:=if(get:picture=NIL,40,max(40,val(SubStr(get:picture,1+at("S",get:picture)))))
   if expandable
      txt:=trim(get:buffer)+' ' //trim(get:untransform())
   else
@@ -1326,7 +1326,7 @@ osk:=HB_SETKEYSAVE()
            ch:=.f.
            b[3-bp]:=b[bp]
         endif
-        bl:=subs(txt,min(b[1],b[2]),abs(b[2]-b[1]))
+        bl:=SubStr(txt,min(b[1],b[2]),abs(b[2]-b[1]))
         hb_gtInfo( HB_GTI_CLIPBOARDDATA, bl )
         //restscreen(cl,cc,cl,cc,hiattr(savescreen(cl,cc,cl,cc)))
        elseif k='K'
@@ -1388,7 +1388,7 @@ osk:=HB_SETKEYSAVE()
         k:=strtran(txt,chr(141)+chr(10))
         if expandable
            k:=trim(k)
-           m:=val(subs(get:picture,1+at("S",get:picture)))
+           m:=val(SubStr(get:picture,1+at("S",get:picture)))
            if len(k)<m
               k:=padr(k,m)
            endif

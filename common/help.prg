@@ -192,7 +192,7 @@ osk:=HB_SETKEYSAVE()
            ch:=.f.
            b[3-bp]:=b[bp]
         endif
-        bl:=subs(txt,min(b[1],b[2]),abs(b[2]-b[1]))
+        bl:=SubStr(txt,min(b[1],b[2]),abs(b[2]-b[1]))
         loop
     elseif k=K_ALT_K
         txt:=stuff(txt,m:=mlctopos(txt,ll,l,c,8,ww),0,bl)

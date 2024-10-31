@@ -17,7 +17,7 @@
 #define A_XPRN
 #define A_PCL
 #define isPrinter() .t.
-#define DTOV(dat) tranr(subs(dtos(dat),5),"##.##")
+#define DTOV(dat) tranr(SubStr(dtos(dat),5),"##.##")
 #define A_SET_DAT GERMAN
 #define STANY   INDX_MAT
 #define A_SUMK  -47291241801

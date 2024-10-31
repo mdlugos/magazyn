@@ -40,7 +40,7 @@
 #define A_ZATW
 #define A_NAZWISKO
 #define A_SET_DAT GERMAN
-#define DTOV(dat) tran(subs(dtos(dat),5),"@R ##.##")
+#define DTOV(dat) tran(SubStr(dtos(dat),5),"@R ##.##")
 #define DatE() MEMVAR->dzisiaj
 #define A_FK 12
 #define A_F9

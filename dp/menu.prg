@@ -106,11 +106,11 @@ return
 static proc showh(da,kon)
   @ 2,10 say ile_pos picture D_ILPIC color _sbkgr
   @ 2,17 say strpic(WARTOSC/ile_pos,7,A_ZAOKR,"@E ",.t.) color _sbkgr
-  @ 2,49 say subs(posilki[max(1,ascan(posilki,kon))],3,11) COLOR _sbkgr
+  @ 2,49 say SubStr(posilki[max(1,ascan(posilki,kon))],3,11) COLOR _sbkgr
   @ 2,60 say if(zapot->(dbseek(dtos(da)+kon,.f.)),"jest","brak") color _sbkgr
 
 #ifdef A_WAGI
-  pg:=subs(PosGr,at(kon,PosStr),1)
+  pg:=SubStr(PosGr,at(kon,PosStr),1)
 #else
   pg:=kon
 #endif
@@ -406,7 +406,7 @@ local a,b,c,i,j,k
     set relation to
     dbseek(dseek(,'data,posilek,dieta',da,po,'0'))
     c:=.f.
-    dbeval({||c:=.t.},{||ile_pos<>0 .and. dieta>='0' .and. subs(dieta,2,1)='/' .and. subs(dieta,3,1)>='0' .and. empty(subs(dieta,4)) .and. dind(dieta,d) .and. dind(dieta,di)},{||!c .and. data=da .and. posilek=po})
+    dbeval({||c:=.t.},{||ile_pos<>0 .and. dieta>='0' .and. SubStr(dieta,2,1)='/' .and. SubStr(dieta,3,1)>='0' .and. empty(SubStr(dieta,4)) .and. dind(dieta,d) .and. dind(dieta,di)},{||!c .and. data=da .and. posilek=po})
 #else
     if len(d)<=1
      return dind(d,di)
@@ -422,7 +422,7 @@ local a,b,c,i,j,k
     set relation to
     dbseek(dseek(,'data,posilek,dieta',da,po,'0'))
     c:=.f.
-    dbeval({||c:=.t.},{||ile_pos<>0 .and. dieta>='0' .and. empty(subs(dieta,2)) .and. dind(dieta,d) .and. dind(dieta,di)},{||!c .and. data=da .and. posilek=po})
+    dbeval({||c:=.t.},{||ile_pos<>0 .and. dieta>='0' .and. empty(SubStr(dieta,2)) .and. dind(dieta,d) .and. dind(dieta,di)},{||!c .and. data=da .and. posilek=po})
 #endif
     dbgoto(b[2])
     dbselectarea(b[1])
@@ -436,7 +436,7 @@ local g:='',gi:='',i,j,a
 d:=strtran(d,' ')
 i:=at('/',d)
 if i>0
-  g:=subs(d,i+1)
+  g:=SubStr(d,i+1)
   d:=left(d,i-1)
   if !empty(g) .and. (g<'0' .or. len(g)>1)
     return .f. //dind bez weryfikacji po wszystkich dietach
@@ -460,7 +460,7 @@ for j:=1 to len(a)
   di:=a[j]
   i:=at('/',di)
   if '/'$di
-    gi:=subs(di,i+1)
+    gi:=SubStr(di,i+1)
     di:=left(di,i-1)
     if ! (''=gi .or. XOR(gi="-",g$gi))
       loop
@@ -490,7 +490,7 @@ f:=.f.
 a:=''
 b:=1
 for l:=1 to len(d)
-    c:=subs(d,l,1)
+    c:=SubStr(d,l,1)
 #ifdef A_GREX
     if c=','
        if l=b
@@ -634,8 +634,8 @@ DO CASE
   CASE _skey=0 .and. alias()="DANIA"
     _spform:={|p|tranr(p,"X/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")}
     if [at(] $ lower(INDEXKEY(0))
-       _sp2s:={|x|dseek(,'posilek,nazwa',left(x,1),subs(x,2))}
-       _ss2p:={|x|if(len(x)>0,subs(posstr,asc(x)%16,1)+subs(x,2),"")}
+       _sp2s:={|x|dseek(,'posilek,nazwa',left(x,1),SubStr(x,2))}
+       _ss2p:={|x|if(len(x)>0,SubStr(posstr,asc(x)%16,1)+SubStr(x,2),"")}
        _spform:={|p,l|tranr(eval(_ss2p,p,l),"X/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")}
     endif
     if _slth>0
@@ -678,7 +678,7 @@ DO CASE
     SET ORDER TO tag dan_uni
     _sbeg:=3
     _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
-    _spocz:=subs(_spocz,2)
+    _spocz:=SubStr(_spocz,2)
     _slth:=len(_spocz)
     _spform:={|p|p}
     _sp2s:=NIL
@@ -698,8 +698,8 @@ DO CASE
     _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     _spform:={|p|tranr(p,"X/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")}
     if [at(] $ lower(INDEXKEY(0))
-       _sp2s:={|x|dseek(,'posilek,nazwa',left(x,1),subs(x,2))}
-       _ss2p:={|x|if(len(x)>0,subs(posstr,asc(x)%16,1)+subs(x,2),"")}
+       _sp2s:={|x|dseek(,'posilek,nazwa',left(x,1),SubStr(x,2))}
+       _ss2p:={|x|if(len(x)>0,SubStr(posstr,asc(x)%16,1)+SubStr(x,2),"")}
        _spform:={|p,l|tranr(Eval(_ss2p,p,l),"X/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")}
     endif
     refresh(1,_s)
