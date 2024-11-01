@@ -197,7 +197,7 @@ DO WHILE .T.
       else
          LOCK
 #ifdef A_SUBDOK
-         sub_dok:=subs(dok,3)
+         sub_dok:=SubStr(dok,3)
 #endif         
          NOWYDM:=.F.
          _fpopkey:=.f.
@@ -399,7 +399,7 @@ local r,l,c,j
    d:=g:buffer
  endif
  d:=UpP(d)
- c:=subs(d,2,1)
+ c:=SubStr(d,2,1)
  if r:=aczojs(posilki,@c,,,"Posilek")
    d:=stuff(d,2,1,c)
  endif
@@ -424,14 +424,14 @@ return r
        endif
        kk:=b
        getactive():updatebuffer()
-       b:=subs(kk,4,1)
+       b:=SubStr(kk,4,1)
        if !aczojs(zaklady,@b,,,hb_UTF8ToStr("Zakłady:"))
           getactive():pos:=4
           return .f.
        endif
        kk:=stuff(kk,4,1,b)
-       b:=subs(kk,5)
-       if b#" ".and.b=subs(kont[i],5,1)
+       b:=SubStr(kk,5)
+       if b#" ".and.b=SubStr(kont[i],5,1)
           return .t.
        endif
        getactive():updatebuffer()
@@ -451,7 +451,7 @@ return r
        elseif stano[i]=b .and. !"?"$stano[i]
           sk:=b
           if d_o=" "
-             d_o:=trim(subs(stano[i],8))
+             d_o:=trim(SubStr(stano[i],8))
              getlist[d]:display()
              updated(.t.)
           endif
@@ -459,15 +459,15 @@ return r
        endif
        sk:=b
        getactive():updatebuffer()
-       b:=subs(sk,4,1)
+       b:=SubStr(sk,4,1)
        if !aczojs(zaklady,@b,@j,,hb_UTF8ToStr("Zakłady:"))
           getactive():pos:=4
           return .f.
        endif
        sk:=stuff(sk,4,1,b)
-       if !" "$sk.and.subs(sk,5)==subs(stano[i],5,2)
+       if !" "$sk.and.SubStr(sk,5)==SubStr(stano[i],5,2)
           if d_o=" "
-             d_o:=trim(subs(stano[i],8))+subs(zaklady[j],2)
+             d_o:=trim(SubStr(stano[i],8))+SubStr(zaklady[j],2)
              getlist[d]:display()
              updated(.t.)
           endif
@@ -476,7 +476,7 @@ return r
        getactive():updatebuffer()
        z:=array(len(dzial))
        aeval(dzial,{|x,i|z[i]:=b=trim(substr(x,4,1))})
-       b:=subs(sk,5)
+       b:=SubStr(sk,5)
        j:=NIL
        if !aczojs(dzial,@b,@j,z,hb_UTF8ToStr("Działy:"))
           getactive():pos:=5
@@ -485,21 +485,21 @@ return r
        sk:=stuff(sk,5,2,b)
        if dzial[j]=b //do pełna
           if d_o=" "
-             d_o:=trim(subs(stano[i],8))+subs(dzial[j],5)
+             d_o:=trim(SubStr(stano[i],8))+SubStr(dzial[j],5)
              getlist[d]:display()
              updated(.t.)
           endif
           return .t.
        endif
        getactive():updatebuffer()
-       b:=subs(sk,6)
+       b:=SubStr(sk,6)
        if !aczojs(mater,@b,@k)
           getactive():pos:=6
           return .f.
        endif
        sk:=stuff(sk,6,1,b)
        if d_o=" "
-          d_o:=trim(subs(stano[i],8))+trim(subs(dzial[j],5))+subs(mater[k],2)
+          d_o:=trim(SubStr(stano[i],8))+trim(SubStr(dzial[j],5))+SubStr(mater[k],2)
           getlist[d]:display()
           updated(.t.)
        endif
@@ -523,31 +523,31 @@ return r
          getactive():pos:=1
          return .f.
       elseif nz#za
-         nz:=za+cz+dz+subs(nz,6)
+         nz:=za+cz+dz+SubStr(nz,6)
          getactive():updatebuffer()
          loop
       elseif !aczojs(czynnosc,@cz,,,hb_UTF8ToStr("Czynność"))
          getactive():pos:=2
          return .f.
       elseif cz#substr(nz,2,2)
-         nz:=za+cz+dz+subs(nz,6)
+         nz:=za+cz+dz+SubStr(nz,6)
          getactive():updatebuffer()
          loop
-      elseif dz#subs(sk,5,2).and.(dzwz:=array(len(dzial)),aeval(dzial,{|x,i|dzwz[i]:=za=trim(substr(x,4,1))}),j:=NIL,!aczojs(dzial,@dz,@j,dzwz,hb_UTF8ToStr("Działy")))
+      elseif dz#SubStr(sk,5,2).and.(dzwz:=array(len(dzial)),aeval(dzial,{|x,i|dzwz[i]:=za=trim(substr(x,4,1))}),j:=NIL,!aczojs(dzial,@dz,@j,dzwz,hb_UTF8ToStr("Działy")))
              getactive():pos:=4
              return .f.
-      elseif dz#subs(nz,4,2)
-             nz:=za+cz+dz+subs(nz,6)
+      elseif dz#SubStr(nz,4,2)
+             nz:=za+cz+dz+SubStr(nz,6)
              getactive():updatebuffer()
              loop
-      elseif " "==subs(dz,2)
-             b:=subs(dz,2)
+      elseif " "==SubStr(dz,2)
+             b:=SubStr(dz,2)
              if !aczojs(mater,@b)
                 getactive():pos:=5
                 return .f.
              endif
              dz:=left(dz,1)+b
-             nz:=za+cz+dz+subs(nz,6)
+             nz:=za+cz+dz+SubStr(nz,6)
              getactive():updatebuffer()
              loop
       elseif TRIM(nz)#nz
@@ -1275,9 +1275,9 @@ LOCAL ZNALAZ,recf,RECM,RECS,RECI,RECD,rec1,rec2,PRZE:=IL,A,B,c,d,j,oldp,dpushl,a
        dpushl:=.f.
     else
  #ifdef A_KASA
-     il:=prze:=-val(subs(nim,hb_fieldlen('index')+1))
-     pv:=subs(nim,hb_fieldlen('index')+12,2)
-     cz:=val(subs(nim,hb_fieldlen('index')+16,10))
+     il:=prze:=-val(SubStr(nim,hb_fieldlen('index')+1))
+     pv:=SubStr(nim,hb_fieldlen('index')+12,2)
+     cz:=val(SubStr(nim,hb_fieldlen('index')+16,10))
      wa:=pm*val(right(nim,10))
      if wa<>0
         ce:=ck:=wa/il
@@ -1293,11 +1293,11 @@ LOCAL ZNALAZ,recf,RECM,RECS,RECI,RECD,rec1,rec2,PRZE:=IL,A,B,c,d,j,oldp,dpushl,a
     endif
   #endif
      wz:=ROUND(pm*il*cz,A_ZAOKR)
-     nz:=subs(nim,hb_fieldlen('index')+36)
+     nz:=SubStr(nim,hb_fieldlen('index')+36)
      nim:=pad(left(nim,hb_fieldlen('index')),46)
  #else
-     //nz:=subs(nim,hb_fieldlen('index')+2,6)
-     //prze:=-val(subs(nim,rat(HB_UCHAR(0x00A0),nim)+1))
+     //nz:=SubStr(nim,hb_fieldlen('index')+2,6)
+     //prze:=-val(SubStr(nim,rat(HB_UCHAR(0x00A0),nim)+1))
      //nim:=pad(left(nim,hb_fieldlen('index')),46)
  #endif
  #ifdef A_FA
@@ -2523,10 +2523,10 @@ DO CASE
       SET ORDER TO TAG FIRM_NUM
       sel('KH','KH')
       SET RELATION TO str(N1,A_NRLTH) INTO FIRMY
-      _sprompt:={||str(n1,A_NRLTH)+if(""=uwagi,I,"*")+n15+I+longname}
+      _sprompt:={||str(n1,A_NRLTH)+if(""=uwagi,I,"*")+n15+I+ufieldget([longname])}
 #else
 #ifdef A_FFULL
-      _sprompt:={||numer_kol+if(""=uwagi,I,"*")+nazwa+I+longname}
+      _sprompt:={||numer_kol+if(""=uwagi,I,"*")+nazwa+I+ufieldget([longname])}
 #else
       _sprompt:={||numer_kol+if(""=uwagi,I,"*")+nazwa}
 #endif
@@ -2560,11 +2560,11 @@ DO CASE
                        re:=txt['workingAddress']
                        endif
                        _skey:=at(', ',re)
-                       if subs(re,_skey+4,1)='-'
-                          re:=trim(subs(re,_skey+2))+', '+left(re,_skey-1)
+                       if SubStr(re,_skey+4,1)='-'
+                          re:=trim(SubStr(re,_skey+2))+', '+left(re,_skey-1)
                        endif
                        goto lastrec()+1
-                       FIRM_EDIT(numer_kol,_s,pad(txt['name'],hb_fieldlen('nazwa')),pad(txt['name'],hb_fieldlen('longname')),pad(re,hb_fieldlen('adres')),pad(txt['nip'],hb_fieldlen('ident')),h)
+                       FIRM_EDIT(numer_kol,_s,pad(txt['name'],hb_fieldlen([nazwa])),pad(txt['name'],hb_fieldlen([longname])),pad(re,hb_fieldlen([adres])),pad(txt['nip'],hb_fieldlen([ident])),h)
                        return .f.
                   endif
 #endif
@@ -2583,10 +2583,10 @@ DO CASE
 #ifdef A_FA
           case _spocz='?'
                select DM
-               set order to "DM_NAZ"
+               set order to tag DM_NAZ
                re:=recno()
                begin sequence
-                  dbseek(txt:=if(upper(IndexkeY(0))='NR_MAG',mag_biez,'')+subs(_spocz,2))
+                  dbseek(txt:=if(upper(IndexkeY(0))='NR_MAG',mag_biez,'')+SubStr(_spocz,2))
 
 
 #ifdef A_KB
@@ -2609,7 +2609,7 @@ DO CASE
                   if !Firmy->(dbseek(kh))
                      kh:=space(A_NRLTH)
                   else
-                     d_o:=subs(d_o,A_NRLTH+1)
+                     d_o:=SubStr(d_o,A_NRLTH+1)
                   endif
 #endif
                   _sret:=.t.
@@ -2627,7 +2627,7 @@ DO CASE
 #ifdef A_AF
                set order to tag KH
 #else
-               set order to "FIRM_NUM"
+               set order to tag FIRM_NUM
 #endif
                re:=recno()
                if dbseek(_spocz)
@@ -2651,7 +2651,7 @@ DO CASE
 #ifdef A_AF
                set order to tag KH2
 #else
-               SET ORDER TO "FIRM_NAZ"
+               SET ORDER TO TAG FIRM_NAZ
 #endif
           otherwise
                _sbeg:=A_NRLTH+2
@@ -2660,7 +2660,7 @@ DO CASE
                if dbSEEK(_spocz)
                   if _spocz=UpP(trim(n15))
 #else
-               SET ORDER TO "FIRM_NAZ"
+               SET ORDER TO TAG FIRM_NAZ
                if dbSEEK(_spocz)
                   if _spocz=UpP(trim(nazwa))
 #endif
@@ -2687,7 +2687,7 @@ DO CASE
                   SET ORDER TO TAG FIRM_LNG
 
                   if indexord()>2 .and. dbSEEK(_spocz)
-                     _sbeg:=A_NRLTH+3+hb_fieldlen('nazwa')
+                     _sbeg:=A_NRLTH+3+hb_fieldlen([nazwa])
                      if _spocz=UpP(trim(longname))
                         return gfirma(13,_s,getlist)
                      endif
@@ -2696,14 +2696,17 @@ DO CASE
                      _slth:=0
                      _sfilt:='['+txt+']$UPPER(longname)'
                      _sfilb:={||txt$UPPER(longname)}
-                     _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,I,"*")+nazwa+I+longname,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+                     _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,I,"*")+nazwa+I+ufieldget([longname]),if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(SubStr(x,l,k),_sel),devout(SubStr(x,l+k),c),''))}
+                     if indexord()=0
+                        SET ORDER TO TAG FIRM_NAZ
+                     endif
                   endif
 #else
                   _spocz:=''
                   _slth:=0
                   _sfilt:='['+txt+']$UPPER(naZwa)'
                   _sfilb:={||txt$UPPER(naZwa)}
-                  _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,I,"*")+nazwa,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(subs(x,l,k),_sel),devout(subs(x,l+k),c),''))}
+                  _sprompt:={|d,s,z,x,l,k,c|c:=_snorm,x:=numer_kol+if(""=uwagi,I,"*")+nazwa,if(z=.t.,x,(l:=at(txt,UpP(x)),k:=if(l=0,0,len(txt)),devout(left(x,l-1),c),devout(SubStr(x,l,k),_sel),devout(SubStr(x,l+k),c),''))}
 #endif
                endif
       ENDCASE
@@ -2721,12 +2724,12 @@ DO CASE
       kh:=numer_kol
       getlist[1]:display()
 #ifdef A_FFULL
-         D_O:=pad(trim(nazwa)+" * "+longname,dm->(hb_fieldlen('dost_odb')))
+         D_O:=pad(trim(nazwa)+" * "+longname,dm->(hb_fieldlen([dost_odb])))
 #else
 #ifdef A_OLZBY
          d_o:=nazwa
 #else
-         d_o:=PAD(nazwa,dm->(hb_fieldlen('dost_odb')))
+         d_o:=PAD(nazwa,dm->(hb_fieldlen([dost_odb])))
 #endif
 #endif
 #ifdef A_FA
@@ -2755,7 +2758,7 @@ DO CASE
             x:=strtran(firmy->ident,'-')
             if !isdigit(x)
                if x='PL'
-                 x:=subs(x,3)
+                 x:=SubStr(x,3)
                else
                  x:=''
                endif
@@ -3118,7 +3121,7 @@ stat func nipval(i,n)
 field longname
 local ord:=ordsetfocus('firm_nip'),rec:=recno()
 set filter to rec#recno()
-if !dbseek(strtran(i,'-','')) .or. !szukam({1,4,maxrow(),,1,0,'Inne firmy o tym NIPie:',{||numer_kol+I+nazwa+I+longname},,strtran(i,'-','')})
+if !dbseek(strtran(i,'-','')) .or. !szukam({1,4,maxrow(),,1,0,'Inne firmy o tym NIPie:',{||numer_kol+I+nazwa+I+ufieldget([longname])},,strtran(i,'-','')})
    dbgoto(rec)
 else
    lock
@@ -3159,10 +3162,10 @@ stat func getf(i,r,f,b,a,c,u,getlist,n,tp,nzw)
      a:={"       ",alltrim(adres),''}
      if isdigit(a[2])
         a[1]:=left(adres,7)
-        a[2]:=subs(a[2],8)
+        a[2]:=SubStr(a[2],8)
      endif
      if ','$a[2]
-        a[3]:=alltrim(subs(a[2],1+at(",",a[2])))
+        a[3]:=alltrim(SubStr(a[2],1+at(",",a[2])))
         a[3]:=strtran(a[3],'UL.','')
         a[3]:=strtran(a[3],'ul.','')
         a[2]:=left(a[2],at(",",a[2])-1)
@@ -3385,7 +3388,7 @@ endif
 sel:=select()
 sel('ksef',0)
 go bottom
-d:=max(DatY->d_z_mies1+1,stod(subs(n_ksef,12,8)))
+d:=max(DatY->d_z_mies1+1,stod(SubStr(n_ksef,12,8)))
 da:=dd:=dv:=d
 varput(getlistactive(),'dv',dv)
 varput(getlistactive(),'dd',dv)
@@ -3393,7 +3396,7 @@ varput(getlistactive(),'da',dv)
 if eof()
 s:=max(DatY->d_z_mies1+1,d-31)
 else
-s:=max(max(DatY->d_z_mies1+1,stod(subs(nr_ksef,12,8))),d-31)
+s:=max(max(DatY->d_z_mies1+1,stod(SubStr(nr_ksef,12,8))),d-31)
 endif
 set order to tag ksef_nr
 if d>=s
@@ -3412,7 +3415,7 @@ d:=min(date(),s+10)
 s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject2', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(s,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(d,'YYYY-MM-DD')+'T23:59:59'}})
 curl('Query/Invoice/Sync?PageSize=100&PageOffset=0','-X POST -H Content-Type:application/json -H sessionToken:'+token,s,@ans)
 //REST SCREEN FROM scr
-s:=hb_JsonDecode(subs(ans,at('{',ans)))
+s:=hb_JsonDecode(SubStr(ans,at('{',ans)))
 d:=hb_hgetdef(s,'invoiceHeaderList',{})
 if len(d)=0
   alarm('Brak faktur w podanym zakresie:'+HB_EOL()+hb_jsonencode(s,.t.))
@@ -3438,7 +3441,7 @@ _sbeg:=1
 _slth:=len(_spocz)
 if szukam(_s) .and. !eof()
    n_ksef:=field->nr_ksef
-   dv:=stod(subs(n_ksef,12,8))
+   dv:=stod(SubStr(n_ksef,12,8))
    varput(getlistactive(),'dd',dv)
    varput(getlistactive(),'n_f',pad(field->nr_faktury,DM->(hb_fieldlen('nr_faktury'))))
    if dataval(dv)

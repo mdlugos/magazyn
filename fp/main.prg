@@ -74,7 +74,7 @@ setpos(4,maxcol()/2)
 public defa
 
 if parametr='FKDEF='
-   defa:=subs(parametr,7)
+   defa:=SubStr(parametr,7)
    parametr:=menu
 else
    defa:=getenv("FKDEF")
@@ -95,7 +95,7 @@ if curdir()=HB_ps()
 endif
 #endif
 
-aeval(defa,{|x,j,i|defa[j]:=if(x='.'+HB_ps(),a+subs(x,3),if(x='..'+HB_ps().and.(i:=rat(HB_ps(),left(a,len(a)-1)))>0,left(a,i)+subs(x,4),x))})
+aeval(defa,{|x,j,i|defa[j]:=if(x='.'+HB_ps(),a+SubStr(x,3),if(x='..'+HB_ps().and.(i:=rat(HB_ps(),left(a,len(a)-1)))>0,left(a,i)+SubStr(x,4),x))})
 
 menu:=.f.
 aeval(defa,{|x,j,i|if(lower(a)=lower(x),(menu:=.t.,defa[j]:=if((i:=len(x))=0,a,left(a,i))),)})
@@ -419,7 +419,7 @@ set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_OsPat
      do while inirestold(@txt)
        i:=at(':=',txt)
        if i>0
-         aadd(a,{left(txt,i-1),type(subs(txt,i+2)),10,2})
+         aadd(a,{left(txt,i-1),type(SubStr(txt,i+2)),10,2})
        endif
      enddo
      dbcreate('daty',a)
@@ -516,12 +516,12 @@ begin sequence
 
   for j:=0 to len(ap[i])-AP_LTH step AP_STEP
   if empty(ap[i,j+AP_WNVAL])
-     ap[i,j+AP_WNVAL]:='K'$subs(ap[i,j+AP_POZWN],2)
+     ap[i,j+AP_WNVAL]:='K'$SubStr(ap[i,j+AP_POZWN],2)
   else
      ap[i,j+AP_WNVAL]:=&(ap[i,j+AP_WNVAL])
   endif
   if empty(ap[i,j+AP_MAVAL])
-     ap[i,j+AP_MAVAL]:='K'$subs(ap[i,j+AP_POZMA],2)
+     ap[i,j+AP_MAVAL]:='K'$SubStr(ap[i,j+AP_POZMA],2)
   else
      ap[i,j+AP_MAVAL]:=&(ap[i,j+AP_MAVAL])
   endif

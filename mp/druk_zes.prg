@@ -9,7 +9,7 @@ memvar strona,stawki,stawkizby,it_zesmnu,oprn,defa
 #define D_KH1 dost_odb
 #else
 #define D_KH left(dost_odb,A_NRLTH)
-#define D_KH1 if(val(dost_odb)="0",dost_odb,subs(dost_odb,A_NRLTH+2))
+#define D_KH1 if(val(dost_odb)="0",dost_odb,SubStr(dost_odb,A_NRLTH+2))
 #endif
 #include "inkey.ch"
 #ifdef A_NVAT
@@ -386,7 +386,7 @@ if valtype(g)='O'
    t:=g:varget()
 /*
    if len(t)>=len(main->nr_zlec))
-     s:=trim(subs(t,len(main->nr_zlec)-len(firmy->numer_kol)+1,len(firmy->numer_kol)))
+     s:=trim(SubStr(t,len(main->nr_zlec)-len(firmy->numer_kol)+1,len(firmy->numer_kol)))
    else
      s:=t
    endif
@@ -396,9 +396,9 @@ r:=szukam({1,14,maxrow(),,1,0,'FIRMY',{||numer_kol+if(""=uwagi,I,"*")+nazwa},{|_
       if r.and.valtype(g)='O'
          a:=MAIN->(len(EvAlDb(IndexKey(3)))-10-hb_fieldlen('index'))
       if len(t)>=main->(hb_fieldlen('nr_zlec'))
-         t:=firmy->(left(t,a-hb_fieldlen('numer_kol'))+FIELD->numer_kol)+subs(t,a+1)
+         t:=firmy->(left(t,a-hb_fieldlen('numer_kol'))+FIELD->numer_kol)+SubStr(t,a+1)
       else
-         t:=FIRMY->(FIELD->numer_kol+subs(t,hb_fieldlen('numer_kol')+1))
+         t:=FIRMY->(FIELD->numer_kol+SubStr(t,hb_fieldlen('numer_kol')+1))
       endif
          g:varput(t)
       endif
@@ -468,11 +468,11 @@ return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,hb_UTF8ToStr("ZESTAWIENIE ROZCHODÓW W
 #else
 #ifdef A_FA
 return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,hb_UTF8ToStr("ZESTAWIENIE SPRZEDAŻY W/G KONTRAHENTÓW"),{||NIL},{||;
-  FIRMY->(IF(i_gr>=a.and.DBSEEK(subs(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),if(i_gr>=a+2,QOUT(subs(magazyny[ascan(magazyny,nr_mag)],4)),)}})
+  FIRMY->(IF(i_gr>=a.and.DBSEEK(SubStr(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),if(i_gr>=a+2,QOUT(SubStr(magazyny[ascan(magazyny,nr_mag)],4)),)}})
 #else
 return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,hb_UTF8ToStr("ZESTAWIENIE ROZCHODÓW W/G KONT"),{||NIL},{|x,y,z|z:='',;
-  if(i_gr>=a+2.and.(x:=ascan(magazyny,nr_mag),y:=if(x=0,x,ascan(stanowis[x],{|x|nr_zlec=strtran(trim(left(x,a)),'*')})),y#0),z:=subs(stanowis[x,y],8),),;
-  FIRMY->(IF(i_gr>=a.and.DBSEEK(subs(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),z}})
+  if(i_gr>=a+2.and.(x:=ascan(magazyny,nr_mag),y:=if(x=0,x,ascan(stanowis[x],{|x|nr_zlec=strtran(trim(left(x,a)),'*')})),y#0),z:=SubStr(stanowis[x,y],8),),;
+  FIRMY->(IF(i_gr>=a.and.DBSEEK(SubStr(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),z}})
 #endif
 #endif
 ***********************************
@@ -527,7 +527,7 @@ I_DO=UpP(TRIM(I_DO))
 a:=len(EvAlDb(INDEXKEY()))-10-hb_fieldlen('index')
 
 return({od,do,i_od,i_do,i_gr,bkey,bpic,1,hb_UTF8ToStr("ZESTAWIENIE PRZYCHODÓW W/G KONT"),{||NIL},{||;
-  FIRMY->(IF(i_gr>=a.and.DBSEEK(subs(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),HB_BCHAR(13)+replicate('_',78)}})
+  FIRMY->(IF(i_gr>=a.and.DBSEEK(SubStr(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),HB_BCHAR(13)+replicate('_',78)}})
 #endif
 ****************
 FUNCTION PRZYCH(n)
@@ -1363,7 +1363,7 @@ endif
     ENDIF
       ?? Tran((SEL)->INDEX,"@R "+ INDEXPIC )+"|"
 #ifdef A_PLUDRY
-      ?? subs(nz,3,4)+'|'
+      ?? SubStr(nz,3,4)+'|'
 #endif
       ?? CPAD((sel)->NAZWA,(P_COLN-pcol())*ccpi()*.1,,0)
   enddo
@@ -1711,7 +1711,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
 #ifdef A_WALUTA
          if dok_wal
             w:=rat(' ',trim(DM->nr_spec))
-            w:=round(val(subs(DM->nr_spec,w))*10000,0)
+            w:=round(val(SubStr(DM->nr_spec,w))*10000,0)
             aeval(was,{|v|v[2]:=(v[2]*w)/10000})
          endif
 #endif
@@ -2084,10 +2084,10 @@ ELSE
 #ifdef A_FFULL
                j:=FIRMY->(if(len(trim(longname))>kl-15,nazwa,longname))
                k:=min(len(trim(j)),kl-15)
-               ?? "|"+FIRMY->ident +"|"+pad(j,k)+padl(trim(subs(FIRMY->adres,7)),kl-1-k)
+               ?? "|"+FIRMY->ident +"|"+pad(j,k)+padl(trim(SubStr(FIRMY->adres,7)),kl-1-k)
 #else
                k:=min(len(trim(FIRMY->nazwa)),kl-15)
-               ?? "|"+FIRMY->ident +"|"+pad(FIRMY->nazwa,k)+padl(trim(subs(FIRMY->adres,7)),kl-1-k)
+               ?? "|"+FIRMY->ident +"|"+pad(FIRMY->nazwa,k)+padl(trim(SubStr(FIRMY->adres,7)),kl-1-k)
 #endif
             else
                ?? "|"+pad(nr_faktury,13) +"|"+pad(dm->dost_odb,kl-1)
@@ -2099,9 +2099,9 @@ ELSE
             if dok_i .and. FIRMY->(dbseek(DM->(D_KH),.f.))
                ?? "|"+FIRMY->ident
 #ifdef A_FFULL
-               ?? "|"+left(firmy->longname,70)+left(firmy->adres,50)
+               ?? "|"+padr(firmy->longname,70)+padr(firmy->adres,50)
 #else
-               ?? "|"+left(firmy->nazwa,70)+left(firmy->adres,50)
+               ?? "|"+padr(firmy->nazwa,70)+padr(firmy->adres,50)
 #endif
             else
                ?? "|"+pad(nr_faktury,13)+"|"+left(dm->dost_odb,120)
@@ -2148,7 +2148,7 @@ ELSE
 #ifdef A_WALUTA
          if dok_wal
             w:=rat(' ',trim(DM->nr_spec))
-            w:=round(val(subs(DM->nr_spec,w))*10000,0)
+            w:=round(val(SubStr(DM->nr_spec,w))*10000,0)
             aeval(was,{|v|v[2]:=(v[2]*w)/10000})
          endif
 #endif
@@ -2507,7 +2507,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
         ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
       ENDIF
 */
-      //? trim(subs(magazyny[mag_poz],4)),adres_mag[mag_poz]
+      //? trim(SubStr(magazyny[mag_poz],4)),adres_mag[mag_poz]
       ?
       ? "Strona"+str(++strona,3)
     ENDIF
@@ -2626,7 +2626,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
         ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
       ENDIF
 */
-      //? trim(subs(magazyny[mag_poz],4)),adres_mag[mag_poz]
+      //? trim(SubStr(magazyny[mag_poz],4)),adres_mag[mag_poz]
       ?
       ? "Strona"+str(++strona,3)
       ENDIF
@@ -2851,10 +2851,10 @@ ELSE
 #ifdef A_FFULL
                j:=FIRMY->(if(len(trim(longname))>kl-15,nazwa,longname))
                k:=min(len(trim(j)),kl-15)
-               ?? "|"+FIRMY->ident +"|"+pad(j,k)+padl(trim(subs(FIRMY->adres,7)),kl-1-k)
+               ?? "|"+FIRMY->ident +"|"+pad(j,k)+padl(trim(SubStr(FIRMY->adres,7)),kl-1-k)
 #else
                k:=min(len(trim(FIRMY->nazwa)),kl-15)
-               ?? "|"+FIRMY->ident +"|"+pad(FIRMY->nazwa,k)+padl(trim(subs(FIRMY->adres,7)),kl-1-k)
+               ?? "|"+FIRMY->ident +"|"+pad(FIRMY->nazwa,k)+padl(trim(SubStr(FIRMY->adres,7)),kl-1-k)
 #endif
             else
                ?? pad("|",14)+"|"+pad(dm->dost_odb,kl-1)
@@ -2874,9 +2874,9 @@ ELSE
             if dok_i .and. FIRMY->(dbseek(DM->(D_KH),.f.))
                ?? "|"+FIRMY->ident
 #ifdef A_FFULL
-               ?? "|"+left(firmy->longname,70)+left(firmy->adres,50)
+               ?? "|"+padr(firmy->longname,70)+padr(firmy->adres,50)
 #else
-               ?? "|"+left(firmy->nazwa,70)+left(firmy->adres,50)
+               ?? "|"+padr(firmy->nazwa,70)+padr(firmy->adres,50)
 #endif
             else
                ?? pad("|",14)+"|"+dm->dost_odb
@@ -3182,18 +3182,18 @@ IF tak(hb_UTF8ToStr("CZY KOJEJNOŚĆ W/G NAZW"),20,,.F.,.F.)
    set order to 1
    bkey:=EvAlDb('{||'+IndexkeY(0)+'}')
    SEEK MAG_BIEZ LAST
-   I_DO:=MAG_BIEZ+subs(EvaldB(bkey),3)
+   I_DO:=MAG_BIEZ+SubStr(EvaldB(bkey),3)
    SEEK MAG_BIEZ
-   I_OD:=MAG_BIEZ+subs(EvaldB(bkey),3)
+   I_OD:=MAG_BIEZ+SubStr(EvaldB(bkey),3)
    @ 19,05 SAY 'MAT. "od" :' GET I_OD PICTURE "@KR! ##/"+repl("X",len(i_do)-2) valid {||if(i_do<i_od,(i_do:=i_od),),.t.}
    @ 20,05 SAY 'MAT. "do" :' GET I_DO PICTURE "@KR! ##/"+repl("X",len(i_do)-2) valid {||if(i_do<i_od,(i_do:=i_od)=NIL,.t.)}
 ELSE
 #endif
    bkey:=EvAlDb('{||'+IndexkeY(0)+'}')
     SEEK MAG_BIEZ LAST
-    I_DO:=MAG_BIEZ+subs(EvaldB(bkey),3)
+    I_DO:=MAG_BIEZ+SubStr(EvaldB(bkey),3)
     SEEK MAG_BIEZ
-    I_OD:=MAG_BIEZ+subs(EvaldB(bkey),3)
+    I_OD:=MAG_BIEZ+SubStr(EvaldB(bkey),3)
     @ 20,05 SAY 'MAT. "od" :' GET I_OD PICTURE "@KR! ##/"+ INDEXPIC valid {||if(i_do<i_od,(i_do:=i_od),),.t.}
     @ 20,45 SAY 'MAT. "do" :' GET I_DO PICTURE "@KR! ##/"+ INDEXPIC valid {||if(i_do<i_od,(i_do:=i_od)=NIL,.t.)}
 #ifndef A_STSIMPLE
@@ -3468,7 +3468,7 @@ endif
     ? "PRZED ZAMKNIĘCIEM MIESIĄCA"
   ENDIF
 */
-  ? trim(subs(magazyny[mag_poz],4))+' '+adres_mag[mag_poz]
+  ? trim(SubStr(magazyny[mag_poz],4))+' '+adres_mag[mag_poz]
   ?
   ? "Strona"+str(++strona,3)
   if wa_flag
@@ -3598,7 +3598,7 @@ njob:=D_PCL-pcol()
 #endif
     do while substr((sel)->NAZWA,njob+1,1)>="0";--njob;enddo
     ?? left((SEL)->NAZWA,njob)
-    ?  padl(trim(subs((SEL)->NAZWA,njob+1)),D_PCL)
+    ?  padl(trim(SubStr((SEL)->NAZWA,njob+1)),D_PCL)
     else
     ?? cpad((SEL)->NAZWA,D_PCL-pcol(),17,0)
     endif
@@ -3684,7 +3684,7 @@ if strona>0
    ?? speC(HB_BCHAR(13)+P_UON+SPACE(136))
    ?? spec(P_UOFF)
    IF t_GR
-     ? Tran(SUBS(EvaldB(BKEY),3),"@R "+ INDEXPIC )+"|"
+     ? Tran(SubStr(EvaldB(BKEY),3),"@R "+ INDEXPIC )+"|"
    ELSE
      ? HEADER_1
    ENDIF
@@ -3886,7 +3886,7 @@ DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
       ENDIF
 */
       ?
-      ? trim(subs(magazyny[mag_poz],4))+' '+adres_mag[mag_poz]
+      ? trim(SubStr(magazyny[mag_poz],4))+' '+adres_mag[mag_poz]
       ?
       ? "Strona"+str(++strona,3)
       if od<=do
@@ -3999,7 +3999,7 @@ DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
         ENDIF
 */
         ?
-        ? trim(subs(magazyny[mag_poz],4))+' '+adres_mag[mag_poz]
+        ? trim(SubStr(magazyny[mag_poz],4))+' '+adres_mag[mag_poz]
         ?
         ? "Strona"+str(++strona,3)
         ? ccpi(7)
@@ -4194,7 +4194,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.F.,.F.)
       endif
       ?
 #endif
-      ? trim(subs(magazyny[mag_poz],4)),adres_mag[mag_poz]
+      ? trim(SubStr(magazyny[mag_poz],4)),adres_mag[mag_poz]
       ?
       ? "Strona"+str(++strona,3)
       ?
@@ -4386,7 +4386,7 @@ ELSE
         endif
         ?
 #endif
-        ? trim(subs(magazyny[mag_poz],4))+' '+adres_mag[mag_poz]
+        ? trim(SubStr(magazyny[mag_poz],4))+' '+adres_mag[mag_poz]
         ?
         ? "Strona"+str(++strona,3)
       endif
@@ -4410,7 +4410,7 @@ ELSE
         endif
 #endif
       else
-       ?? subs(dokumenty[mag_poz,i],3)
+       ?? SubStr(dokumenty[mag_poz,i],3)
       endif
       if main_flag
 #ifdef A_FA
@@ -5033,17 +5033,17 @@ ENDIF
 #ifdef A_PCL
 #ifdef A_FFULL
         ? "|"+nr_kpr+"|"+str(day(data),3)+"  |"+padr(if(dok_par[mag_poz,r,1]="F",D_SUBDOK,nr_faktury),10)+;
-          "|"+if(FIRMY->(dbseek(DM->(D_KH))),left(FIRMY->D_FFULL,39)+"|"+left(FIRMY->adres,35),padr(dost_odb,75))+;
-          "|"+padr(subs(dokumenty[mag_poz,r],F_SUBDOK),20)
+          "|"+if(FIRMY->(dbseek(DM->(D_KH))),padr(FIRMY->D_FFULL,39)+"|"+padr(FIRMY->adres,35),padr(dost_odb,75))+;
+          "|"+padr(SubStr(dokumenty[mag_poz,r],F_SUBDOK),20)
 #else
         ? "|"+nr_kpr+"|"+str(day(data),3)+"  |"+padr(if(dok_par[mag_poz,r,1]="F",D_SUBDOK,nr_faktury),10)+;
-          "|"+if(FIRMY->(dbseek(DM->(D_KH))),left(FIRMY->D_FFULL,39)+"|"+left(alltrim(left(FIRMY->adres,24))+','+subs(FIRMY->adres,25),35),padr(dost_odb,75))+;
-          "|"+padr(subs(dokumenty[mag_poz,r],F_SUBDOK),20)
+          "|"+if(FIRMY->(dbseek(DM->(D_KH))),padr(FIRMY->D_FFULL,39)+"|"+padr(alltrim(left(FIRMY->adres,24))+','+SubStr(FIRMY->adres,25),35),padr(dost_odb,75))+;
+          "|"+padr(SubStr(dokumenty[mag_poz,r],F_SUBDOK),20)
 #endif
 #else
         ? "|"+nr_kpr+"|"+str(day(data),3)+"  |"+padr(if(dok_par[mag_poz,r,1]="F",D_SUBDOK,nr_faktury),12)+;
-          "|"+if(FIRMY->(dbseek(DM->(D_KH))),left(FIRMY->D_FFULL,44)+"|"+left(FIRMY->adres,44),padr(dost_odb,89))+;
-          "|"+padr(subs(dokumenty[mag_poz,r],F_SUBDOK),23)
+          "|"+if(FIRMY->(dbseek(DM->(D_KH))),padr(FIRMY->D_FFULL,44)+"|"+padr(FIRMY->adres,44),padr(dost_odb,89))+;
+          "|"+padr(SubStr(dokumenty[mag_poz,r],F_SUBDOK),23)
 #endif
 #undef D_SUBDOK
 #undef D_SUBKEY
@@ -5376,7 +5376,7 @@ DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
 select DM
 
   SET ORDER TO 3
-  I_OD:=I_DO:=nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)
+  I_OD:=I_DO:=nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)
   @ 18,20 say "DATA od   :" get od valid {||od:=max(od,DatY->d_z_rok+1),do:=max(od,do),.t.}
   @ 18,50 say "DATA do   :" get do valid {||do:=max(od,do),.t.}
   @ 20,10 SAY 'MAG-DOK-KONTO od :' GET I_OD PICTURE "@KR! ##-XX-XXXXXX/X" valid {||if(i_do<i_od,(i_do:=i_od),),.t.}
@@ -5393,12 +5393,12 @@ SEEK I_OD
 IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
   @ 8,0 CLEAR
 
-DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
+DO WHILE nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)<=I_DO .AND. !EOF()
 
-   TXT:=nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)
+   TXT:=nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)
    seek TXT+DTOS(od)
-   sum -warT_ewiD to w rest while data<=do .and. nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)=txt
-   if nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)=txt
+   sum -warT_ewiD to w rest while data<=do .and. nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)=txt
+   if nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)=txt
       seek txt + HB_UCHAR(0x00A0)
    endif
    if w=0
@@ -5435,12 +5435,12 @@ ELSE
      MAIN->(ordsetfocus("MAIN_NRK"))
   ENDIF
   @ 8,0 CLEAR 
-DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
+DO WHILE nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)<=I_DO .AND. !EOF()
 
-   TXT:=nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)
+   TXT:=nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)
    seek TXT+DTOS(od)
-   IF nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)+DTOS(DATA)>TXT+DTOS(DO) .OR. EOF()
-      IF nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)=txt
+   IF nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)+DTOS(DATA)>TXT+DTOS(DO) .OR. EOF()
+      IF nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)=txt
          seek TXT + HB_UCHAR(0x00A0)
       ENDIF
       LOOP
@@ -5483,7 +5483,7 @@ DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
   ? TranR(txt,"XX-XX-XXXXXX/X")
   ?
   iw:=0
-  do while nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)=txt .AND. data<=do
+  do while nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)=txt .AND. data<=do
      IF MAIN_FLAG .AND. D_LPVAL(pozycja)+1+prow()>P_ROWN .or. prow()+1>P_ROWN
         ?? speC(HB_BCHAR(13)+P_UON+SPACE(80))
         ?? spec(P_UOFF)
@@ -5542,7 +5542,7 @@ DO WHILE nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)<=I_DO .AND. !EOF()
     ENDIF
     skip
   enddo
-  if nr_mag+smb_dow+stano_kosz+subs(konto_kosz,5)=txt
+  if nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)=txt
      seek txt + HB_UCHAR(0x00A0)
   endif
   ?? speC(HB_BCHAR(13)+P_UON+SPACE(80))

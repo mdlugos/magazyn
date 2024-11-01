@@ -34,7 +34,7 @@ if len(alltrim(x))<12
 endif
 
 for i:=1 to 12 step 2
-   a+=val(subs(x,i,1))+3*val(subs(x,i+1,1))
+   a+=val(SubStr(x,i,1))+3*val(SubStr(x,i+1,1))
 next i
 
 return left(x,12)+str((220-a)%10,1)
@@ -142,7 +142,7 @@ func netuse(a,b,file,alias,shared,rdo,cp)   // w netio sciezka serwera
 #ifdef A_NETIO
 memvar netio
  if !empty(netio) .and. file=netio
-    file:='net:'+subs(file,len(netio)+1)
+    file:='net:'+SubStr(file,len(netio)+1)
  endif
 return dbusearea(a,b,file,alias,shared,rdo,cp)
 #else
@@ -193,7 +193,7 @@ s:=select(alias)
                a:=trim(path)
                if !empty(a)
                 if a="&:"
-                  a:=trim(&(subs(a,3)))
+                  a:=trim(&(SubStr(a,3)))
                 endif
                 a:=expand(a)
                 if right(a,1)<>HB_ps()
@@ -264,7 +264,7 @@ s:=select(alias)
                a:=trim(path)
                if !empty(a)
                 if a="&:"
-                  a:=trim(&(subs(a,3)))
+                  a:=trim(&(SubStr(a,3)))
                 endif
                 a:=expand(a)
                 if right(a,1)<>HB_ps()
@@ -369,7 +369,7 @@ function alarm(txt,parr,i)
   else
     ?? " -"
   for i:=1 to len(parr)
-    ?? " ["+left(parr[i],1)+"]"+trim(subs(parr[i],2))
+    ?? " ["+left(parr[i],1)+"]"+trim(SubStr(parr[i],2))
   next
     ?? " :"
   endif
@@ -834,7 +834,7 @@ ENDIF
    IF ARRAY[_e]#var
       _a:=array[_e]
       if sp>0
-         _a:=stuff(_a,sp,1,subs(var,sp,1))
+         _a:=stuff(_a,sp,1,SubStr(var,sp,1))
       endif
       if sx=sl
          var:=LEFT(_a,_l)
@@ -1125,7 +1125,7 @@ RETURN k<>K_ESC
 proc __atprompt(row,col,pro,msg)
 
 aadd(apro,{int(row),int(col),pro,msg})
-@ row,col say pro color subs(setcolor(),rat(",",setcolor())+1)
+@ row,col say pro color SubStr(setcolor(),rat(",",setcolor())+1)
 
 return
 *******************
@@ -1147,8 +1147,8 @@ endif
    endif
    clr:=setcolor()
    crsr:=setcursor()
-   sel:=subs(clr,at(",",clr)+1)
-   unsel:=subs(clr,rat(",",clr)+1)
+   sel:=SubStr(clr,at(",",clr)+1)
+   unsel:=SubStr(clr,rat(",",clr)+1)
    do while .t.
 
       if mesrow#NIL .and. array[p,4]#NIL

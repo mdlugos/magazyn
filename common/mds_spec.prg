@@ -120,7 +120,7 @@ endif
   _skip(1,0,_s)
   setcancel(.f.)
   DBEval( {|t,l|scrltxt(),t:=trim(eval(txt,0,_s,.t.)),scrltxt(),qqout(strtran(left(t,l:=maxcol()-col()),I,"|")),;
-    if(len(t)>l,(if(row()=maxrow(),(scrllf()/*,hb_scroll(0,0,row(),maxcol(),1),setpos(row(),maxcol()-len(t)+l)*/),/*setpos(row()+1,maxcol()-len(t)+l)*/),qqout(subs(t,l+1))),),;
+    if(len(t)>l,(if(row()=maxrow(),(scrllf()/*,hb_scroll(0,0,row(),maxcol(),1),setpos(row(),maxcol()-len(t)+l)*/),/*setpos(row()+1,maxcol()-len(t)+l)*/),qqout(SubStr(t,l+1))),),;
     if(row()=maxrow(),scrllf(),),qout(),scrltxt()},lfor,{||scrltxt(), EvaldB(_swar,_spocz,_skon).AND.inkey()#27},,, .T. )
   end sequence
   scrllf()

@@ -24,7 +24,7 @@
 #define A_PRINT(x) eval(MEMVAR->do_print,x)
 #define A_GETLPT eval(MEMVAR->do_getlpt)
 #define isPrinter() .t.
-#define DTOV(dat) tranr(subs(dtos(dat),5),"##.##")
+#define DTOV(dat) tranr(SubStr(dtos(dat),5),"##.##")
 #define A_SET_DAT GERMAN
 #define STANY   INDX_MAT
 //#define cenA_zaK cena_przy

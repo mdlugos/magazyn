@@ -30,7 +30,7 @@ field smb_dow,nr_dowodu
 #else
 field dowod
 #define smb_doW dowod
-#define nr_dowodU subs(dowod,3)
+#define nr_dowodU SubStr(dowod,3)
 #endif
 #ifndef A_IDENT
   #define A_IDENT hb_fieldlen('ident')
@@ -91,7 +91,7 @@ func dok //append - .t. append blank .f. - noedit
 
           x:=5
           for i:=5 to 1 step -1
-            s:=subs(nr_dowodU,i,1)
+            s:=SubStr(nr_dowodU,i,1)
             if isdigit(s)
                exit
             endif
@@ -109,7 +109,7 @@ func dok //append - .t. append blank .f. - noedit
           DEFAULT mknk TO i
 
             for x:=i-1 to 1 step -1
-              s:=subs(nr_dowodU,x,1)
+              s:=SubStr(nr_dowodU,x,1)
               if !isdigit(s)
                 if s<>' '
                   exit
@@ -126,11 +126,11 @@ func dok //append - .t. append blank .f. - noedit
           seek ad[AD_SMB]+left(nr_dowodU,x)+HB_UCHAR(0x0A0)
           skip -1
 
-          if x>0 .and. str(1+val(subs(nr_dowodU,x+1)),i-x)='*'
+          if x>0 .and. str(1+val(SubStr(nr_dowodU,x+1)),i-x)='*'
              --x
           endif
 
-          d_d:=left(nr_dowodU,x)+str(1+val(subs(nr_dowodU,x+1)),i-x)+subs(nr_dowodU,i+1)
+          d_d:=left(nr_dowodU,x)+str(1+val(SubStr(nr_dowodU,x+1)),i-x)+SubStr(nr_dowodU,i+1)
        endif
        goto r
 #ifndef A_DSPLIT
@@ -214,7 +214,7 @@ func dok //append - .t. append blank .f. - noedit
     SAYL ad[AD_SMB]
     getl d_d picture "@!K" send block:={|x,y,z|if(pcount()=0,d_d,d_d:=if((z:=val(x))<>0 .and. (y:=len(lTrim(sTr(z))))<5 .and. len(trim(x))=y ,A_MKNK(val(x)),x))}
     #else
-    getl d_d picture "@!K" send block:={|x,y,z|if(pcount()=0,d_d,d_d:=if(empty(x),x,(x:=subs(x,3),d_d:=ad[AD_SMB]+if((z:=val(x))<>0 .and. (y:=len(lTrim(sTr(z))))<5 .and. len(trim(x))=y ,A_MKNK(val(x)),x))))}
+    getl d_d picture "@!K" send block:={|x,y,z|if(pcount()=0,d_d,d_d:=if(empty(x),x,(x:=SubStr(x,3),d_d:=ad[AD_SMB]+if((z:=val(x))<>0 .and. (y:=len(lTrim(sTr(z))))<5 .and. len(trim(x))=y ,A_MKNK(val(x)),x))))}
     #endif
     sayl "Data:" get da valid {|g|da>DatY->d_z_mies1 .and. year(da)=year(DatY->d_z_rok+1) .or. (alarm("Data poza dopuszczalnym zakresem !"),g:undo(),.f.)}
     sayl "Link:" get l_k picture "@!K"
@@ -291,14 +291,14 @@ func dok //append - .t. append blank .f. - noedit
             ++k
             setpos(win[1]+k,win[2])
           endif
-          SAYL subs(ad[AD_POLA,i,AP_NAME],2)+' '
+          SAYL SubStr(ad[AD_POLA,i,AP_NAME],2)+' '
           n:=win[4]-col()
           if (s[2]='M' .or. s[3]>n) .and. empty(ad[AD_POLA,i,AP_PICTURE])
              txt:="@S"+lTrim(sTr(n))
           endif
         ELSEIF ad[AD_POLA,i,AP_NAME]='.'
           ++k
-          @ win[1]+k,win[2]+1 SAY subs(ad[AD_POLA,i,AP_NAME],2)+' '
+          @ win[1]+k,win[2]+1 SAY SubStr(ad[AD_POLA,i,AP_NAME],2)+' '
           n:=win[4]-col()
         ELSE
           ++k
@@ -443,14 +443,14 @@ func dok //append - .t. append blank .f. - noedit
           elseif !m
              --p
           endif
-          SAYL subs(ad[AD_POLA,i,AP_NAME],2)+' '
+          SAYL SubStr(ad[AD_POLA,i,AP_NAME],2)+' '
           if (s[2]='M' .or. s[3]>n) .and. empty(ad[AD_POLA,i,AP_PICTURE])
              txt:="@S"+lTrim(sTr(n))
           endif
         ELSEIF ad[AD_POLA,i,AP_NAME]='.'
           key:=col()
           ++k
-          @ win[1]+k,win[2]+1 say subs(ad[AD_POLA,i,AP_NAME],2)+' '
+          @ win[1]+k,win[2]+1 say SubStr(ad[AD_POLA,i,AP_NAME],2)+' '
         ELSE
           key:=col()
           ++k
@@ -488,7 +488,7 @@ func dok //append - .t. append blank .f. - noedit
         endif
         setpos(win[1]+k,win[2]+18+A_WAL+(o-1)*2*(A_KTL+1))
         br:=_GET_( adw[i,o],"adw,"+alltrim(ad[AD_POLA,i,AP_FIELD])+","+str(o,1),"@!K",,)
-        s:=subs(ad[AD_POLA,i,AP_POZWN+p],2) //chroni od litery pozycji na początku
+        s:=SubStr(ad[AD_POLA,i,AP_POZWN+p],2) //chroni od litery pozycji na początku
         if "E" $ s
            br:postblock:={|g,va,list,pos|!g:changed.and.af[g:subscript[1]]=0.or.(empty(g:varget()).or.konval(g,ad[AD_POLA,g:subscript[1],AP_WNVAL+(g:subscript[2]-1)*AP_STEP],kh,getlist,pos)).and.softup(ad,getlist,g)}
         else
@@ -547,7 +547,7 @@ func dok //append - .t. append blank .f. - noedit
            s+="S"+lTrim(sTr(win[4]-col()))
         ENDIF
         br:=_GET_( adm[i,o],"adm,"+alltrim(ad[AD_POLA,i,AP_FIELD])+","+str(o,1),s,,)
-        s:=subs(ad[AD_POLA,i,AP_POZMA+p],2)
+        s:=SubStr(ad[AD_POLA,i,AP_POZMA+p],2)
         if "E" $ s
            br:postblock:={|g,va,list,pos|!g:changed.and.af[g:subscript[1]]=0.or.(empty(g:varget()).or.konval(g,ad[AD_POLA,g:subscript[1],AP_MAVAL+(g:subscript[2]-1)*AP_STEP],kh,getlist,pos)).and.softup(ad,getlist,g)}
         else
@@ -838,7 +838,7 @@ endif
                         else
                            alarm("Brak w planie kont:"+if(s=1,adw[i,o],adm[i,o]),,0,3)
                            getpos:=(o-1)*2+s+ascan(getlist,{|g|g:subscript#nil .and. g:subscript[1]=i})
-                           IF "F" $ subs(ad[AD_POLA,i,IF(s=1,AP_POZWN,AP_POZMA)+p],2)
+                           IF "F" $ SubStr(ad[AD_POLA,i,IF(s=1,AP_POZWN,AP_POZMA)+p],2)
                               i:=0
                               While ++i <=l
                                   o:=0
@@ -847,7 +847,7 @@ endif
                                       if empty(ad[AD_POLA,i,AP_POZWN+p])
                                          loop
                                       endif
-                                      IF !"F" $ subs(ad[AD_POLA,i,IF(s=1,AP_POZWN,AP_POZMA)+p],2)
+                                      IF !"F" $ SubStr(ad[AD_POLA,i,IF(s=1,AP_POZWN,AP_POZMA)+p],2)
                                          getpos:=(o-1)*2+s+ascan(getlist,{|g|g:subscript#nil .and. g:subscript[1]=i})
                                          i:=l
                                          exit

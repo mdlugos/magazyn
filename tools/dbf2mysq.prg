@@ -126,7 +126,7 @@ PROCEDURE Main( ... )
 static proc chgdat(cFile, cTable, lCreateTable)
    LOCAL oTable, oRecord, aDbfStruct, i
 
-   IF File(strtran(cFile,subs(cFile,-3),'fpt'))
+   IF File(strtran(cFile,SubStr(cFile,-3),'fpt'))
      i:='DBFCDX'
    ENDIF
    dbUseArea( .f., i, cFile,,.F., .T. ,'PL852')

@@ -67,8 +67,8 @@ memvar it_menudod
          #define D_Z3 nowy->d_z_rok
 #else
          a:=getlines(memoread(m+"daty.ini"))
-         #define D_Z1 &(subs(a[1],at(':=',a[1])+2))
-         #define D_Z3 &(subs(a[3],at(':=',a[3])+2))
+         #define D_Z1 &(SubStr(a[1],at(':=',a[1])+2))
+         #define D_Z3 &(SubStr(a[3],at(':=',a[3])+2))
 #endif
          if D_Z1#D_Z3
             alarm(hb_UTF8ToStr("Otwarcie niemożliwe;Nowy rok jest zamknięty do ")+dtoc(D_Z1)+" .")
@@ -198,7 +198,7 @@ IF dz1>DatY->d_z_mies1
      #define D_Z1 stary->d_z_mies1
 #else
      m:=getlines(memoread(defa+str(year(DatY->d_z_rok),4)+HB_OsPathSeparator()+"daty.ini"))[1]
-     #define D_Z1 &(subs(m,at(':=',m)+2))
+     #define D_Z1 &(SubStr(m,at(':=',m)+2))
 #endif
      if D_Z1<DatY->d_z_rok
         alarm(hb_UTF8ToStr("Poprzedni rok nie zamknięty !"))
@@ -363,7 +363,7 @@ DO WHILE !(EOF() .and. konta->(eof()))
       LOCK IN KONTA
    ENDIF
 
-   SEEK konta->konto+subs(dtos(dz3+1),5)
+   SEEK konta->konto+SubStr(dtos(dz3+1),5)
 
 
    if dz3=DatY->d_z_rok
@@ -403,7 +403,7 @@ DO WHILE !(EOF() .and. konta->(eof()))
   ENDIF
 
    w:=recno()
-   m:=subs(konto,A_KTL-A_NRLTH+1)
+   m:=SubStr(konto,A_KTL-A_NRLTH+1)
    if dbseek(left(konto,A_KTL-A_NRLTH)) .and. syntet .and. khflag .and. firmy->(dbseek(m))
       m:=trim(firmy->nazwA)+" - "+trim(nazwa)
       goto w
@@ -457,7 +457,7 @@ if stary_rok=DatY->d_z_mies1
 #else
      use
      m:=getlines(memoread(w+"daty.ini"))[1]
-     #define D_Z1 &(subs(m,at(':=',m)+2))
+     #define D_Z1 &(SubStr(m,at(':=',m)+2))
 #endif
    set color to (_sel)
    ? hb_UTF8ToStr("SPRAWDZENIE ZGODNOŚCI BILANSU ZAMKNIĘCIA STAREGO I OTWARCIA NOWEGO ROKU."),chr(7)
@@ -629,7 +629,7 @@ elseIF year(DatY->d_z_mies1+1) > year(DatY->d_z_rok+1)
      mkdir(defa+"archiwum")
      ?
      ? "Kopiowanie starych danych do katalogu ARCHIWUM:"
-     AEVAL(DIRECTORY(defa+"fiks.*"),{|X|if(file(defa+"archiwum"+HB_OsPathSeparator()+"fiks"+right(str(year(DatY->d_z_mies1)),2)+subs(x[1],at(".",x[1]))),,(QOUT(X[1]),frename(defa+X[1],defa+"archiwum"+HB_OsPathSeparator()+"fiks"+right(str(year(DatY->d_z_mies1)),2)+subs(x[1],at(".",x[1])))))})
+     AEVAL(DIRECTORY(defa+"fiks.*"),{|X|if(file(defa+"archiwum"+HB_OsPathSeparator()+"fiks"+right(str(year(DatY->d_z_mies1)),2)+SubStr(x[1],at(".",x[1]))),,(QOUT(X[1]),frename(defa+X[1],defa+"archiwum"+HB_OsPathSeparator()+"fiks"+right(str(year(DatY->d_z_mies1)),2)+SubStr(x[1],at(".",x[1])))))})
   else
      mkdir(defa+str(year(DatY->d_z_rok+1),4))
   endif

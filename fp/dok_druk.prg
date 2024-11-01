@@ -156,7 +156,7 @@ if f=NIL .or. f
          else
             main->(ordsetfocus("X"+m))
             if main->(ordsetfocus())<>"X"+m
-              d:="left(konto,"+str(w,1)+")+subs(dtos(data),5)"
+              d:="left(konto,"+str(w,1)+")+SubStr(dtos(data),5)"
               main->(ordsetfocus(if(w<=A_STL,'MAIN_KS','MAIN_KT')))
               main->(dbseek(m))
               main->(ordCondSet("konto='"+m+"'",,,{||field->konto=m},,,RECNO(),,,,))
@@ -172,7 +172,7 @@ if f=NIL .or. f
 #endif
             endif
          endif
-      elseif !empty(subs(konta->konto,A_STL+1))
+      elseif !empty(SubStr(konta->konto,A_STL+1))
          main->(ordsetfocus('MAIN_KT'))
       endif
 
@@ -302,7 +302,7 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
    l:=len(ap)
    private a,b,c,d,e,f,g,h,j,self,buf
    do while 1<=l .and. ap[1]="&:"
-      (&(subs(ap[1],3)),asize(adel(ap,1),--l))
+      (&(SubStr(ap[1],3)),asize(adel(ap,1),--l))
    end
    for i:=1 to l
       ap[i]:=asize(getlines(ap[i],";"),6)

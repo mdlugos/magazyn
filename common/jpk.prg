@@ -88,7 +88,7 @@ static func token(bin)
 if type('memvar->ksef_token')='C'
    return memvar->ksef_token
 endif
-return subs(bin,HB_HEXTONUM(subs(bin,1,2))+1,HB_HEXTONUM(subs(bin,3,2)))
+return SubStr(bin,HB_HEXTONUM(SubStr(bin,1,2))+1,HB_HEXTONUM(SubStr(bin,3,2)))
 
 func ksef_initsession()
 local ans,s,i,j,nip:=trim(strtran(memvar->firma_NIP,'-'))
@@ -175,7 +175,7 @@ if empty(token['sessiontoken'])
       return NIL
    endif
    j:=at('{',ans)
-   ans:=subs(ans,j)
+   ans:=SubStr(ans,j)
    hb_memowrit(defa+'session.json',ans,.f.)
    token['sessiontoken']:=hb_jsondecode(ans)
    HB_IDLESLEEP(1) // jak za szybko to błąd
@@ -208,7 +208,7 @@ local scr,i
       return NIL
    endif
 
-   ans:=subs(ans,i)
+   ans:=SubStr(ans,i)
 return ans
 
 func ksef_sendfa(c,b,d)
@@ -232,7 +232,7 @@ local a,ans,i,scr
 
    curl('Invoice/Send','-X PUT -H Content-Type:application/json -H sessionToken:'+d,hb_jsonencode(b),@ans)
    if empty(i:=at('{',ans)) .or.;
-      empty(i:=hb_jsondecode(subs(ans,i))) .or.;
+      empty(i:=hb_jsondecode(SubStr(ans,i))) .or.;
       empty(i:=hb_HGetDef(i,'elementReferenceNumber',''))
       hb_memowrit('send.txt',ans,.f.)
       alarm(ans)
@@ -244,7 +244,7 @@ local a,ans,i,scr
       HB_IDLESLEEP(1)
       curl(a,'-X GET -H sessionToken:'+d,,@ans)
       i:=at('{',ans)
-      i:=hb_jsondecode(subs(ans,i))
+      i:=hb_jsondecode(SubStr(ans,i))
       //"invoiceStatus":{"invoiceNumber":"FA6","ksefReferenceNumber"
       c:=hb_HGetDef(i,"invoiceStatus",{=>})
       if !empty(c) .and. hb_HHasKey(c,"ksefReferenceNumber")
@@ -616,7 +616,7 @@ DEFAULT waluta TO 'PLN'
        mxmlNewText( node,, left(memvar->firma_poczta,6) )
 
       node := mxmlNewElement( element, "etd:Poczta")
-       mxmlNewText( node,, trim(subs(memvar->firma_poczta,8)) )
+       mxmlNewText( node,, trim(SubStr(memvar->firma_poczta,8)) )
 
       aj:=lp:=NIL
 
@@ -1009,7 +1009,7 @@ DEFAULT waluta TO 'PLN'
        mxmlNewText( node,, left(memvar->firma_poczta,6) )
 
       node := mxmlNewElement( element, "Poczta")
-       mxmlNewText( node,, trim(subs(memvar->firma_poczta,8)) )
+       mxmlNewText( node,, trim(SubStr(memvar->firma_poczta,8)) )
 #endif
 endif
 
@@ -1238,7 +1238,7 @@ endif
     if dekl .and. len(trim(nip))>10 .and. nip>='A'
      node := mxmlNewElement( element, 'KodKrajuNadaniaTIN')
      mxmlNewText( node,,left(nip,2))
-     nip := alltrim(subs(nip,3))
+     nip := alltrim(SubStr(nip,3))
     endif 
 
      node := mxmlNewElement( element, 'NrKontrahenta' )
@@ -1297,7 +1297,7 @@ endif
        fp := hb_hgetdef(b,'TypDokumentu',NIL) == 'FP'
        hb_heval(b,{|k,v,n|;
          if(k='K_'.and.v<>NIL,(;
-             n:=val(subs(k,3)),;
+             n:=val(SubStr(k,3)),;
              n:=if(c=NIL.or.n<32,n-D_SPRZEDOFFSET,n:=c[n-31]),;
              if(n=NIL,;
                v:=NIL,;
@@ -1440,7 +1440,7 @@ local a,b,c,d,element,node,i
      if dekl .and. len(trim(nip))>10 .and. nip>='A'
           node := mxmlNewElement( element, 'KodKrajuNadaniaTIN')
           mxmlNewText( node,,left(nip,2))
-          nip := alltrim(subs(nip,3))
+          nip := alltrim(SubStr(nip,3))
      endif 
      
      node := mxmlNewElement( element, 'NrDostawcy' )
@@ -1492,7 +1492,7 @@ local a,b,c,d,element,node,i
       endif
      if valtype(b)='H'
        d:={}
-       hb_heval(b,{|k,v,n|if(k='K_'.and.v<>NIL,(n:=val(subs(k,3))-a,aj[n]+=round(100*v,0),if(len(d)<n,asize(d,n),),d[n]:=v,k:='K_'+str(n+c,2)),),;
+       hb_heval(b,{|k,v,n|if(k='K_'.and.v<>NIL,(n:=val(SubStr(k,3))-a,aj[n]+=round(100*v,0),if(len(d)<n,asize(d,n),),d[n]:=v,k:='K_'+str(n+c,2)),),;
        if(v=NIL,,mxmlNewText(mxmlNewElement( element, k ),,ltrim(tran(v,))))})
      else
        aeval(b,{|x,i|;
@@ -1628,7 +1628,7 @@ DEFAULT waluta TO 'PLN'
 
 #if D_FAVARIANT == 1
       node := mxmlNewElement( element, "etd:Poczta")
-       mxmlNewText( node,, trim(subs(memvar->firma_poczta,8)) )
+       mxmlNewText( node,, trim(SubStr(memvar->firma_poczta,8)) )
 #endif
     lp:=aj:=0
 
@@ -1743,7 +1743,7 @@ local a,b,c,d,element,node
       if empty(od) .or. empty(do)
          a:=memvar->defa+"jpk_mag"+alltrim(mag_biez)+".xml"
       else
-         a:=memvar->defa+"jpk_mag"+alltrim(mag_biez)+'_'+dtos(od)+'_'+subs(dtos(do),5)+".xml"
+         a:=memvar->defa+"jpk_mag"+alltrim(mag_biez)+'_'+dtos(od)+'_'+SubStr(dtos(do),5)+".xml"
       endif
       mxmlsetwrapmargin(250)
       mxmlSaveFile( tree, a , @wscb() )
@@ -1836,7 +1836,7 @@ DEFAULT waluta TO 'PLN'
        mxmlNewText( node,, left(memvar->firma_poczta,6) )
 
       node := mxmlNewElement( element, "etd:Poczta")
-       mxmlNewText( node,, trim(subs(memvar->firma_poczta,8)) )
+       mxmlNewText( node,, trim(SubStr(memvar->firma_poczta,8)) )
 
 
     group   := mxmlNewElement( jpk, 'Magazyn' )

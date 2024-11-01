@@ -110,7 +110,7 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,dost_odb,rodz_opak,gram,;
 #else
 #define D_LP0 '0'
 #define D_LP1 '1'
-#define D_LPVAL(x) (HB_BCODE(binfieldget([x]))-48)
+#define D_LPVAL(x) (hb_BCode(binfieldget([x]))-48)
 #define D_LPSTR(x) str(D_LPVAL(x),3)
 #define D_LPSTR1(x) x
 #endif
@@ -431,7 +431,7 @@ endif
            _spocz:=""
 #ifdef A_ZLEC11
            _spform={|p|TranR(p,"XXXXXXXXXXX|##|"+ INDEXPIC +"|XXXX.XX.XX")}
-           //_spform={|p|TranR(p,"XXXXXXXXXXX|")+TRANR(subs(p,len(nr_zlec)+1),"##|"+ INDEXPIC +"|XXXX.XX.XX")}
+           //_spform={|p|TranR(p,"XXXXXXXXXXX|")+TRANR(SubStr(p,len(nr_zlec)+1),"##|"+ INDEXPIC +"|XXXX.XX.XX")}
 #else
            _spform={|p|TranR(p,"XXXXXX|##|"+ INDEXPIC +"|XXXX.XX.XX")}
 #endif

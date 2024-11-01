@@ -26,14 +26,14 @@
 #define A_GETLPT eval(MEMVAR->do_getlpt)
 #define isPrinter() .t.
 #define A_15CPI
-#define DTOV(dat) tranr(subs(dtos(dat),5),"##.##")
+#define DTOV(dat) tranr(SubStr(dtos(dat),5),"##.##")
 #define A_SET_DAT GERMAN
 #define A_DDBF
 #define STANY   INDX_MAT
 #define A_SUMK    -55705546984
-#define A_KOMU_N  'Gminne Przedszkole Publiczne w Zebrzydowicach o/Koäczyce Maˆe'
-#define A_KOMU_A  'Koäczyce Maˆe, ul. Jagielloäska 22a'
-#define A_AUTOR   "A.D. 2022, Marek Dˆugosz, Cieszyn ul. R¢wna 16, tel. 601842030"
+#define A_KOMU_N  'Gminne Przedszkole Publiczne w Zebrzydowicach o/Koï¿½czyce Maï¿½e'
+#define A_KOMU_A  'Koï¿½czyce Maï¿½e, ul. Jagielloï¿½ska 22a'
+#define A_AUTOR   "A.D. 2022, Marek Dï¿½ugosz, Cieszyn ul. Rï¿½wna 16, tel. 601842030"
 #define DatE()    MEMVAR->dzisiaj
 #define A_DIETA   ! alias()$"ZAPOT,SUROWCE"
 #define A_FILELIMIT '45'

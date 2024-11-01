@@ -78,7 +78,7 @@ local b,d,y,r
       if y[2]=0
          exit
       endif
-      if y[1]='['.and.y[2]>1.and.(isalpha(r:=subs(c,y[2]-1,1)).or.isdigit(r).or.r$'_}')
+      if y[1]='['.and.y[2]>1.and.(isalpha(r:=SubStr(c,y[2]-1,1)).or.isdigit(r).or.r$'_}')
          y[2]++
          LOOP
       endif
@@ -100,7 +100,7 @@ local b,d,y,r
     d:=0
     while !empty(d:=hb_at(']',c,1+d))
        y:=rat('[',left(c,d))
-       while y>1 .and. isalpha(r:=subs(c,y-1,1)) .or. isdigit(r) .or. r='_'
+       while y>1 .and. isalpha(r:=SubStr(c,y-1,1)) .or. isdigit(r) .or. r='_'
           --y
        enddo
        c:=stuff(c,y,b:=d-y+1,'')
@@ -109,7 +109,7 @@ local b,d,y,r
     d:=0
     while !empty(d:=hb_at(')',c,1+d))
        y:=rat('(',left(c,d))
-       while y>1 .and. isalpha(r:=subs(c,y-1,1)) .or. isdigit(r) .or. r='_'
+       while y>1 .and. isalpha(r:=SubStr(c,y-1,1)) .or. isdigit(r) .or. r='_'
           --y
        enddo
        c:=stuff(c,y,b:=d-y+1,'')
@@ -130,7 +130,7 @@ local b,d,y,r
     for d:=len(b) To 1 step -1
        c:=b[d]:=alltrim(b[d])
        y:=len(c)
-       while y>0 .and. (isalpha(r:=subs(c,y,1)) .or. isdigit(r) .or. r='_')
+       while y>0 .and. (isalpha(r:=SubStr(c,y,1)) .or. isdigit(r) .or. r='_')
           --y
        enddo
        if c=='' .or. y>0
@@ -161,7 +161,7 @@ do while .t.
    endif
    x:=a[i]
    if x='&:'
-      x:=subs(x,3)
+      x:=SubStr(x,3)
    elseif '&:'$x
       x:=Trim(left(x,at('&:',x)-1))
    endif
@@ -186,7 +186,7 @@ for i:=1 to l
    if empty(x) .or. x=';' 
       loop
    elseif x='&:'
-      x:=subs(x,3)
+      x:=SubStr(x,3)
    elseif '&:'$x
       x:=Trim(left(x,at('&:',x)-1))
    endif
@@ -215,9 +215,9 @@ local i,txt,j,b,c
         if j=0
            loop
         endif
-        b:=subs(txt[i],j+2)
+        b:=SubStr(txt[i],j+2)
         if '&:' $ b
-          b:=subs(b,at('&:',b)+2)
+          b:=SubStr(b,at('&:',b)+2)
           txt[i]:=left(txt[i],j+1)+icv(&b,b)+' &:'+b
           STORE &b TO &(left(txt[i],j-1))
         else
@@ -243,7 +243,7 @@ local a,l,i,y:=""
        y:=l
 #endif
     else
-       x:=subs(x,rat(HB_ps(),x)+1)
+       x:=SubStr(x,rat(HB_ps(),x)+1)
     endif
  endif
  if y==""
@@ -276,7 +276,7 @@ local a,l,i,y:=""
  endif
 #ifdef A_NETIO
  if !empty(netio) .and. y=netio
-    y:='net:'+subs(y,len(netio)+1)
+    y:='net:'+SubStr(y,len(netio)+1)
  endif
 #endif
 return y
@@ -669,7 +669,7 @@ static func getnum(x,i,c)
 local y:='',wasdot:=.f.
 DEFAULT i TO 1
 for i:=i to len(x)
-   c:=subs(x,i,1)
+   c:=SubStr(x,i,1)
    if isdigit(c) .or. (!wasdot .and. (wasdot:=(c='.'))).or.(''=y .and. c$'+-')
       y+=c
    else
@@ -681,7 +681,7 @@ return y
 func spec(x)
 static fw:=NIL,fw4:=NIL,fs4:=NIL,fsu:=NIL
 local cons,i,j,k,c,d,z
-  local b:={|y,b,k,m|z:=y$x,if(z.or.(k:=(m:=left(y,3))+lower(subs(y,4)))$x,(x:=if(z,strtran(x,y),strtran(x,k,m)),.t.),.f.)}
+  local b:={|y,b,k,m|z:=y$x,if(z.or.(k:=(m:=left(y,3))+lower(SubStr(y,4)))$x,(x:=if(z,strtran(x,y),strtran(x,k,m)),.t.),.f.)}
 #ifdef D_HWPRN
 while valtype(oprn)='O' .and. ""<>x
 
@@ -798,7 +798,7 @@ while valtype(oprn)='O' .and. ""<>x
           oprn:SetFont(,,k,,,,255)
           fw:=NIL
         endif
-        if isupper(subs(x,j,1))
+        if isupper(SubStr(x,j,1))
            x:=stuff(x,i,j-i+1,'')
         else
            x:=stuff(x,i+3,j-i-2,'')
@@ -816,7 +816,7 @@ while valtype(oprn)='O' .and. ""<>x
         k:=oprn:PosX-oprn:Leftmargin
         oprn:Leftmargin:=oprn:CharWidth*c
         oprn:PosX:=oprn:Leftmargin+k
-        if isupper(subs(x,j,1))
+        if isupper(SubStr(x,j,1))
            x:=stuff(x,i,j-i+1,'')
         else
            x:=stuff(x,i+3,j-i-2,'')
@@ -828,7 +828,7 @@ while valtype(oprn)='O' .and. ""<>x
         else
            oprn:PosX:=oprn:CharWidth*c
         endif
-        if isupper(subs(x,j,1))
+        if isupper(SubStr(x,j,1))
            x:=stuff(x,i,j-i+1,'')
         else
            x:=stuff(x,i+3,j-i-2,'')
@@ -848,7 +848,7 @@ while valtype(oprn)='O' .and. ""<>x
          endif
          oprn:LineHeight:=Int(oprn:PixelsPerInchY/c)
          oprn:SetFont(,74/c)
-        if isupper(subs(x,j,1))
+        if isupper(SubStr(x,j,1))
            x:=stuff(x,i,j-i+1,'')
         else
            x:=stuff(x,i+3,j-i-2,'')
@@ -863,7 +863,7 @@ while valtype(oprn)='O' .and. ""<>x
         oprn:TopMargin:=oprn:LineHeight
         oprn:StartDoc()
         setprc(oprn:PRow(),oprn:PCol())
-        if isupper(subs(x,j,1))
+        if isupper(SubStr(x,j,1))
            x:=stuff(x,i,j-i+1,'')
         else
            x:=stuff(x,i+3,j-i-2,'')
@@ -873,7 +873,7 @@ while valtype(oprn)='O' .and. ""<>x
    endif
 
    for i:=1 To len(x)
-      c:=asc(subs(x,i,1))
+      c:=asc(SubStr(x,i,1))
    if c=13
       qqout(chr(c))
       oprn:PosX := oprn:LeftMargin
@@ -1263,34 +1263,34 @@ begin sequence
     break
  endif
  r:=alltrim(y)
- if r="|" .and. (a:=at('|',subs(r,2))) <> 0
+ if r="|" .and. (a:=at('|',SubStr(r,2))) <> 0
     p:='{'+left(r,a+1)
-    r:=subs(r,a+2)
+    r:=SubStr(r,a+2)
  else
     p:='{||'
  endif
  if r="?"
 #ifdef A_SIMPLE
     if r="??"
-       y:=&(p+'outerr('+subs(r,4)+')}')
+       y:=&(p+'outerr('+SubStr(r,4)+')}')
     else
-       y:=&(p+'outerr(HB_EOL()),outerr('+subs(r,3)+')}')
+       y:=&(p+'outerr(HB_EOL()),outerr('+SubStr(r,3)+')}')
     endif
 #else
     if r="??"
-       y:=&(p+'wwout('+subs(r,4)+')}')
+       y:=&(p+'wwout('+SubStr(r,4)+')}')
     else
-       y:=&(p+'wout(),wwout('+subs(r,3)+')}')
+       y:=&(p+'wout(),wwout('+SubStr(r,3)+')}')
     endif
 #endif
  elseif r=">"
     if r=">>"
-       y:=&(p+'wqq('+subs(r,4)+')}')
+       y:=&(p+'wqq('+SubStr(r,4)+')}')
     else
-       y:=&(p+'wq(),wqq('+subs(r,3)+')}')
+       y:=&(p+'wq(),wqq('+SubStr(r,3)+')}')
     endif
  elseif r="JUMP " //.or. r="GOTO "
-    a:=":"+ltrim(subs(r,6))+" "
+    a:=":"+ltrim(SubStr(r,6))+" "
     b:=ascan(ba,{|x|valtype(x)$"MC".and. x+' '=a})+1
     if b=1
        b:=errornew()
@@ -1303,14 +1303,14 @@ begin sequence
     y:={||j:=b}
  elseif r="IF "
     c:=rat(" THEN ",r)
-    a:=":"+ltrim(subs(r,c+6))+" "
+    a:=":"+ltrim(SubStr(r,c+6))+" "
     d:=rat(" ELSE ",a)
-    c:=&(p+alltrim(subs(r,4,c-4))+'}')
+    c:=&(p+alltrim(SubStr(r,4,c-4))+'}')
     if d=0
        a:=ascan(ba,{|x|valtype(x)$"MC".and. x+' '=a})
        b:=jl
     else
-       b:=":"+ltrim(subs(a,d+6))
+       b:=":"+ltrim(SubStr(a,d+6))
        a:=left(a,d-1)
        a:=ascan(ba,{|x|valtype(x)$"MC".and. x+' '=a})
        b:=ascan(ba,{|x|valtype(x)$"MC".and. x+' '=b})
@@ -1326,7 +1326,7 @@ begin sequence
        eval(errorblock(),b)
     endif
  elseif r='CALL '
-    c:=ltrim(subs(r,6))+" "
+    c:=ltrim(SubStr(r,6))+" "
     d:=at(" ",c)
     a:=":"+left(c,d)
     b:=ascan(ba,{|x|valtype(x)$"MC".and. x+' '=a})
@@ -1338,13 +1338,13 @@ begin sequence
        b:severity:=2
        eval(errorblock(),b)
     endif
-    c:=&(p+"{"+ltrim(subs(c,d+1))+"}}") //parametry
-    d:=getlines(alltrim(subs(ba[b],len(a)+1)),',')
+    c:=&(p+"{"+ltrim(SubStr(c,d+1))+"}}") //parametry
+    d:=getlines(alltrim(SubStr(ba[b],len(a)+1)),',')
     ++b
     y:={|x|callfunc(,b,eval(c,x),d)}
 
  elseif r='RETURN'
-    a:=ltrim(subs(r,8))
+    a:=ltrim(SubStr(r,8))
     if empty(a)
        y:={||j:=0,NIL}
     else
@@ -1373,7 +1373,7 @@ begin sequence
 #endif
 #endif
     else
-       r:=ltrim(subs(r,6))
+       r:=ltrim(SubStr(r,6))
        if (p=='{||')
          b:=hb_macroBlock(r)
 #ifdef A_SIMPLE
@@ -1401,12 +1401,12 @@ begin sequence
  elseif r='STORE' //wylicza tylko raz możliwy błąd?
     b:=rat(" TO ",r)
     IF b=0 //do ret
-       //a:=&(p+SUBS(r,7)+'}')
-       a:=&(SUBS(r,7))
+       //a:=&(p+SubStr(r,7)+'}')
+       a:=&(SubStr(r,7))
        y:={||a}
     ELSE
-    c:=subs(r,b+4)
-    a:=&(SUBS(r,7,b-7))
+    c:=SubStr(r,b+4)
+    a:=&(SubStr(r,7,b-7))
     b:=&('{|x|'+c+':=x}')
     y:={|d|eval(b,a),IF(type(c)<>valtype(a),;
        (d:=errornew(),;
@@ -1419,7 +1419,7 @@ begin sequence
     ENDIF
  elseif r='PRIVATE'
     // probuje usunąć teksty
-    c:=extractleft(strtran(a:=SUBS(r,9)," ") )
+    c:=extractleft(strtran(a:=SubStr(r,9)," ") )
 
     if empty(c)
        c:=NIL
@@ -1429,10 +1429,10 @@ begin sequence
     y:={'('+a+')','PRIVATE',c}
  elseif r='&STORE'
     a:=rat(" TO ",r)
-    c:=subs(r,a+4)
-    y:={c+':=self[2]',&(SUBS(r,8,a-8)),c}
+    c:=SubStr(r,a+4)
+    y:={c+':=self[2]',&(SubStr(r,8,a-8)),c}
  elseif r="&"
-    y:={subs(r,2),,}
+    y:={SubStr(r,2),,}
  elseif r="{" //tablica lub blok
     y:=&r
  else //if r="|"
@@ -1485,7 +1485,7 @@ memvar buf
        b:severity:=2
        return eval(errorblock(),b)
     endif
-return callfunc(,b+1,p,getlines(alltrim(subs(buf[b],len(c)+1)),','))
+return callfunc(,b+1,p,getlines(alltrim(SubStr(buf[b],len(c)+1)),','))
 ***************************
 func callsub(bx,g)
 return callfunc(bx,0,{g},IF(EMPTY(G),NIL,{'getlist'}))
@@ -1596,7 +1596,7 @@ return list[pos]:varget()
 ********************************
 function getset(get,clause,value)
 if valtype(value)$'MC' .and. value='&:'
-   value:=&(trim(subs(value,3)))
+   value:=&(trim(SubStr(value,3)))
 endif
 if clause=='block'
    get:block:=value
@@ -1640,14 +1640,14 @@ local l,i
 as:=UPPER(alltrim(as))
 l:=0
 for i:=1 to len(as)
-   l:=16*l+at(subs(as,i,1),'123456789ABCDEF')
+   l:=16*l+at(SubStr(as,i,1),'123456789ABCDEF')
 next i
 return l
 ************************************
 function N2hex(an)
 local s:=''
 while an<>0
-s:=subs('0123456789ABCDEF',an%16+1,1)+s
+s:=SubStr('0123456789ABCDEF',an%16+1,1)+s
 an:=int(an/16)
 enddo
 return s
@@ -1709,7 +1709,7 @@ function KCR_U(mode,l,c)
            ch:=.f.
            b[3-bp]:=b[bp]
         endif
-        bl:=subs(oed:GetText( .f. ),min(b[1],b[2]),abs(b[2]-b[1]))
+        bl:=SubStr(oed:GetText( .f. ),min(b[1],b[2]),abs(b[2]-b[1]))
         hb_gtInfo( HB_GTI_CLIPBOARDDATA, bl )
 
     elseif k=K_ALT_K
@@ -1984,7 +1984,7 @@ func tranr(x,y)
 local i:=0,j:=0
 
 if y='@'
-   y:=subs(y,at(' ',y)+1)
+   y:=SubStr(y,at(' ',y)+1)
 endif
 while j<len(x) .and. ++i<=len(y)
    if ! (y[i]$'ANX9#!')
@@ -2087,7 +2087,7 @@ return ret
 local k:=2
 l:=len(txt)/k
 for i:=0 to l-1
-  ret+=subs(txt,i*k+1,1)
+  ret+=SubStr(txt,i*k+1,1)
 next i
 
 return ret
@@ -2112,12 +2112,34 @@ func evaldb(...)
    endif
 return r
 *****************
+func ufieldget(f,lval)
+   local n := fieldpos(f), x := fieldget(n)
+   if valtype(x)='C' //.and. hb_cdpIsUTF8()
+      if x=hb_utf8Chr(0xFEFF)
+         x:=hb_bsubstr(x,4)
+      endif
+      if empty(lval)
+         x += space(FieldLen(n) - hb_UTF8Len(x))
+      endif
+   endif
+return x
+*****************
+func ufieldput(f,x)
+   local n := fieldpos(f), t := hb_FieldType(n)
+   if valtype(x)='C' .and. (left(t,1) $ 'PWG' .or. SubStr(t,2) = ':B')
+      x:=trim(x)
+      if hb_utf8Chr(0xFEFF)<>hb_BLeft(x,3) .and. hb_UTF8Len(x)<>hb_blen(x)
+         x:=hb_utf8Chr(0xFEFF)+x
+      endif
+   endif
+return fieldput(n,x)
+*****************
 func binfieldput(f,x,lval)
    local t,b
    if valtype(x)='C'
       t:=hb_FieldType(f)
       x:=trim(x)
-      if !(left(t,1) $ 'PWG' .or. subs(t,3,1) $ 'UB')
+      if !(left(t,1) $ 'PWG' .or. SubStr(t,3,1) $ 'UB')
          x:=hb_translate(x,dbinfo(DBI_CODEPAGE),)  //odwrotne tłumacznie do tego co przy zapisie
          // przy tłumaczeniu z powrotem się skróci, ale i tak będzie przyciasno
       endif
@@ -2126,17 +2148,17 @@ func binfieldput(f,x,lval)
    return HB_FieldPut(f,x)
    endif
 return x 
-
-static func binfieldget(f,lval) // .t. - do not padr with spaces
+*******************************
+func binfieldget(f,lval) // .t. - do not padr with spaces
    local x := hb_fieldget(f),t
    if valtype(x)='C'
       t:=hb_FieldType(f)
-      if !(left(t,1) $ 'PWG' .or. subs(t,3,1) $ 'UB')
+      if !(left(t,1) $ 'PWG' .or. SubStr(t,3,1) $ 'UB')
          x := hb_translate(x,,dbinfo(DBI_CODEPAGE)) //odwrotne tłumacznie do tego co przy odczycie
       endif
       if empty(lval)
          // to działa zależy jaka aktualna strona kodowa
-         x := x + space(hb_FieldLen(f) - len(x))
+         x += space(hb_FieldLen(f) - hb_ULen(x))
       endif
    endif
 return x

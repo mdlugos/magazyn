@@ -191,9 +191,9 @@ stat proc statedit(get,ni)
 local w:=window(3,17,_sbkgr)
 local getlist:={},waga,zawiesz,cotw,out:=get:varget()
 
-waga:=subs(out,3,1)>'0'.or.left(out,2)>'05'
-zawiesz:=subs(out,3,1)>'0'
-cotw:=subs(out,4,1)>'0'
+waga:=SubStr(out,3,1)>'0'.or.left(out,2)>'05'
+zawiesz:=SubStr(out,3,1)>'0'
+cotw:=SubStr(out,4,1)>'0'
 
 @ w[1]+1,w[2]+2 SAY "Towar na wagę:" UNICODE GET waga picture "Y"
 @ w[1]+2,w[2]+2 SAY "   Zawieszony:" GET zawiesz picture "Y"
@@ -211,13 +211,13 @@ return
 func nextni()
 local i,s,ni:=index
   for i:=hb_fieldlen('index') to 1 step -1
-    if isdigit(subs(index,i,1))
-       ni:=subs(index,i+1)
+    if isdigit(SubStr(index,i,1))
+       ni:=SubStr(index,i+1)
        exit
     endif
   next
   for i:=i to 1 step -1
-    s:=subs(index,i,1)
+    s:=SubStr(index,i,1)
     if isdigit(s)
        ni:=s+ni
     else
@@ -417,7 +417,7 @@ endif
   dbGoto(lam)
 
   for i:=len(ni) to 1 step -1
-    if isdigit(subs(ni,i,1))
+    if isdigit(SubStr(ni,i,1))
        ni:=s+pad(strtran(str(val(ni)+1,i)," ","0"),len(ni))
        exit
     endif
@@ -432,7 +432,7 @@ endif
      seek beg
 #endif
      if index=beg
-        beg:=left(beg,3)+str(val(subs(index,4))+1,3)
+        beg:=left(beg,3)+str(val(SubStr(index,4))+1,3)
      endif
      goto lam
   endif
@@ -550,7 +550,7 @@ endif
 #ifdef A_SHARP
     getlist[1]:postblock:={|x,n|varput(getlist,'kna',left(n,16),.t.),.t.}
     @ 12,3 SAY 'Kasa:' GET kna
-    SAYL 'Gr:' GET kgr PICTURE "@K" VALID {|e|e:=NIL,aczojs(grupy,@kgr,@e) .and. (varput(getlist,'pv',subs(grupy[e],17,2),.t.),.t.)}
+    SAYL 'Gr:' GET kgr PICTURE "@K" VALID {|e|e:=NIL,aczojs(grupy,@kgr,@e) .and. (varput(getlist,'pv',SubStr(grupy[e],17,2),.t.),.t.)}
     SAYL 'Ilość:' UNICODE GET kwa VALID aczojs({'3 - cena ustawiona otwarta  ',hb_UTF8ToStr('2 - cena ustawiona zamknięta'),'1 - cena zawsze wprowadzana','0 - zablokowane'})
     SAYL 'K:' Get ksh VALID aczojs({'0','1','2'})
     SAYL 'Klaw:' GET kkl
@@ -1211,7 +1211,7 @@ endif
             if  j_m='kg  ' .and. rt#'1'  .or. j_m#'kg  '.and.rt='1'
               clear typeahead
               alarm("Zmieniam status towaru z powodu zmiany jednostki miary z/na kg.",,,3)
-              rt:=if(j_m='kg','1','0')+subs(rt,2)
+              rt:=if(j_m='kg','1','0')+SubStr(rt,2)
               pos:=ascan(getlist,{|g|g:name='j_m'})
               loop
             endif
@@ -1474,7 +1474,7 @@ field cenA
 local wartosc:=ilosc*(sel:=(i_lam(data)))->cenA
 #endif
 #ifdef A_JMO
-#define D_JMOFIX(s,p) s:=val(substr(p,-21));if(miar_opcja,s:=s*indx_mat->przel+if(s<0,-1,1)*val(subs(p,-14)),)
+#define D_JMOFIX(s,p) s:=val(substr(p,-21));if(miar_opcja,s:=s*indx_mat->przel+if(s<0,-1,1)*val(SubStr(p,-14)),)
 #define smiaR(x,y) if(miar_opcja,if(x%indx_mat->przel=0,str(x/indx_mat->przel,y-4)+"    ",stuff(str(int(x/indx_mat->przel)+x%indx_mat->przel/1000,y,3),y-3,1,"r")),str(x,y,ILDEC))
 #else
 #define D_JMOFIX(s,p) s:=val(substr(p,-21))
@@ -1653,7 +1653,7 @@ field data
 #endif
 #endif
       case _skey=24 .and. select()<>MAIN->(select())
-        select (select('MAIN'+str(val(subs(alias(),5))+1,4)))
+        select (select('MAIN'+str(val(SubStr(alias(),5))+1,4)))
         if !used()
           select MAIN
         endif

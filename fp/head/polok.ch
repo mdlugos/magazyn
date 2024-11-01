@@ -24,7 +24,7 @@
 #define A_XPRN
 #define A_PCL
 #define A_SET_DAT GERMAN
-#define DTOV(dat) tran(subs(dtos(dat),5),"@R ##.##")
+#define DTOV(dat) tran(SubStr(dtos(dat),5),"@R ##.##")
 #define DatE() MEMVAR->dzisiaj
 #define A_KTL 8
 #define A_WAL 11

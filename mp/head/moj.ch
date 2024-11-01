@@ -42,7 +42,7 @@
 //#define A_TP //TP-LINE
 #define A_DRUKCOMP
 #define A_WTYM
-#define DTOV(dat) TRAN(subs(dtoS(dat),5),"@R XX.XX")
+#define DTOV(dat) TRAN(SubStr(dtoS(dat),5),"@R XX.XX")
 //#define A_LIFO
 //#define A_FIFO
 #define A_WA

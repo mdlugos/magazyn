@@ -41,13 +41,13 @@ static function _snaglo(s,m)
   endif
   s:=strtran(s,hb_UTF8ToStr(n),hb_UTF8ToStr(m))
   do while (i:=hb_at(u,s,j+1))>0
-    DispOut(subs(s,j+1,i-j-1),_SRAMKA)
+    DispOut(SubStr(s,j+1,i-j-1),_SRAMKA)
     hb_DispOutAtBox(row(),col(),t,_SRAMKA)
     setpos(row(),col()+1)
     j:=i 
   enddo
 
-  x:=subs(s,j+1)
+  x:=SubStr(s,j+1)
   
 return x
 
@@ -398,7 +398,7 @@ elseif k=K_ESC
 elseif ( k=K_CTRL_LEFT .or. k=K_CTRL_RIGHT ) .and. ordnumber()<>0
    txt:=eval(_sprompt,0,_s,.t.)
    if k=K_CTRL_RIGHT
-      txt:=at('|',subs(txt,_sbeg))
+      txt:=at('|',SubStr(txt,_sbeg))
       if txt=0
          ord_l:=ordnumber()
          RETURN .f.
@@ -1301,7 +1301,7 @@ function CUT(_s,zmiana,key)
       scr1:=savescreen(l+_srow1-1,_scol1,l+_srow1-1,_scol2-1)
       @ _srow1+l-1,_scol1 say padr(eval(_sprompt,-1,_s),_scol2-COL())
       scr2:=savescreen(l+_srow1-1,_scol1,l+_srow1-1,_scol2-1)
-      if !scr1==scr2 .or. z //.or. subs(scr1,2,1)>chr(7)
+      if !scr1==scr2 .or. z //.or. SubStr(scr1,2,1)>chr(7)
          zmiana := .t.
          ALTERNATE LINE _srow1+l-1 BUFFER scr2 ATTRIB if(iscolor(),16,8)
       endif
@@ -1337,7 +1337,7 @@ begin sequence
     z:=_srec[l]#(_srec[l]:=recno())
     scr1:=_sprpt
     REFRESH LINE _srow1+l-1 DIRECTION 0
-    if scr1#_sprpt .or. z //.or. subs(scr1,2,1)>chr(7)
+    if scr1#_sprpt .or. z //.or. SubStr(scr1,2,1)>chr(7)
        ALTERNATE LINE _srow1+l-1 BUFFER _sprpt ATTRIB if(iscolor(),72,142)
        ZMIANA :=.T.
     else
@@ -1350,7 +1350,7 @@ begin sequence
       scr1:=savescreen(l+_srow1-1,_scol1,l+_srow1-1,_scol2-1)
       @ _srow1+l-1,_scol1 say padr(eval(_sprompt,1,_s),_scol2-COL())
       scr2:=savescreen(l+_srow1-1,_scol1,l+_srow1-1,_scol2-1)
-      if !scr1==scr2 .or. z //.or. subs(scr1,2,1)>chr(7)
+      if !scr1==scr2 .or. z //.or. SubStr(scr1,2,1)>chr(7)
          zmiana := .t.
          ALTERNATE LINE _srow1+l-1 BUFFER scr2 ATTRIB if(iscolor(),16,8)
       endif

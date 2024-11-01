@@ -34,7 +34,7 @@
 #define D_KH1 dost_odb
 #else
 #define D_KH left(dost_odb,A_NRLTH)
-#define D_KH1 if(val(dost_odb)="0",dost_odb,subs(dost_odb,A_NAZBEG))
+#define D_KH1 if(val(dost_odb)="0",dost_odb,SubStr(dost_odb,A_NAZBEG))
 #endif
 #ifdef A_SUBDOK
 #define D_SUBDOK +sub_dok
@@ -361,7 +361,7 @@ private gt
             k:=getlines(x,HB_BCHAR(9))
             was:=array(len(k))
             for x:=1 to len(was)
-              y:=subs(k[x],3)
+              y:=SubStr(k[x],3)
               if y='100'
                  was[x]:={'zw',0,0}
               elseif y='101'
@@ -514,7 +514,7 @@ private gt
        fakkormem:=NIL
        main->(dbSEEK(dM->(KEY_DOK+NR_DOWODU),.f.))
 #endif
-    elseif subs(dok_naz,2,1)="K"
+    elseif SubStr(dok_naz,2,1)="K"
 #ifdef A_DFP
        fakkorflag:={recno(),main->(recno()),df,,firmy->(recno())}
 #else
@@ -609,7 +609,7 @@ private gt
             aadd(fakkormem,{index,pm*ilosc_f,cena,proc_vat,if(srbuf=NIL,recno(),0),pozycja,nr_zlec})
          elseif fakkormem#NIL
 *
-          x:=getlines(trim(subs(dm->nr_faktury,D_MM+2)),',')
+          x:=getlines(trim(SubStr(dm->nr_faktury,D_MM+2)),',')
           y:=ascan(fakkormem,{|x|index=pad(x[1],len(index)).and.round(x[3]-cena,2)=0.and.x[4]=proc_vat})
           if len(x)>0 .and. y>0
              for k:=1 to len(x)
@@ -1100,7 +1100,7 @@ private gt
  #ifdef A_POSNET
          endif
   #ifdef A_THERMAL
-         if df .and. (k:=' ',dfprint('1;0;1;0$e1'+left(operator,1)+subs(operator,1+at(' ',operator),1)+HB_BCHAR(13)+"#"+nr_mag+smb_dow+nr_dowodu+HB_BCHAR(13)+str(x,10,2)+'/'+str(D_DF,10,2)+'/',@k).and.HB_BCODE(k)%8=5)
+         if df .and. (k:=' ',dfprint('1;0;1;0$e1'+left(operator,1)+SubStr(operator,1+at(' ',operator),1)+HB_BCHAR(13)+"#"+nr_mag+smb_dow+nr_dowodu+HB_BCHAR(13)+str(x,10,2)+'/'+str(D_DF,10,2)+'/',@k).and.HB_BCODE(k)%8=5)
   #else
          if df .and. (x=0 .or. dfprint({'trpayment','ty0','wa'+lTrim(sTR(x*100,10,0))})) .and. dfprint({'trend','to'+lTrim(sTR(D_DF*100,10,0))})
   #endif
@@ -1670,7 +1670,7 @@ function rswrite(x,buf,n)
   if n=NIL .or. hb_blen(buf)<n
     n:=hb_blen(buf)
   endif
-  if n>=2 .and. ! RS_SEND(HB_BCODE(subs(buf,2,1)),,hb_bsubstr(buf,3,n-2))
+  if n>=2 .and. ! RS_SEND(HB_BCODE(SubStr(buf,2,1)),,hb_bsubstr(buf,3,n-2))
     n:=0
   endif
 
@@ -1934,7 +1934,7 @@ local p,i
 
    hb_comClose( 3 )
 
-   if 0<>(p:=val(subs(x,i:=rat(':',x)+1)))
+   if 0<>(p:=val(SubStr(x,i:=rat(':',x)+1)))
       if !empty(socket) .or. valtype(socket:=hb_inetCreate(D_TIMEOUT))='P'
          ipactive:=.t.
          hb_inetClearError(Socket)
@@ -2086,7 +2086,7 @@ memvar aux,df_ver
            ret := ret .and. ( rsread( 3, @s, 1) == 1 ) .and. (!lack .or. HB_BCODE(s) = 6)
            //( hb_comRecv( 3, @s, 1, D_TIMEOUT ) == 1 ) .and. (!lack .or. HB_BCODE(s) = 6)
            ack := stuff( ack ,1, 1, s)
-           rtr := subs( rtr, 3 )
+           rtr := SubStr( rtr, 3 )
         endif
         if ret
            ret := ( rtr == '' ) .or. rswrite( 3, rtr ) == hb_blen( rtr )
@@ -2298,7 +2298,7 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
    k:=0
    for i:=1 to l
       if valtype(ap[i])$'MC'
-        (&(trim(subs(ap[i],3))),txt:=NIL)
+        (&(trim(SubStr(ap[i],3))),txt:=NIL)
       else
         k+=1
         if ZES_DEF->baza#"MEMVAR"
@@ -2599,7 +2599,7 @@ oprn:=D_HWPRN
       txt3:="wystaw. dnia :"
 #ifdef A_FA
     case dok_p_r="F"
-      if subs(dok_naz,2)="K"
+      if SubStr(dok_naz,2)="K"
       txt2:="Dok. popraw. :"
       txt3:="wystaw. dnia :"
 #ifdef A_ODDO
@@ -2635,9 +2635,9 @@ oprn:=D_HWPRN
        ?? padl(left(firma_a,1+at(", ",firma_a))+dtoc(data),P_COLN)
        TEXT dok_pie
 #ifdef A_FULNUM
-       ? spec(P_BON+P_4XON),padc(subs(trim(dok_naz),4)+" "+ltrim(KEY_DOK)+ltrim(nr_dowodu),P_COLN/2),spec(P_BOFF+P_4XOFF)
+       ? spec(P_BON+P_4XON),padc(SubStr(trim(dok_naz),4)+" "+ltrim(KEY_DOK)+ltrim(nr_dowodu),P_COLN/2),spec(P_BOFF+P_4XOFF)
 #else
-       ? spec(P_BON+P_4XON),padc(subs(trim(dok_naz),4)+" "+ltrim(nr_dowodu)+"/"+str(year(data)%100,2),P_COLN/2),spec(P_BOFF+P_4XOFF)
+       ? spec(P_BON+P_4XON),padc(SubStr(trim(dok_naz),4)+" "+ltrim(nr_dowodu)+"/"+str(year(data)%100,2),P_COLN/2),spec(P_BOFF+P_4XOFF)
 #endif
 
         SELECT firmy
@@ -2664,7 +2664,7 @@ oprn:=D_HWPRN
        select dM
        ?? txt3+" ",data_dost
 #ifdef A_FAT
-       if subs(dok_naz,2)#"K"
+       if SubStr(dok_naz,2)#"K"
           ?
           ? "Numer Specyfikacji: "+nr_spec+hb_UTF8ToStr(" Środek transportu: ")+trim(transport)
        endif
@@ -2723,7 +2723,7 @@ oprn:=D_HWPRN
        ? "Korekta:"
        go fakkorflag
        fakkorflag:=NIL
-    elseif subs(dok_naz,2)="K"
+    elseif SubStr(dok_naz,2)="K"
        fakkorflag:=recno()
        if dbSEEK(pad(nr_faktury,D_MM),.f.)
           ? hb_UTF8ToStr("Przed korektą:")
@@ -2765,7 +2765,7 @@ oprn:=D_HWPRN
       endif
       p:=pozycja
       cpi:=17
-      if subs(dok_naz,2)#"K" .and. p=dM->pozycja .and. wt>0 .and. w<0 // upust
+      if SubStr(dok_naz,2)#"K" .and. p=dM->pozycja .and. wt>0 .and. w<0 // upust
          ? ccpi(4)+repl("-",79),ccpi(7)
       endif
 #ifdef A_SWW
@@ -2993,7 +2993,7 @@ oprn:=D_HWPRN
       endif
       exit
       enddo
-      TEXT if(dok_spc="&:",&(trim(subs(dok_spc,3))),dok_spc)
+      TEXT if(dok_spc="&:",&(trim(SubStr(dok_spc,3))),dok_spc)
       ?
       if ""#uwagi
          TEXT uwagi
@@ -3048,7 +3048,7 @@ oprn:=D_HWPRN
 #ifdef A_NOTOT
       endif
 #endif
-      TEXT if(dok_fot="&:",&(trim(subs(dok_fot,3))),dok_fot)
+      TEXT if(dok_fot="&:",&(trim(SubStr(dok_fot,3))),dok_fot)
       ?? spec(HB_BCHAR(13)+HB_BCHAR(12))
     else
 #endif
@@ -3463,7 +3463,7 @@ wp17:=0
 #endif
    endif
       if dok_fot="&:"
-      TEXT &(trim(subs(dok_fot,3)))
+      TEXT &(trim(SubStr(dok_fot,3)))
       else
       TEXT dok_fot
       ? kto_pisal

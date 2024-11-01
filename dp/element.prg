@@ -186,9 +186,9 @@ if len(dat)<9
       return {}
    endif
 #ifdef A_GREX
-   g:=pad(subs(dat,2,2),2)
+   g:=pad(SubStr(dat,2,2),2)
    if g='/' .and. g>='/0'
-      g:=subs(g,2,1)
+      g:=SubStr(g,2,1)
    else
       g:=' '
    endif
@@ -203,7 +203,7 @@ else
 
    select zapot
    set order to tag zap_rel
-   d:=pad(subs(dat,10,1),1)
+   d:=pad(SubStr(dat,10,1),1)
    aczojs(diety,@d,@i,,"Wybierz:")
    if i=0
       pop_stat(stat)
@@ -211,9 +211,9 @@ else
       return {}
    endif
 #ifdef A_GREX
-   g:=pad(subs(dat,11,2),2)
+   g:=pad(SubStr(dat,11,2),2)
    if g='/' .and. g>='/0'
-      g:=subs(g,2,1)
+      g:=SubStr(g,2,1)
    else
       g:=' '
    endif
@@ -224,9 +224,9 @@ else
       return {}
    endif
    d:=d+'/'+g
-   aret:={TRim(subs(diety[i],2))+'/'+Trim(subs(grupy[j],2))}
+   aret:={TRim(SubStr(diety[i],2))+'/'+Trim(SubStr(grupy[j],2))}
 #else
-   aret:={TRim(subs(diety[i],2))}
+   aret:={TRim(SubStr(diety[i],2))}
 #endif
 
    dbseek(dat:=left(dat,9),.f.)
@@ -285,7 +285,7 @@ select elementy
  next i
  endif
  asort(atot,,,{|x,y|x[1]<y[1]})
- aeval(atot,{|x|dbseek(x[1],.f.),aadd(aret,if(empty(jedn),'*'+subs(nazwa,2),nazwa+if(jedn='%',str(x[2],4)+" "+'%',str(x[2],10,3)+" "+jedn)))})
+ aeval(atot,{|x|dbseek(x[1],.f.),aadd(aret,if(empty(jedn),'*'+SubStr(nazwa,2),nazwa+if(jedn='%',str(x[2],4)+" "+'%',str(x[2],10,3)+" "+jedn)))})
 #else
  asort(atot,,,{|x,y|x[1]<y[1]})
  aeval(atot,{|x|dbseek(x[1],.f.),aadd(aret,nazwa+str(x[2],10,3)+" "+jedn)})

@@ -98,7 +98,7 @@ else
      exec {|a|cennik->(dbseek(zapot->skladnik+left(chg,8)),if(skladnik=zapot->skladnik,,dbgoto(lastrec()+1))),a:=ascan(d,dieta),if(a=0,(aadd(d,dieta),aadd(e,ilosc*cennik->cena)),e[a]+=ilosc*cennik->cena)} rest while dtos(data)+posilek=chg
      set relation to
      select relewy
-     seek dseek(,'data,posilek,dieta',stod(left(chg,8)),subs(chg,9,1),subs(chg,10))
+     seek dseek(,'data,posilek,dieta',stod(left(chg,8)),SubStr(chg,9,1),SubStr(chg,10))
 #ifdef A_LAN
      #define D_LAN .and. reclock()
 #else
@@ -174,9 +174,9 @@ local rec, s:=select(),a
      f:={}
   endif
 #ifdef A_GREX
-  EXEC aadd(f,{left(dieta,1),subs(dieta,3,1),,left(dieta,3),ile_pos}) WHILE data=da .and. posilek=po FOR ile_pos<>0 .and. subs(dieta,2)='/' .and. subs(dieta,3)>'0' .and. empty(subs(dieta,4))
+  EXEC aadd(f,{left(dieta,1),SubStr(dieta,3,1),,left(dieta,3),ile_pos}) WHILE data=da .and. posilek=po FOR ile_pos<>0 .and. SubStr(dieta,2)='/' .and. SubStr(dieta,3)>'0' .and. empty(SubStr(dieta,4))
 #else
-  EXEC {|x|x:=left(dieta,1),aadd(f,{x,ascan(diety,x),,x,ile_pos})} WHILE data=da .and. posilek=po FOR ile_pos<>0 .and. empty(subs(dieta,2))
+  EXEC {|x|x:=left(dieta,1),aadd(f,{x,ascan(diety,x),,x,ile_pos})} WHILE data=da .and. posilek=po FOR ile_pos<>0 .and. empty(SubStr(dieta,2))
   asort(f,,,{|x,y|x[2]<y[2]})
 #endif
   go rec
@@ -327,7 +327,7 @@ local i,j,k,l,a,b,g:='',h:=''
           c+='/'+d[i,2]
        endif
    next i
-   d:=subs(c,2)
+   d:=SubStr(c,2)
 #else
    c:=''
    d:=''
@@ -366,7 +366,7 @@ local aZap:={{},{},{}},rec,mes,d,e,f:={},i,j
         if dbseek(menu->danie)
            dania->(dbseek(menu->danie,.f.))
            do while danie==menu->danie
-              d:=diand(menu->dieta,sklad->dieta,f,stod(left(adat,8)),subs(adat,9,1),@e)
+              d:=diand(menu->dieta,sklad->dieta,f,stod(left(adat,8)),SubStr(adat,9,1),@e)
 #ifdef A_DODATKI
               if menu->ile_pos<>0
                  e:=menu->ile_pos  //ipcalc(d,menu->danie,menu->ile_pos)
@@ -383,7 +383,7 @@ local aZap:={{},{},{}},rec,mes,d,e,f:={},i,j
 #else
 #ifdef A_DISUM
               i:=ascan(aZap[1],surowce->(recno()))
-              if i<>0 .and. round(azap[2,i,1]-ilosc,3)=0 .and. diand(d,subs(azap[1,i],3),f)=HB_UCHAR(0x0A0)
+              if i<>0 .and. round(azap[2,i,1]-ilosc,3)=0 .and. diand(d,SubStr(azap[1,i],3),f)=HB_UCHAR(0x0A0)
                  aZap[1,i,2]:=dior(d,azap[1,i,2],f)
                  aZap[2,i,2]+=e
                  aZap[3,i]+=",("+left(dania->nazwa,at(" ",dania->nazwa)-1)+") "+hb_ntoc(e*ilosc/surowce->przel,3)+" "+trim(surowce->jmaG)
@@ -410,7 +410,7 @@ local aZap:={{},{},{}},rec,mes,d,e,f:={},i,j
        for j:=len(azap[1]) to i+1 step -1
          if azap[1,i,1]==azap[1,j,1] .and. dieq(azap[1,i,2],azap[1,j,2],f)
             aZap[2,i,1]+=aZap[2,j,1]
-            aZap[3,i]+=','+subs(azap[3,j],1+at(" (",azap[3,j]))
+            aZap[3,i]+=','+SubStr(azap[3,j],1+at(" (",azap[3,j]))
             adel(azap[1],j)
             adel(azap[2],j)
             adel(azap[3],j)
@@ -594,7 +594,7 @@ local i,f,r:=recno()
    i+=il
 
 for f:=10 to 8 step -1
-  r:=subs(str(i,10,3),f,1)
+  r:=SubStr(str(i,10,3),f,1)
   if r='0'
   else
      il+=round(i,f-8)-i
@@ -703,7 +703,7 @@ LOCAL Z,s,pg,_s
 #endif
 
 #ifdef A_WAGI
-  pg:=subs(Memvar->PosGr,at(relewy->posilek,PosStr),1)
+  pg:=SubStr(Memvar->PosGr,at(relewy->posilek,PosStr),1)
 #else
   pg:=relewy->posilek
 #endif
