@@ -106,7 +106,7 @@ PROCEDURE Dbu( param1, param2, param3 )
          SET FILETYPE TO NTX
       endif
 
-      SET CHARTYPE TO ANSI
+      SET CHARTYPE TO OEM //test
       SET SERVER LOCAL
       SET AXS LOCKING ON
       SET RIGHTS CHECKING ON

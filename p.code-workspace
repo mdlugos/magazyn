@@ -11,6 +11,11 @@
 		"files.associations": {
 			"*.h": "c",
 			"*.ch": "harbour"
-		}
+		},
+		"clangd.fallbackFlags": [
+			"-I${workspaceFolder}/../harbour/include",
+			"-I${workspaceFolder}/common",
+			"-I/usr/local/ads/acesdk/"
+		]
 	}
 }
