@@ -2,8 +2,8 @@
 #include "simpleio.ch"
 #include "set.ch"
 #include "dbinfo.ch"
-REQUEST FPTCDX,ADS
-PROCEDURE mdx2cdx(DB)
+REQUEST VFPCDX,ADS
+PROCEDURE vfp2ads(DB)
 Local i:=0
 request HB_CODEPAGE_PL852,HB_CODEPAGE_UTF8EX,HB_LANG_PL
 HB_CDPSELECT('UTF8EX') //some fields may be already in UTF8/16
@@ -46,7 +46,7 @@ LOCAL h,st
 //if HB_BCODE(st)<>3
    db:=left(db,rat('.',db)-1)
    erase (set(_SET_DEFAULT)+db+".cdx")
-   USE (DB) READONLY EXCLUSIVE VIA 'FPTCDX'
+   USE (DB) READONLY EXCLUSIVE VIA 'VFPCDX'
    st:=dbstruct()
    ?? DB+" "
    aeval(st,{|x,i|outstd(x[1]:=lower(trim(x[1])),''),iif(x[2]='M', x[2]:='W',iif(SubStr(x[2],3)='U' .or. x[2]=='C' .and. x[3]>36, (x[2]:='Q:B',x[3]:=min(254,9*x[3]/8)),))})

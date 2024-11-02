@@ -16,6 +16,15 @@
 			"-I${workspaceFolder}/../harbour/include",
 			"-I${workspaceFolder}/common",
 			"-I/usr/local/ads/acesdk/"
+		],
+		"harbour.extraIncludePaths": [
+			"${workspaceFolder}/common"
+		],
+		"harbour.extraOptions": "-u+${workspaceFolder}/common/lan.ch"
+	},
+	"extensions": {
+		"recommendations": [
+			"aperricone.harbour"
 		]
 	}
 }
