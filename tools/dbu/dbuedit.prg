@@ -19,6 +19,10 @@ static proc FieldWBlock(cFieldName, nWa)
 Local k := (nWa)->(FieldPos(cFieldName)), l
 
 SWITCH Left((nWa)->(hb_FieldType(k)),1)
+CASE "P"
+   RETURN bColBlock := {||'  <Image> '}
+CASE "W"
+   RETURN bColBlock := {||'  <Blob>  '}
 CASE "M"
    RETURN bColBlock := {||'  <Memo>  '}
 CASE "Q"
