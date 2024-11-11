@@ -16,13 +16,13 @@
   #define A_ZEBRA
 #endif
 #define A_CDX VFPCDX
-#define A_ADS 1
+//#define A_ADS 1
 
 //#define UpP(x) uPp(x,A_UNICODE)
 
 //upper z UTF8EX już gotowe, podobnie z PL852M
 #define UpP(x) UPPER(x)
-#define PC852 'PL852M'
+#define PC852 'PLWIN'
 //#define A_HBGET
 //#include "md_add.ch"
 #define A_LPNUM 3

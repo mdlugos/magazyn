@@ -18,9 +18,10 @@
 			"-I/usr/local/ads/acesdk/"
 		],
 		"harbour.extraIncludePaths": [
-			"${workspaceFolder}/common"
+			"${workspaceFolder}/common",
+			"${workspaceFolder}/../harbour/contrib/rddads"
 		],
-		"harbour.extraOptions": "-u+${workspaceFolder}/common/lan.ch"
+		"harbour.extraOptions": "-u+${workspaceFolder}/mp/head/moj.ch"
 	},
 	"extensions": {
 		"recommendations": [

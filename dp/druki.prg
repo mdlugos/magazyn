@@ -1410,7 +1410,7 @@ go top
 #ifndef A_LAN
 #define filock() .t.
 #endif
-  v:=fieldpos('wartosc')<>0 .and. filock()
+  v:=fieldpos([wartosc])<>0 .and. filock()
 do while !eof()
   txt:=main->kod_osoby
   seek txt+DTOS(od)

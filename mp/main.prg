@@ -338,7 +338,7 @@ DO WHILE .T.
        mag_poz:=max(1,ascan(magazyny,mag_biez))
        operator:=MAGAZYNIER
 #ifndef hAslo_spec
-       is_spec:=fieldpos('haslo_spec')<>0 .and. !empty(haslo_spec)
+       is_spec:=fieldpos([haslo_spec])<>0 .and. !empty(haslo_spec)
 #endif
        mlog:=array(len(magazyny))
        afill(mlog,.f.)
@@ -654,13 +654,13 @@ XSELECT DIETY readonly; dbeval({||aadd(diety,dieta+" "+opis), dietyStr+=dieta})
 
 USE
 XSELECT posilki readonly; dbeval({||aadd(posilki,posilek+" "+opis), PosStr+=posilek})
-IF fieldpos("WAGA")<>0
+IF fieldpos([WAGA])<>0
 dbeval({||aadd(p_wagi,waga/100)})
 endif
 
 USE
 XSELECT grupy readonly; dbeval({||aadd(grupy,grupa+" "+opis), GrStr+=grupa})
-IF fieldpos('stawka')<>0
+IF fieldpos([stawka])<>0
 dbeval({||aadd(g_stawki,stawka)})
 endif
 endif
@@ -776,7 +776,7 @@ local i,j,txt
          dok_par[MAG_POZ,r,A_DF]:=paragon
 #endif
 #ifdef A_WALUTA
-         dok_par[MAG_POZ,r,A_WALUTA]:=if(fieldpos('waluta')<>0,waluta,.f.)
+         dok_par[MAG_POZ,r,A_WALUTA]:=if(fieldpos([waluta])<>0,waluta,.f.)
 #endif
 #else
          dok_par[mag_poz,r,7]:=trim(podpisy)

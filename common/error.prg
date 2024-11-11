@@ -1,9 +1,9 @@
-#undef PC852
-#define PC852 'PL852'
 
 #ifdef A_UNICODE
    #define D_CDP 'UTF8EX'
 #else
+   #undef PC852
+   #define PC852 'PL852'
    #define D_CDP PC852
 #endif
 
@@ -17,8 +17,12 @@ request A_EXT
 #include "error.ch"
 #include "inkey.ch"
 #include "hbgtinfo.ch"
-
-REQUEST HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_UTF8EX
+#ifdef A_ADS
+  #require "rddads"
+  #include "ads.ch"
+  REQUEST ADS
+#endif
+REQUEST HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_PLWIN, HB_CODEPAGE_UTF8EX
 
 init proc esys()
 
@@ -91,7 +95,6 @@ endif
 ErrorBlock( {|e| DefError(e)} )
 
 #ifdef A_ADS
-      REQUEST ADS
       RddRegister( "ADS", 1 )
       rddsetdefault("ADS")
       AdsSetCharType( ADS_ANSI, .F.)  //oemtranslation = false
@@ -105,7 +108,7 @@ ErrorBlock( {|e| DefError(e)} )
       SET AXS LOCKING ON
 #else
    #ifdef A_CDX
-      REQUEST FPTCDX
+      REQUEST A_CDX
       SET RDD DEFAULT TO A_CDX
    #else
       REQUEST DBFNTX
@@ -503,12 +506,12 @@ static s:=0,ee:=NIL
              skip
              loop
           endif
-          a:=trim(klucz)
+          a:=Expand(trim(klucz))
           c:=trim(for)
           d:=Expand(Lower(trim(nazwa)))
  #ifdef SIMPLE
           ?
-          ?? "Odtwarzanie skorowidza "+d+", baza: "+expand(b)+".DBF, klucz: "+expand(a)
+          ?? "Odtwarzanie skorowidza "+d+", baza: "+expand(b)+".DBF, klucz: "+a
           ?
           select (cMessage)
           if empty(c)
@@ -517,7 +520,7 @@ static s:=0,ee:=NIL
              ordCondSet( expand(c),{||&c},,,{||outerr("."),.t.},int(1+lastrec()/79),RECNO(),,,,indeks->descend)
           endif
  #else
-          f:=MESSAGE("Odtwarzanie skorowidza "+d+", baza: "+expand(b)+".DBF, klucz: "+expand(a)+";.")
+          f:=MESSAGE("Odtwarzanie skorowidza "+d+", baza: "+expand(b)+".DBF, klucz: "+a+";.")
           setpos(f[3]-1,f[2]+1)
           select (cMessage)
           if empty(c)
@@ -538,7 +541,7 @@ static s:=0,ee:=NIL
 
   #ifdef A_CDX
           //ordCreate(,d,strtran(expand(a),'UPP(','UPPER('),,indeks->unique)
-          ordCreate(,d,expand(a),,indeks->unique)
+          ordCreate(,d,a,,indeks->unique)
   #else
           if !empty(indeks->path)
              c:=trim(indeks->path)
@@ -559,12 +562,13 @@ static s:=0,ee:=NIL
              c:=left(c,rat(HB_ps(),c))
           endif
           //ordCreate(c+d,,strtran(expand(a),'UPP(','UPPER('),,indeks->unique)
-          ordCreate(c+d,,expand(a),,indeks->unique)
+          ordCreate(c+d,,a,,indeks->unique)
   #endif
           AdsClrCallBack()
  #else
-          ordCreate(,d,expand(a),{||&a},indeks->unique)
- #endif
+//          ordCreate(,d,a,{||&a},indeks->unique)
+          ordCreate(,d,a,,indeks->unique)
+#endif
  #ifndef SIMPLE
           MESSAGE(f)
  #endif

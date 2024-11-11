@@ -458,7 +458,7 @@ do while !eof()
 #endif
 
      //seek chg  //po co?
-     exec {|a|a:=ascan(d,dieta),f:=if(a=0,0,e[a]),g:=left(dieta,1),if(g<'0',if(a=0,,e[a]:=e[a]/ile_pos),aeval(d,{|x,i|if(x<'0'.and.dind(g,x),f+=ile_pos*e[i],)})),relewy->(field2bin('d_wartosc',f))} rest while dtos(data)+posilek=chg D_LAN
+     exec {|a|a:=ascan(d,dieta),f:=if(a=0,0,e[a]),g:=left(dieta,1),if(g<'0',if(a=0,,e[a]:=e[a]/ile_pos),aeval(d,{|x,i|if(x<'0'.and.dind(g,x),f+=ile_pos*e[i],)})),relewy->(field2bin([d_wartosc],f))} rest while dtos(data)+posilek=chg D_LAN
 enddo
 #else
 #ifdef A_CENNIK
@@ -480,7 +480,7 @@ select relewy
 #endif
 *
 seek dtos(mies_rob)
-EXECUTE {|c|c:=cennik[ascan(posilki,posilek)],D_LAN,relewy->(field2bin('d_wartosc',ile_pos*c)) ,setpos(23,0),qqout(DATA,posilek,dieta,STRPIC(ile_pos*c,12,A_ZAOKR,"@E "),ILE_POS,STRPIC(c,7,A_ZAOKR,"@E ",.t.))} REST
+EXECUTE {|c|c:=cennik[ascan(posilki,posilek)],D_LAN,relewy->(field2bin([d_wartosc],ile_pos*c)) ,setpos(23,0),qqout(DATA,posilek,dieta,STRPIC(ile_pos*c,12,A_ZAOKR,"@E "),ILE_POS,STRPIC(c,7,A_ZAOKR,"@E ",.t.))} REST
 #else
 
 LOCAL txt,carry,carry_key,carry_di,carry_1,carry_di_1,i,di,ko,da,w,bir,bit,x,tot_rec,tot_w

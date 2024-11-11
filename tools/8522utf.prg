@@ -3,55 +3,54 @@
 #include "simpleio.ch"
 #include "set.ch"
 #include "dbinfo.ch"
-PROCEDURE oem2utf(DB)
-/* bo załadowane 
-REQUEST HB_LANG_PL
-HB_LANGSELECT('PL')
-request HB_CODEPAGE_PL852
-request HB_CODEPAGE_UTF8EX
-HB_CDPSELECT('UTF8EX')
-SET(_SET_DBCODEPAGE,'PL852')
+REQUEST VFPCDX, HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_PLWIN, HB_CODEPAGE_UTF8EX
 
-request DBFCDX
-*/
-//SET(_SET_CODEPAGE,'PL852M')
+PROCEDURE oem2utf(DB)
+
+HB_CDPSELECT('UTF8EX')
+SET(_SET_DBCODEPAGE,'PLWIN')
+HB_LANGSELECT('pl')
+SET DELETED ON
 
 IF empty(db)
    db:=''
 ENDIF
-SET DELETED ON
-SET DEFAULT TO (LEFT(DB,RAT(hb_ps(),DB)))
-db:=SubStr(db,RAT(hb_ps(),DB)+1)
-AEVAL(DIRECTORY(SET(_SET_DEFAULT)+DB+"*.dbf"),{|X|CHGDAT(X[1])})
+
+i:=RAT(hb_ps(),db)
+
+SET DEFAULT TO (LEFT(DB,i))
+db:=SubStr(db,i+1)
+
+erase (set(_SET_DEFAULT)+"tmp.dbf")
+erase (set(_SET_DEFAULT)+"tmp.dbt")
+erase (set(_SET_DEFAULT)+"tmp.fpt")
+
+if file(set(_SET_DEFAULT)+db)
+   CHGDAT(db)
+else
+   AEVAL(DIRECTORY(SET(_SET_DEFAULT)+DB+"*.dbf"),{|X|CHGDAT(X[1])})
+endif
 ?
 ********************
 PROCEDURE CHGDAT(DB)
 
 LOCAL i:=0,st,f
 
-erase (set(_SET_DEFAULT)+db+".cdx")
-i:=fopen(set(_SET_DEFAULT)+db,64)
-st:=space(1)
-fread(i,@st,1)
-fclose(i)
 db:=left(db,rat('.',db)-1)
-USE (DB)
+erase (set(_SET_DEFAULT)+db+".cdx")
+USE (DB) READONLY EXCLUSIVE CODEPAGE 'PL852'
 st:=dbstruct()
 ? DB+":"
 i:=0
-f:=.f.
-do while (i:=ascan(st,{|x|x[2]$"WMC"},++i))>0
+do while (i:=ascan(st,{|x|x[2]$"MCQ"},++i))>0
    if st[i,3]>36 //nr ksef
       ?? "",st[i,1],st[i,2]
-      st[i,2]:='C:U'
-      f:=.t.
-   elseif left(st[i,2],1)$'MW'
+      st[i,2]:=left(st[i,2],1)+':U'
+   elseif left(st[i,2],1)='M'
       ?? "",st[i,1],st[i,2]
-      st[i,2]:='M:B'
-      f:=.t.
+      st[i,2]:='W'
    endif
 enddo
-if f
    dbcreate("tmp",st) //,'VFPCDX')
    use tmp NEW
    select 1
@@ -63,6 +62,5 @@ if f
    rename (set(_SET_DEFAULT)+"tmp.dbf") to (set(_SET_DEFAULT)+db+".dbf")
    rename (set(_SET_DEFAULT)+"tmp.dbt") to (set(_SET_DEFAULT)+db+".dbt")
    rename (set(_SET_DEFAULT)+"tmp.fpt") to (set(_SET_DEFAULT)+db+".fpt")
-endif
 return
 *********************

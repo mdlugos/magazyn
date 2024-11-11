@@ -1,5 +1,8 @@
 #ifdef A_UNICODE
 #define hb_UTF8ToStr(x) x
+#else
+#define binfieldget(x) hb_FieldGet(x)
+#define binfieldput(x,y) hb_FieldPut(x,y)
 #endif
 
 #define hb_UTF8ToStrBox(x) x

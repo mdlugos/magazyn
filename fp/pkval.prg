@@ -28,7 +28,7 @@ local stat,i,f,g,h,a
     aeval(a,{|x,i|a[i]:=Fieldget(i)})
     pop_stat(stat)
     g:=gl[i:=findget(gl,'l_k')]
-    f:=FieldPos("IDENT")
+    f:=FieldPos([IDENT])
     if empty(g:varget()) .and. !empty(a[f]) .and. GetPreValidate(g, gl, i)
           if g:hasfocus
              g:killfocus()
@@ -42,7 +42,7 @@ local stat,i,f,g,h,a
     endif
     if "K"$ad[AD_FLAGS]
     g:=gl[i:=findget(gl,'kh')]
-    f:=FieldPos("KONTRAHENT")
+    f:=FieldPos([KONTRAHENT])
     if val(g:varget())=0 .and. val(a[f])<>0 .and. GetPreValidate(g, gl, i)
         sel("firmy","firm_num")
         dbseek(a[f],.f.)
@@ -303,7 +303,7 @@ local  c,key,chg:=.f.,k:=ar[AR_SMB]+l_p,kol,f9rec,f9arr,i
                     case fieldname(i) = 'LP'
                     case fieldname(i) = 'REJESTR'
                     case fieldname(i) = 'POZYCJA'
-                    case fieldname(i) = 'LINK' .and. f9arr[FieldPos('POZYCJA')]<>pozycja
+                    case fieldname(i) = 'LINK' .and. f9arr[FieldPos([POZYCJA])]<>pozycja
                     otherwise
                          Fieldput(i,f9arr[i])
                     endcase

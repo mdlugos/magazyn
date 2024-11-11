@@ -128,7 +128,7 @@ field  data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,numer_kol,;
   memvar wtot
 #endif
 #ifdef A_DF
-#command REPLACE [DM->]WARTOSC WITH <x> => field2bin('d_wartosc',DM->wartosc:=<x>,1)
+#command REPLACE [DM->]WARTOSC WITH <x> => field2bin([d_wartosc],DM->wartosc:=<x>,1)
 #define wartosC (bin2d(binfieldget('d_wartosc')))
 #endif
 
@@ -632,7 +632,7 @@ procedure dok1(_f)
       data_dost:=dd
 #ifdef A_KSEF
       nr_ksef:=n_ksef
-      ufieldput('KSEF',xml_ksef)
+      binfieldput('KSEF',xml_ksef)
 #endif
       wtoT:=0
 #ifdef A_SUBDOK
@@ -686,7 +686,7 @@ procedure dok1(_f)
       n_f:=nr_faktury
 #ifdef A_KSEF
       n_ksef:=nr_ksef
-      xml_ksef:=ufieldget('KSEF')
+      xml_ksef:=binfieldget('KSEF',.t.)
 #endif
 #ifdef A_DATAVAT
       dv:=data_vat
@@ -1065,7 +1065,7 @@ procedure dok11(_f)
 #endif
 #ifdef A_KSEF
     @ _frow-1,11 SAY nr_ksef
-    @ _frow-1,50 SAY ufieldget('KSEF') picture "@S28"
+    @ _frow-1,50 BOX hb_utf8Left(binfieldget('KSEF',.t.),28) UNICODE
 #endif
     @ _frow,2 say pad(uwagi,76)
     return
@@ -1104,7 +1104,7 @@ procedure dok11(_f)
 #endif
 #ifdef A_KSEF
     @ _frow-2,11 SAY nr_ksef
-    @ _frow-2,50 SAY ufieldget('KSEF') picture "@S28"
+    @ _frow-2,50 BOX hb_utf8Left(binfieldget('KSEF',.t.),28) UNICODE
 #endif
     @  _frow,73 say nk  PICTURE "XXXXX"
 
@@ -1501,7 +1501,7 @@ memvar exp_od,exp_do
     nr_faktury := n_f
 #ifdef A_KSEF
     nr_ksef := n_ksef
-    BINFIELDPUT('KSEF',xml_ksef)
+    binfieldput('KSEF',xml_ksef)
 #endif
 #ifdef A_OLZA
     konto_kosz:=kk
@@ -4219,12 +4219,10 @@ for i:=1 to l
     v:=NIL
     vat(x,@v,@n)
     if val(x)#0
-       y:=dm->(fieldpos(D_NVAT+ltrim(x)))
-       dm->(field2biN(y,v))
+       dm->(field2biN(D_NVAT+ltrim(x),v))
 #ifdef A_A
  #ifdef A_NVAT
-       y:=dm->(fieldpos('wart_vat'+ltrim(x)))
-       dm->(fieldput(y,round(v,0)/100))
+       dm->(hb_FieldPut('wart_vat'+ltrim(x),round(v,0)/100))
  #endif
     endif
  #undef D_CENVAT
@@ -4239,12 +4237,10 @@ for i:=1 to l
  #endif
  #ifdef D_CENVAT
     if D_CENVAT
-       y:=dm->(fieldpos('wart_net'+ltrim(x)))
-       dm->(fieldput(y,(round(n+v,0)-round(v,0))/100))
+       dm->(hb_FieldPut('wart_net'+ltrim(x),(round(n+v,0)-round(v,0))/100))
     else
  #endif
-       y:=dm->(fieldpos('wart_net'+ltrim(x)))
-       dm->(fieldput(y,n/100))
+       dm->(hb_FieldPut('wart_net'+ltrim(x),n/100))
  #ifdef D_CENVAT
     endif
  #endif
@@ -4276,8 +4272,7 @@ for i:=1 to l
     x:=stawki[i]
     v:=0
 #ifdef A_A
-    y:=dm->(fieldpos('wart_net'+ltrim(x)))
-    n:=dm->(fieldget(y))
+    n:=dm->(hb_FieldGet('wart_net'+ltrim(x)))
     if !empty(n)
        n*=100
     endif

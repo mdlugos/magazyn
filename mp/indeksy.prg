@@ -1004,7 +1004,7 @@ DO CASE
          select indx_mat
          LOCK recno()
          zaznacz:=at(chr(_skey),"[\];',./")-1
-         if zaznacz<>0 .and. fieldpos('data_zazn')<>0
+         if zaznacz<>0 .and. fieldpos([data_zazn])<>0
             FIELD->data_zazn:=DatE()
          endif
          unlock recno()
@@ -1316,7 +1316,7 @@ endif
         go _srec[_sm]
         c:=.f.
         for d:=1 to 4
-          c:=c.or.!empty(a[d]) .and. b[d]#indx_mat->(fieldget(fieldpos(a[d])))
+          c:=c.or.!empty(a[d]) .and. b[d]#indx_mat->(hb_FieldGet(a[d]))
         next
         if c
            txt:=select()
@@ -1333,8 +1333,8 @@ endif
               field->data_popr:=DatY->d_z_mies1+1
            ENDIF
            for d:=1 to 4
-            if !empty(a[d]) .and. b[d]#fieldget(fieldpos(a[d]))
-               fieldput(fieldpos(a[d]),b[d])
+            if !empty(a[d]) .and. b[d]#hb_FieldGet(a[d])
+               hb_FieldPut(a[d],b[d])
             endif
            next d
            UNLOCK IN INDX_MAT

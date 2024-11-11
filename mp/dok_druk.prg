@@ -49,7 +49,7 @@ request asort
 #else
 #define D_NVAT "WART_VAT"
 //#define d2biN(x) ((x)/100)
-#define field2biN(x,y) fieldput(x,(y)/100)
+#define field2biN(x,y) hb_FieldPut(x,(y)/100)
 #define bin2D(x) (100*(x))
 #endif
 
@@ -924,7 +924,7 @@ private gt
                loop
              endif
              x:=ascan(was,{|x|x[1]==z})
-             o:=fieldget(fieldpos('wart_net'+ltrim(z)))
+             o:=hb_FieldGet('wart_net'+ltrim(z))
              if o=NIL
                 o:=0
              endif
@@ -971,7 +971,7 @@ private gt
                #endif
                  endif
                endif
-               fieldput(fieldpos('wart_net'+ltrim(stawki[n])),if(x=0,0,z/100))
+               hb_FieldPut('wart_net'+ltrim(stawki[n]),if(x=0,0,z/100))
 
              next n
 #endif
@@ -983,7 +983,7 @@ private gt
                    if x#0
                       x:=was[x,3]
                    endif
-                   field2biN(fieldpos(D_NVAT+ltrim(z)),x)
+                   field2biN(D_NVAT+ltrim(z),x)
                 endif
              next n
          else
@@ -1006,7 +1006,7 @@ private gt
       if i=dok_kop .and.changed
          WARTOSC:=wt
          #ifdef A_DF
-          field2bin('d_wartosc',w)
+          field2bin([d_wartosc],w)
          #endif
          //changed:=.t.
          alarm(hb_UTF8ToStr("WARTOŚĆ SUMY POZYCJI NIEZGODNA Z INFORMACJĄ W NAGŁÓWKU;DOKONANO KOREKTY"),,,3)
@@ -2860,7 +2860,7 @@ oprn:=D_HWPRN
                    if x#0
                       x:=was[x,3]
                    endif
-                   field2biN(fieldpos(D_NVAT+ltrim(stawki[k])),x)
+                   field2biN(D_NVAT+ltrim(stawki[k]),x)
                 endif
              next k
          else
@@ -2883,7 +2883,7 @@ oprn:=D_HWPRN
       if fakkorflag=NIL .and. i=dok_kop .and.changed
          WARTOSC:=wt
          #ifdef A_DF
-         field2bin('d_wartosc',w)
+         field2bin([d_wartosc],w)
          #endif
          //changed:=.t.
          alarm(hb_UTF8ToStr("WARTOŚĆ SUMY POZYCJI NIEZGODNA Z INFORMACJĄ W NAGŁÓWKU;DOKONANO KOREKTY"),,,3)
@@ -3403,7 +3403,7 @@ wp17:=0
                    if x#0
                       x:=was[x,3]
                    endif
-                   field2biN(fieldpos(D_NVAT+ltrim(stawki[k])),x)
+                   field2biN(D_NVAT+ltrim(stawki[k]),x)
                 endif
              next k
          else
@@ -3426,7 +3426,7 @@ wp17:=0
       if fakkorflag=NIL .and. i=dok_kop .and.changed
          WARTOSC:=wt
          #ifdef A_DF
-           field2bin('d_wartosc',w)
+           field2bin([d_wartosc],w)
          #endif
          //changed:=.t.
          alarm(hb_UTF8ToStr("WARTOŚĆ SUMY POZYCJI NIEZGODNA Z INFORMACJĄ W NAGŁÓWKU;DOKONANO KOREKTY"),,,3)

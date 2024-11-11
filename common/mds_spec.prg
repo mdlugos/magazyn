@@ -258,11 +258,13 @@ local i,j,pole,fi,txt,ars:=dbstruct()
    case left(ars[i,2],1)$"NB"
     txt:= pole+"="+lTrim(sTr(fi))
    case left(ars[i,2],1)=="C" .and. ars[i,3]=8 .and. ars[i,1]="D_"
-    txt:= "BIN2D(BINFIELDGET(["+trim(ars[i,1])+"]))"
+#ifndef binfieldget
+    pole:= "binfieldget(["+trim(ars[i,1])+"])"
     IF sel!=select()
-       txt:=CHR(64+SELECT())+'->('+txt+')'
+      pole:=CHR(64+SELECT())+'->('+pole+')'
     ENDIF
-    txt += "="+lTrim(sTr(bin2d(BINFIELDGET(i))))
+#endif    
+    txt:= "BIN2D("+pole+")="+lTrim(sTr(bin2d(binfieldget(i))))
    case left(ars[i,2],1)$"CQMW"
     txt:= pole+'="'+left(fi,10)+'"'
    case ars[i,2]=="L"
@@ -301,13 +303,13 @@ local i,j,pole,fi,txt,ars:=dbstruct()
     txt:= "PAD("+pole+",20)"
    case Left(ars[i,2],1)$"CQ"
     if  ars[i,3]=8 .and. ars[i,1]="D_"
-      txt:= "BINFIELDGET(["+trim(ars[i,1])+"])"
+  #ifndef binfieldget
+      pole:="binfieldget(["+trim(ars[i,1])+"])"
       IF sel!=select()
-         txt:=CHR(64+SELECT())+'->('+txt+')'
+        pole:=CHR(64+SELECT())+'->('+pole+')'
       ENDIF
-      txt:= "TRAN(BIN2D("+txt+"),)"
-    else
-      txt:= pole
+  #endif
+      txt:= "TRAN(BIN2D("+pole+"),)"
     endif
    otherwise
     txt:= "TRAN("+pole+",)"

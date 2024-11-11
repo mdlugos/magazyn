@@ -61,7 +61,7 @@
 #define ILDEC 3
 #endif
 #ifdef A_DF
-#command REPLACE [DM->]WARTOSC WITH <x> => field2bin('d_wartosc',DM->wartosc:=<x>,1)
+#command REPLACE [DM->]WARTOSC WITH <x> => field2bin([d_wartosc],DM->wartosc:=<x>,1)
 #define wartosC (bin2d(binfieldget([D_WARTOSC])))
 #endif
 
@@ -572,7 +572,7 @@ local a,b,rcrd,s,w,c,d,e,f,x,y,z,v,u,odc
 #endif
   a:=STANY->STAN
   b:=STANY->WARTOSC
-  f:=STANY->(fieldpos('stanx'))<>0
+  f:=STANY->(fieldpos([stanx]))<>0
 if f .and. STANY->validx
   c:=STANY->STANX
   d:=STANY->WARTOSCX
@@ -3216,7 +3216,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
       nzw:=nazwisko
 #endif
 #ifdef A_TPD
-      tp:=if(fieldpos('tp_dni')<>0,tp_dni,0)
+      tp:=if(fieldpos([tp_dni])<>0,tp_dni,0)
 #endif
 #ifdef A_KHKONTO
       k:=konto
@@ -3352,7 +3352,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
          nazwisko:=nzw
 #endif
 #ifdef A_TPD
-         if(fieldpos('tp_dni')<>0,tp_dni:=tp,)
+         if(fieldpos([tp_dni])<>0,tp_dni:=tp,)
 #endif
 #ifdef A_KHKONTO
          konto:=k

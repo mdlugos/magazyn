@@ -16,7 +16,7 @@
   #define D_ILPIC "@KZ #####"
 #endif
 
-#command REPLACE wartosc WITH <x> => field2bin('d_wartosc',<x>)
+#command REPLACE wartosc WITH <x> => field2bin([d_wartosc],<x>)
 #define WARTOSC bin2d(field->d_wartosc)
 
 field data,posilek,nazwa,d_wartosc,ile_pos,skladnik,ilosc,danie,dieta,pozycja,jedn,gramatura,kod
@@ -104,7 +104,7 @@ else
 #else
      #define D_LAN
 #endif
-     exec {|a|a:=ascan(d,dieta),f:=if(a=0,0,e[a]),g:=left(dieta,1),if(g<'0',if(a=0,,e[a]:=e[a]/ile_pos),aeval(d,{|x,i|if(x<'0'.and.dind(g,x),f+=ile_pos*e[i],)})),relewy->(field2bin('d_wartosc',f))} rest while dtos(data)+posilek=chg D_LAN
+     exec {|a|a:=ascan(d,dieta),f:=if(a=0,0,e[a]),g:=left(dieta,1),if(g<'0',if(a=0,,e[a]:=e[a]/ile_pos),aeval(d,{|x,i|if(x<'0'.and.dind(g,x),f+=ile_pos*e[i],)})),relewy->(field2bin([d_wartosc],f))} rest while dtos(data)+posilek=chg D_LAN
      goto r
   endif
 #endif

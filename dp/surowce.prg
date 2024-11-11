@@ -139,7 +139,7 @@ stat proc sdok2(_f,getlist,deep)
   now:=if(nowy,"NOWY   ","POPRAWA")
 #ifdef A_KODY
   kw:=kod
-  if fieldpos('OPIS')<>0
+  if fieldpos([OPIS])<>0
      op:=opis
   endif
 #endif
@@ -322,7 +322,7 @@ stat proc sdok3(_f)
     gram:=gra
 #ifdef A_KODY
     kod:=kw
-    if fieldpos('opis')>0
+    if fieldpos([opis])>0
        opis:=op
     endif
 #endif
@@ -414,7 +414,7 @@ stat proc f9(g,_f,getlist)
             poprec:=startrec
 #ifdef A_KODY
             varput(getlist,'kw',surowce->kod)
-            if surowce->(fieldpos('opis')>0)
+            if surowce->(fieldpos([opis])>0)
                varput(getlist,'op',surowce->opis)
             endif
 #endif

@@ -722,7 +722,7 @@ DEFAULT _dhead2 TO {||NIL}
 #ifdef A_WA
      DEFAULT bw TO {||pm*wartosc}
 #ifdef A_CK
-     if fieldpos('cena_k')=0
+     if fieldpos([cena_k])=0
        DEFAULT bc TO {||wartosc/ilosc}
      else
        DEFAULT bc TO {||cena_k}
@@ -740,7 +740,7 @@ DEFAULT _dhead2 TO {||NIL}
 #ifdef A_WA
   #define D_WARTOSC pm*wartosc
 #ifdef A_CK
-  #define D_CENA    if(fieldpos('cena_k')=0,wartosc/ilosc,cena_k)
+  #define D_CENA    if(fieldpos([cena_k])=0,wartosc/ilosc,cena_k)
 #else
   #define D_CENA    wartosc/ilosc
 #endif
@@ -1731,7 +1731,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
 #endif
 #endif
          lock
-         aeval(was,{|x|if(val(x[1])#0,field2biN(fieldpos(D_NVAT+ltrim(x[1])),x[3]),)})
+         aeval(was,{|x|if(val(x[1])#0,field2biN(D_NVAT+ltrim(x[1]),x[3]),)})
          unlock
 //#endif
 #endif
@@ -2168,7 +2168,7 @@ ELSE
 #endif
 #endif
          lock
-         aeval(was,{|x|if(val(x[1])#0,field2biN(fieldpos(D_NVAT+ltrim(x[1])),x[3]),)})
+         aeval(was,{|x|if(val(x[1])#0,field2biN(D_NVAT+ltrim(x[1]),x[3]),)})
          unlock
 //#endif
 #endif
@@ -3946,7 +3946,7 @@ DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
       W+=ws:=WARTOSC
       x:=ws/is
 #ifdef A_CK
-      IF fieldpos('cena_k')<>0
+      IF fieldpos([cena_k])<>0
          x:=cena_k
       ENDIF
 #endif

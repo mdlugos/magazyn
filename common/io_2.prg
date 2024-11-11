@@ -1658,7 +1658,7 @@ proc field2bin(f,d,a)
    elseif valtype(a)='C'
       a:=select(a)
    endif
-   if valtype((a)->(hb_fieldget(f)))='C'
+   if (a)->(hb_FieldType(f))='C'
       d:=d2bin(d)
    endif
    (a)->(binfieldput(f,d))
@@ -2112,30 +2112,41 @@ func evaldb(...)
    endif
 return r
 *****************
-func ufieldget(f,lval)
-   local n := fieldpos(f), x := fieldget(n)
-   if valtype(x)='C' //.and. hb_cdpIsUTF8()
-      if x=hb_utf8Chr(0xFEFF)
-         x:=hb_bsubstr(x,4)
+// w polach binarnych zapisuje/czyta w utf8
+func uFieldGet(f,lval)
+   local x := hb_FieldGet(f), t
+   if valtype(x)='C'
+      t:=hb_FieldType(f)
+      if (left(t,1) $ 'PWG' .or. SubStr(t,2) = ':B')
+         if x=hb_utf8Chr(0xFEFF)
+            x:=hb_bsubstr(x,4)
+         endif
+         if empty(lval)
+            x += space(hb_FieldLen(f) - hb_utf8Len(x))
+         endif
       endif
-      if empty(lval)
-         x += space(FieldLen(n) - hb_UTF8Len(x))
-      endif
+#ifndef A_UNICODE
+      x:=hb_UTF8ToStr(x)
+#endif      
    endif
 return x
 *****************
-func ufieldput(f,x)
-   local n := fieldpos(f), t := hb_FieldType(n)
+func uFieldPut(f,x)
+   local t:=hb_FieldType(f)
    if valtype(x)='C' .and. (left(t,1) $ 'PWG' .or. SubStr(t,2) = ':B')
       x:=trim(x)
+#ifndef A_UNICODE
+      x:=HB_TRANSLATE(x,,hb_gtInfo( HB_GTI_BOXCP ))
+#endif      
       if hb_utf8Chr(0xFEFF)<>hb_BLeft(x,3) .and. hb_UTF8Len(x)<>hb_blen(x)
          x:=hb_utf8Chr(0xFEFF)+x
       endif
    endif
-return fieldput(n,x)
+return hb_FieldPut(f,x)
 *****************
-func binfieldput(f,x,lval)
+func binFieldPut(f,x,lval)
    local t,b
+#ifdef A_UNICODE
    if valtype(x)='C'
       t:=hb_FieldType(f)
       x:=trim(x)
@@ -2144,13 +2155,15 @@ func binfieldput(f,x,lval)
          // przy tłumaczeniu z powrotem się skróci, ale i tak będzie przyciasno
       endif
    endif
+#endif      
    if empty(lval)
-   return HB_FieldPut(f,x)
+   return hb_FieldPut(f,x)
    endif
 return x 
 *******************************
-func binfieldget(f,lval) // .t. - do not padr with spaces
-   local x := hb_fieldget(f),t
+func binFieldGet(f,lval) // .t. - do not padr with spaces
+   local x := hb_FieldGet(f),t
+#ifdef A_UNICODE
    if valtype(x)='C'
       t:=hb_FieldType(f)
       if !(left(t,1) $ 'PWG' .or. SubStr(t,3,1) $ 'UB')
@@ -2158,9 +2171,10 @@ func binfieldget(f,lval) // .t. - do not padr with spaces
       endif
       if empty(lval)
          // to działa zależy jaka aktualna strona kodowa
-         x += space(hb_FieldLen(f) - hb_ULen(x))
+         x += space(hb_FieldLen(f) - hb_UTF8Len(x))
       endif
    endif
+#endif      
 return x
 *****************
 #pragma BEGINDUMP
