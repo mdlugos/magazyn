@@ -8,8 +8,11 @@ REQUEST VFPCDX, HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_PLWIN, HB_CODEPAGE_UT
 PROCEDURE oem2utf(DB)
 
 HB_CDPSELECT('UTF8EX')
-SET(_SET_DBCODEPAGE,'PLWIN')
 HB_LANGSELECT('pl')
+SET(_SET_DBCODEPAGE,'PLWIN')
+
+rddSetDefault('VFPCDX')
+
 SET DELETED ON
 
 IF empty(db)
@@ -38,11 +41,12 @@ LOCAL i:=0,st,f
 
 db:=left(db,rat('.',db)-1)
 erase (set(_SET_DEFAULT)+db+".cdx")
+select A
 USE (DB) READONLY EXCLUSIVE CODEPAGE 'PL852'
 st:=dbstruct()
 ? DB+":"
 i:=0
-do while (i:=ascan(st,{|x|x[2]$"MCQ"},++i))>0
+do while (i:=ascan(st,{|x|left(x[2],1)$"MCQ"},++i))>0
    if st[i,3]>36 //nr ksef
       ?? "",st[i,1],st[i,2]
       st[i,2]:=left(st[i,2],1)+':U'
@@ -51,10 +55,9 @@ do while (i:=ascan(st,{|x|x[2]$"MCQ"},++i))>0
       st[i,2]:='W'
    endif
 enddo
-   dbcreate("tmp",st) //,'VFPCDX')
-   use tmp NEW
-   select 1
-   dbeval({||tmp->(dbappend(),aeval(st,{|x,i,y|fieldput(i,A->(fieldget(i)))}))})
+   dbcreate("tmp",st,'VFPCDX',.t.,"TMP",,'PLWIN')
+   select A
+   dbeval({||TMP->(dbappend(),aeval(st,{|x,i,y|fieldput(i,A->(fieldget(i)))}))})
    close databases
    erase (set(_SET_DEFAULT)+db+".dbf")
    erase (set(_SET_DEFAULT)+db+".dbt")
