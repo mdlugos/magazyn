@@ -1,3 +1,5 @@
+#define PC852 'PL852'
+
 #ifndef __PLATFORM__DOS
   #define A_KSEF
   #define A_UNICODE 'UTF8EX'
@@ -15,14 +17,13 @@
   #define A_WIN_PRN eval(memvar->do_getoprn)
   #define A_ZEBRA
 #endif
-#define A_CDX VFPCDX
+//#define A_CDX VFPCDX
 //#define A_ADS 1
 
 //#define UpP(x) uPp(x,A_UNICODE)
 
 //upper z UTF8EX już gotowe, podobnie z PL852M
 #define UpP(x) UPPER(x)
-#define PC852 'PLWIN'
 //#define A_HBGET
 //#include "md_add.ch"
 #define A_LPNUM 3
@@ -50,9 +51,10 @@
 #define A_SHORTIND
 #define STANY     indx_mat
 #ifdef A_UNICODE
-#define A_SUMK    -28441314785
+  #define A_SUMK    -28441314785
 #else
-#define A_SUMK    -32508120377
+  #define A_SUMK    -32508120377
+  // PLWIN #define A_SUMK    -35309936228
 #endif
 #define A_KOMU_N  "Firma Usług Informatycznych Marek Długosz"
 #define A_KOMU_A  "Cieszyn, ul. Równa 16"

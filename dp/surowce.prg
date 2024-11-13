@@ -629,7 +629,7 @@ local stat
 do case
   CASE _SKEY=0 .and. alias()="SUROWCE"
     set order to tag sur_naz
-    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     if ! ( (EvaldB(_swar,_spocz).or.dbseek(_spocz)).and._skip(0,,_s) )
       _spocz=LEFT(_spocz,len(_spocz)-_slth)
       _slth=0
@@ -769,7 +769,7 @@ do case
    CASE _skey=2 .AND. _sbeg=1 // ^>
     SET ORDER TO tag sur_naz
     _sbeg:=hb_fieldlen('kod')+2
-    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     _spform:={|p|tranr(p,"X/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")}
     _spform:={|p,l|RIGHT(p,l)}
     _spocz:=''
@@ -782,7 +782,7 @@ do case
     _spform:={|p|tranr(p,repl("X",hb_fieldlen('kod'))+"|"+repl("X",hb_fieldlen('nazwa')))}
     _slth:=0
     _sbeg:=1
-    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     refresh(1,_s)
 #endif
 endcase

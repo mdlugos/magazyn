@@ -28,6 +28,7 @@ func dziennik(x,_s)
    DEFAULT _sbeg  TO 1
    DEFAULT _slth  TO 0
    DEFAULT _sinfo TO {|k,s|maininfo(k,s)}
+   DEFAULT _spocz TO ""
    if x=3
       DEFAULT _skproc TO array(32)
       DEFAULT _skproc[K_ENTER] TO {|_skey,_s|_Sinfo(_skey,_s)}
@@ -119,7 +120,7 @@ if key=0
       //_spocz+=left(dtov(IF(_si=0,DatY->d_z_gran+1,data)),_slth)
       kibord(chr(30))
    endif
-   _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+   //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
 
 
 elseif key=K_ESC

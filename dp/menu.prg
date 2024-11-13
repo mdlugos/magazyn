@@ -639,7 +639,7 @@ DO CASE
        _spform:={|p,l|tranr(eval(_ss2p,p,l),"X/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")}
     endif
     if _slth>0
-    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     if ! ( (EvaldB(_swar,_spocz).or.dbseek(_spocz)).and._skip(0,,_s) )
       _spocz=LEFT(_spocz,len(_spocz)-_slth)
       _slth=0
@@ -677,7 +677,7 @@ DO CASE
     go _srec[_sm]
     SET ORDER TO tag dan_uni
     _sbeg:=3
-    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     _spocz:=SubStr(_spocz,2)
     _slth:=len(_spocz)
     _spform:={|p|p}
@@ -695,7 +695,7 @@ DO CASE
     _slth+=1
     _sbeg:=1
     _spocz:=dseek(,'nazwa',_spocz)
-    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     _spform:={|p|tranr(p,"X/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")}
     if [at(] $ lower(INDEXKEY(0))
        _sp2s:={|x|dseek(,'posilek,nazwa',left(x,1),SubStr(x,2))}

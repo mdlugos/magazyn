@@ -593,8 +593,8 @@ select relewy
 #endif
 
 seek dtos(od)
-w:=IndexkeY()
-bir:={||&w}
+//w:=IndexkeY()
+//bir:={||&w}
 w:=strtran(strtran(UpP(w),'POSILEK','SubStr(NR_ZLEC,2,1)'),'DIETA','SubStr(NR_ZLEC,3)')
 bit:={||&w}
 
@@ -608,8 +608,9 @@ DO WHILE relewy->( data<=do .and. !eof() ) .or. data<=do .and. !eof()
   da:=data
   ko:=SubStr(nr_zlec,2,1)
   di:=trim(SubStr(nr_zlec,3))
-  IF !eof() .and. ( RELEWY->(eval(bir))>eval(bit) .or. relewy->(eof()) )
-    if ascan(posilki,ko)=0 .or. !dival(,di)
+  //IF !eof() .and. ( RELEWY->(eval(bir))>eval(bit) .or. relewy->(eof()) )
+  IF !eof() .and. ( RELEWY->(ordKeyVal())>eval(bit) .or. relewy->(eof()) )
+  if ascan(posilki,ko)=0 .or. !dival(,di)
       print(1)
       ?? DATA,NR_ZLEC
       ?? hb_UTF8ToStr(" NIEPRAWIDŁOWY KOD ROZCHODU, PROSZĘ POPRAWIĆ W MAGAZYNIE !!!")+chr(7)+chr(7)+chr(7)+chr(7)

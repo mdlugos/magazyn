@@ -321,7 +321,7 @@ do case
        _sbeg:=1
     endif
     _slth:=0
-    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     refresh(1,_s)
 #endif
 
@@ -1139,7 +1139,7 @@ DO CASE
       _spocz:=UpP(TRIM(_spocz))
       _slth:=LEN(_spocz)
       _spform:={|p|p}
-      _swar:=EvAlDb('{|p|'+ IndexkeY(0)+'=p'+'}')
+      //_swar:=EvAlDb('{|p|'+ IndexkeY(0)+'=p'+'}')
       //_sfor:={||EMPTY(data_zamkn).or.data_zamkn>=dm->data}
       _sfor:={||empty(nr_mag).or.nr_mag=mag_biez}
       if (EvaldB(_swar,_spocz).or.dbseek(_spocz)).and._skip(0,,_s) .and. _spocz=UpP(trim(KONTO))
@@ -1152,7 +1152,7 @@ DO CASE
          _slth:=LEN(_spocz)
          _sbeg:=8
          _spform:={|p|p}
-         _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+         //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
          seek _spocz
       endif
       set cursor on
@@ -1181,7 +1181,7 @@ DO CASE
     if readkey()#27 .and. updated()
       _sbeg=1
       SET ORDER TO "KONT_NUM"
-      _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+      //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
       _spocz:=""
       _slth:=0
       if empty(k)
@@ -1201,7 +1201,7 @@ DO CASE
    CASE _skey=2  // ^>
       _sbeg=8
       SET ORDER TO "KONT_NAZ"
-      _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+      //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
       _spocz:=""
       _slth:=0
       refresh(1,_s)
@@ -1209,7 +1209,7 @@ DO CASE
    CASE _skey=26  // ^<
       _sbeg=1
       SET ORDER TO "KONT_NUM"
-      _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+      //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
       _spocz:=""
       _slth:=0
       refresh(1,_s)
@@ -2867,7 +2867,7 @@ DO CASE
         SET ORDER TO "FIRM_NUM"
 #endif
       endif
-      _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+      //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
       _spocz:=""
       _slth:=0
       refresh(1,_s)
@@ -2898,7 +2898,7 @@ DO CASE
         SET ORDER TO "FIRM_NAZ"
 #endif
       endif
-      _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+      //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
       _spocz:=""
       _slth:=0
       refresh(1,_s)

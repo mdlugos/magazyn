@@ -137,7 +137,7 @@ elseif key>32 .and. _slth=1
    else
       return .f.
    endif
-   _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+   //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
    if !dbseek(_spocz)
       _spocz:=''
       _slth:=0
@@ -161,7 +161,7 @@ elseif key=K_CTRL_RIGHT .or. key=K_CTRL_LEFT
       set order to "kont_naz"
       _sbeg:=A_KTL+2
    endif
-   _swar=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+   //_swar=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
    refresh(1,_s)
 
 elseif key=K_INS

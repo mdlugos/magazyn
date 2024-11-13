@@ -1023,7 +1023,7 @@ do case
     else
         seek _spocz
     endif
-    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     if ! ( (EvaldB(_swar,_spocz).or.dbseek(_spocz)).and._skip(0,,_s) )
       _spocz=LEFT(_spocz,len(_spocz)-_slth)
       _slth=0
@@ -1066,7 +1066,7 @@ do case
       OTHERWISE
         RETURN .F.
     ENDCASE       
-    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     if ! ( (EvaldB(_swar,_spocz).or.dbseek(_spocz)).and._skip(0,,_s) )
    _spocz=LEFT(_spocz,len(_spocz)-_slth)
       _slth=0
@@ -1084,7 +1084,7 @@ do case
    CASE _skey=2 .AND. _sbeg=1 // ^>
     SET ORDER TO tag indx_naz
     _sbeg:=len(index)+2
-    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     _spocz:=LEFT(_spocz,len(_spocz)-_slth)
     _slth:=0
     refresh(1,_s)
@@ -1094,7 +1094,7 @@ do case
     _spocz=LEFT(_spocz,len(_spocz)-_slth)
     _slth:=0
     _sbeg:=1
-    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     refresh(1,_s)
 
   CASE _skey=7 .or. _skey=-1// del - POKAZ/UKRYJ ZEROWKI

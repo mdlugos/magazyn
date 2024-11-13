@@ -260,7 +260,7 @@ ENDIF
          @ nTop + 1, nLeft + 2 say padr(hb_UTF8ToStr("Klejność wg: ")+txt,nright-nleft-43)
          @ 16,5 say "Podaj poszukiwaną sekwencję znaków:" UNICODE
 
-         txt = EvAlDb(txt)
+         txt = ordKeyVal() //EvAlDb(txt)
          @ 16,41 get txt picture "@KS34"
          read
 
@@ -523,7 +523,7 @@ local lFresh, nCursSave, mGetVar, nLen
   cExpr := IndexKey(0)
   if ( !Empty(cExpr) )
     // expand key expression for later comparison
-    xEval := EvAlDb(cExpr)
+    xEval := ordKeyVal() //EvAlDb(cExpr)
   end
 
   // get column object from browse
@@ -564,14 +564,14 @@ local lFresh, nCursSave, mGetVar, nLen
   endif
     // replace with new data
     Eval(oCol:block, mGetVar)
+    unlock
     // test for change in index order
     if ( !Empty(cExpr) .and. !lAppend )
-      if ( xEval != EvAlDb(cExpr) )
+      if ( xEval != ordKeyVal() ) //EvAlDb(cExpr) )
         // change in index key eval
         lFresh := .t.
       end
     end
-    unlock
     if ( lFresh )
       // record in new indexed order
       FreshOrder(oB)

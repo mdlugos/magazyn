@@ -823,7 +823,7 @@ DO CASE
 #endif
        _sbeg:=1
     endif
-    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     _spocz:=LEFT(_spocz,len(_spocz)-_slth)
     _slth:=0
     REFRESH LINE _sm+_srow1-1 DIRECTION 0
@@ -893,7 +893,7 @@ DO CASE
          _sfilb:=hb_macroBlock(_sfilt)
       ENDIF
  #endif
-        _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+        //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
         _sret:=2
     REFRESH(,_s)
     @ _srow2,_scol1+1 say hb_UTF8ToStr(if(_sfor=NIL,"WSZYSTKIE MATERIAŁY ","STAN NIEZEROWY "))+trim(magazyny[mag_poz]) COLOR _slinia
@@ -914,7 +914,7 @@ DO CASE
         _spocz:=substr(_spocz,3)
       endif
       set order to if(_sbeg=1,"INDX_NUM","INDX_NAZ")
-      _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+      //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
       _sfor:=NIL
       REFRESH(,_s)
       @ _srow2,_scol1+1 say "MATERIAŁY Z WSZYSTKICH MAGAZYNÓW" UNICODE COLOR _slinia
@@ -950,7 +950,7 @@ DO CASE
       _sfilb:=NIL
    endif
  #endif
-      _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+      //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     _sret:=0
     REFRESH(,_s)
     @ _srow2,_scol1+1 say "WSZYSTKIE MAGAZYNY" COLOR _slinia
@@ -1058,7 +1058,7 @@ DO CASE
       OTHERWISE
         RETURN .F.
     ENDCASE
-    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     refresh(,_s)
     return .t.
 #endif
@@ -1090,7 +1090,7 @@ DO CASE
  #endif
             _sfor:=NIL
             _sbeg:=1
-            _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+            //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
             _spocz:=mag_biez+left(index,7)
             _slth:=7
             refresh(0,_s)
@@ -1405,7 +1405,7 @@ endif
        seek nr_mag+na
        _spform={|p,l|right(p,l)}
        _sbeg=SSBEG
-       _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+       //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
        _spocz=nr_mag
        _slth=0
        @ 0,0 say magazyny[ascan(magazyny,nr_mag)]

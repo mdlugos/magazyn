@@ -81,7 +81,7 @@ local getlist,a,b,c,d,scr
           _spform:={|p,l|tranr(right(Eval(_ss2p,p,l),l),hb_UTF8ToStr("####.##.##│X│")+repl("X",A_DILTH))}
        endif
     endif
-    _swar=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     if ! ( (EvaldB(_swar,_spocz).or.dbseek(_spocz)).and._skip(0,,_s) )
       _spocz=LEFT(_spocz,len(_spocz)-_slth)
       _slth=0
@@ -805,7 +805,7 @@ DEFAULT _snagl    TO hb_UTF8ToStr('Kod┬')+pad('Nazwisko',len(nazwisko),hb_UTF8
            RETURN (_sret:=.T.)
         endif
       ENDIF
-    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     if ! ( (EvaldB(_swar,_spocz).or.dbseek(_spocz)).and._skip(0,,_s) )
       _spocz:=LEFT(_spocz,len(_spocz)-_slth)
       _slth:=0
@@ -826,7 +826,7 @@ DEFAULT _snagl    TO hb_UTF8ToStr('Kod┬')+pad('Nazwisko',len(nazwisko),hb_UTF8
    CASE _skey=2 .AND. _sbeg=1 // ^>
     SET ORDER TO tag osob_naz
     _sbeg=5
-    _swar=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     _spocz=LEFT(_spocz,len(_spocz)-_slth)
     _slth=0
     refresh(1,_s)
@@ -836,7 +836,7 @@ DEFAULT _snagl    TO hb_UTF8ToStr('Kod┬')+pad('Nazwisko',len(nazwisko),hb_UTF8
     _spocz=LEFT(_spocz,len(_spocz)-_slth)
     _slth=0
     _sbeg=1
-    _swar=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     refresh(1,_s)
 
    CASE _skey=22 .or. _skey=43 //+
@@ -925,7 +925,7 @@ DEFAULT _snagl    TO hb_UTF8ToStr('Kod┬')+pad('Nazwisko',len(nazwisko),hb_UTF8
       OTHERWISE
         RETURN .F.
     ENDCASE       
-    _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+    //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     if ! dbseek(_spocz)
       _spocz=LEFT(_spocz,LEN(_spocz)-_slth)
       _slth=0

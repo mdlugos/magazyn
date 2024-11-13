@@ -72,7 +72,7 @@ elseif key>=65 .and. _sbeg=1
    _slth:=1
    _sbeg:=A_NRLTH+2
    set order to tag firm_naz
-   _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+   //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
    if EvaldB(_swar,_spocz)
       refresh(1,_s)
    else
@@ -84,7 +84,7 @@ elseif key>=65 .and. _sbeg=1
 elseif key>=48 .and. key<=57 .and. _sbeg>1 .and. _slth=1
    _sbeg:=1
    set order to tag firm_num
-   _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+   //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
    if EvaldB(_swar,_spocz)
       refresh(1,_s)
    else
@@ -109,7 +109,7 @@ elseif key=K_CTRL_RIGHT .or. key=K_CTRL_LEFT
       set order to "firm_naz"
       _sbeg:=A_NRLTH+2
    endif
-   _swar=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+   //_swar=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
    refresh(1,_s)
 elseif key=K_INS .or. key=43
    if key=43

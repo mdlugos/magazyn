@@ -123,7 +123,7 @@ elseif key=K_CTRL_RIGHT .or. key=K_CTRL_LEFT
       set order to ar[AR_DBF]+"_ID"
       _sbeg:=21
    endif
-   _swar=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+   //_swar=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
    refresh(1,_s)
 
 elseif key=K_F8

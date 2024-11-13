@@ -171,6 +171,25 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
   DEFAULT _skproc[31] TO {|_skey,_s|_STOP(_s)} //CTRL PGUP
   DEFAULT _skproc[32] TO {|_skey,_s|_SZNAK(_s,_skey)}  //32...255
 
+  IF _swar=NIL
+    if ValType(_spocz)='C'
+      * OBSZAR OGRANICZONY
+      //_stxt:=IndexkeY(0)
+      IF ValType(_skon)='C'
+        * OGRANICZENIE NA PODSTAWIE AKTYWNEGO INDEKSU
+        //_swar:=EvAlDb('{|p,k|'+_stxt+'>=p.AND.k>'+_stxt+'}')
+        _swar:={|p,k,x|x:=UpP(ordKeyVal()),!Eof() .and. x>=p .and. k>x}
+      ELSE
+        * OGRANICZENIE NA PODSTAWIE AKTYWNEGO INDEKSU
+        //_swar:=EvAlDb('{|p|'+_stxt+'=p'+'}')
+        _swar:={|p|!Eof() .and. UpP(ordKeyVal())=p}
+      ENDIF
+    else
+      _swar:={||.t.}
+    endif
+    set cursor on
+  ENDIF
+
   if _sinfo=NIL
     _sinfo:={|k,s|_Sinfo(k,s)}
   elseIF eval(_sinfo,0,_s)
@@ -240,22 +259,6 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
 
   DEFAULT _spform TO {|p,l|RIGHT(p,l)}
 
-  IF _swar=NIL
-    if _spocz#NIL
-      * OBSZAR OGRANICZONY
-      _stxt:=IndexkeY(0)
-      IF _skon#NIL
-        * OGRANICZENIE NA PODSTAWIE AKTYWNEGO INDEKSU
-        _swar:=EvAlDb('{|p,k|'+_stxt+'>=p.AND.k>'+_stxt+'}')
-      ELSE
-        * OGRANICZENIE NA PODSTAWIE AKTYWNEGO INDEKSU
-        _swar:=EvAlDb('{|p|'+_stxt+'=p'+'}')
-      ENDIF
-    else
-      _swar:={||.t.}
-    endif
-    set cursor on
-  ENDIF
   if empty(_sbeg)
     set cursor off
     _skproc[32]:=NIL //sznak
@@ -436,7 +439,7 @@ elseif ( k=K_CTRL_LEFT .or. k=K_CTRL_RIGHT ) .and. ordnumber()<>0
         ord_1:=indexord()
       endif
    endif
-   _swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
+   //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
    _spocz:=left(_spocz,len(_spocz)-_slth)
    _slth:=0
    REFRESH(1,_s)
@@ -887,7 +890,8 @@ IF _si>0
 
   GO _srec[_sm]
   wiele=.f.
-  sw:=len(EvAlDb(IndexKey(0)))
+  sw:=len(ordKeyVal())
+  //sw:=len(EvAlDb(IndexKey(0)))
   sl:=UpP(getscrtxt(_sprpt))
   sp:=eval(_spform,_spocz,_slth)
   do while _scoln-_sbeg+1>(l:=len(sp)) .and. len(_spocz)<sw
@@ -927,7 +931,8 @@ local ltb,l,spb,spp,sp,sl,wiele,sw
 IF _si>0
   wiele:=.f.
   go _srec[_sm]
-  sw:=len(EvAlDb(IndexKey(0)))
+  //sw:=len(EvAlDb(IndexKey(0)))
+  sw:=len(ordKeyVal())
   sl:=UpP(getscrtxt(_sprpt))
   do while .t.
   ltb:=_slth
@@ -1103,7 +1108,7 @@ endif
                   _spocz:=LEFT(_spocz,len(_spocz)-_slth)
                   _slth:=0
                   _sbf:=_sef:=.f.
-                  if EvaldB(_swar,_spocz,_skon) .or. (_sef:=_skip(-1,,_s)) .or. (_sbf:=dbseek(_spocz))
+                  if !eof() .and. EvaldB(_swar,_spocz,_skon) .or. (_sef:=_skip(-1,,_s)) .or. (_sbf:=dbseek(_spocz))
                     crsr:=1
                     loop
                   endif
@@ -1388,7 +1393,7 @@ ELSE
   skip p
 endif
 
-do while EvaldB(_swar,_spocz,_skon) .and. !BOF() .and. !EOF()
+do while !EOF() .and. EvaldB(_swar,_spocz,_skon) .and. !BOF()
   if (_sfor=NIL.or.eval(_sfor)).and.(_sfilb=NIL.or.eval(_sfilb))
     return .t.
   elseif bl=NIL
