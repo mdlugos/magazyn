@@ -1,4 +1,4 @@
-#define PC852 'PL852'
+#define PC852 'PLWIN'
 
 #ifndef __PLATFORM__DOS
   #define A_KSEF
@@ -17,8 +17,12 @@
   #define A_WIN_PRN eval(memvar->do_getoprn)
   #define A_ZEBRA
 #endif
-//#define A_CDX VFPCDX
-//#define A_ADS 1
+#define A_CDX VFPCDX
+#define A_ADS 1
+
+#ifdef A_ADS
+//#define ordKeyVal() evaldb(ordKey())
+#endif
 
 //#define UpP(x) uPp(x,A_UNICODE)
 

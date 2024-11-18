@@ -17,6 +17,7 @@ request A_EXT
 #include "error.ch"
 #include "inkey.ch"
 #include "hbgtinfo.ch"
+#include "dbinfo.ch"
 #ifdef A_ADS
   #require "rddads"
   #include "ads.ch"
@@ -97,12 +98,12 @@ ErrorBlock( {|e| DefError(e)} )
 #ifdef A_ADS
       RddRegister( "ADS", 1 )
       rddsetdefault("ADS")
-      AdsSetCharType( ADS_ANSI, .F.)  //oemtranslation = false
-      //SET CHARTYPE TO ANSI  //  Set( _SET_OSCODEPAGE, hb_cdpOS() ) has to be set already
    #ifdef A_CDX
-      SET FILETYPE TO VFP
+      // default SET FILETYPE TO VFP
+      // default AdsSetCharType( /*MACHINE_VFP_BIN_1250*/ 6, ":en_US" )  
    #else
       SET FILETYPE TO NTX
+      SET CHARTYPE TO ANSI
    #endif
       AdsSetServerType( A_ADS )
       SET AXS LOCKING ON
@@ -256,11 +257,16 @@ static s:=0,ee:=NIL
     return 0 // (e:args[1])
 #ifdef A_LAN
   elseif e:genCode == EG_OPEN .AND. e:osCode == 5 .AND. e:subcode==1001 .and. procname(2)=='DBUSEAREA'
-    nuse (e:filename) SHARED READONLY
+    select select('indeks')
+    if used() .and. HB_OsPathSeparator()+Lower(trim(BAZA))+'.'$lower(e:filename)
+       sel(trim(baza),trim(nazwa),.t.,.t.)
+    else
+       nuse (e:filename) SHARED READONLY
+    endif
     ee:=NIL
     return (.f.)
   elseIf ( e:genCode == EG_OPEN .OR. e:genCode == EG_CREATE).AND. e:osCode == 55
-   __Run( "Echo > Nul")
+   //__Run( "Echo > Nul")
    //Return (.t.)
     e:description := hb_UTF8ToStr('Błąd sieci MS-Windows, wybierz "spróbuj"...')
 #endif
@@ -363,7 +369,7 @@ static s:=0,ee:=NIL
  #endif
 
     cMessage:=lower(alias())
-    sel("indeks")
+    sel("indeks",,.t.,.t.)
     n:=recno()
     go top
     locate for expand(b:=Lower(trim(BAZA))) == CMESSAGE
@@ -444,7 +450,7 @@ static s:=0,ee:=NIL
     cMessage:=alias()
     r:=select("indeks")
     if r=0
-       sel("indeks")
+       sel("indeks",,.t.,.t.)
     else
        select (r)
        n:=recno()
@@ -486,11 +492,13 @@ static s:=0,ee:=NIL
  #endif
        ******
        select (cMessage)
-       h:=shared()
+       h:=dbinfo(DBI_SHARED)
        if h
           bk:=get_relat()
           ee:=NIL
-          nuse (t) EXCLUSIVE
+          use
+          sel(cMessage,,.f.,.f.)
+          //nuse (t) EXCLUSIVE
           ee:=e
           aeval(bk,{|x|dbsetrelation(x[1],EvAlDb('{||'+x[2]+'}'),x[2])})
        endif
@@ -583,7 +591,8 @@ static s:=0,ee:=NIL
        select (cMessage)
        if h
           ee:=NIL
-          nuse (t) SHARED
+          use
+          sel(b,,.f.,.f.)
           aeval(bk,{|x|dbsetrelation(x[1],EvAlDb('{||'+x[2]+'}'),x[2])})
           ee:=e
        endif

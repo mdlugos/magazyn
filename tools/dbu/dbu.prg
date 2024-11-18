@@ -91,7 +91,6 @@ PROCEDURE Dbu( param1, param2, param3 )
    param2   := param3[2]
 
    REQUEST HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_UTF8EX, HB_CODEPAGE_PLMAZ, HB_CODEPAGE_PLWIN
-   SET(_SET_DBCODEPAGE, 'PLWIN')
 
 #ifdef ADS_CH_
    IF "-ads" $ Lower( hb_cmdLine() )
@@ -100,16 +99,17 @@ PROCEDURE Dbu( param1, param2, param3 )
 
       IF "-cdx" $ Lower( hb_cmdLine() )
          SET FILETYPE TO CDX
+         SET CHARTYPE TO ANSI
       elseif "-vfp" $ Lower( hb_cmdLine() )
-         SET FILETYPE TO VFP
+         //default SET FILETYPE TO VFP
       else   
          SET FILETYPE TO NTX
+         SET CHARTYPE TO ANSI
       endif
 
-      SET CHARTYPE TO OEM //test
       SET SERVER LOCAL
-      SET AXS LOCKING ON
-      SET RIGHTS CHECKING ON
+      // SET AXS LOCKING ON
+      // SET RIGHTS CHECKING ON
    ELSE
 #endif
       IF "-cdx" $ Lower( hb_cmdLine() )
@@ -126,8 +126,11 @@ PROCEDURE Dbu( param1, param2, param3 )
    hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
    HB_CDPSELECT('UTF8EX')
    HB_LANGSELECT('PL')
-   SET(_SET_DBCODEPAGE, 'PL852')
-
+   SET(_SET_DBCODEPAGE, 'PLWIN')
+   
+   hb_SetTermCP( hb_cdpTerm() )
+   Set(_SET_OSCODEPAGE, hb_cdpOS())
+   
    SET(_SET_DEBUG,.t.) //alt_d on
    
    SetKey( K_ALT_V, {|| hb_gtInfo( HB_GTI_CLIPBOARDPASTE, .T. ) } )
@@ -891,15 +894,14 @@ FUNCTION GetHelpFile()
    RETURN ( cFile )
 
 #pragma BEGINDUMP
-#include "signal.h"
+//#include "signal.h"
 #include "hbapi.h"
-
+#include "intrin.h"
+//#include "debugapi.h"
 HB_FUNC ( CDBG )
 {
    //raise(SIGTRAP);
+   __debugbreak;
+   //DebugBreak();
 }
-#pragma ENDDUMP   
-
-
-
-* EOF DBU.PRG
+#pragma ENDDUMP

@@ -100,10 +100,10 @@ DO CASE
    else
       txt:={}
    endif
-   if 'STARY'<>stary_rok .and. file(defa+'stary\relewy.dbf')
+   if 'STARY'<>stary_rok .and. file(defa+'stary'+HB_OsPathSeparator()+'relewy.dbf')
       aadd(txt,'STARY')
    endif
-   aeval(directory(defa+'????','D'),{|x|if(val(x[1])<>0.and.x[1]<>stary_rok.and.file(defa+x[1]+'\relewy.dbf'),aadd(txt,x[1]),)})
+   aeval(directory(defa+'????','D'),{|x|if(val(x[1])<>0.and.x[1]<>stary_rok.and.file(defa+x[1]+HB_OsPathSeparator()+'relewy.dbf'),aadd(txt,x[1]),)})
    setpos(11,maxcol()/2+25)
    m:=1
    aczojs(txt,"",@m)
@@ -243,7 +243,7 @@ if i=0
 endif
 ye:=a[i]
 
-if file(defa+ye+"\relewy.dbf")
+if file(defa+ye+HB_OsPathSeparator()+"relewy.dbf")
    Alarm(hb_UTF8ToStr('Ten rok już jest w archiwum.'))
    return
 endif
@@ -255,7 +255,7 @@ begin sequence
    mkdir(defa+ye)
    ?
    ? "Tworzenie zbioru DATY.INI ."
-   copy file (set(_SET_DEFAULT)+"daty.ini") to (defa+ye+"\daty.ini")
+   copy file (set(_SET_DEFAULT)+"daty.ini") to (defa+ye+HB_OsPathSeparator()+"daty.ini")
    /*
    ?
    ? "Tworzenie pustych baz w kartotece STARY: "
@@ -274,25 +274,25 @@ begin sequence
         ?
         ? "Dopisywanie do archiwum z bazy RELEWY."
         select relewy
-        copy to (defa+ye+'\relewy') for dtos(data)<=ye
+        copy to (defa+ye+HB_OsPathSeparator()+'relewy') for dtos(data)<=ye
         //append from (defa+'roboczy\relewy') for dtos(data)<=ye
 
         ?
         ? "Dopisywanie do archiwum z bazy MAIN."
         select main
-        copy to (defa+ye+'\main') for dtos(data)<=ye
+        copy to (defa+ye+HB_OsPathSeparator()+'main') for dtos(data)<=ye
         //append from (defa+'roboczy\main') for dtos(data)<=ye
 
         ?
         ? "Dopisywanie do archiwum z bazy MENU."
         select menu
-        copy to (defa+ye+'\menu') for dtos(data)<=ye
+        copy to (defa+ye+HB_OsPathSeparator()+'menu') for dtos(data)<=ye
         //append from (defa+'roboczy\menu') for dtos(data)<=ye
 
         ?
         ? "Dopisywanie do archiwum z bazy ZAPOT."
         select zapot
-        copy to (defa+ye+'\zapot') for dtos(data)<=ye
+        copy to (defa+ye+HB_OsPathSeparator()+'zapot') for dtos(data)<=ye
         //append from (defa+'roboczy\zapot') for dtos(data)<=ye
 
         ?
@@ -301,7 +301,7 @@ begin sequence
         select main
         set order to tag main_kod
         select osoby
-        copy to (defa+ye+'\osoby') for {||main->(dbseek(osoby->kod_osoby).and.dtos(data)<=ye)}
+        copy to (defa+ye+HB_OsPathSeparator()+'osoby') for {||main->(dbseek(osoby->kod_osoby).and.dtos(data)<=ye)}
         /*
         select main
         set order to tag main_kod
@@ -313,7 +313,7 @@ begin sequence
         ? "Kopiowanie do archiwum bazy DANIA."
 
         select dania
-        copy to (defa+ye+'\dania')
+        copy to (defa+ye+HB_OsPathSeparator()+'dania')
         /*
         select menu
         set order to tag menu_dan
@@ -326,7 +326,7 @@ begin sequence
 
         set order to tag dan_kod
         select sklad
-        copy to (defa+ye+'\sklad') for {||dania->(dbseek(sklad->danie))}
+        copy to (defa+ye+HB_OsPathSeparator()+'sklad') for {||dania->(dbseek(sklad->danie))}
         /*
         set order to tag dan_kod
         select sklad
@@ -342,7 +342,7 @@ begin sequence
         select zawar
         set order to tag zaw_skl
         select surowce
-        copy to (defa+ye+'\surowce') for {|x|x:=skladnik,zapot->(dbseek(x).and.dtos(data)<=ye).or.sklad->(dbseek(x)).or.zawar->(dbseek(x))}
+        copy to (defa+ye+HB_OsPathSeparator()+'surowce') for {|x|x:=skladnik,zapot->(dbseek(x).and.dtos(data)<=ye).or.sklad->(dbseek(x)).or.zawar->(dbseek(x))}
         //append from (defa+'roboczy\surowce') for {|x|x:=skladnik,zapot->(dbseek(x)).or.sklad->(dbseek(x))}
 
         ?
@@ -350,14 +350,14 @@ begin sequence
         set order to tag sur_kod
         select zawar
         set order to tag zaw_ele
-        copy to (defa+ye+'\zawar') for {|x|x:=skladnik,surowce->(dbseek(x))}
+        copy to (defa+ye+HB_OsPathSeparator()+'zawar') for {|x|x:=skladnik,surowce->(dbseek(x))}
         //append from (defa+'roboczy\zawar') for {|x|x:=skladnik,surowce->(dbseek(x))}
 
         ?
         ? "Kopiowanie do archiwum bazy ELEMENTY."
         //set order to tag zaw_ele
         select elementy
-        copy to (defa+ye+'\elementy') for {|x|x:=element,zawar->(dbseek(x))}
+        copy to (defa+ye+HB_OsPathSeparator()+'elementy') for {|x|x:=element,zawar->(dbseek(x))}
         //append from (defa+'roboczy\elementy') for {|x|x:=element,zawar->(dbseek(x))}
 
         //stary_rok:=NIL

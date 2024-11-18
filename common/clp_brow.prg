@@ -428,7 +428,7 @@ ENDIF
 set deleted on
 
 @ 0,0 CLEAR to 2,79
-if !shared() .and. lPack .AND. tak(hb_UTF8ToStr('CZY SKASOWAĆ UKRYTE WIERSZE'),0,,.f.,.F.)
+if !dbinfo(DBI_SHARED) .and. lPack .AND. tak(hb_UTF8ToStr('CZY SKASOWAĆ UKRYTE WIERSZE'),0,,.f.,.F.)
     @ 0,0 SAY "TRWA KASOWANIE UKRYTYCH WIERSZY W BAZIE " COLOR "BG+"
     dispout(alias(),"BG+*")
     i:=lastrec()

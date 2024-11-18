@@ -3,17 +3,24 @@
 #include "set.ch"
 #include "dbinfo.ch"
 REQUEST VFPCDX,ADS
-PROCEDURE vfp2ads(DB)
+PROCEDURE vfp2ads(DB,p)
 Local i:=0
-request HB_CODEPAGE_PL852,HB_CODEPAGE_UTF8EX,HB_LANG_PL
+if !empty(p)
+   ACCEPT hb_UTF8ToStr("Naciśnij coś",hb_cdpTerm()) TO p
+endif
+request HB_CODEPAGE_PL852,HB_CODEPAGE_PLWIN,HB_CODEPAGE_UTF8EX,HB_LANG_PL
 HB_CDPSELECT('UTF8EX') //some fields may be already in UTF8/16
-SET(_SET_DBCODEPAGE,'PL852')
+SET(_SET_DBCODEPAGE,'PLWIN')
 REQUEST HB_LANG_PL
 HB_LANGSELECT('PL')
 
+hb_SetTermCP( hb_cdpTerm() )
+Set(_SET_OSCODEPAGE, hb_cdpOS())
+
 rddSetDefault('ADS')
 SET SERVER LOCAL
-SET FILETYPE TO VFP
+//SET FILETYPE TO VFP
+//SET CHARTYPE TO ANSI
 
 SET DELETED ON
 
@@ -46,14 +53,12 @@ LOCAL h,st
 //if HB_BCODE(st)<>3
    db:=left(db,rat('.',db)-1)
    erase (set(_SET_DEFAULT)+db+".cdx")
-   USE (DB) READONLY EXCLUSIVE VIA 'VFPCDX'
+   USE (DB) READONLY EXCLUSIVE VIA 'VFPCDX' CODEPAGE "PL852"
    st:=dbstruct()
    ?? DB+" "
-   aeval(st,{|x,i|outstd(x[1]:=lower(trim(x[1])),''),iif(x[2]='M', x[2]:='W',iif(SubStr(x[2],3)='U' .or. x[2]=='C' .and. x[3]>36, (x[2]:='Q:B',x[3]:=min(254,9*x[3]/8)),))})
-   //db:=alias() keep it in the same case
-   altd()
+   aeval(st,{|x,i|outstd(x[1]:=lower(trim(x[1])),''),iif(x[2]='M', x[2]:='W',iif('U'$SubStr(x[2],3) .or. x[2]=='C' .and. x[3]>46, (x[2]:='Q:B',x[3]:=min(254,9*x[3]/8)),))})
    dbcreate("tmp",st)
-   use tmp NEW
+   use tmp NEW EXCLUSIVE
    select 1
    dbeval({||B->(dbappend(),aeval(st,{|x,i,f|f:=A->(fieldget(i)),iif(valtype(f)='C',f:=trim(f),),fieldput(i,f)}))})
    close databases

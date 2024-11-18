@@ -157,7 +157,7 @@ return x
 #endif
 **************************
 func sel(alias,order,shared,rdo,cp)
-field baza,path,nazwa,plik
+field baza,path,nazwa,plik,codepage
 local s,a,b,c
 
 #ifdef A_NETIO
@@ -168,8 +168,8 @@ local s,a,b,c
 #endif
 //memvar a,b,c
 //private a,b,c
-alias:=lower(trim(alias))
-s:=select(alias)
+   alias:=lower(trim(alias))
+   s:=select(alias)
    if s=0
       if alias=="indeks"
          s:=11
@@ -185,9 +185,9 @@ s:=select(alias)
          NetusE(NIL,NIL,a,alias,shared,rdo,cp)
       else
          a:=b:=alias
-#ifdef A_CDX
          s:=select()
-         if sel("indeks",,,.t.)#0
+#ifdef A_CDX
+         if sel("indeks",,.t.,.t.)#0
             locate for {||c:=trim(baza), lower(expand(c))==alias}
             if found()
                a:=trim(path)
@@ -200,12 +200,15 @@ s:=select(alias)
                   a+=HB_ps()
                 endif
                endif
-               if fieldpos("PLIK")#0 .and. !empty(plik)
+               if fieldpos([PLIK])#0 .and. !empty(plik)
                   a+=trim(plik)
                else
                   a+=lower(c)
                endif
                a:=expand(a)
+               if fieldpos([codepage])#0 .and. empty(cp)
+                  cp:=codepage
+               endif
             endif
          endif
          select (s)
@@ -217,6 +220,10 @@ s:=select(alias)
            a:=b
          endif
          NetusE(NIL,NIL,a,alias,shared,rdo,cp)
+         if !used()
+            select (s)
+            return 0
+         endif
          if !empty(a)
             a:=left(a,len(a)-4)
          endif
@@ -246,8 +253,7 @@ s:=select(alias)
             ordsetfocus(1)
          endif
 #else
-         s:=select()
-         if sel("indeks")=0
+         if sel("indeks",,.t.,.t.)=0
             select (s)
             if used()
               select 0
@@ -257,6 +263,10 @@ s:=select(alias)
               a:=b
             endif
             NetusE(NIL,NIL,a,alias,shared,rdo,cp)
+            if !used()
+               select (s)
+               return 0
+            endif
             s:=select()
          else
             locate for {||c:=trim(baza), lower(expand(c))==alias}
@@ -272,12 +282,15 @@ s:=select(alias)
                 endif
                endif
                b:=a
-               if fieldpos("PLIK")#0 .and. !empty(plik)
+               if fieldpos([plik])#0 .and. !empty(plik)
                   a+=trim(plik)
                else
                   a+=lower(c)
                endif
                a:=expand(a)
+               if fieldpos([codepage])#0 .and. empty(cp)
+                  cp:=codepage
+               endif
             endif
             b:=findfile(a+'.dbf' D_NETIO)
             if !Empty(b)
@@ -289,11 +302,16 @@ s:=select(alias)
                select 0
             endif
             NetusE(NIL,NIL,a,alias,shared,rdo,cp)
+            if !used()
+               select (s)
+               return 0
+            endif
             s:=select()
             select indeks
             if found()
                a:=''
 #ifdef A_ADS
+//za drugim razem doda jeżeli za pierwszym był odtworzony
 #define D_CHECK ,if(indexord()=0,ordlistadd(a),)
 #else
 #define D_CHECK

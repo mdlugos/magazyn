@@ -951,6 +951,20 @@ jm_opcja,przel,lamus,UWAGI,nr_mag,data_zmian,waznosc,data_przy,cena_przy,info,ko
 do case
   case _skey=0
     if select("INDX_MAT")=0
+      sel("indeks",,.t.,.t.)
+      locate for {||lower(expand(trim(baza)))=="indx_mat"}
+      if found()
+        sel("INDX_MAT","INDX_NUM",.t.,.t.)
+#ifndef STANY
+        select indeks
+        locate for {||lower(expand(trim(baza)))=="stany"}
+        if found()
+           sel("STANY","STAN_MAG",.t.,.t.)
+        endif
+#endif
+      endif
+   endif
+   if select("INDX_MAT")=0
       select 0
       _STXT:=getenv("MAGDEF")
 
@@ -995,13 +1009,13 @@ do case
        alarm("BRAK BAZY DANYCH :"+_stxt+hb_UTF8ToStr("indx_mat.dbf; Proszę ustawić prawidłowo zmienną środowiska DOS: MAGDEF"))
        return .t.
       end
-    else
+   else
       select indx_mat
 #ifndef STANY
       set relation to MAG_BIEZ+index into stany
 #endif
-    endif
-    set order to tag indx_num
+   endif
+   set order to tag indx_num
     _slth:=LEN(_spocz)
     _snagkol:=1
     _stxt:=_spocz

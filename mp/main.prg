@@ -230,11 +230,12 @@ setpos(i-6,0)
 
 *******************                    Tworzenie tablic dla aczojs() itp
 
-i:={maxrow(),maxcol(),}
 #ifdef DatE
 private dzisiaj:=date()
 #endif
 
+/*
+   i:={maxrow(),maxcol(),}
    txt:="magazyn.ini"
    do while inirest(@txt)
 begin sequence
@@ -249,9 +250,11 @@ end sequence
      clear screen
      restscreen(0,0,i[1],i[2],i[3])
    endif
+*/
 
 readinit()
 reuse()
+/*
 #ifndef A_DDBF
    txt:="daty.ini"
    do while inirest(@txt)
@@ -260,9 +263,9 @@ reuse()
    end
    enddo
 #endif
-
+*/
 #ifdef A_XPRN
-   p_reset()
+//   p_reset()
 /*   
    txt:="xprn.ini"
    do while inirest(@txt)

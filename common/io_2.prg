@@ -1969,8 +1969,8 @@ endif
 return fread(x,@y,z)
 ************
 
-func shared()
-return dbinfo(DBI_SHARED)
+//func shared()
+//return dbinfo(DBI_SHARED)
 //return !set(_SET_EXCLUSIVE)
 ************
 func hiattr(x)
