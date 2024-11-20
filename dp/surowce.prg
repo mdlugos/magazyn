@@ -707,7 +707,7 @@ do case
     endif
 
   CASE _si=0
-  case _skey=9 .or. _skey=92  //asc('\')
+  case _skey=9 .or. _skey=hb_keyCode('\')
     stat:=push_stat()
 #ifdef A_ELZ
     if _skey=92
@@ -761,7 +761,7 @@ do case
       _sfil(_s)
       
    case _skey=-9
-      _slist(".\"+left(alias(),3)+"*.frm",_s)
+      _slist("."+HB_OsPathSeparator()+left(alias(),3)+"*.frm",_s)
 #ifdef A_KODY
    case alias()<>'SUROWCE'
       return .f.
@@ -794,13 +794,13 @@ LOCAL c,d,getlist
 do case
    case _skey=27
     return .t.
-   case _skey=22 .or. _skey=asc('+')
+   case _skey=22 .or. _skey=hb_keyCode('+')
     d:=DatE()
     if _si=0
          _srec[1]=recno()
          _sm=1
          go lastrec()+1
-    elseif _skey=asc('+')
+    elseif _skey=hb_keyCode('+')
        go _srec[_sm]
        _slth=_slth-1
        _spocz=left(_spocz,LEN(_spocz)-1)
@@ -843,7 +843,7 @@ do case
       _sfil(_s)
       
   case _skey=-9
-      _slist(".\"+left(alias(),3)+"*.frm",_s)
+      _slist("."+HB_OsPathSeparator()+left(alias(),3)+"*.frm",_s)
 
 endcase
 return .f.

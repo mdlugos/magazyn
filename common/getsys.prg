@@ -1171,8 +1171,8 @@ static proc getval(get)
      g:exitstate:=GE_NOEXIT
      while ( g:exitState < GE_ENTER )
        k:=INkey(0)
-       if k=asc(',')
-          k:=asc('.')
+       if hb_keyChar(k)=','
+          k:=hb_keyCode('.')
        endif
        GetApplyKey( g,k )
      end
