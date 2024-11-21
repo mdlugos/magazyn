@@ -2117,7 +2117,7 @@ func uFieldGet(f,lval)
    local x := hb_FieldGet(f), t
    if valtype(x)='C'
       t:=hb_FieldType(f)
-      if (left(t,1) $ 'PWG' .or. SubStr(t,2) = ':B')
+      if (left(t,1) $ 'PWG' .or. 'B' $ SubStr(t,3)
          if x=hb_utf8Chr(0xFEFF)
             x:=hb_bsubstr(x,4)
          endif
@@ -2133,48 +2133,52 @@ return x
 *****************
 func uFieldPut(f,x)
    local t:=hb_FieldType(f)
-   if valtype(x)='C' .and. (left(t,1) $ 'PWG' .or. SubStr(t,2) = ':B')
+   if valtype(x)='C' .and. (left(t,1) $ 'PWG' .or. 'B' $ substr(t,3) )
       x:=trim(x)
 #ifndef A_UNICODE
       x:=HB_TRANSLATE(x,,hb_gtInfo( HB_GTI_BOXCP ))
 #endif      
-      if hb_utf8Chr(0xFEFF)<>hb_BLeft(x,3) .and. hb_UTF8Len(x)<>hb_blen(x)
-         x:=hb_utf8Chr(0xFEFF)+x
-      endif
+      //if hb_utf8Chr(0xFEFF)<>hb_BLeft(x,3) .and. hb_UTF8Len(x)<>hb_blen(x)
+      //   x:=hb_utf8Chr(0xFEFF)+x
+      //endif
    endif
 return hb_FieldPut(f,x)
 *****************
 func binFieldPut(f,x,lval)
    local t,b
-#ifdef A_UNICODE
-   if valtype(x)='C'
+   if valtype(x)='C' .and. dbinfo(DBI_CODEPAGE) != HB_CDPSELECT()
       t:=hb_FieldType(f)
-      x:=trim(x)
-      if !(left(t,1) $ 'PWG' .or. SubStr(t,3,1) $ 'UB')
-         x:=hb_translate(x,dbinfo(DBI_CODEPAGE),)  //odwrotne tłumacznie do tego co przy zapisie
-         // przy tłumaczeniu z powrotem się skróci, ale i tak będzie przyciasno
+      IF !(left(t,1) $ 'PWG' .or. 'U' $ substr(t,3) .or. 'B' $ substr(t,3) ) 
+         if !empty(lval)
+            return hb_translate(x,dbinfo(DBI_CODEPAGE),)
+         endif
+         t:=HB_CDPSELECT(dbinfo(DBI_CODEPAGE))
+         hb_FieldPut(f,x)
+         HB_CDPSELECT(t)
+      else
+         hb_FieldPut(f,x)
       endif
-   endif
-#endif      
-   if empty(lval)
-   return hb_FieldPut(f,x)
+   elseif empty(lval)
+      hb_FieldPut(f,x)
    endif
 return x 
 *******************************
 func binFieldGet(f,lval) // .t. - do not padr with spaces
    local x := hb_FieldGet(f),t
-#ifdef A_UNICODE
-   if valtype(x)='C'
+   if valtype(x)='C' .and.  dbinfo(DBI_CODEPAGE) != HB_CDPSELECT()
       t:=hb_FieldType(f)
-      if !(left(t,1) $ 'PWG' .or. SubStr(t,3,1) $ 'UB')
-         x := hb_translate(x,,dbinfo(DBI_CODEPAGE)) //odwrotne tłumacznie do tego co przy odczycie
+      IF !(left(t,1) $ 'PWG' .or. 'U' $ substr(t,3) .or. 'B' $ substr(t,3) ) // unicode has been translated OK
+         t:=HB_CDPSELECT(dbinfo(DBI_CODEPAGE))
+         x := hb_FieldGet(f) // again without translation
+         HB_CDPSELECT(t)
       endif
+#ifdef A_UNICODE
       if empty(lval)
          // to działa zależy jaka aktualna strona kodowa
          x += space(hb_FieldLen(f) - hb_UTF8Len(x))
       endif
-   endif
 #endif      
+   endif
 return x
 *****************
 #pragma BEGINDUMP
@@ -2268,19 +2272,23 @@ HB_FUNC ( UPP )
 //HB_FUNC_TRANSLATE( D2BIN, F2BIN )
 HB_FUNC ( BIN2D )
 {
- if ( hb_parinfo( 1 ) == HB_IT_STRING )
- {
-   hb_retnd (  * (double*) hb_parc(1) );
- } else {
-   hb_retnd ( hb_parnd( 1 ) );
- }
-}
+   if( hb_parclen( 1 ) >= sizeof( double ) )
+   {
+      const char * buf = hb_parc( 1 );
 
+      hb_retnd( HB_GET_LE_DOUBLE( buf ) );
+   }
+   else
+      hb_retnd ( hb_parnd( 1 ) );
+}
 
 HB_FUNC ( D2BIN )
 {
-   double d = hb_parnd(1);
-   hb_retclen ( (char *) &d, 8 );
+   char buf[ sizeof( double ) ];
+   double d = hb_parnd( 1 );
+
+   HB_PUT_LE_DOUBLE( buf, d );
+   hb_retclen( buf, sizeof( buf ) );
 }
 
 HB_FUNC ( TRANR )
