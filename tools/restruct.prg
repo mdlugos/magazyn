@@ -1,3 +1,5 @@
+//hbmk2 restruct rddads.hbc ~/e/harbour/contrib/rddmisc/vfpcdx.prg  -gtnul
+
 #require "rddads"
 #require "vfpcdx"
 #include "simpleio.ch"
