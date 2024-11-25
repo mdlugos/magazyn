@@ -51,16 +51,14 @@ endif
 ********************
 PROCEDURE CHGDAT(DB, cdpfrom, cdpto)
 
-LOCAL h,b,f:=db
+LOCAL h,b,f:=SET(_SET_DEFAULT)+db
    close databases
-   if lower(right(set(_SET_DEFAULT),8))=='roboczy'+HB_PS()
-      f:=db
-   else
+   if lower(right(set(_SET_DEFAULT),8))!='roboczy'+HB_PS()
       f:=SET(_SET_DEFAULT)+'..'+HB_PS()+'roboczy'+HB_PS()+DB
       if !file(f)
          f:= strtran(f,'roboczy'+HB_PS())
          if !file(f)
-            f:=db
+            f:=SET(_SET_DEFAULT)+db
          endif
       endif
    endif
@@ -70,8 +68,9 @@ LOCAL h,b,f:=db
    use
    if !empty(h)
       aeval(h,{|x,i| if(x[1]='D_' .and. x[2]='C' .and. x[3]=8, x[2]:='B', ),;
+                     if(x[2]=='M', x[2]:='W', ),;
                      if((x[1]=='POZYCJA' .or. x[1]=='LINK') .and. x[2]='C' .and. x[3]=1, x[3]:=3, ),;
-                     x[1]:=lower(x[1])})
+               x[1]:=lower(x[1])})
       db:=lower(left(db,rat('.',db)-1))
       ?? db,''
       erase (set(_SET_DEFAULT)+db+ordbagext())

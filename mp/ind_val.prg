@@ -1453,19 +1453,28 @@ RETURN
 *****************
 FUNCTION LTAB(D,_s)
 field ilosc,data,smb_dow,nr_dowodu,pozycja,nr_zlec
+
 #ifdef A_LPNUM
-#define D_LP0 str(0,A_LPNUM) //'  0'
-#define D_LP1 str(1,A_LPNUM) //'  1'
-#define D_LPVAL(x) val(x)
-#define D_LPSTR(x) str(D_LPVAL(x),3)
-#define D_LPSTR1(x) str(D_LPVAL(x),1)
+   #define D_LP0 str(0,A_LPNUM) //'  0'
+   #define D_LP1 str(1,A_LPNUM) //'  1'
+   #ifdef A_UNICODE
+      #define D_LPVAL(x) iif(A_LPNUM=1,HB_BCODE(binfieldget([POZYCJA],x))-48,val(x))
+      #define D_LPVALFIELD(x) iif(A_LPNUM=1,HB_BCODE(binfieldget([x]))-48,val(x))
+   #else
+      #define D_LPVAL(x) iif(A_LPNUM=1,HB_BCODE(x)-48,val(x))
+      #define D_LPVALFIELD(x) D_LPVAL(x)
+   #endif
+   #define D_LPSTR1(x) str(D_LPVALFIELD(x),1)
 #else
-#define D_LP0 '0'
-#define D_LP1 '1'
-#define D_LPVAL(x) (HB_BCODE(x)-48)
-#define D_LPSTR(x) str(HB_BCODE(x)-48,3)
-#define D_LPSTR1(x) x
+   #define D_LP0 '0'
+   #define D_LP1 '1'
+   #define D_LPVAL(x) (HB_BCODE(x)-48)
+   #define D_LPVALFIELD(x) D_LPVAL(x)
+   #define D_LPSTR1(x) x
 #endif
+#define D_LPSTR(x) str(D_LPVAL(x),3)
+#define D_LPSTRFIELD(x) str(D_LPVALFIELD(x),3)
+
 local sel,prptxt
 #ifdef A_WA
 field wartosc
@@ -1568,18 +1577,18 @@ RETURN(DTOV(data)+hb_UTF8ToStr(if(data>DatY->d_z_mies1,"│","┼"))+smb_dow+nr_
 #else
 #ifdef A_ANKER
 #ifdef A_ZAGRODA
-dispout(DTOV(data)+hb_UTF8ToStr(if(data>DatY->d_z_mies1,"│","┼"))+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+I+nr_zleC+I;
+dispout(DTOV(data)+hb_UTF8ToStr(if(data>DatY->d_z_mies1,"│","┼"))+smb_dow+nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)+I+nr_zleC+I;
   +if(NR_MAG+smb_dow$dok_rozch,"         "+I+smiaR(-ilosc,9),smiaR(ilosc,9)+I+"         ")+I;
   +str(wartosC,10,CEOKR)+hb_UTF8ToStr(if(INDX_MAT->data_POPR>DATA,"┼","│"))+smiaR(s,10)+I+str(w,10,CEOKR),if(year(data)<year(DatY->d_z_rok+1),'GR+/N',if(smb_dow='PA' .and. ilosc<>0,'W/R','W/N')))
 RETURN('')
 #else
-dispout(DTOV(data)+hb_UTF8ToStr(if(data>DatY->d_z_mies1,"│","┼"))+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+I+nr_zleC+I;
+dispout(DTOV(data)+hb_UTF8ToStr(if(data>DatY->d_z_mies1,"│","┼"))+smb_dow+nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)+I+nr_zleC+I;
   +if(NR_MAG+smb_dow$dok_rozch,"         "+I+smiaR(-ilosc,9),smiaR(ilosc,9)+I+"         ")+I;
   +str(wartosC,10,CEOKR)+hb_UTF8ToStr(if(INDX_MAT->data_POPR>DATA,"┼","│"))+smiaR(s,10)+I+str(w,10,CEOKR),if(year(data)<year(DatY->d_z_rok+1),'GR+/N',{'W/N','W/N','W/N','W/N','W/N','W/N','W/R'}[dow(data)]))
 RETURN('')
 #endif
 #else
-RETURN(DTOV(data)+hb_UTF8ToStr(if(data>DatY->d_z_mies1,"│","┼"))+smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+I+nr_zleC+I;
+RETURN(DTOV(data)+hb_UTF8ToStr(if(data>DatY->d_z_mies1,"│","┼"))+smb_dow+nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)+I+nr_zleC+I;
   +if(NR_MAG+smb_dow$dok_rozch,"         "+I+smiaR(-ilosc,9),smiaR(ilosc,9)+I+"         ")+I;
   +str(wartosC,10,CEOKR)+hb_UTF8ToStr(if(INDX_MAT->data_POPR>DATA,"┼","│"))+smiaR(s,10)+I+str(w,10,CEOKR))
 #endif

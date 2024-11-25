@@ -118,18 +118,27 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,ilosc_f,dost_odb,kontrahent
       jm,stan,KTO_PISAL,data_przy,data_zmian,data_roz,jm_opcja,rodz_opak,gram,;
       cennik,sub_dok,nazwisko,ident,nr_ksef
 #ifdef A_LPNUM
-#define D_LP0 str(0,A_LPNUM) //'  0'
-#define D_LP1 str(1,A_LPNUM) //'  1'
-#define D_LPPUT(x) str(x,A_LPNUM)
-#define D_LPVAL(x) val(x)
-#define D_LPSTR(x) str(D_LPVAL(x),3)
+   #define D_LP0 str(0,A_LPNUM) //'  0'
+   #define D_LP1 str(1,A_LPNUM) //'  1'
+   #ifdef A_UNICODE
+      #define D_LPPUT(x) iif(A_LPNUM=1,binfieldput([POZYCJA],HB_BCHAR(x+48),.t.),str(x,A_LPNUM))
+      #define D_LPVAL(x) iif(A_LPNUM=1,HB_BCODE(binfieldget([POZYCJA],x))-48,val(x))
+      #define D_LPVALFIELD(x) iif(A_LPNUM=1,HB_BCODE(binfieldget([x]))-48,val(x))
+   #else
+      #define D_LPPUT(x) iif(A_LPNUM=1,HB_BCHAR(x+48),str(x,A_LPNUM))
+      #define D_LPVAL(x) iif(A_LPNUM=1,HB_BCODE(x)-48,val(x))
+      #define D_LPVALFIELD(x) D_LPVAL(x)
+   #endif
 #else
-#define D_LP0 '0'
-#define D_LP1 '1'
-#define D_LPVAL(x) (HB_BCODE(x)-48)
-#define D_LPSTR(x) str(D_LPVAL(x),3)
-#define D_LPPUT(x) binfieldput('POZYCJA',HB_BCHAR(x+48),.t.)
+   #define D_LP0 '0'
+   #define D_LP1 '1'
+   #define D_LPPUT(x) HB_BCHAR(x+48)
+   #define D_LPVAL(x) (HB_BCODE(x)-48)
+   #define D_LPVALFIELD(x) D_LPVAL(x)
 #endif
+#define D_LPSTR(x) str(D_LPVAL(x),3)
+#define D_LPSTRFIELD(x) str(D_LPVALFIELD(x),3)
+
 #ifdef A_FA
   field proc_VAT
   memvar pv
@@ -184,10 +193,10 @@ DO WHILE .T.
      set order to 1
 #ifdef A_FK
     znalaz:= szukam({1,40,maxrow(),,1,0,hb_UTF8ToStr("Przegląd ")+dok,;
-        {||nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+hb_UTF8ToStr(if(data>DatY->d_z_mies1 .and. kto_pisal=HB_UCHAR(0x00A0),"│","┼"))+D_KH+I+DTOV(data)+I+D_KH1},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
+        {||nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)+hb_UTF8ToStr(if(data>DatY->d_z_mies1 .and. kto_pisal=HB_UCHAR(0x00A0),"│","┼"))+D_KH+I+DTOV(data)+I+D_KH1},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
 #else
     znalaz:= szukam({1,40,maxrow(),,1,0,hb_UTF8ToStr("Przegląd ")+dok,;
-        {||nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+hb_UTF8ToStr(if(data>DatY->d_z_mies1 .and. kto_pisal=HB_UCHAR(0x00A0),"│","┼"))+DTOV(data)+I+dost_odb},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
+        {||nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)+hb_UTF8ToStr(if(data>DatY->d_z_mies1 .and. kto_pisal=HB_UCHAR(0x00A0),"│","┼"))+DTOV(data)+I+dost_odb},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
 #endif
      firMy->(dbgoto(rf))
     if znalaz
@@ -216,7 +225,7 @@ DO WHILE .T.
          endif
 #endif
          _flp:=_flpmax
-         nkp:=if(pozycja>=D_LP1,pozycja,nil)
+         nkp:=if(pozycja>D_LP0,pozycja,nil)
          eval(_fdmpre,_f)
          //dok1(_f)
          KIBORD(CHR(18))
@@ -1222,7 +1231,7 @@ DO CASE
       set order to "main_zle"
       set relation to nr_mag+index into indx_mat
       seek stanowis->konto
-         szukam({1,17,maxrow(),,1,0,trim(stanowis->opis_koszt),{||index+I+DTOV(data)+I+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)+I+str(pm*ilosc,9,ILDEC)+I+indx_mat->jm+I+indx_mat->nazwa},{|_skey,_s|_skey=K_ESC},stanowis->konto+mag_biez})
+         szukam({1,17,maxrow(),,1,0,trim(stanowis->opis_koszt),{||index+I+DTOV(data)+I+nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)+I+str(pm*ilosc,9,ILDEC)+I+indx_mat->jm+I+indx_mat->nazwa},{|_skey,_s|_skey=K_ESC},stanowis->konto+mag_biez})
       select indx_mat
       goto k
       select main
@@ -2168,9 +2177,9 @@ static asp:={},ksp:='',jmsp,u:=.f.
 local i,j,win,b,c,key,x
 field spec_nr
 
-   IF ksp#dm->(KEY_DOK+nr_dowodu)+D_LPPUT(_fi)
+   IF ksp#dm->(KEY_DOK+nr_dowodu+D_LPPUT(_fi))
       asp:={}
-      ksp:=dm->(KEY_DOK+nr_dowodu)+D_LPPUT(_fi)
+      ksp:=dm->(KEY_DOK+nr_dowodu+D_LPPUT(_fi))
       jmsp:=(lam)->jm
       sel("SPEC","SPEC_NR")
       dbseek(ksp,.f.)
@@ -2754,7 +2763,7 @@ DO CASE
 #endif
 */
 #ifdef A_KSEF
-         elseif NOWYDM .or. DM->pozycja=D_LP0
+         elseif NOWYDM .or. DM->(pozycja=D_LP0)
             x:=strtran(firmy->ident,'-')
             if !isdigit(x)
                if x='PL'

@@ -2117,7 +2117,7 @@ func uFieldGet(f,lval)
    local x := hb_FieldGet(f), t
    if valtype(x)='C'
       t:=hb_FieldType(f)
-      if (left(t,1) $ 'PWG' .or. 'B' $ SubStr(t,3)
+      if left(t,1) $ 'PWG' .or. 'B' $ SubStr(t,3)
          if x=hb_utf8Chr(0xFEFF)
             x:=hb_bsubstr(x,4)
          endif
@@ -2163,21 +2163,14 @@ func binFieldPut(f,x,lval)
    endif
 return x 
 *******************************
-func binFieldGet(f,lval) // .t. - do not padr with spaces
-   local x := hb_FieldGet(f),t
-   if valtype(x)='C' .and.  dbinfo(DBI_CODEPAGE) != HB_CDPSELECT()
+func binFieldGet(f,val)
+   local x,t
+   x:=iif(valtype(val)='C',val,hb_FieldGet(f))
+   if valtype(x)='C' .and. dbinfo(DBI_CODEPAGE) != HB_CDPSELECT()
       t:=hb_FieldType(f)
       IF !(left(t,1) $ 'PWG' .or. 'U' $ substr(t,3) .or. 'B' $ substr(t,3) ) // unicode has been translated OK
-         t:=HB_CDPSELECT(dbinfo(DBI_CODEPAGE))
-         x := hb_FieldGet(f) // again without translation
-         HB_CDPSELECT(t)
+         x:=hb_translate(x,,dbinfo(DBI_CODEPAGE))
       endif
-#ifdef A_UNICODE
-      if empty(lval)
-         // to działa zależy jaka aktualna strona kodowa
-         x += space(hb_FieldLen(f) - hb_UTF8Len(x))
-      endif
-#endif      
    endif
 return x
 *****************

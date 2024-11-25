@@ -106,19 +106,29 @@ field  data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,numer_kol,;
        skladnik,konto_kosz,stano_kosz,cena,przelewem,czekiem,nr_czeku,cena_zak,;
        termin_p,nr_spec,transport,nr_kpr,longname,sub_dok,zaplacono,data_zap,;
        ksef,nr_ksef,nazwisko,data_vat
+
 #ifdef A_LPNUM
-#define D_LP0 str(0,A_LPNUM) //'  0'
-#define D_LP1 str(1,A_LPNUM) //'  1'
-#define D_LPPUT(x) str(x,A_LPNUM)
-#define D_LPVAL(x) val(x)
-#define D_LPSTR(x) str(D_LPVAL(x),3)
+   #define D_LP0 str(0,A_LPNUM) //'  0'
+   #define D_LP1 str(1,A_LPNUM) //'  1'
+   #ifdef A_UNICODE
+      #define D_LPPUT(x) iif(A_LPNUM=1,binfieldput([POZYCJA],HB_BCHAR(x+48),.t.),str(x,A_LPNUM))
+      #define D_LPVAL(x) iif(A_LPNUM=1,HB_BCODE(binfieldget([POZYCJA],x))-48,val(x))
+      #define D_LPVALFIELD(x) iif(A_LPNUM=1,HB_BCODE(binfieldget([x]))-48,val(x))
+   #else
+      #define D_LPPUT(x) iif(A_LPNUM=1,HB_BCHAR(x+48),str(x,A_LPNUM))
+      #define D_LPVAL(x) iif(A_LPNUM=1,HB_BCODE(x)-48,val(x))
+      #define D_LPVALFIELD(x) D_LPVAL(x)
+   #endif
 #else
-#define D_LP0 '0'
-#define D_LP1 '1'
-#define D_LPVAL(x) (HB_BCODE(x)-48)
-#define D_LPSTR(x) str(asc(x)-48,3)
-#define D_LPPUT(x) binfieldput('POZYCJA',HB_BCHAR(x+48),.t.)
+   #define D_LP0 '0'
+   #define D_LP1 '1'
+   #define D_LPPUT(x) HB_BCHAR(x+48)
+   #define D_LPVAL(x) (HB_BCODE(x)-48)
+   #define D_LPVALFIELD(x) D_LPVAL(x)
 #endif
+#define D_LPSTR(x) str(D_LPVAL(x),3)
+#define D_LPSTRFIELD(x) str(D_LPVALFIELD(x),3)
+
 #ifndef A_IZ
   #define ilosc_f ilosc
 #endif
@@ -291,7 +301,7 @@ endif
   if nk#NIL
 #ifdef wtoT
     nkp:=SubStr(nk,6)
-    if empty(nkp) .and. D_LPVAL(pozycja)>maxrow() .and. pozycja>=D_LP1
+    if empty(nkp) .and. D_LPVALFIELD(POZYCJA)>maxrow() .and. pozycja>D_LP0
        nkp:=pozycja
     endif
 #else
@@ -397,7 +407,7 @@ endif
     _f:=asize({0,79,0,2,dok_lpm,;
          {|_f|DOK10(_f),dok11(_f)},;
          {||NIL},{||NIL},;
-         {|_f|DBSELECTAREA("MAIN"),ORDSETFOCUS("MAIN_NRK"),DBSEEK(DM->(KEY_DOK+NR_DOWODU)+D_LPPUT(_fi),.f.)},;
+         {|_f|DBSELECTAREA("MAIN"),ORDSETFOCUS("MAIN_NRK"),DBSEEK(DM->(KEY_DOK+NR_DOWODU+D_LPPUT(_fi)),.f.)},;
          {|_f|dok41(_f)},;
          {|_f|dok7(_f)}},_fLEN)
   ELSE
@@ -412,7 +422,7 @@ private HLINK
          {|_f|DOK1(_f),dok10(_f)},;
          {|_f,g|dok2(_f,g)},;
          {|_f,g|dok3(_f,g)},;
-         {|_f|DBSELECTAREA("MAIN"),ORDSETFOCUS("MAIN_NRK"),DBSEEK(DM->(KEY_DOK+NR_DOWODU)+D_LPPUT(_fi),.f.)},;
+         {|_f|DBSELECTAREA("MAIN"),ORDSETFOCUS("MAIN_NRK"),DBSEEK(DM->(KEY_DOK+NR_DOWODU+D_LPPUT(_fi)),.f.)},;
          {|_f,g|dok4(_f,g,_s)},;
          {|_f,g|dok5(_f,g)},;
          {|_f|dok6(_f)}},_fLEN)
@@ -680,7 +690,7 @@ procedure dok1(_f)
           //DEFAULT mknk TO i
           mknk:=i
       endif
-      _flp:=MIN(_flp,D_LPVAL(pozycja))
+      _flp:=MIN(_flp,D_LPVALFIELD(POZYCJA))
       da:=DATA
       dd:=DATA_DOST
       n_f:=nr_faktury
@@ -786,7 +796,7 @@ return
 **********************************************
 PROCEDURE DOK10(_f)
 
-  _flp:=MIN(_flp,D_LPVAL(DM->pozycja))
+  _flp:=MIN(_flp,D_LPVALFIELD(POZYCJA))
   IF !empty(nkp)
     _fi:=max(1,D_LPVAL(nkp))
     _fl:=min(_flp,_fi+5)
@@ -1021,11 +1031,11 @@ procedure dok11(_f)
 #ifdef wtoT
 #ifndef A_GRAM
 #ifndef A_JMTOT
-  posproc:=D_LPVAL(pozycja)
+  posproc:=D_LPVALFIELD(POZYCJA)
 #endif
 #endif
 #endif
-  _flp:=D_LPVAL(pozycja)
+  _flp:=D_LPVALFIELD(POZYCJA)
 #ifdef A_FA
   if dok_p_r="F"
     @ 4,2 SAY nr_faktury picture "@S13"
@@ -1451,7 +1461,7 @@ memvar exp_od,exp_do
           aeval(rarr,{|i|dbgoto(i),nr_dowodu:=nk})
 #else
           // break lub .t.
-          aeval(rarr,{|i|dbgoto(i),if(reclock(.F.,hb_UTF8ToStr("NIE POTRAFIĘ ZMIENIĆ NUMERU W POZYCJI")+D_LPSTR(POZYCJA)),nr_dowodu:=nk,)})
+          aeval(rarr,{|i|dbgoto(i),if(reclock(.F.,hb_UTF8ToStr("NIE POTRAFIĘ ZMIENIĆ NUMERU W POZYCJI")+D_LPSTRFIELD(POZYCJA)),nr_dowodu:=nk,)})
           unlock
 #endif
           select DM
@@ -1475,7 +1485,7 @@ memvar exp_od,exp_do
 #ifndef A_LAN
            replace data with da while KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu) rest
 #else
-           replace data with da for reclock(.F.,hb_UTF8ToStr("NIE POTRAFIĘ ZMIENIĆ DATY POZYCJI")+D_LPSTR(POZYCJA) ,.F.) while KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu) rest
+           replace data with da for reclock(.F.,hb_UTF8ToStr("NIE POTRAFIĘ ZMIENIĆ DATY POZYCJI")+D_LPSTRFIELD(POZYCJA) ,.F.) while KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu) rest
            unlock
 #endif
         ENDIF
@@ -1585,7 +1595,7 @@ memvar exp_od,exp_do
 #ifndef A_LAN
            dbeval(x,,{||KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu)})
 #else
-           dbeval(x,{||RECLOCK(.F.,hb_UTF8ToStr("NIE POTRAFIĘ ZMIENIĆ NUMERU KONTA POZYCJI")+D_LPSTR(POZYCJA) ,.F.)},{||KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu)})
+           dbeval(x,{||RECLOCK(.F.,hb_UTF8ToStr("NIE POTRAFIĘ ZMIENIĆ NUMERU KONTA POZYCJI")+D_LPSTRFIELD(POZYCJA) ,.F.)},{||KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu)})
            unlock
 #endif
            else
@@ -1593,7 +1603,7 @@ memvar exp_od,exp_do
 #ifndef A_LAN
            replace nr_zlec with left(nr_zlec,i)+kh while KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu) for c==SubStr(nr_zlec,i+1,A_NRLTH)
 #else
-           replace nr_zlec with left(nr_zlec,i)+kh while KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu) for c==SubStr(nr_zlec,i+1,A_NRLTH) .and. reclock(.F.,hb_UTF8ToStr("NIE POTRAFIĘ ZMIENIĆ NUMERU KONTA POZYCJI")+D_LPSTR(POZYCJA) ,.F.)
+           replace nr_zlec with left(nr_zlec,i)+kh while KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu) for c==SubStr(nr_zlec,i+1,A_NRLTH) .and. reclock(.F.,hb_UTF8ToStr("NIE POTRAFIĘ ZMIENIĆ NUMERU KONTA POZYCJI")+D_LPSTRFIELD(POZYCJA) ,.F.)
            unlock
 #endif
            endif
@@ -1664,7 +1674,7 @@ memvar exp_od,exp_do
        if (dpos:=min(_flp+1,len(darr)))=1
           @ _frow+4,1 say 'Pozycje z KSeF pod [F8]' color _sbkgr
        endif
-       dflag:=dm->pozycja=D_LP0 .and. dpos>0
+       dflag:=dm->(pozycja=D_LP0) .and. dpos>0
   endif
 #endif
 #ifdef A_ODDO
@@ -1768,7 +1778,7 @@ begin sequence
        if (dpos:=min(_flp+1,len(darr)))=1
            @ _frow+4,1 say 'Zbiorówka za ten okres pod [F8]' UNICODE color _sbkgr
        endif
-       dflag:=dm->pozycja=D_LP0 .and. dpos>0
+       dflag:=dm->(pozycja=D_LP0) .and. dpos>0
 recover
       dflag:=.f.
       darr:={}
@@ -1844,7 +1854,7 @@ begin sequence
           if (dpos:=min(_flp+1,len(darr)))=1
              @ _frow+2,5 say 'Zapotrzebowanie na ten dzień pod [F8]' UNICODE color _sbkgr
           endif
-          dflag:=dm->pozycja=D_LP0 .and. dpos>0
+          dflag:=dm->(pozycja=D_LP0) .and. dpos>0
        endif
 #else
     if empty(darr) .and. pm=-1 .and. dok$dok_di .and. dok_zew="W" .and. nr_mag=A_MAGDI //.and. ""#(txt:=getenv("DIETADEF"))
@@ -1963,7 +1973,7 @@ begin sequence
           if (dpos:=min(_flp+1,len(darr)))=1
              @ _frow+2,5 say 'Zapotrzebowanie na ten dzień pod [F8]' UNICODE color _sbkgr
           endif
-          dflag:=dm->pozycja=D_LP0 .and. dpos>0
+          dflag:=dm->(pozycja=D_LP0) .and. dpos>0
        endif
 #endif //multidi
 recover
@@ -2061,7 +2071,7 @@ local txt,j,x,s:=0,si:='',gzl,y,z,a
       if iscolor()
         SET COLOR TO (_sbnorm)
       endif
-      _fnowy:=KEY_DOK+nr_dowodu+pozycja#dm->(KEY_DOK+nr_dowodu)+D_LPPUT(_fi)
+      _fnowy:=KEY_DOK+nr_dowodu+pozycja#dm->(KEY_DOK+nr_dowodu+D_LPPUT(_fi))
 #ifndef STANY
       NOWYSTAN:=.t.
 #endif
@@ -2657,16 +2667,16 @@ IF p='DOK4'
    tone(130,3)
   ELSE
    LOCK IN DM
-   DM->POZYCJA:=D_LPPUT(D_LPVAL(DM->pozycja)+1)
+   DM->(POZYCJA:=D_LPPUT(D_LPVALFIELD(POZYCJA)+1))
 #ifdef A_LAN
-#define D_LAN {||reclock(.F.,hb_UTF8ToStr("NIE POTRAFIĘ ZMIENIĆ NUMERU W POZYCJI")+D_LPSTR(POZYCJA),,,recno())}
+#define D_LAN {||reclock(.F.,hb_UTF8ToStr("NIE POTRAFIĘ ZMIENIĆ NUMERU W POZYCJI")+D_LPSTRFIELD(POZYCJA),,,recno())}
 #define D_LAN0 ,dbrunlock(r)
 #else
 #define D_LAN
 #define D_LAN0
 #endif
    dbeval({||aadd(a,recno())},D_LAN,{||KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu)})
-   AEVAL(a,{|r,i|dbgoto(r),MAIN->pozycja:=D_LPPUT(_fi+i) D_LAN0})
+   AEVAL(a,{|r,i|dbgoto(r),pozycja:=D_LPPUT(_fi+i) D_LAN0})
 #undef D_LAN
 #undef D_LAN0
    append blank
@@ -2703,13 +2713,14 @@ ELSEIF procname(3)='SZUKAM' .and. !_fnowy
    message(a)
    if g:exitstate=GE_ENTER .and. p#0
       LOCK IN DM
-      DM->POZYCJA:=D_LPPUT(_flp:=D_LPVAL(DM->pozycja)+1)
+      DM->(POZYCJA:=D_LPPUT(_flp:=D_LPVALFIELD(POZYCJA)+1))
       a:=recno()
       append blank
       nr_mag:=mag_biez
       smb_dow:=dm->smb_dow
       nr_dowodu:=dm->nr_dowodu
-      pozycja:=DM->pozycja
+      //pozycja:=DM->pozycja
+      POZYCJA:=DM->(D_LPPUT(D_LPVALFIELD(POZYCJA)))
       data:=dm->data
       index:=INDX_MAT->index
 #ifdef A_IZ
@@ -3202,7 +3213,7 @@ local rcrd,j,a,b,c,d,comdm,ames:={},x,y,z,cx,px
           append blank
           smb_dow:=dm->smb_dow
           nr_dowodu:=dm->nr_dowodu
-          pozycja:=D_LPPUT(_fi)
+          POZYCJA:=D_LPPUT(_fi)
           data:=dm->data
         ELSE
           lock
@@ -3210,8 +3221,9 @@ local rcrd,j,a,b,c,d,comdm,ames:={},x,y,z,cx,px
         IF _fi>posproc
            posproc:=_fi
         ENDIF
-        IF pozycja>DM->pozycja
-          DM->POZYCJA:=pozycja
+        IF D_LPVALFIELD(POZYCJA)>DM->(D_LPVALFIELD(POZYCJA))
+          //DM->POZYCJA:=pozycja
+          DM->POZYCJA:=D_LPPUT(D_LPVALFIELD(POZYCJA))
           comdm:=.t.
         ENDIF
         nr_mag:=mag_biez
@@ -3656,7 +3668,7 @@ else
     do while ""#dok_kpr
        if npr>DatY->last_kpr .and. dm->pozycja>D_LP0
          a:=npr
-       elseif npr=DatY->last_kpr .and. dm->pozycja=D_LP0
+       elseif npr=DatY->last_kpr .and. dm->pozycja==D_LP0
          a:=npr-1
        else
          Exit
@@ -3722,7 +3734,7 @@ do while _fpopkey
 #define D_REST 4
 #ifdef A_LAN
 dm->(dbgoto(recno()))
-if _flp>D_LPVAL(dm->pozycja) .or. if(_flp=0, dm->pozycja >D_LP0,_fi#D_LPVAL(pozycja)) .and. D_LPVAL(pozycja)>0
+if _flp>D_LPVAL(dm->pozycja) .or. if(_flp=0, dm->pozycja >D_LP0,_fi#D_LPVALFIELD(POZYCJA)) .and. D_LPVALFIELD(POZYCJA)>0
    select dm
    _fj:=0
    _fl:=_fi:=1
@@ -3733,8 +3745,8 @@ if _flp>D_LPVAL(dm->pozycja) .or. if(_flp=0, dm->pozycja >D_LP0,_fi#D_LPVAL(pozy
    _fkey:=K_ESC
    inkey()
    exit
-elseif _flp<D_LPVAL(dm->pozycja)
-   _flp:=D_LPVAL(dm->pozycja)
+elseif _flp<DM->(D_LPVALFIELD(POZYCJA))
+   _flp:=DM->(D_LPVALFIELD(POZYCJA))
    _fkey:=K_PGDN
 else
 #ifdef A_MYSZ

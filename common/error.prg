@@ -1,4 +1,3 @@
-
 #ifdef A_UNICODE
    #define D_CDP 'UTF8EX'
 #else
@@ -10,6 +9,8 @@
 #ifdef A_EXT
 request A_EXT
 #endif
+
+REQUEST HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_PLWIN, HB_CODEPAGE_UTF8EX
 
 //#define SIMPLE
 #define NONTXERR
@@ -23,9 +24,8 @@ request A_EXT
   #include "ads.ch"
   REQUEST ADS
 #endif
-REQUEST HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_PLWIN, HB_CODEPAGE_UTF8EX
 
-init proc esys()
+init proc z_esys()
 
 memvar _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,firma_n,firma_a,defa,pcl
 local sc:=A_SUMK,a:=A_AUTOR,f:=A_KOMU_N,fa:=A_KOMU_A
@@ -96,8 +96,8 @@ endif
 ErrorBlock( {|e| DefError(e)} )
 
 #ifdef A_ADS
-      RddRegister( "ADS", 1 )
-      rddsetdefault("ADS")
+   RddRegister( "ADS", 1 )
+   SET RDD DEFAULT TO ADS
    #ifdef A_CDX
       // default SET FILETYPE TO VFP
       // default AdsSetCharType( /*MACHINE_VFP_BIN_1250*/ 6, ":en_US" )  
@@ -109,10 +109,8 @@ ErrorBlock( {|e| DefError(e)} )
       SET AXS LOCKING ON
 #else
    #ifdef A_CDX
-      REQUEST A_CDX
       SET RDD DEFAULT TO A_CDX
    #else
-      REQUEST DBFNTX
       SET RDD DEFAULT TO DBFNTX
    #endif
 #endif

@@ -9,16 +9,19 @@
 #endif
 
 #ifdef A_LPNUM
-#define D_LP0 str(0,A_LPNUM) //'  0'
-#define D_LP1 str(1,A_LPNUM) //'  1'
-#define D_LPVAL(x) val(x)
-#define D_LPSTR(x) str(D_LPVAL(x),3)
+   #ifdef A_UNICODE
+      #define D_LPVAL(x) iif(A_LPNUM=1,HB_BCODE(binfieldget([POZYCJA],x))-48,val(x))
+      #define D_LPVALFIELD(x) iif(A_LPNUM=1,HB_BCODE(binfieldget([x]))-48,val(x))
+   #else
+      #define D_LPVAL(x) iif(A_LPNUM=1,HB_BCODE(x)-48,val(x))
+      #define D_LPVALFIELD(x) D_LPVAL(x)
+   #endif
 #else
-#define D_LP0 '0'
-#define D_LP1 '1'
-#define D_LPVAL(x) (HB_BCODE(x)-48)
-#define D_LPSTR(x) str(D_LPVAL(x),3)
+   #define D_LPVAL(x) (HB_BCODE(x)-48)
+   #define D_LPVALFIELD(x) D_LPVAL(x)
 #endif
+#define D_LPSTR(x) str(D_LPVAL(x),3)
+#define D_LPSTRFIELD(x) str(D_LPVALFIELD(x),3)
 
 #ifdef A_ADS
 #ifndef A_STSIMPLE
@@ -1530,7 +1533,7 @@ select main
 seek STANY->NR_MAG+STANY->index LAST
 do while STANY->NR_MAG+STANY->index = NR_MAG+index .AND..NOT. BOF()
    if !nr_mag+smb_dow$dok_rozch
-      dop:=smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)
+      dop:=smb_dow+nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)
       select STANY      
       return(dtoc(MAIN->data))
    endif   
@@ -1549,7 +1552,7 @@ select main
 seek STANY->NR_MAG+STANY->index LAST
 do while STANY->NR_MAG+STANY->index = NR_MAG+index .and..not. bof()
    if nr_mag+smb_dow$dok_rozch
-      dor:=smb_dow+nr_dowodu+"/"+str(D_LPVAL(pozycja),2)
+      dor:=smb_dow+nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)
       select STANY
       return(dtoc(MAIN->data))
    endif   

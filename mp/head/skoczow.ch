@@ -2,11 +2,14 @@
 #define A_DDBF
 #command INIT SCREEN => //__run("font852")
 #command INIT PRINTER => qqout(eval(MEMVAR->p_init,wasbad))
-#define PC852
+#define PC852 'PLWIN'
+#define A_UNICODE 'UTF8EX'
+#define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
 #define PLWIN
 #define UpP(x) UPPER(x)
 #define A_ZLEC11
-#define A_CDX DBFCDX
+#define A_LPNUM hb_FieldLen([POZYCJA])
+#define A_CDX VFPCDX
 #define A_GREX
 #define A_NOZAP
 #define A_DRUKCOMP
@@ -20,10 +23,14 @@
 #define DTOV(dat) tranr(SubStr(dtos(dat),5),"##.##")
 #define A_SET_DAT GERMAN
 #define STANY   INDX_MAT
-#define A_SUMK  -47291241801
+#ifdef A_UNICODE
+   #define A_SUMK  -40457792895
+#else
+   #define A_SUMK  -47291241801
+#endif
 #define A_KOMU_N  'Powiatowy Dom Pomocy Społecznej "Feniks" w Skoczowie'
 #define A_KOMU_A  "Skoczów, ul. Sportowa 13"
-#define A_AUTOR   "A.D. 1992-2006, Marek Długosz, Cieszyn, ul. Równa 16, tel. 0338522553"
+#define A_AUTOR   "A.D. 1992-2024, Marek Długosz, Cieszyn, ul. Równa 16, tel. 0338522553"
 #define iS_spec .t.
 //#define hAslo_spec(x) ALARM("TYLKO WERSJA DEMO NIE POSIADA ZABEZPIECZENIA PRZED NIEUPOWŻNIONYM DOSTĘPEM DO TEJ FUNKCJI.")
 #define A_WA

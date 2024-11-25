@@ -101,19 +101,27 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,dost_odb,rodz_opak,gram,;
       data_dost,nr_faktury,index,nazwa,adres,uwagi,NUMER_KOL,nr_mag,jm,stan,;
       KTO_PISAL,jm_opcja,nr_kpr,sub_dok,zaplacono,wartosc,wart_ewid,kontrahent,;
       wart_vat
+
 #ifdef A_LPNUM
-#define D_LP0 str(0,A_LPNUM) //'  0'
-#define D_LP1 str(1,A_LPNUM) //'  1'
-#define D_LPVAL(x) val(x)
-#define D_LPSTR(x) str(D_LPVAL(x),3)
-#define D_LPSTR1(x) str(D_LPVAL(x),1)
+   #define D_LP0 str(0,A_LPNUM) //'  0'
+   #define D_LP1 str(1,A_LPNUM) //'  1'
+   #ifdef A_UNICODE
+      #define D_LPVAL(x) iif(A_LPNUM=1,HB_BCODE(binfieldget([POZYCJA],x))-48,val(x))
+      #define D_LPVALFIELD(x) iif(A_LPNUM=1,HB_BCODE(binfieldget([x]))-48,val(x))
+   #else
+      #define D_LPVAL(x) iif(A_LPNUM=1,HB_BCODE(x)-48,val(x))
+      #define D_LPVALFIELD(x) D_LPVAL(x)
+   #endif
+   #define D_LPSTR1(x) str(D_LPVALFIELD(x),1)
 #else
-#define D_LP0 '0'
-#define D_LP1 '1'
-#define D_LPVAL(x) (hb_BCode(binfieldget([x]))-48)
-#define D_LPSTR(x) str(D_LPVAL(x),3)
-#define D_LPSTR1(x) x
+   #define D_LP0 '0'
+   #define D_LP1 '1'
+   #define D_LPVAL(x) (HB_BCODE(x)-48)
+   #define D_LPVALFIELD(x) D_LPVAL(x)
+   #define D_LPSTR1(x) x
 #endif
+#define D_LPSTR(x) str(D_LPVAL(x),3)
+#define D_LPSTRFIELD(x) str(D_LPVALFIELD(x),3)
 
 #ifdef A_OLZA
 field stano_kosz,konto_kosz
@@ -154,7 +162,7 @@ field przelewem,czekiem
 #ifdef A_SHORTIND
    #define ZLBEG 32
    #define ILPIC 8,ILDEC
-   #define STDPOZ1 smb_dow+nr_dowodu+'/'+str(D_LPVAL(pozycja),2)
+   #define STDPOZ1 smb_dow+nr_dowodu+'/'+str(D_LPVALFIELD(POZYCJA),2)
    #define STDPOZ2 STDPOZ1
    #define STDZLE nr_zlec
            #ifdef A_ZLEC11
@@ -197,9 +205,9 @@ field przelewem,czekiem
         #define ILPIC 9,ILDEC
      #else
         #define ILPIC 8,ILDEC
-        #define STDPOZ1 smb_dow+nr_dowodu+'/'+str(D_LPVAL(pozycja),2)
+        #define STDPOZ1 smb_dow+nr_dowodu+'/'+str(D_LPVALFIELD(POZYCJA),2)
         #ifdef A_ZATW
-        #define STDPOZ2 smb_dow+nr_dowodu+if(data<=DatY->d_z_mies1 .or. operator=kto_pisal .or. kto_pisal#HB_UCHAR(0x00A0).and.!is_spec,"/","*")+str(D_LPVAL(pozycja),2)
+        #define STDPOZ2 smb_dow+nr_dowodu+if(data<=DatY->d_z_mies1 .or. operator=kto_pisal .or. kto_pisal#HB_UCHAR(0x00A0).and.!is_spec,"/","*")+str(D_LPVALFIELD(POZYCJA),2)
         #else
         #define STDPOZ2 STDPOZ1
         #endif
@@ -229,7 +237,7 @@ field przelewem,czekiem
 #endif
            #ifdef A_SUBDOK
              #undef STDPOZ2
-             #define STDPOZ2 smb_dow+nr_dowodu+'/'+str(D_LPVAL(pozycja),2)+I+sub_dok
+             #define STDPOZ2 smb_dow+nr_dowodu+'/'+str(D_LPVALFIELD(POZYCJA),2)+I+sub_dok
            #endif
 
 STATIC proc set_all(_s,doc_opcja,_skey,stat_ord,init,chgbase)

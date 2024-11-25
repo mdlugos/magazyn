@@ -740,7 +740,7 @@ DO CASE
 
 		IF EMPTY(&items[1])
 			* no list..go left
-			KEYBOARD(CHR(219))
+			KEYBOARD(CHR(19)) //219
 
 		ELSE
 			* standard list selection..get starting element and row
@@ -770,7 +770,7 @@ DO CASE
 
 					ELSE
 						* just move over and down
-						KEYBOARD CHR(219) + CHR(24)
+						KEYBOARD CHR(19) + CHR(24) //219
 
 					ENDIF
 
@@ -778,7 +778,7 @@ DO CASE
 					* left arrow..move off list by forwarding to multibox
 					* cannot directly keyboard chr(19) because it would be
 					*    handled like ^S and halt the system
-					KEYBOARD CHR(219)
+					KEYBOARD CHR(19) //219
 
 				CASE M->keystroke = 0
 					* menu system has returned either select or abort
@@ -843,7 +843,8 @@ ENDIF
 
 IF M->cur_el > M->rel_row + 1
 	* first element not on screen
-	@ M->wt + 2, M->wl + 44 SAY M->more_up
+	//@ M->wt + 2, M->wl + 44 SAY M->more_up
+	hb_DispOutAtBox( M->wt + 2, M->wl + 44, M->more_up )
 
 ELSE
 	* first element is on screen
@@ -853,7 +854,8 @@ ENDIF
 
 IF M->i_full - M->cur_el > M->wh - 2 - M->rel_row
 	* last element not on screen
-	@ M->wt + M->wh, M->wl + 44 SAY M->more_down
+	//@ M->wt + M->wh, M->wl + 44 SAY M->more_down
+	hb_DispOutAtBox( M->wt + M->wh, M->wl + 44, M->more_down )
 
 ELSE
 	* last element is on screen
@@ -870,7 +872,7 @@ IF M->amod = 3
 			* escape..abort
 			r = 0
 
-		CASE M->keystroke = 13 .OR. M->keystroke = 19 .OR. M->keystroke = 219
+		CASE M->keystroke = 13 .OR. M->keystroke = 19 //.OR. M->keystroke = 219
 			* quit achoice no abort..only the enter key will cause selection
 			r = 1
 
@@ -2199,7 +2201,8 @@ FUNCTION isdata
 
 PARAMETERS k
 
-RETURN (M->k >= 32 .AND. M->k < 249 .AND. M->k <> 219 .AND. CHR(M->k) <> ";")
+RETURN (M->k >= 32 .AND. hb_keyChar(M->k) <> ";")
+//M->k < 249 .AND. M->k <> 219 .AND. CHR(M->k) <> ";")
 
 
 ******

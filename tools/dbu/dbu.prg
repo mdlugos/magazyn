@@ -180,12 +180,12 @@ PROCEDURE Dbu( param1, param2, param3 )
    CLEAR
 
    * system constants
-   more_up = CHR(24)                             && visual up arrow
-   more_down = CHR(25)                           && visual down arrow
-   frame  := hb_UTF8ToStr( "╒═╕│╛═╘│" )       	  // box characters
-   lframe := hb_UTF8ToStr( "╤═╕│╛═╧│" )
-   mframe := hb_UTF8ToStr( "┬─┬│┘─└│" )
-   sframe := hb_UTF8ToStr( "┌─┐│┘─└│" )
+   more_up = chr(24)                && visual up arrow
+   more_down = chr(25)              && visual down arrow
+   frame  := hb_UTF8ToStrBox( "╒═╕│╛═╘│" )       	  // box characters
+   lframe := hb_UTF8ToStrBox( "╤═╕│╛═╧│" )
+   mframe := hb_UTF8ToStrBox( "┬─┬│┘─└│" )
+   sframe := hb_UTF8ToStrBox( "┌─┐│┘─└│" )
 
    * global variables
    STORE .F. TO need_field,need_ntx,need_relat,need_filtr,box_open

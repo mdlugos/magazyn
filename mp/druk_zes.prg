@@ -131,18 +131,25 @@ FIELD WARTOSC,ILOSC,DATA,INDEX,nr_mag,smb_dow,nr_dowodu,pozycja,nr_zlec,dost_odb
       data_vat,cena_k
 
 #ifdef A_LPNUM
-#define D_LP0 str(0,A_LPNUM) //'  0'
-#define D_LP1 str(1,A_LPNUM) //'  1'
-#define D_LPVAL(x) val(x)
-#define D_LPSTR(x) str(D_LPVAL(x),3)
-#define D_LPSTR1(x) str(D_LPVAL(x),1)
+   #define D_LP0 str(0,A_LPNUM) //'  0'
+   #define D_LP1 str(1,A_LPNUM) //'  1'
+   #ifdef A_UNICODE
+      #define D_LPVAL(x) iif(A_LPNUM=1,HB_BCODE(binfieldget([POZYCJA],x))-48,val(x))
+      #define D_LPVALFIELD(x) iif(A_LPNUM=1,HB_BCODE(binfieldget([x]))-48,val(x))
+   #else
+      #define D_LPVAL(x) iif(A_LPNUM=1,HB_BCODE(x)-48,val(x))
+      #define D_LPVALFIELD(x) D_LPVAL(x)
+   #endif
+   #define D_LPSTR1(x) str(D_LPVALFIELD(x),1)
 #else
-#define D_LP0 '0'
-#define D_LP1 '1'
-#define D_LPVAL(x) (HB_BCODE(binfieldget([x]))-48)
-#define D_LPSTR(x) str(HB_BCODE(binfieldget([x]))-48,3)
-#define D_LPSTR1(x) x
+   #define D_LP0 '0'
+   #define D_LP1 '1'
+   #define D_LPVAL(x) (HB_BCODE(x)-48)
+   #define D_LPVALFIELD(x) D_LPVAL(x)
+   #define D_LPSTR1(x) x
 #endif
+#define D_LPSTR(x) str(D_LPVAL(x),3)
+#define D_LPSTRFIELD(x) str(D_LPVALFIELD(x),3)
 
 #ifdef A_KAMIX
   #undef D_GRAM
@@ -517,7 +524,7 @@ DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
   endif
 #endif
   @ 22,10 SAY 'Grupowanie według pierwszych' UNICODE GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=len(i_od)
-  devout(" znaków klucza")
+  SAYL " znaków klucza" UNICODE
 READ
 if readkey()=27
   break
@@ -1289,10 +1296,10 @@ endif
       endif
 #endif
 if wa_flag
-      ? ccpi(7)+SMB_DOW+NR_DOWODU+"/"+str(D_LPVAL(POZYCJA),2)+"|"+DTOV(DATA)+"|"+strpic(D_CENA,10,A_ZAOKR,"@E ",.t.),speC(ccpi(5)+HB_BCHAR(13)+space(19)),"|"
+      ? ccpi(7)+SMB_DOW+NR_DOWODU+"/"+str(D_LPVALFIELD(POZYCJA),2)+"|"+DTOV(DATA)+"|"+strpic(D_CENA,10,A_ZAOKR,"@E ",.t.),speC(ccpi(5)+HB_BCHAR(13)+space(19)),"|"
       setprc(prow(),20)
 else
-      ? SMB_DOW+NR_DOWODU+"/"+str(D_LPVAL(POZYCJA),2)+"|"+DTOV(DATA)+"|"
+      ? SMB_DOW+NR_DOWODU+"/"+str(D_LPVALFIELD(POZYCJA),2)+"|"+DTOV(DATA)+"|"
 endif
       ?? D_ILOUT(D_ILOSC,(sel)->przel)+"|"+(SEL)->jM+"|"
 if wa_flag
@@ -3957,7 +3964,7 @@ DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
 #endif
 #ifdef A_OLZA
       DM->(DBSEEK(MAIN->(KEY_DOK+MAIN->NR_DOWODU),.F.))
-      ? ccpi(7)+SMB_DOW,NR_DOWODU+"/"+STR(D_LPVAL(POZYCJA),3)+"|"+DTOV(DATA)+"|"+;
+      ? ccpi(7)+SMB_DOW,NR_DOWODU+"/"+STR(D_LPVALFIELD(POZYCJA),3)+"|"+DTOV(DATA)+"|"+;
         dm->konto_kosz+"|"+dm->stano_kosz+"|"+NR_ZLEC+"|"
         ?? ccpi(4)+;
         izreS(PRZYCH(is),(sel)->przel)+"|"+;
@@ -3967,7 +3974,7 @@ DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
         izreS(S,(sel)->przel)+"|"+;
         TrAN(W,"@E ",A_ZAOKR,11)+"|"
 #else
-      ? SMB_DOW,NR_DOWODU+"/"+STR(D_LPVAL(POZYCJA),3)+"|"+DTOV(DATA)+"|"+nr_zleC+"|"+;
+      ? SMB_DOW,NR_DOWODU+"/"+STR(D_LPVALFIELD(POZYCJA),3)+"|"+DTOV(DATA)+"|"+nr_zleC+"|"+;
         TrAN(x,"@EZ ",A_ZAOKR,10)+"|"+;
         izreS(PRZYCH(is),(sel)->przel)+"|"+;
         TrAN(PRZYCH(ws),"@EZ ",A_ZAOKR,11)+"|"+;
@@ -4356,7 +4363,7 @@ ELSE
 #endif
     longdok:=.f.
     DO WHILE TXT=KEY_DOK
-      if prow()+if(main_flag,D_LPVAL(pozycja)+3,3)>P_ROWN .and. prow()>15
+      if prow()+if(main_flag,D_LPVALFIELD(POZYCJA)+3,3)>P_ROWN .and. prow()>15
         IF STRONA>0
          ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
          setprc(0,0)
@@ -4479,7 +4486,7 @@ ELSE
         ?? speC(ccpi(4)+P_UOFF)
       endif
       if main_flag
-        do while txt=KEY_DOK .and. (prow()+D_LPVAL(pozycja)+3<=P_ROWN .or. prow()<=15)
+        do while txt=KEY_DOK .and. (prow()+D_LPVALFIELD(POZYCJA)+3<=P_ROWN .or. prow()<=15)
           if !longdok
              LASTDOK:=NR_DOWODU
              wd:=0
@@ -4510,7 +4517,7 @@ ELSE
               ?? dm->konto_kosz+"|"+dm->stano_kosz+"|"
             endif
 #else
-            ? smb_dow+nr_dowodu+"/"+Str(D_LPVAL(pozycja),2)+"|"+DTOV(data)+"|"
+            ? smb_dow+nr_dowodu+"/"+Str(D_LPVALFIELD(POZYCJA),2)+"|"+DTOV(data)+"|"
 #endif
             if dok_k
               ?? nr_zleC+"|"
@@ -4607,7 +4614,7 @@ ELSE
           endif
 #endif
 #ifdef A_OLZA
-          ? SMB_DOW+NR_DOWODU+"/"+str(D_LPVAL(POZYCJA),2)+"|"+DTOV(DATA)+"|"
+          ? SMB_DOW+NR_DOWODU+"/"+str(D_LPVALFIELD(POZYCJA),2)+"|"+DTOV(DATA)+"|"
           if dok_k .and. dok_w
             ?? dm->konto_kosz+"|"+dm->stano_kosz+"|"
           endif
@@ -4620,7 +4627,7 @@ ELSE
             wd:=wartoSC
             WP+=PRZELEWEM
             WC+=CZEKIEM
-            ? ccpi(7)+SMB_DOW+NR_DOWODU+"/"+str(D_LPVAL(POZYCJA),2)+"|"+DTOV(DATA)+"|"
+            ? ccpi(7)+SMB_DOW+NR_DOWODU+"/"+str(D_LPVALFIELD(POZYCJA),2)+"|"+DTOV(DATA)+"|"
 #ifdef A_CENVAT
             ?? TrAN(wartoSC-przelewem-czekiem,"@E ",A_ZAOKR,12)+"|"
 #else
@@ -4630,7 +4637,7 @@ ELSE
                TrAN(czekiem,"@E ",A_ZAOKR,12)+"|"
           else
   #endif
-            ? SMB_DOW+NR_DOWODU+"/"+str(D_LPVAL(POZYCJA),2)+"|"+DTOV(DATA)+"|"+PAD(NR_FAKTURY,13)+"|"
+            ? SMB_DOW+NR_DOWODU+"/"+str(D_LPVALFIELD(POZYCJA),2)+"|"+DTOV(DATA)+"|"+PAD(NR_FAKTURY,13)+"|"
 #ifdef A_FA
           if dok_v
             wd:=wartoSC
@@ -5253,7 +5260,7 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
       LOOP
    ENDIF
    W:=0
-   IF MAIN_FLAG .AND. D_LPVAL(pozycja)+4+prow()>P_ROWN .or. prow()+4>P_ROWN
+   IF MAIN_FLAG .AND. D_LPVALFIELD(POZYCJA)+4+prow()>P_ROWN .or. prow()+4>P_ROWN
       IF STRONA>0
          ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
          setprc(0,0)
@@ -5291,7 +5298,7 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
   ?
   iw:=0
   do while nr_mag+smb_dow+konto_kosz=txt .AND. data<=do
-     IF MAIN_FLAG .AND. D_LPVAL(pozycja)+1+prow()>P_ROWN .or. prow()+1>P_ROWN
+     IF MAIN_FLAG .AND. D_LPVALFIELD(POZYCJA)+1+prow()>P_ROWN .or. prow()+1>P_ROWN
         ?? speC(HB_BCHAR(13)+P_UON+SPACE(80))
         ?? spec(P_UOFF)
         ? "DO PRZENIESIENIA |"+TrAN(W,"@E ",A_ZAOKR,18)+"|                                           "
@@ -5324,7 +5331,7 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
     ENDIF
     W-=warT_ewiD
     iw-=warT_ewiD
-    ? SMB_DOW+' '+NR_DOWODU+"/"+STR(D_LPVAL(POZYCJA),2)+"|"+DTOV(DATA)+"|"
+    ? SMB_DOW+' '+NR_DOWODU+"/"+STR(D_LPVALFIELD(POZYCJA),2)+"|"+DTOV(DATA)+"|"
     ?? stano_kosz+"|"
     ?? strpic(-warT_ewiD,12,A_ZAOKR,"@E ")+"|"
     ?? cpad(dost_odb,80-pcol(),10,0)
@@ -5337,10 +5344,10 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
       indx_mat->(dbseek(main->index,.f.))
 #endif
       r:=i_lam(dm->data)
-      if pozycja=dm->pozycja
+      if D_LPVALFIELD(POZYCJA)=dm->(D_LPVALFIELD(POZYCJA))
         ?? speC(P_UON)
       endif
-      ? str(D_LPVAL(pozycja),2)+"|",cpad((r)->NAZWA,27,10,1),"|",ccpi(5)+tran(index,"@R "+ INDEXPIC )+"|"+if(""=dok_kon,"",ccpi(7)+nr_zleC+"|"),ccpi(5)+TrAN(waRTOSC/ILOSC,"@E ",A_ZAOKR,9)+"|"
+      ? str(D_LPVALFIELD(POZYCJA),2)+"|",cpad((r)->NAZWA,27,10,1),"|",ccpi(5)+tran(index,"@R "+ INDEXPIC )+"|"+if(""=dok_kon,"",ccpi(7)+nr_zleC+"|"),ccpi(5)+TrAN(waRTOSC/ILOSC,"@E ",A_ZAOKR,9)+"|"
       ?? strTraN(strpic(if(dok_p_r#"P",-ilosc,ilosc),10,3),".000",".   ")+"|"+(r)->jm+"|"+strpic(if(dok_p_r#"P",-WARTOSC,wartosc),10,A_ZAOKR,"@E "),ccpi(4)
       skip
     ENDDO
@@ -5446,7 +5453,7 @@ DO WHILE nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)<=I_DO .AND. !EOF()
       LOOP
    ENDIF
    W:=0
-   IF MAIN_FLAG .AND. D_LPVAL(pozycja)+4+prow()>P_ROWN .or. prow()+4>P_ROWN
+   IF MAIN_FLAG .AND. D_LPVALFIELD(POZYCJA)+4+prow()>P_ROWN .or. prow()+4>P_ROWN
       IF STRONA>0
          ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
          setprc(0,0)
@@ -5484,7 +5491,7 @@ DO WHILE nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)<=I_DO .AND. !EOF()
   ?
   iw:=0
   do while nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)=txt .AND. data<=do
-     IF MAIN_FLAG .AND. D_LPVAL(pozycja)+1+prow()>P_ROWN .or. prow()+1>P_ROWN
+     IF MAIN_FLAG .AND. D_LPVALFIELD(POZYCJA)+1+prow()>P_ROWN .or. prow()+1>P_ROWN
         ?? speC(HB_BCHAR(13)+P_UON+SPACE(80))
         ?? spec(P_UOFF)
         ? "DO PRZENIESIENIA |"+TrAN(W,"@E ",A_ZAOKR,17)+"|                                           "
@@ -5517,7 +5524,7 @@ DO WHILE nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)<=I_DO .AND. !EOF()
     ENDIF
     W-=warT_ewiD
     iw-=warT_ewiD
-    ? SMB_DOW+' '+NR_DOWODU+"/"+STR(D_LPVAL(POZYCJA),2)+"|"+DTOV(DATA)+"|"
+    ? SMB_DOW+' '+NR_DOWODU+"/"+STR(D_LPVALFIELD(POZYCJA),2)+"|"+DTOV(DATA)+"|"
     ?? KONTO_kosz+"|"
     ?? strpic(-warT_ewiD,12,A_ZAOKR,"@E ")+"|"
     ?? cpad(dost_odb,80-pcol(),10,0)
@@ -5530,10 +5537,10 @@ DO WHILE nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)<=I_DO .AND. !EOF()
       indx_mat->(dbseek(main->index,.f.))
 #endif
       r:=i_lam(dm->data)
-      if pozycja=dm->pozycja
+      if D_LPVALFIELD(POZYCJA)=dm->(D_LPVALFIELD(POZYCJA))
         ?? speC(P_UON)
       endif
-      ? str(D_LPVAL(pozycja),2)+"|",cpad((r)->NAZWA,27,10,1),"|",ccpi(5)+Tran(index,"@R "+ INDEXPIC )+"|",if(""=dok_kon,"",ccpi(7)+nr_zleC+"|"),ccpi(5)+TrAN(waRTOSC/ILOSC,"@E ",A_ZAOKR,9)+"|"
+      ? str(D_LPVALFIELD(POZYCJA),2)+"|",cpad((r)->NAZWA,27,10,1),"|",ccpi(5)+Tran(index,"@R "+ INDEXPIC )+"|",if(""=dok_kon,"",ccpi(7)+nr_zleC+"|"),ccpi(5)+TrAN(waRTOSC/ILOSC,"@E ",A_ZAOKR,9)+"|"
       ?? strTraN(strpic(if(dok_p_r#"P",-ilosc,ilosc),10,3),".000",".   ")+"|"+(r)->jm+"|"+strpic(if(dok_p_r#"P",-WARTOSC,wartosc),10,A_ZAOKR,"@E "),ccpi(4)
       skip
     ENDDO

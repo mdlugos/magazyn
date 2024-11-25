@@ -477,7 +477,8 @@ DO CASE
 
 					IF ch_el[2] + row_x[2] - ch_cur_row[2] = afull(M->ch_ntx)
 						* last filename will hb_scroll off the window
-						@ row_x[2], column[M->n] + 11 SAY M->more_down
+						//@ row_x[2], column[M->n] + 11 SAY M->more_down
+						hb_DispOutAtBox( row_x[2], column[M->n] + 11, M->more_down )
 
 					ENDIF
 
@@ -546,7 +547,8 @@ DO CASE
 
 					IF ch_el[3] + row_x[3] - ch_cur_row[3] = afull(M->ch_field_n)
 						* last fieldname will hb_scroll off the window
-						@ row_x[3], column[M->n] + 11 SAY M->more_down
+						//@ row_x[3], column[M->n] + 11 SAY M->more_down
+						hb_DispOutAtBox( row_x[3], column[M->n] + 11, M->more_down )
 
 					ENDIF
 
@@ -775,10 +777,11 @@ DO CASE
 
 	CASE M->mode = 0
 		* idle..maintain correct "more_up" and "more_down" indicators
-		@ M->t, M->r + M->x SAY IF(M->bar_el > M->row + 1, M->more_up, " ")
-		@ M->b, M->r + M->x SAY IF(M->num_full >;
+		//@ M->t, M->r + M->x SAY IF(M->bar_el > M->row + 1, M->more_up, " ")
+		hb_DispOutAtBox( M->t, M->r + M->x, IF(M->bar_el > M->row + 1, M->more_up, " ") )
+		hb_DispOutAtBox( M->b, M->r + M->x, IF(M->num_full >;
 								   (M->bar_el + M->b - M->t - M->row),;
-								M->more_down, " ")
+								M->more_down, " ") )
 
 	CASE M->mode = 1 .OR. M->mode = 2
 		* attempt to cursor past top or end of list
@@ -857,8 +860,9 @@ IF .NOT. EMPTY(array[M->top_el])
 	SetColor(M->color1)
 
 	* update status of "more_up" and "more_down" indicators
-	@ M->t, M->r + M->x SAY IF(M->top_el > 1, M->more_up, " ")
-	@ M->b, M->r + M->x SAY IF(M->bottom_el < M->num_full, M->more_down, " ")
+	//@ M->t, M->r + M->x SAY IF(M->top_el > 1, M->more_up, " ")
+	hb_DispOutAtBox( M->t, M->r + M->x, IF(M->top_el > 1, M->more_up, " ") )
+	hb_DispOutAtBox( M->b, M->r + M->x, IF(M->bottom_el < M->num_full, M->more_down, " ") )
 
 	IF array[M->bottom_el] == " "
 		* restore to null string
@@ -1660,8 +1664,8 @@ DO WHILE .NOT. q_check()
 
 				IF .NOT. EMPTY(k_relate[M->k])
 					* off-screen element is active
-					@ 22, M->pos_r SAY M->more_down
-
+					//@ 22, M->pos_r SAY M->more_down
+					hb_DispOutAtBox( 22, M->pos_r, M->more_down )
 				ENDIF
 			ENDIF
 
@@ -1786,7 +1790,8 @@ DO WHILE .NOT. q_check()
 
 					IF .NOT. EMPTY(k_relate[M->c_el + 6])
 						* off-screen element is active
-						@ 22, M->pos_r SAY M->more_down
+						//@ 22, M->pos_r SAY M->more_down
+						hb_DispOutAtBox( 22, M->pos_r, M->more_down )
 
 					ENDIF
 				ENDIF
@@ -1814,7 +1819,8 @@ DO WHILE .NOT. q_check()
 				hb_scroll(11, column[1], 22, M->pos_r - 1, 2)
 
 				* definitely more up
-				@ 11,M->pos_r SAY M->more_up
+				//@ 11,M->pos_r SAY M->more_up
+				hb_DispOutAtBox( 11,M->pos_r, M->more_up )
 
 				IF .NOT. EMPTY(k_relate[M->c_el])
 					* fill in the bottom row
@@ -1918,7 +1924,8 @@ ENDDO
 
 IF M->start_el > 1
 	* indicate active elements above window
-	@ 11, M->pos_r SAY M->more_up
+	//@ 11, M->pos_r SAY M->more_up
+	hb_DispOutAtBox( 11, M->pos_r, M->more_up )
 
 ENDIF
 
@@ -1927,7 +1934,8 @@ IF M->start_el + M->i <= LEN(M->k_relate)
 
 	IF .NOT. EMPTY(k_relate[M->start_el + M->i])
 		* indicate active elements below window
-		@ 22, M->pos_r SAY M->more_down
+		//@ 22, M->pos_r SAY M->more_down
+		hb_DispOutAtBox( 22, M->pos_r, M->more_down )
 
 	ENDIF
 ENDIF

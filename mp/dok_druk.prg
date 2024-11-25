@@ -60,18 +60,26 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,wart_vat,;
       info,d_wartosc,wart_par,vat_par,cena_k
 
 #ifdef A_LPNUM
-#define D_LP0 str(0,A_LPNUM) //'  0'
-#define D_LP1 str(1,A_LPNUM) //'  1'
-#define D_LPPUT(x) str(x,A_LPNUM)
-#define D_LPVAL(x) val(x)
-#define D_LPSTR(x) str(D_LPVAL(x),3)
+   #define D_LP0 str(0,A_LPNUM) //'  0'
+   #define D_LP1 str(1,A_LPNUM) //'  1'
+   #ifdef A_UNICODE
+      #define D_LPPUT(x) iif(A_LPNUM=1,binfieldput([POZYCJA],HB_BCHAR(x+48),.t.),str(x,A_LPNUM))
+      #define D_LPVAL(x) iif(A_LPNUM=1,HB_BCODE(binfieldget([POZYCJA],x))-48,val(x))
+      #define D_LPVALFIELD(x) iif(A_LPNUM=1,HB_BCODE(binfieldget([x]))-48,val(x))
+   #else
+      #define D_LPPUT(x) iif(A_LPNUM=1,HB_BCHAR(x+48),str(x,A_LPNUM))
+      #define D_LPVAL(x) iif(A_LPNUM=1,HB_BCODE(x)-48,val(x))
+      #define D_LPVALFIELD(x) D_LPVAL(x)
+   #endif
 #else
-#define D_LP0 '0'
-#define D_LP1 '1'
-#define D_LPVAL(x) (HB_BCODE(x)-48)
-#define D_LPSTR(x) str(D_LPVAL(x),3)
-#define D_LPPUT(x) binfieldput('POZYCJA',HB_BCHAR(x+48),.t.)
+   #define D_LP0 '0'
+   #define D_LP1 '1'
+   #define D_LPPUT(x) HB_BCHAR(x+48)
+   #define D_LPVAL(x) (HB_BCODE(x)-48)
+   #define D_LPVALFIELD(x) D_LPVAL(x)
 #endif
+#define D_LPSTR(x) str(D_LPVAL(x),3)
+#define D_LPSTRFIELD(x) str(D_LPVALFIELD(x),3)
 
 #ifdef A_HPDF
   #define D_HWPRN A_HPDF
@@ -214,13 +222,13 @@ private gt
       select main
         SEEK dM->(KEY_DOK+NR_DOWODU)
         y:={};l:=.f.;x:=0
-        dbeval({||aadd(y,recno()),l:=l .or. pozycja<>D_LPPUT(++x)},,{||DM->(KEY_DOK+NR_DOWODU)==KEY_DOK+NR_DOWODU})
+        dbeval({||aadd(y,recno()),l:=l .or. D_LPVALFIELD(POZYCJA)<>++x},,{||DM->(KEY_DOK+NR_DOWODU)==KEY_DOK+NR_DOWODU})
         if l
-          aeval(y,{|x,y|dbgoto(x) D_LOCK , main->pozycja:=D_LPPUT(y)})
+          aeval(y,{|x,y|dbgoto(x) D_LOCK , pozycja:=D_LPPUT(y)})
           UNLOCK
         endif
-        if DM->pozycja<>D_LPPUT(x)
-           DM->pozycja:=D_LPPUT(x)
+        if DM->(D_LPVALFIELD(POZYCJA)<>x)
+           DM->(pozycja:=D_LPPUT(x))
            alarm(hb_UTF8ToStr("ILOŚĆ POZYCJI NIEZGODNA Z INFORMACJĄ W NAGŁÓWKU;DOKONANO KOREKTY"),,,3)
         endif
     endif 
@@ -606,14 +614,14 @@ private gt
            endif
 #endif
 #ifdef A_WB
-            aadd(fakkormem,{index,pm*ilosc_f,cena,proc_vat,if(srbuf=NIL,recno(),0),pozycja,nr_zlec})
+            aadd(fakkormem,{index,pm*ilosc_f,cena,proc_vat,if(srbuf=NIL,recno(),0),D_LPVALFIELD(POZYCJA),nr_zlec})
          elseif fakkormem#NIL
 *
           x:=getlines(trim(SubStr(dm->nr_faktury,D_MM+2)),',')
           y:=ascan(fakkormem,{|x|index=pad(x[1],len(index)).and.round(x[3]-cena,2)=0.and.x[4]=proc_vat})
           if len(x)>0 .and. y>0
              for k:=1 to len(x)
-                y:=ascan(fakkormem,{|a|a[6]=D_LPPUT(val(x[k])) .and. index=pad(a[1],len(index)).and.round(a[3]-cena,2)=0.and.a[4]=proc_vat })
+                y:=ascan(fakkormem,{|a|a[6]=val(x[k]) .and. index=pad(a[1],len(index)).and.round(a[3]-cena,2)=0.and.a[4]=proc_vat })
                 if y<>0
                    exit
                 endif
@@ -2769,13 +2777,13 @@ oprn:=D_HWPRN
          ? ccpi(4)+repl("-",79),ccpi(7)
       endif
 #ifdef A_SWW
-      ? str(D_LPVAL(p),2)+"|",cpad((s)->NAZWA,42,@cpi)
+      ? str(D_LPVALFIELD(POZYCJA),2)+"|",cpad((s)->NAZWA,42,@cpi)
       if cpi#17
          ?? spec(HB_BCHAR(13)),space(45)
       endif
       ?? "|"+(s)->sww+"|"+tran(index,"@R "+ INDEXPIC )+"|"
 #else
-      ? str(D_LPVAL(p),2)+"|",cpad((s)->NAZWA,46,@cpi)
+      ? str(D_LPVALFIELD(POZYCJA),2)+"|",cpad((s)->NAZWA,46,@cpi)
       if cpi#17
          ?? spec(HB_BCHAR(13)),space(49)
       endif
@@ -3277,7 +3285,7 @@ wp17:=0
         ? space(30)
       else
         cpi:=10
-        ? str(D_LPVAL(p),2)+"|",cpad((s)->NAZWA,27,@cpi)
+        ? str(D_LPVALFIELD(POZYCJA),2)+"|",cpad((s)->NAZWA,27,@cpi)
         if cpi#10
            ?? spec(HB_BCHAR(13)+space(30))
         endif
@@ -3289,7 +3297,7 @@ wp17:=0
       ?? STRPIC(ceNA,D_CENLTH,A_ZAOKR,"@E ",.t.)
 #else
       cpi:=10
-      ? str(D_LPVAL(p),2)+"|",cpad((s)->NAZWA,27,@cpi)
+      ? str(D_LPVALFIELD(POZYCJA),2)+"|",cpad((s)->NAZWA,27,@cpi)
       if cpi#10
          ?? spec(HB_BCHAR(13)),space(30)+"|"
       else
@@ -3316,7 +3324,7 @@ wp17:=0
 #else
 #ifdef A_KTM
       cpi:=10
-      ? p+"|",cpad((s)->NAZWA,27,@cpi)
+      ? pozycja+"|",cpad((s)->NAZWA,27,@cpi)
       if cpi#10
          ?? spec(HB_BCHAR(13)),space(29)
       endif
@@ -3329,7 +3337,7 @@ wp17:=0
 #else
 #ifdef A_OLZA
         cpi:=10
-        ? str(D_LPVAL(p),2)+"|",cpad((s)->NAZWA,27,@cpi)
+        ? str(D_LPVALFIELD(POZYCJA),2)+"|",cpad((s)->NAZWA,27,@cpi)
         if cpi#10
            ?? SPEC(HB_BCHAR(13)),space(30)
         endif
@@ -3341,14 +3349,14 @@ wp17:=0
 #else
 #ifdef A_SWW
         cpi:=10
-        ? str(D_LPVAL(p),2)+"|",cpad((s)->NAZWA,27,@cpi)
+        ? str(D_LPVALFIELD(POZYCJA),2)+"|",cpad((s)->NAZWA,27,@cpi)
         if cpi#10
            ?? spec(HB_BCHAR(13)+space(30))
         endif
       ?? ccpi(5),"|"+(s)->sww+"|"+tran(index,"@R "+ INDEXPIC )+"|"+if(""#dok_kon,nr_zlec+"|","")+STRpic(ceNA,D_CENLTH,A_ZAOKR,"@E ",.t.)
 #else
         cpi:=10
-        ? str(D_LPVAL(p),2)+"|",cpad((s)->NAZWA,27,@cpi)
+        ? str(D_LPVALFIELD(POZYCJA),2)+"|",cpad((s)->NAZWA,27,@cpi)
         if cpi#10
            ?? spec(HB_BCHAR(13)+space(30))
         endif

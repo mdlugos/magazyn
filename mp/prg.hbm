@@ -9,7 +9,7 @@ hbmxml.hbc
 -i../common
 #../common/mlcfunc.c ../common/cppl852m.c ../common/cp_utf8m.c
 main ind_val dok dm_valid dok_druk dok_pr dodatki druk_zes indeksy
-../../harbour/contrib/rddmisc/vfpcdx.prg
+#../../harbour/contrib/rddmisc/vfpcdx.prg
 #../common/tbrowse
 ../common/dm_form
 ../common/io
@@ -21,4 +21,4 @@ main ind_val dok dm_valid dok_druk dok_pr dodatki druk_zes indeksy
 ../common/mds_spec
 ../common/frmrun
 ../common/getsys
-../common/jpk
+#../common/jpk
