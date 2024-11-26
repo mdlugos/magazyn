@@ -79,10 +79,11 @@ LOCAL h,b,f:=SET(_SET_DEFAULT)+db
       select 2
       dbcreate("tmp",h,,.f.,"TMP",,cdpto)
       select 1
+      //
       dbeval({||B->(dbappend(),aeval(h,{|x,i,f,c,t,n|A->(f:=hb_FieldGet(x[1]),n:=hb_FieldLen(x[1]),t:=valtype(f)),iif(t='C',(;
-            iif(x[2]='B' .and. n=8, A->(c:=HB_CDPSELECT(cdpfrom),f:=Bin2D(fieldget(x[1])),HB_CDPSELECT(c)), ),;
-            iif(n=1 .and. (x[1]=='POZYCJA' .or. x[1]=='LINK') .and. x[3]>1, (c:=HB_CDPSELECT(cdpfrom),f:=str(hb_BCode(A->(fieldget(x[1])))-48,x[3]),HB_CDPSELECT(c)), ),;
-            f:=trim(f)),),fieldput(i,f)}))})
+            iif(x[2]='B' .and. n=8, A->(c:=HB_CDPSELECT(cdpfrom),f:=Bin2D(hb_FieldGet(x[1])),HB_CDPSELECT(c)), ),;
+            iif(n=1 .and. (x[1]=='pozycja' .or. x[1]=='link') .and. x[3]>1, A->(c:=HB_CDPSELECT(cdpfrom),f:=str(hb_BCode(hb_FieldGet(x[1]))-48,x[3]),HB_CDPSELECT(c)), ),;
+            f:=trim(f)),),FieldPut(i,f)}))})
       close databases
       erase (set(_SET_DEFAULT)+db+".dbf")
       erase (set(_SET_DEFAULT)+db+".dbt")

@@ -188,19 +188,18 @@ DO CASE
    setpos(11,maxcol()/2+25)
    m:=1
    aczojs(txt,"",@m)
+   altd()
    if stary_rok#NIL .and. m=1
       stary_rok:=NIL
    elseif m#0
       m:=txt[m]
-      txt:=set(_SET_DATEFORMAT,"yyyy.mm.dd")
 #ifdef A_OLDA
-      STARY_ROK:=ctod(m+".11.30")
+      STARY_ROK:=stod(m+"1130")
 #else
-      STARY_ROK:=ctod(m+".12.31")
+      STARY_ROK:=stod(m+"1231")
 #endif
-      set(_SET_DATEFORMAT,txt)
    endif
-   set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_ps())
+   set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_OsPathSeparator())
    readinit()
    reuse()
    if stary_rok<>NIL .and. DatY->data_gran<>DatY->d_z_rok
@@ -1020,7 +1019,7 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
    //AEVAL(DIRECTORY(defa+"roboczy"+HB_ps()+"*.??x"),{|X|QOUT(X[1]),FERASE(defa+"roboczy"+HB_ps()+X[1])})
 
    mkdir(defa+"tmp")
-   SET DEFAULT TO (defa+"tmp"+HB_ps())              // roboczy katalog
+   SET DEFAULT TO (defa+"tmp"+HB_OsPathSeparator())              // roboczy katalog
 
   ?
   ? "Kasowanie kartoteki TMP."
@@ -1180,7 +1179,7 @@ endif
     w:=str(year(DatY->d_z_rok),4)
     close databases
 
-    SET DEFAULT TO (defa+"roboczy"+HB_ps())              // roboczy katalog
+    SET DEFAULT TO (defa+"roboczy"+HB_OsPathSeparator())              // roboczy katalog
 #ifdef A_DIETA
    nuse indx_mat READONLY EXCLUSIVE alias "YYYY" //żeby nikt się nie pchał do "roboczy"
    if !used()
@@ -1200,7 +1199,7 @@ endif
 
     errorblock(s)
     close databases
-    set default to (defa+"roboczy"+HB_ps())
+    set default to (defa+"roboczy"+HB_OsPathSeparator())
 
   ?
   ? hb_UTF8ToStr("Błąd ")
@@ -1285,7 +1284,7 @@ SET PRINT OFF
       A_PRINT(x)
   endif
 #endif
-set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_ps())
+set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_OsPathSeparator())
 readinit()
 reuse()
 

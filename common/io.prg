@@ -51,7 +51,7 @@ if ! '"'$x
   return &('"&x"')
 elseif ! "'"$x
   return &("'&x'")
-elseif ! "["$x
+elseif ! "]"$x
   return &("[&x]")
 endif
 return x
@@ -207,7 +207,7 @@ local s,a,b,c
                endif
                a:=expand(a)
                if fieldpos([codepage])#0 .and. empty(cp)
-                  cp:=codepage
+                  cp:=expand(trim(codepage))
                endif
             endif
          endif

@@ -429,9 +429,11 @@ private HLINK
   ENDIF
   IF _flpmax<0
 #ifdef A_LPNUM
-    _flpmax:=D_LPVAL(replicate('9',A_LPNUM))
+    if (_flpmax:=D_LPVAL(replicate('9',A_LPNUM)))=9
+        _flpmax:=255-48
+    endif
 #else
-    _flpmax:=D_LPVAL(HB_UCHAR(0x0A0))
+    _flpmax:=255-48
 #endif
   endif
 #ifdef A_DOKCOMP

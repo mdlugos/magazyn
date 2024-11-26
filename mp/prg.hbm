@@ -1,20 +1,20 @@
 -oma -w1 -m -n
-#-debug -inc -rebuild
-#-gtwvt
+-debug -inc -rebuild
+-gtwvt
 hbwin.hbc
 #-lelzabdr
-hbzebra.hbc
-rddads.hbc
-hbmxml.hbc
+#hbzebra.hbc
+#rddads.hbc
+#hbmxml.hbc
 -i../common
 #../common/mlcfunc.c ../common/cppl852m.c ../common/cp_utf8m.c
 main ind_val dok dm_valid dok_druk dok_pr dodatki druk_zes indeksy
-#../../harbour/contrib/rddmisc/vfpcdx.prg
-#../common/tbrowse
+../common/errsys
+../common/help
+../common/harbinit
+../../harbour/contrib/rddmisc/vfpcdx
 ../common/dm_form
 ../common/io
-../common/error
-../common/help
 ../common/io_2
 ../common/clp_brow
 ../common/mds

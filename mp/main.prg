@@ -190,7 +190,7 @@ setpos(3,0)
 ? trim(padc(hb_UTF8ToStr("█   █   █ █       █  ████  █       █ ██████    █    █    ██"),maxcol()))
 
 
-set default to (defa+"roboczy"+HB_ps())
+set default to (defa+"roboczy"+HB_OsPathSeparator())
 
 STARY_ROK=NIL
 year2bckp:={}
@@ -846,9 +846,51 @@ field index
     if stary_rok#NIL .and. 0=ascan(year2bckp,year(stary_rok))
        aadd(year2bckp,year(stary_rok))
     endif
-    set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_ps())
+    set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_OsPathSeparator())
 
-          sel("DM",1)
+ #ifdef A_DDBF
+    select 10
+ 
+    if Empty(Findfile('daty.dbf')) .and. !Empty(txt:=Findfile("daty.ini"))
+      a:={}
+      do while inirestold(@txt)
+        i:=at(':=',txt)
+        if i>0
+          aadd(a,{left(txt,i-1),type(SubStr(txt,i+2)),10,2})
+        endif
+      enddo
+      dbcreate('daty',a)
+      nUSE daty
+      dbappend()
+      txt:="daty.ini"
+      do while inirestold(@txt)
+        i:=at(':=',txt)
+        if i>0
+          txt:='DATY->'+txt
+          begin sequence
+            (&txt,txt:=NIL)
+          end
+        endif
+      enddo
+      UNLOCK
+    endif
+    nUSE daty
+ #else
+    if Empty(txt:=Findfile("daty.ini"))
+       nUSE daty
+       txt:=''
+       aeval(dbstruct(),{|x|txt+=x[1]+':='+x[1]+HB_EOL()})
+       memowrit(set(_SET_DEFAULT)+"daty.ini",txt)
+       inisave("daty.ini")
+    endif
+    txt:="daty.ini"
+    do while inirest(@txt)
+    begin sequence
+    (&txt,txt:=NIL)
+    end sequence
+    enddo
+ #endif
+           sel("DM",1)
 
        if stary_rok=NIL //tymczasowo bo nie wszyscy mają
 #ifdef A_ADS
@@ -901,48 +943,6 @@ field index
           sel("stanowis",2)
 #endif
 
-#ifdef A_DDBF
-   select 0
-
-   if Empty(Findfile('daty.dbf')) .and. !Empty(txt:=Findfile("daty.ini"))
-     a:={}
-     do while inirestold(@txt)
-       i:=at(':=',txt)
-       if i>0
-         aadd(a,{left(txt,i-1),type(SubStr(txt,i+2)),10,2})
-       endif
-     enddo
-     dbcreate('daty',a)
-     nUSE daty
-     dbappend()
-     txt:="daty.ini"
-     do while inirestold(@txt)
-       i:=at(':=',txt)
-       if i>0
-         txt:='DATY->'+txt
-         begin sequence
-           (&txt,txt:=NIL)
-         end
-       endif
-     enddo
-     UNLOCK
-   endif
-   nUSE daty
-#else
-   if Empty(txt:=Findfile("daty.ini"))
-      nUSE daty
-      txt:=''
-      aeval(dbstruct(),{|x|txt+=x[1]+':='+x[1]+HB_EOL()})
-      memowrit(set(_SET_DEFAULT)+"daty.ini",txt)
-      inisave("daty.ini")
-   endif
-   txt:="daty.ini"
-   do while inirest(@txt)
-   begin sequence
-   (&txt,txt:=NIL)
-   end sequence
-   enddo
-#endif
 #ifdef A_XPRN
    p_reset()
 /*

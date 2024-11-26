@@ -1,9 +1,9 @@
+#define A_UNICODE 'UTF8EX'
 #include "lan.ch"
 #define A_DDBF
 #command INIT SCREEN => //__run("font852")
 #command INIT PRINTER => qqout(eval(MEMVAR->p_init,wasbad))
 #define PC852 'PLWIN'
-#define A_UNICODE 'UTF8EX'
 #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
 #define PLWIN
 #define UpP(x) UPPER(x)

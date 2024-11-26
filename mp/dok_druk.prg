@@ -502,6 +502,7 @@ private gt
 //       ?
        IF fakkorflag[4]#NIL
             stary_rok:=srbuf
+            //readinit()
             reuse()
             SELECT DM
             go fakkorflag[1]
@@ -551,6 +552,7 @@ private gt
           x:=left(dtos(data_dost),4)
           fakkorflag[4]:=x
           y:=pad(nr_faktury,D_MM)
+          //readinit()
           reuse()
           SELECT DM
           if dbseek(y)
@@ -566,6 +568,7 @@ private gt
           endif
           recover
             stary_rok:=srbuf
+            //readinit()
             reuse()
             SELECT FIRMY
             go fakkorflag[5]
