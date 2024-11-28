@@ -177,7 +177,7 @@ elseif key=K_F2
       refresh(,_s)
 
 elseif key=K_F8
-      _slist("."+HB_OsPathSeparator()+"k*.frm",_s)
+      _slist("."+HB_ps()+"k*.frm",_s)
 
 elseif key=K_F9
       _sfil(_s)

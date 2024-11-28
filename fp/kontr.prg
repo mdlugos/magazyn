@@ -233,7 +233,7 @@ elseif key=K_INS .or. key=43
    refresh(,_s)
 
 elseif key=K_F8
-      _slist("."+HB_OsPathSeparator()+"f*.frm",_s)
+      _slist("."+HB_ps()+"f*.frm",_s)
 
 elseif key=K_F9
       _sfil(_s)

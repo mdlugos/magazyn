@@ -82,7 +82,7 @@ IF DISKSPACE(if(":"$defa,asc(upper(defa))-64,))<500000
   alarm("TYLKO"+hb_ntos(DISKSPACE())+hb_UTF8ToStr(" BAJTÓW WOLNEGO MIEJSCA NA DYSKU !"),,3,3)
 ENDIF
 
-set default to (defa+"roboczy"+HB_OsPathSeparator())
+set default to (defa+"roboczy"+HB_ps())
 
    STARY_ROK=NIL
 
@@ -348,7 +348,7 @@ return
 *********************************
 proc reuse()
 close databases
-set default to (defa+if(stary_rok#NIL,stary_rok,"roboczy")+HB_OsPathSeparator())
+set default to (defa+if(stary_rok#NIL,stary_rok,"roboczy")+HB_ps())
       select 0
       SEL("relewy",1)
       SEL("osoby",2)
@@ -390,7 +390,7 @@ return
 *****************
 func wersja()
 #ifdef __DATE__
-return 'Wersja: 2.'+lTrim(sTr(stod(__DATE__)-stod('20100101')))
+return 'Wersja: 3.'+lTrim(sTr(stod(__DATE__)-stod('20250101')))
 #else
 return 'Wersja: 2.2'
 #endif

@@ -377,7 +377,7 @@ local bKeyBlock
       get:display()
       get:changed:=.t.
     else
-      a:=getlines(b)
+      a:=getlines(b,.t.)
       c:=''
       if len(a)=1
          kibord(a[1])

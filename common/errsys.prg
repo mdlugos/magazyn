@@ -14,6 +14,9 @@
   #include "ads.ch"
 #else
 #endif
+#ifdef SIMPLE
+#include "simpleio.ch"
+#endif
 
 PROCEDURE ErrorSys()
 
@@ -71,7 +74,7 @@ FUNCTION DefError(e)
    #ifdef A_LAN
      elseif e:genCode == EG_OPEN .AND. e:osCode == 5 .AND. e:subcode==1001 .and. procname(2)=='DBUSEAREA'
        select select('indeks')
-       if used() .and. HB_OsPathSeparator()+Lower(trim(BAZA))+'.'$lower(e:filename)
+       if used() .and. HB_ps()+Lower(trim(BAZA))+'.'$lower(e:filename)
           sel(trim(baza),trim(nazwa),.t.,.t.)
        else
           nuse (e:filename) SHARED READONLY

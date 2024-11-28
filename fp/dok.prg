@@ -619,12 +619,12 @@ if !empty(buf) .and. valtype(buf)$"MC"
         endif
         i:=findfile(i)
         IF !empty(i)
-           aadd(ppd,{x,buf:=getlines(memoread(i))})
+           aadd(ppd,{x,buf:=getlines(memoread(i),.t.)})
         endif
      endif
      x:=NIL
   else
-     buf:=getlines(buf)
+     buf:=getlines(buf,.t.)
   endif
   ad[AD_PREPROC]:=buf
 endif
@@ -1084,11 +1084,11 @@ endif
                   endif
                   i:=findfile(i)
                   IF !empty(i)
-                     aadd(ppd,{x,buf:=getlines(memoread(i))})
+                     aadd(ppd,{x,buf:=getlines(memoread(i),.t.)})
                   endif
                endif
             else
-               buf:=getlines(buf)
+               buf:=getlines(buf,.t.)
             endif
             ad[AD_VALID]:=buf
           endif

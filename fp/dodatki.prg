@@ -57,16 +57,16 @@ memvar it_menudod
       case m = 3 .and. iS_spec
 
       if stary_rok#NIL
-         m:=defa+str(year(stary_rok+1),4)+HB_OsPathSeparator()
+         m:=defa+str(year(stary_rok+1),4)+HB_ps()
          if ! file(m+'daty.*')
-           m:=defa+'roboczy'+HB_OsPathSeparator()
+           m:=defa+'roboczy'+HB_ps()
          endif
 #ifdef A_LAN
          nuse (m+"daty") NEW alias nowy
          #define D_Z1 nowy->d_z_mies1
          #define D_Z3 nowy->d_z_rok
 #else
-         a:=getlines(memoread(m+"daty.ini"))
+         a:=getlines(memoread(m+"daty.ini"),.t.)
          #define D_Z1 &(SubStr(a[1],at(':=',a[1])+2))
          #define D_Z3 &(SubStr(a[3],at(':=',a[3])+2))
 #endif
@@ -140,7 +140,7 @@ memvar it_menudod
    endif
    m:=year(if(stary_rok=NIL,DatY->d_z_rok,DatE()))
    do while .t.
-      if !file(defa+str(m,4)+HB_OsPathSeparator()+"daty.*")
+      if !file(defa+str(m,4)+HB_ps()+"daty.*")
          if stary_rok=NIL .or. m<year(DatY->d_z_rok+1)
             exit
          endif
@@ -192,12 +192,12 @@ IF dz1>DatY->d_z_mies1
         dz1-=day(dz1)
      enddo
   endif
-  if stary_rok=NIL .and. DatY->d_z_mies1=DatY->d_z_rok .and. file(defa+str(year(DatY->d_z_rok),4)+HB_OsPathSeparator()+"daty.*")
+  if stary_rok=NIL .and. DatY->d_z_mies1=DatY->d_z_rok .and. file(defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty.*")
 #ifdef A_LAN
-     nuse (defa+str(year(DatY->d_z_rok),4)+HB_OsPathSeparator()+"daty") new alias stary
+     nuse (defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty") new alias stary
      #define D_Z1 stary->d_z_mies1
 #else
-     m:=getlines(memoread(defa+str(year(DatY->d_z_rok),4)+HB_OsPathSeparator()+"daty.ini"))[1]
+     m:=getlines(memoread(defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty.ini"),.t.)[1]
      #define D_Z1 &(SubStr(m,at(':=',m)+2))
 #endif
      if D_Z1<DatY->d_z_rok
@@ -445,9 +445,9 @@ if stary_rok=DatY->d_z_mies1
    ?
    set color to (_snorm)
 #else
-     w:=defa+str(year(stary_rok+1),4)+HB_OsPathSeparator()
+     w:=defa+str(year(stary_rok+1),4)+HB_ps()
      if ! file(w+'daty.*')
-        w:=defa+'roboczy'+HB_OsPathSeparator()
+        w:=defa+'roboczy'+HB_ps()
      endif
      select main
 #ifdef A_LAN
@@ -456,7 +456,7 @@ if stary_rok=DatY->d_z_mies1
      #define D_Z1 ndat->d_z_mies1
 #else
      use
-     m:=getlines(memoread(w+"daty.ini"))[1]
+     m:=getlines(memoread(w+"daty.ini"),.t.)[1]
      #define D_Z1 &(SubStr(m,at(':=',m)+2))
 #endif
    set color to (_sel)
@@ -621,15 +621,15 @@ elseIF year(DatY->d_z_mies1+1) > year(DatY->d_z_rok+1)
    ? hb_UTF8ToStr("ZAMKNIĘCIE ROKU, TROCHĘ POTRWA")
    set color to (_snorm)
    ?
-  if File(defa+str(year(DatY->d_z_rok),4)+HB_OsPathSeparator()+"daty.*")
-     if !file(defa+"fiks.*") .and. !file(defa+"archiwum"+HB_OsPathSeparator()+"fiks"+right(str(year(DatY->d_z_mies1)),2)+".*")
+  if File(defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty.*")
+     if !file(defa+"fiks.*") .and. !file(defa+"archiwum"+HB_ps()+"fiks"+right(str(year(DatY->d_z_mies1)),2)+".*")
         alarm(hb_UTF8ToStr("Brak kopii bezpieczeństwa danych.;Nie będę zamykać roku!"),0,3)
         break
      endif
      mkdir(defa+"archiwum")
      ?
      ? "Kopiowanie starych danych do katalogu ARCHIWUM:"
-     AEVAL(DIRECTORY(defa+"fiks.*"),{|X|if(file(defa+"archiwum"+HB_OsPathSeparator()+"fiks"+right(str(year(DatY->d_z_mies1)),2)+SubStr(x[1],at(".",x[1]))),,(QOUT(X[1]),frename(defa+X[1],defa+"archiwum"+HB_OsPathSeparator()+"fiks"+right(str(year(DatY->d_z_mies1)),2)+SubStr(x[1],at(".",x[1])))))})
+     AEVAL(DIRECTORY(defa+"fiks.*"),{|X|if(file(defa+"archiwum"+HB_ps()+"fiks"+right(str(year(DatY->d_z_mies1)),2)+SubStr(x[1],at(".",x[1]))),,(QOUT(X[1]),frename(defa+X[1],defa+"archiwum"+HB_ps()+"fiks"+right(str(year(DatY->d_z_mies1)),2)+SubStr(x[1],at(".",x[1])))))})
   else
      mkdir(defa+str(year(DatY->d_z_rok+1),4))
   endif
@@ -644,12 +644,12 @@ elseIF year(DatY->d_z_mies1+1) > year(DatY->d_z_rok+1)
 #endif
 
    mkdir(defa+"tmp")
-   SET DEFAULT TO (defa+"tmp"+HB_OsPathSeparator())              // roboczy katalog
+   SET DEFAULT TO (defa+"tmp"+HB_ps())              // roboczy katalog
 
   ?
   ? "Kasowanie kartoteki TMP."
 
-   AEVAL(DIRECTORY(defa+"tmp"+HB_OsPathSeparator()+"*.*"),{|X|QOUT(X[1]),FERASE(defa+"tmp"+HB_OsPathSeparator()+X[1])})
+   AEVAL(DIRECTORY(defa+"tmp"+HB_ps()+"*.*"),{|X|QOUT(X[1]),FERASE(defa+"tmp"+HB_ps()+X[1])})
   ?
   ? hb_UTF8ToStr("Tworzenie nowych zbiorów tymczasowo w kartotece TMP:")
   ?
@@ -671,16 +671,16 @@ elseIF year(DatY->d_z_mies1+1) > year(DatY->d_z_rok+1)
    DatY->d_z_gran=DatY->d_z_rok
 
 #ifndef A_LAN
-    copy file (defa+"roboczy"+HB_OsPathSeparator()+"daty.ini") to daty.ini
+    copy file (defa+"roboczy"+HB_ps()+"daty.ini") to daty.ini
     inisave(set(_SET_DEFAULT)+"daty.ini")
 #endif
 
    nuse indeks new
    key:=''
    do while !eof()
-      if .not. key==(key:=lower(trim(FIELD->baza))) .and. file(defa+"roboczy"+HB_OsPathSeparator()+key+".dbf")
+      if .not. key==(key:=lower(trim(FIELD->baza))) .and. file(defa+"roboczy"+HB_ps()+key+".dbf")
          ?
-         nUSE (defa+"roboczy"+HB_OsPathSeparator()+key) READONLY NEW ALIAS ROB
+         nUSE (defa+"roboczy"+HB_ps()+key) READONLY NEW ALIAS ROB
          IF type("FIELD->LP")#"U"
            ? "Tworzenie bazy",key
            COPY structure TO (key)
@@ -713,24 +713,24 @@ elseIF year(DatY->d_z_mies1+1) > year(DatY->d_z_rok+1)
 
    mkdir(defa+w)
 
-   AEVAL(DIRECTORY(defa+"roboczy"+HB_OsPathSeparator()+"*.ini"),{|X|QOUT(X[1]),frename(defa+"roboczy"+HB_OsPathSeparator()+x[1],defa+w+HB_OsPathSeparator()+X[1])})
-   AEVAL(DIRECTORY(defa+"roboczy"+HB_OsPathSeparator()+"*.??x"),{|X|QOUT(X[1]),frename(defa+"roboczy"+HB_OsPathSeparator()+x[1],defa+w+HB_OsPathSeparator()+X[1])})
-   AEVAL(DIRECTORY(defa+"roboczy"+HB_OsPathSeparator()+"*.db?"),{|X|QOUT(X[1]),frename(defa+"roboczy"+HB_OsPathSeparator()+x[1],defa+w+HB_OsPathSeparator()+X[1])})
+   AEVAL(DIRECTORY(defa+"roboczy"+HB_ps()+"*.ini"),{|X|QOUT(X[1]),frename(defa+"roboczy"+HB_ps()+x[1],defa+w+HB_ps()+X[1])})
+   AEVAL(DIRECTORY(defa+"roboczy"+HB_ps()+"*.??x"),{|X|QOUT(X[1]),frename(defa+"roboczy"+HB_ps()+x[1],defa+w+HB_ps()+X[1])})
+   AEVAL(DIRECTORY(defa+"roboczy"+HB_ps()+"*.db?"),{|X|QOUT(X[1]),frename(defa+"roboczy"+HB_ps()+x[1],defa+w+HB_ps()+X[1])})
 #ifdef A_CDX
-   AEVAL(DIRECTORY(defa+"roboczy"+HB_OsPathSeparator()+"*.fpt"),{|X|QOUT(X[1]),frename(defa+"roboczy"+HB_OsPathSeparator()+x[1],defa+w+HB_OsPathSeparator()+X[1])})
+   AEVAL(DIRECTORY(defa+"roboczy"+HB_ps()+"*.fpt"),{|X|QOUT(X[1]),frename(defa+"roboczy"+HB_ps()+x[1],defa+w+HB_ps()+X[1])})
 #endif
 
   ?
   ? hb_UTF8ToStr("Kasowanie pozostałości kartoteki ROBOCZY.")
 
 
-   AEVAL(DIRECTORY(defa+"roboczy"+HB_OsPathSeparator()+"*.*"),{|X|QOUT(X[1]),FERASE(defa+"roboczy"+HB_OsPathSeparator()+X[1])})
+   AEVAL(DIRECTORY(defa+"roboczy"+HB_ps()+"*.*"),{|X|QOUT(X[1]),FERASE(defa+"roboczy"+HB_ps()+X[1])})
 
   ?
   ? "Przenoszenie danych z kartoteki TMP do ROBOCZY."
 
 
-   AEVAL(DIRECTORY(defa+"tmp"+HB_OsPathSeparator()+"*.*"),{|X|QOUT(X[1]),frename(defa+"tmp"+HB_OsPathSeparator()+X[1],defa+"roboczy"+HB_OsPathSeparator()+x[1])})
+   AEVAL(DIRECTORY(defa+"tmp"+HB_ps()+"*.*"),{|X|QOUT(X[1]),frename(defa+"tmp"+HB_ps()+X[1],defa+"roboczy"+HB_ps()+x[1])})
 
   endif
   end sequence
@@ -739,7 +739,7 @@ elseIF year(DatY->d_z_mies1+1) > year(DatY->d_z_rok+1)
 #ifdef A_WIN_PRN
   oprn:=A_WIN_PRN
   if !empty(oprn)
-     w:=getlines(memoread(set(_SET_PRINTFILE,'')))
+     w:=getlines(memoread(set(_SET_PRINTFILE,'')),.t.)
      if !empty(w)
        set printer to
        Print(1)

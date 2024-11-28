@@ -144,8 +144,13 @@ FIELD WARTOSC,ILOSC,DATA,INDEX,nr_mag,smb_dow,nr_dowodu,pozycja,nr_zlec,dost_odb
 #else
    #define D_LP0 '0'
    #define D_LP1 '1'
-   #define D_LPVAL(x) (HB_BCODE(x)-48)
-   #define D_LPVALFIELD(x) D_LPVAL(x)
+   #ifdef A_UNICODE
+      #define D_LPVAL(x) (HB_BCODE(binfieldget([POZYCJA],x))-48)
+      #define D_LPVALFIELD(x) (HB_BCODE(binfieldget([x]))-48)
+   #else
+      #define D_LPVAL(x) (HB_BCODE(x)-48)
+      #define D_LPVALFIELD(x) D_LPVAL(x)
+   #endif
    #define D_LPSTR1(x) x
 #endif
 #define D_LPSTR(x) str(D_LPVAL(x),3)
@@ -289,13 +294,13 @@ MEMVAR->landscape:=.f.
 oprn:=D_HWPRN
 #command ?  [<exp,...>]         => wQ()[;?? <exp>]
 #command ?? <exp1> [,<expn>]    => wqq(<exp1>)[;wQQ(<expn>)]
-#command TEXT <st> => aeval(getlines(strtran(<st>,";",nl)),{|x|wq(x)})
+#command TEXT <st> => aeval(getlines(strtran(<st>,";",nl),.t.),{|x|wq(x)})
 #define QQOUT(x) WQQ(x)
 #define QOUT(x) WQ(x)
 #else
 #command ? [<List,...>] => qout() [;?? <List>]
 #command ?? <exp1> [,<expn>]    => qqout(<exp1>)[;QQout(<expn>)]
-#command TEXT <st> => aeval(getlines(strtran(<st>,";",nl)),{|x|qout(x)})
+#command TEXT <st> => aeval(getlines(strtran(<st>,";",nl),.t.),{|x|qout(x)})
 #endif
 DO CASE
 #ifndef A_NOMZ

@@ -122,9 +122,15 @@ field  data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,numer_kol,;
 #else
    #define D_LP0 '0'
    #define D_LP1 '1'
-   #define D_LPPUT(x) HB_BCHAR(x+48)
-   #define D_LPVAL(x) (HB_BCODE(x)-48)
-   #define D_LPVALFIELD(x) D_LPVAL(x)
+   #ifdef A_UNICODE
+      #define D_LPPUT(x) binfieldput([POZYCJA],HB_BCHAR(x+48),.t.)
+      #define D_LPVAL(x) (HB_BCODE(binfieldget([POZYCJA],x))-48)
+      #define D_LPVALFIELD(x) (HB_BCODE(binfieldget([x]))-48)
+   #else
+      #define D_LPPUT(x) HB_BCHAR(x+48)
+      #define D_LPVAL(x) (HB_BCODE(x)-48)
+      #define D_LPVALFIELD(x) D_LPVAL(x)
+   #endif
 #endif
 #define D_LPSTR(x) str(D_LPVAL(x),3)
 #define D_LPSTRFIELD(x) str(D_LPVALFIELD(x),3)
@@ -450,12 +456,12 @@ private HLINK
         else
            j:=findfile(buf)
            if !empty(j)
-              dok_co:=getlines(memoread(j))
+              dok_co:=getlines(memoread(j),.t.)
               aadd(apcomp,{buf,dok_co})
            endif
         endif
      else
-        dok_co:=getlines(dok_co)
+        dok_co:=getlines(dok_co,.t.)
      endif
   endif
     buf:=dok_co
@@ -1672,7 +1678,7 @@ memvar exp_od,exp_do
        a:=hb_jsondecode(xml_ksef)
     endif
     a:=a['Faktura','Fa','FaWiersz']
-    darr:=getlines(hb_jsonencode(a,.t.))
+    darr:=getlines(hb_jsonencode(a,.t.),.t.)
        if (dpos:=min(_flp+1,len(darr)))=1
           @ _frow+4,1 say 'Pozycje z KSeF pod [F8]' color _sbkgr
        endif

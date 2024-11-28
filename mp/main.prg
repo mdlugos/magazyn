@@ -190,7 +190,7 @@ setpos(3,0)
 ? trim(padc(hb_UTF8ToStr("█   █   █ █       █  ████  █       █ ██████    █    █    ██"),maxcol()))
 
 
-set default to (defa+"roboczy"+HB_OsPathSeparator())
+set default to (defa+"roboczy"+HB_ps())
 
 STARY_ROK=NIL
 year2bckp:={}
@@ -846,7 +846,7 @@ field index
     if stary_rok#NIL .and. 0=ascan(year2bckp,year(stary_rok))
        aadd(year2bckp,year(stary_rok))
     endif
-    set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_OsPathSeparator())
+    set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_ps())
 
  #ifdef A_DDBF
     select 10
@@ -959,7 +959,7 @@ return
 *****************
 func wersja()
 #ifdef __DATE__
-return 'Wersja: 3.'+lTrim(sTr(stod(__DATE__)-stod('20100101')))
+return 'Wersja: 4.'+lTrim(sTr(stod(__DATE__)-stod('20250101')))
 #else
 return 'Wersja: 3.'
 #endif

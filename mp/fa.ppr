@@ -68,7 +68,7 @@ JUMP HN
 :HNX
 if(firmy->(eof()),NIL,wout('Nr:',firmy->numer_kol,f,firmy->ADRES))
 if(firmy->(eof()),NIL,wout('          NIP:',f,firmy->IDENT))
-a:=if(""=Firmy->uwagi,{},getlines(strtran(';'+Firmy->uwagi+';',";",chr(13)+chr(10))))
+a:=if(""=Firmy->uwagi,{},getlines(strtran(';'+Firmy->uwagi+';',";",chr(13)+chr(10)),.t.))
 IF EMPTY(a) THEN HPL
 ? a[1]
 aeval(a,{|x|wout(f,alltrim(x))},2)

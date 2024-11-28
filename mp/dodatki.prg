@@ -17,8 +17,13 @@
       #define D_LPVALFIELD(x) D_LPVAL(x)
    #endif
 #else
-   #define D_LPVAL(x) (HB_BCODE(x)-48)
-   #define D_LPVALFIELD(x) D_LPVAL(x)
+   #ifdef A_UNICODE
+      #define D_LPVAL(x) (HB_BCODE(binfieldget([POZYCJA],x))-48)
+      #define D_LPVALFIELD(x) (HB_BCODE(binfieldget([x]))-48)
+   #else
+      #define D_LPVAL(x) (HB_BCODE(x)-48)
+      #define D_LPVALFIELD(x) D_LPVAL(x)
+   #endif
 #endif
 #define D_LPSTR(x) str(D_LPVAL(x),3)
 #define D_LPSTRFIELD(x) str(D_LPVALFIELD(x),3)
@@ -122,7 +127,7 @@ DO CASE
          #define D_Z1 nowy->d_z_mies1
          #define D_Z3 nowy->d_z_rok
 #else
-         txt:=getlines(memoread(txt+"daty.ini"))
+         txt:=getlines(memoread(txt+"daty.ini"),.t.)
          #define D_Z1 &(SubStr(txt[1],at(':=',txt[1])+2))
          #define D_Z3 &(SubStr(txt[3],at(':=',txt[3])+2))
 #endif
@@ -199,7 +204,7 @@ DO CASE
       STARY_ROK:=stod(m+"1231")
 #endif
    endif
-   set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_OsPathSeparator())
+   set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_ps())
    readinit()
    reuse()
    if stary_rok<>NIL .and. DatY->data_gran<>DatY->d_z_rok
@@ -364,7 +369,7 @@ IF dz1>DatY->d_z_mies1
      nuse (defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty") alias stary readonly
      #define D_Z1 stary->d_z_mies1
 #else
-     m:=getlines(memoread(defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty.ini"))[1]
+     m:=getlines(memoread(defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty.ini"),.t.)[1]
      #define D_Z1 &(SubStr(m,at(':=',m)+2))
 #endif
      if D_Z1<DatY->d_z_rok
@@ -701,7 +706,7 @@ if stary_rok=dz1
      #define D_Z1 ndat->d_z_mies1
 #else
      use
-     m:=getlines(memoread(dz2+"daty.ini"))[1]
+     m:=getlines(memoread(dz2+"daty.ini"),.t.)[1]
      #define D_Z1 &(SubStr(m,at(':=',m)+2))
 #endif
    set color to (_sel)
@@ -1019,7 +1024,7 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
    //AEVAL(DIRECTORY(defa+"roboczy"+HB_ps()+"*.??x"),{|X|QOUT(X[1]),FERASE(defa+"roboczy"+HB_ps()+X[1])})
 
    mkdir(defa+"tmp")
-   SET DEFAULT TO (defa+"tmp"+HB_OsPathSeparator())              // roboczy katalog
+   SET DEFAULT TO (defa+"tmp"+HB_ps())              // roboczy katalog
 
   ?
   ? "Kasowanie kartoteki TMP."
@@ -1179,7 +1184,7 @@ endif
     w:=str(year(DatY->d_z_rok),4)
     close databases
 
-    SET DEFAULT TO (defa+"roboczy"+HB_OsPathSeparator())              // roboczy katalog
+    SET DEFAULT TO (defa+"roboczy"+HB_ps())              // roboczy katalog
 #ifdef A_DIETA
    nuse indx_mat READONLY EXCLUSIVE alias "YYYY" //żeby nikt się nie pchał do "roboczy"
    if !used()
@@ -1199,7 +1204,7 @@ endif
 
     errorblock(s)
     close databases
-    set default to (defa+"roboczy"+HB_OsPathSeparator())
+    set default to (defa+"roboczy"+HB_ps())
 
   ?
   ? hb_UTF8ToStr("Błąd ")
@@ -1267,7 +1272,7 @@ SET PRINT OFF
 
 #ifdef D_HWPRN
   if oprn:=D_HWPRN
-     x:=getlines(memoread(set(_SET_PRINTFILE,'')))
+     x:=getlines(memoread(set(_SET_PRINTFILE,'')),.t.)
      if !empty(x)
        set printer to
        Print(1)
@@ -1284,7 +1289,7 @@ SET PRINT OFF
       A_PRINT(x)
   endif
 #endif
-set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_OsPathSeparator())
+set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_ps())
 readinit()
 reuse()
 

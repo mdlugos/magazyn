@@ -104,7 +104,7 @@ if key=0
              SET ORDER TO TAG MAIN_KT
              seek s
              ordCondSet("konto='"+s+"'",&("{||konto='"+s+"'}"),,{||konto=s},{||dispout(hb_UTF8ToStr("▒")),message(1),.t.},int(1+lastrec()/(w[4]-w[2]-3)),RECNO(),,,,)
-             ordCreate("."+HB_OsPathSeparator()+"main_tmp","X"+s,txt,&("{||"+txt+"}"))
+             ordCreate("."+HB_ps()+"main_tmp","X"+s,txt,&("{||"+txt+"}"))
              message(w)
 #ifndef A_CDX
              sel("INDEKS")
@@ -126,11 +126,11 @@ if key=0
 elseif key=K_ESC
 /*
    if ks
-     if file("."+HB_OsPathSeparator()+"main_tmp"+ordbagext())
+     if file("."+HB_ps()+"main_tmp"+ordbagext())
         l:=recno()
         use
         begin sequence
-        erase ("."+HB_OsPathSeparator()+"main_tmp"+ordbagext())
+        erase ("."+HB_ps()+"main_tmp"+ordbagext())
         end sequence
         sel("main","main_kt")
         goto l

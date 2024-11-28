@@ -969,10 +969,10 @@ do case
       _STXT:=getenv("MAGDEF")
 
       if empty(_stxt)
-         _skey:=rat(HB_OsPathSeparator(),left(defa,len(defa)-1))
-         _stxt:=if(_skey=0,defa+'..'+HB_OsPathSeparator(),left(defa,_skey))+'magazyn'+HB_OsPathSeparator()
+         _skey:=rat(HB_ps(),left(defa,len(defa)-1))
+         _stxt:=if(_skey=0,defa+'..'+HB_ps(),left(defa,_skey))+'magazyn'+HB_ps()
       endif
-      _STXT+="roboczy"+HB_OsPathSeparator()
+      _STXT+="roboczy"+HB_ps()
       if file(_stxt+"indx_mat.dbf")
       begin sequence
 #ifdef STANY

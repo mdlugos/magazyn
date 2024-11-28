@@ -116,8 +116,13 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,dost_odb,rodz_opak,gram,;
 #else
    #define D_LP0 '0'
    #define D_LP1 '1'
-   #define D_LPVAL(x) (HB_BCODE(x)-48)
-   #define D_LPVALFIELD(x) D_LPVAL(x)
+   #ifdef A_UNICODE
+      #define D_LPVAL(x) (HB_BCODE(binfieldget([POZYCJA],x))-48)
+      #define D_LPVALFIELD(x) (HB_BCODE(binfieldget([x]))-48)
+   #else
+      #define D_LPVAL(x) (HB_BCODE(x)-48)
+      #define D_LPVALFIELD(x) D_LPVAL(x)
+   #endif
    #define D_LPSTR1(x) x
 #endif
 #define D_LPSTR(x) str(D_LPVAL(x),3)

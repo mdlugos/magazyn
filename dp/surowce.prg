@@ -761,7 +761,7 @@ do case
       _sfil(_s)
       
    case _skey=-9
-      _slist("."+HB_OsPathSeparator()+left(alias(),3)+"*.frm",_s)
+      _slist("."+HB_ps()+left(alias(),3)+"*.frm",_s)
 #ifdef A_KODY
    case alias()<>'SUROWCE'
       return .f.
@@ -843,7 +843,7 @@ do case
       _sfil(_s)
       
   case _skey=-9
-      _slist("."+HB_OsPathSeparator()+left(alias(),3)+"*.frm",_s)
+      _slist("."+HB_ps()+left(alias(),3)+"*.frm",_s)
 
 endcase
 return .f.

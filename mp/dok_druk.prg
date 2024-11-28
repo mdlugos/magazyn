@@ -74,9 +74,15 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,wart_vat,;
 #else
    #define D_LP0 '0'
    #define D_LP1 '1'
-   #define D_LPPUT(x) HB_BCHAR(x+48)
-   #define D_LPVAL(x) (HB_BCODE(x)-48)
-   #define D_LPVALFIELD(x) D_LPVAL(x)
+   #ifdef A_UNICODE
+      #define D_LPPUT(x) binfieldput([POZYCJA],HB_BCHAR(x+48),.t.)
+      #define D_LPVAL(x) (HB_BCODE(binfieldget([POZYCJA],x))-48)
+      #define D_LPVALFIELD(x) (HB_BCODE(binfieldget([x]))-48)
+   #else
+      #define D_LPPUT(x) HB_BCHAR(x+48)
+      #define D_LPVAL(x) (HB_BCODE(x)-48)
+      #define D_LPVALFIELD(x) D_LPVAL(x)
+   #endif
 #endif
 #define D_LPSTR(x) str(D_LPVAL(x),3)
 #define D_LPSTRFIELD(x) str(D_LPVALFIELD(x),3)
@@ -250,14 +256,14 @@ private gt
         else
           x:=findfile(y)
           if !empty(x)
-             l:=getlines(memoread(x))
+             l:=getlines(memoread(x),.t.)
              aadd(apcomp,{y,l})
           else
-             l:=getlines(l)
+             l:=getlines(l,.t.)
           endif
         endif
      else
-        l:=getlines(l)
+        l:=getlines(l,.t.)
      endif
      if empty(dok)
        dok_def[7]:=l
@@ -2293,7 +2299,7 @@ endif
 setpos(row()+recno(),col())
 if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
    it_zesmnu:=recno()
-   ap:=getlines(POLA)
+   ap:=getlines(POLA,.t.)
    l:=len(ap)
    k:=0
    for i:=1 to l
@@ -2354,7 +2360,7 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
           endif
          next
          sel(baza,trim(zes_def->order))
-         rel(make_subar(getlines(zes_def->relacje),4))
+         rel(make_subar(getlines(zes_def->relacje,.t.),4))
          unlock in zes_def
          go top
       else
@@ -2382,9 +2388,9 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
           if !"."$txt
             txt+=".ppz"
           endif
-          buf:=getlines(memoread(findfile(txt)))
+          buf:=getlines(memoread(findfile(txt)),.t.)
         else
-          buf:=getlines(txt)
+          buf:=getlines(txt,.t.)
           txt:=NIL
         endif
         aadd(apcomp,{zes_def->(recno()),buf})
@@ -2570,11 +2576,11 @@ local txt1,txt2,txt3,r,i,j,k,s,w,p,bc,bw,x,;
 oprn:=D_HWPRN
 #command ?  [<exp,...>]         => wQ()[;?? <exp>]
 #command ?? <exp1> [,<expn>]    => wqq(<exp1>)[;wQQ(<expn>)]
-#command TEXT <st> => aeval(getlines(strtran(<st>,";",nl)),{|x|wq(x)})
+#command TEXT <st> => aeval(getlines(strtran(<st>,";",nl),.t.),{|x|wq(x)})
 #else
 #command ? [<List,...>] => qout() [;?? <List>]
 #command ?? <exp1> [,<expn>]    => qqout(<exp1>)[;QQout(<expn>)]
-#command TEXT <st> => aeval(getlines(strtran(<st>,";",nl)),{|x|qout(x)})
+#command TEXT <st> => aeval(getlines(strtran(<st>,";",nl),.t.),{|x|qout(x)})
 #endif
   begin sequence
   mes:=message(hb_UTF8ToStr("Proszę czekać;TRWA WYDRUK."))

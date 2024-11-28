@@ -127,7 +127,7 @@ elseif key=K_CTRL_RIGHT .or. key=K_CTRL_LEFT
    refresh(1,_s)
 
 elseif key=K_F8
-      _slist('.'+HB_OsPathSeparator()+ar[AR_DBF]+'*.frm',_s)
+      _slist('.'+HB_ps()+ar[AR_DBF]+'*.frm',_s)
 
 elseif key=K_F9
       _sfil(_s)

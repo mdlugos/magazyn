@@ -217,7 +217,7 @@ endif
 setpos(row()+recno(),col())
 if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
    it_zesmnu:=recno()
-   ap:=getlines(POLA)
+   ap:=getlines(POLA,.t.)
    l:=len(ap)
    do while 1<=l .and. ap[1]="&:"
       (&(SubStr(ap[1],3)),adel(ap,1),--l)
@@ -263,7 +263,7 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
            FIELD->&(ap[i,2]):=MEMVAR->&(ap[i,2])
          next
          sel(baza,trim(zes_def->order))
-         rel(make_subar(getlines(zes_def->relacje),4))
+         rel(make_subar(getlines(zes_def->relacje,.t.),4))
          unlock in zes_def
          go top
       else
@@ -287,10 +287,10 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
           endif
           i:=findfile(txt)
           if !empty(i)
-             buf:=getlines(memoread(i))
+             buf:=getlines(memoread(i),.t.)
           endif
         else
-          buf:=getlines(txt)
+          buf:=getlines(txt,.t.)
           txt:=NIL
         endif
         aadd(apcomp,{zes_def->(recno()),buf})
@@ -869,7 +869,7 @@ gr:=trim(gr)
 di:=trim(di)
 a:={''}
 b:={''}
-x:=getlines(memoread('podpis.txt'))
+x:=getlines(memoread('podpis.txt'),.t.)
 
 #ifdef A_WIN_PRN
  oprn:=NIL
@@ -887,7 +887,7 @@ if !empty(gr) .and. di>='0' .and. len(di)=2
  d:=if(len(a)<len(b),a,b)
  if max(len(a),len(b))>67-len(x)
     aadd(d,'')
-    aeval(getlines(memoread('podpis2.txt')),{|x|aadd(d,x)})
+    aeval(getlines(memoread('podpis2.txt'),.t.),{|x|aadd(d,x)})
     p:=.t.
  endif
 else

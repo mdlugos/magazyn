@@ -43,22 +43,30 @@ PROCEDURE CLIPPER530()
 
 PROCEDURE __HBVMInit()
 
-    MEMVAR GetList
+   MEMVAR GetList
+
     local i,n,t
-    #ifdef SIMPLE
-      #include "simpleio.ch"
-    //  #ifdef __PLATFORM__WINDOWS
-    //    hb_Run('chcp 65001 > NUL')
-    //    hb_SetTermCP( 'UTF8')
-    //  #endif
-    #endif
     
-    //browse musi mieć BOXCP tego samego rodzaju co główną bo left/right/substr w tbrowse
-    //  REQUEST HB_CODEPAGE_PLMAZ
-    //  hb_gtInfo( HB_GTI_BOXCP, 'PLMAZ')
-      HB_CDPSELECT(D_CDP)
-    //header w UTF8 ale suma wyliczona dla kodowania PC852
-    
+    HB_CDPSELECT(D_CDP)
+#ifdef SIMPLE
+#include "simpleio.ch"
+//  #ifdef __PLATFORM__WINDOWS
+//    hb_Run('chcp 65001 > NUL')
+//    hb_SetTermCP( 'UTF8')
+//  #endif
+#endif
+
+      hb_SetTermCP( hb_cdpTerm() )
+      Set(_SET_OSCODEPAGE, hb_cdpOS())
+
+      SET(_SET_DBCODEPAGE, PC852 )
+
+      HB_LANGSELECT('pl')
+
+      hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
+      hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
+   
+   
     a:=hb_UTF8ToStr(a)
     f:=hb_UTF8ToStr(f)
     fa:=hb_UTF8ToStr(fa)
@@ -70,19 +78,20 @@ PROCEDURE __HBVMInit()
     next
     
     SET(_SET_DEBUG,.t.) //alt_d on
-    
+  
     if sc#0
       altd()
       quit
     endif
 
-    PUBLIC GetList := {}
- 
-    ErrorSys()
- 
-    RETURN
+   PUBLIC GetList := {}
 
-PROCEDURE __SetHelpK() //last in init chain before main
+   ErrorSys()
+
+   RETURN
+
+
+PROCEDURE __SetHelpK()
 
     memvar _sbnorm,_sbkgr,_sramka,_sel,_snorm,_slinia,_sunsel,firma_n,firma_a,defa,pcl
 
@@ -107,17 +116,6 @@ PROCEDURE __SetHelpK() //last in init chain before main
      setmode(min(maxrow()+1,Round((maxcol()+1)*5/16,0)),maxcol()+1)
   #endif   
   endif
-  hb_SetTermCP( hb_cdpTerm() )
-  Set(_SET_OSCODEPAGE, hb_cdpOS())
-
-  //SET(_SET_CODEPAGE, D_CDP )
-  SET(_SET_DBCODEPAGE, PC852 )
-
-  HB_LANGSELECT('pl')
-
-  hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
-  hb_gtInfo( HB_GTI_COMPATBUFFER, .F. )
-  
 #ifdef A_ADS
    RddRegister( "ADS", 1 )
    SET RDD DEFAULT TO ADS
@@ -176,7 +174,7 @@ public pcl:=.f.
 #else
     SetKey(K_ALT_RET,n,t)
 #endif
-    SetKey(K_ALT_K,{|get,b|get:=GetActive(),b:= hb_gtInfo( HB_GTI_CLIPBOARDDATA ),if(""<>b,kibord(getlines(b)[1]),),.t.},t)
+    SetKey(K_ALT_K,{|get,b|get:=GetActive(),b:= hb_gtInfo( HB_GTI_CLIPBOARDDATA ),if(""<>b,kibord(getlines(b,.t.)[1]),),.t.},t)
     SetKey(K_ALT_B,{|get|get:=GetActive(),hb_gtInfo( HB_GTI_CLIPBOARDDATA, Alltrim(get:buffer) ),.t.},t)
     SetKey(K_F10,i,t)
     SetKey(K_CTRL_L,i,t)

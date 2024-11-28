@@ -95,6 +95,37 @@ LOCAL h,b,f:=SET(_SET_DEFAULT)+db
    endif
 return
 *********************
+func findfile(x)
+   local a,l,y:=""
+    if (HB_ps()$x)
+       if file(x)
+          y:=x
+   #ifdef __PLATFORM__UNIX
+       elseif file(l:=strtran(x,'\','/'))
+          y:=l
+   #endif
+       else
+          x:=SubStr(x,rat(HB_ps(),x)+1)
+       endif
+    endif
+    if y==""
+       FOR EACH a IN hb_ATokens( set(_SET_DEFAULT)+HB_OsPathListSeparator()+set(_SET_PATH), HB_OsPathListSeparator() )
+             if file(y:=a+x)
+               exit
+             endif
+   #ifdef __PLATFORM__UNIX
+             if file(y:=strtran(a+x,'\','/'))
+                exit
+             endif
+   #endif
+       next
+       if i>l
+          y:=""
+       endif
+    endif
+   return y
+   *********************
+   
 #pragma BEGINDUMP
 #include "hbapi.h"
 

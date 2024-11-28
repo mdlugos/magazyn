@@ -71,7 +71,7 @@ if valtype(buf)$"MC"
      endif
      x:=NIL
   endif
-  ad[AD_DPROC]:=buf:=getlines(buf)
+  ad[AD_DPROC]:=buf:=getlines(buf,.t.)
 endif
 if empty(buf)
    break
@@ -160,7 +160,7 @@ if f=NIL .or. f
               main->(ordsetfocus(if(w<=A_STL,'MAIN_KS','MAIN_KT')))
               main->(dbseek(m))
               main->(ordCondSet("konto='"+m+"'",,,{||field->konto=m},,,RECNO(),,,,))
-              main->(ordCreate("."+HB_OsPathSeparator()+"main_tmp","X"+m,d,&("{||"+d+"}")))
+              main->(ordCreate("."+HB_ps()+"main_tmp","X"+m,d,&("{||"+d+"}")))
 #ifndef A_CDX
               d:=select()
               sel("INDEKS")
@@ -298,7 +298,7 @@ endif
 setpos(row()+recno(),col())
 if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
    it_zesmnu:=recno()
-   ap:=getlines(POLA)
+   ap:=getlines(POLA,.t.)
    l:=len(ap)
    private a,b,c,d,e,f,g,h,j,self,buf
    do while 1<=l .and. ap[1]="&:"
@@ -355,7 +355,7 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
            ZES_DEF->&(ap[i,2]):=MEMVAR->&(ap[i,2])
          next
          sel(baza,trim(zes_def->order))
-         rel(make_subar(getlines(zes_def->relacje)))
+         rel(make_subar(getlines(zes_def->relacje,.t.)))
          unlock in zes_def
          go top
       else
@@ -387,10 +387,10 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
           endif
           i:=findfile(txt)
           if !empty(i)
-             buf:=getlines(memoread(i))
+             buf:=getlines(memoread(i),.t.)
           endif
         else
-          buf:=getlines(txt)
+          buf:=getlines(txt,.t.)
           txt:=NIL
         endif
         aadd(apcomp,{zes_def->(recno()),buf})

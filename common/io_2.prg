@@ -146,7 +146,7 @@ if a=NIL
    x:=findfile(x)
    if ""#x
       a:=memoread(x)
-      a:=getlines(a,i)
+      a:=getlines(a,.t.)
       i:=0
       l:=len(a)
    else
@@ -177,7 +177,7 @@ local a,l:=0,i,j,c,y
    x:=findfile(x)
    if ""#x
       a:=memoread(x)
-      a:=getlines(a,i)
+      a:=getlines(a,.t.)
       l:=len(a)
    endif
 
@@ -208,7 +208,7 @@ local i,txt,j,b,c
    name:=findfile(name)
    txt:=memoread(name)
 
-   txt:=getlines(txt,i)
+   txt:=getlines(txt,.t.)
    for i:=1 to len(txt)
      if txt[i]#';' .and. txt[i]#'&:'
         j:=at(":=",txt[i])
@@ -1377,12 +1377,12 @@ begin sequence
        if (p=='{||')
          b:=hb_macroBlock(r)
 #ifdef A_SIMPLE
-       y:={|x|x:=getlines(eval(b)),if(len(x)>0,fwrite(2,x[1]),NIL),aeval(x,{|y|fwrite(2,HB_EOL()),fwrite(2,y)},2)}
+       y:={|x|x:=getlines(eval(b),.t.),if(len(x)>0,fwrite(2,x[1]),NIL),aeval(x,{|y|fwrite(2,HB_EOL()),fwrite(2,y)},2)}
 #else
 #ifdef D_HWPRN
-       y:={|x|x:=getlines(eval(b)),if(len(x)>0,wqq(x[1]),NIL),aeval(x,{|y|wq(y)},2)}
+       y:={|x|x:=getlines(eval(b),.t.),if(len(x)>0,wqq(x[1]),NIL),aeval(x,{|y|wq(y)},2)}
 #else
-       y:={|x|x:=getlines(eval(b)),if(len(x)>0,qqout(x[1]),NIL),aeval(x,{|y|qout(y)},2)}
+       y:={|x|x:=getlines(eval(b),.t.),if(len(x)>0,qqout(x[1]),NIL),aeval(x,{|y|qout(y)},2)}
 #endif
 #endif
       else
@@ -2017,6 +2017,16 @@ if j#NIL
     return a
 endif
 
+a:=hb_ATokens(txt,delim)
+
+i:=len(a)
+if i>1 .and. a[i]==''
+   asize(a,i-1)
+endif
+
+return a
+/*
+
 j:=1 
 
 do while .t.
@@ -2032,7 +2042,7 @@ do while .t.
   exit
 enddo
 return a
-
+*/
 /*
 HB_FUNC ( GETLINES )
       {

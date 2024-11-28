@@ -127,7 +127,7 @@ STARY_ROK=NIL
 #endif
 #endif
 
-set default to (defa+"roboczy"+HB_OsPathSeparator())
+set default to (defa+"roboczy"+HB_ps())
 i:={maxrow(),maxcol()}
 
 #ifdef DatE
@@ -410,8 +410,8 @@ return
 proc reuse()
 local txt,a,i,x
 close databases
-ferase("."+HB_OsPathSeparator()+"main_tmp"+ordbagext())
-set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_OsPathSeparator())
+ferase("."+HB_ps()+"main_tmp"+ordbagext())
+set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_ps())
 
 #ifdef A_LAN
    if Empty(Findfile('daty.dbf')) .and. !Empty(txt:=Findfile("daty.ini"))
@@ -477,7 +477,7 @@ do while !eof()
    ap[AR_SMB      ]:=NR_REJ
    ap[AR_NAME     ]:=NAZWA
    ap[AR_DBF      ]:=trim(baza)
-   ap[AR_REL      ]:=make_subar(getlines(relacje))
+   ap[AR_REL      ]:=make_subar(getlines(relacje,.t.))
    ap[AR_HEADER   ]:=HEADER
    ap[AR_LINES    ]:=LINES
    ap[AR_DOKUMENTY]:={}
@@ -495,7 +495,7 @@ skip
 enddo
 nuse dok_def readonly
 do while !eof()
-ap:=make_subar(getlines(POLA))
+ap:=make_subar(getlines(POLA,.t.))
 for i:=1 to len(ap)
 begin sequence
 #define AP_STEP (AP_LTH-AP_POZWN+1)
@@ -573,7 +573,7 @@ return
 *****************
 func wersja()
 #ifdef __DATE__
-return 'Wersja: 2.'+lTrim(sTr(stod(__DATE__)-stod('20100101')))
+return 'Wersja: 3.'+lTrim(sTr(stod(__DATE__)-stod('20250101')))
 #else
 return 'Wersja: 2.'
 #endif
