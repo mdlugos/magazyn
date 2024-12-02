@@ -34,8 +34,8 @@ endif
 
 defa:=getlines(defa,HB_OsPathListSeparator())
 
-if empty(defa)
-   defa:={'.'}
+if len(defa)=1 .and. empty(defa[1])
+   defa[1]:='.'
 endif
 aeval(defa,{|x,i|if(right(x,1)<>HB_ps(),defa[i]+=HB_ps(),)})
 

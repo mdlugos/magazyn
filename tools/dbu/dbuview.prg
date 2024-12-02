@@ -24,7 +24,7 @@
 ******
 PROCEDURE set_view
 local saveColor
-PRIVATE bar_line,empty_line,ntx,field_n,el,cur_row,t_row,ch_draw,;
+PRIVATE bar_line,empty_line,ntx,field_n,_el,cur_row,t_row,ch_draw,;
 		strn,is_redraw,is_insert,horiz_keys,prev_area,i
 
 saveColor := SetColor(M->color1)
@@ -98,14 +98,14 @@ DO WHILE .NOT. q_check()
 			* set variables to matrix into current data channel
 			ntx = "ntx" + strn
 			field_n = "field_n" + strn
-         el = "_el" + strn
+         _el = "_el" + strn
 
 			* use temporary variable for adjustment
          t_row = "_cr" + strn
 
 			IF M->page > 1 .AND. M->prev_area <> 0
 				* adjust element by (old row - new row)
-				&el[M->page] = &el[M->page] +;
+				&_el[M->page] = &_el[M->page] +;
 							   &cur_row[M->page] - &t_row[M->page]
 
 				* new row = old row
@@ -198,7 +198,7 @@ DO WHILE .NOT. q_check()
 				set_deflt()
 
 				* adjust row and element for smooth cursor movement
-				&el[M->page] = &el[M->page] -;
+				&_el[M->page] = &_el[M->page] -;
 							   (&cur_row[M->page] - row_a[M->page])
 				&cur_row[M->page] = row_a[M->page]
 
@@ -250,7 +250,7 @@ DO WHILE .NOT. q_check()
 
 				IF M->ch_draw
 					* update screen with "channel" function
-					channel(&ntx, &field_n, &el, &cur_row,;
+					channel(&ntx, &field_n, &_el, &cur_row,;
 							M->cur_area, M->cur_area)
 
 					* new current data file
@@ -274,7 +274,7 @@ DO WHILE .NOT. q_check()
 
 				IF M->page > 1
 					* pages 2 and 3 handled by channel function
-					channel(&ntx, &field_n, &el, &cur_row,;
+					channel(&ntx, &field_n, &_el, &cur_row,;
 							M->cur_area, M->cur_area)
 
 				ELSE
@@ -296,7 +296,7 @@ DO WHILE .NOT. q_check()
 				IF M->cur_area = 6
 					* no need to re-write screen..clear windows
 					ch_draw = .T.
-					channel(&ntx, &field_n, &el, &cur_row,;
+					channel(&ntx, &field_n, &_el, &cur_row,;
 							M->cur_area, M->cur_area)
 
 				ELSE
@@ -315,7 +315,7 @@ DO WHILE .NOT. q_check()
 
 				IF M->page > 1
 					* pages 2 and 3 handled by channel function
-					channel(&ntx, &field_n, &el, &cur_row,;
+					channel(&ntx, &field_n, &_el, &cur_row,;
 							M->cur_area, M->cur_area)
 
 				ENDIF
@@ -418,7 +418,7 @@ RETURN
 *	note: the array identifiers associated with the current
 *		  channel are passed to this function in order to
 *		  avoid the repeated macro expansion inherent in
-*		  constructs like &ntx[&el[]]
+*		  constructs like &ntx[&_el[]]
 ******
 FUNCTION channel
 
@@ -729,7 +729,7 @@ rel_row = &cur_row[M->page] - M->t
 * discard returned value
 saveColor := SetColor(M->color4)
 achoice(M->t, M->l, M->b, M->r, M->array, .T.,;
-		"bar_func", &el[M->page], M->rel_row)
+		"bar_func", &_el[M->page], M->rel_row)
 SetColor(saveColor)
 
 * change back to absolute
@@ -764,7 +764,7 @@ keystroke = LASTKEY()
 ret_code = 2
 
 * maintain variables from above
-&el[M->page] = M->bar_el
+&_el[M->page] = M->bar_el
 rel_row = M->row
 
 IF M->error_on
@@ -950,7 +950,7 @@ RETURN 0
 FUNCTION draw_view
 
 PARAMETERS blank_area
-PRIVATE i, j, ntx, field_n, el, cur_row, strnum
+PRIVATE i, j, ntx, field_n, _el, cur_row, strnum
 
 * get number of active work areas
 i = afull(M->dbf)
@@ -991,7 +991,7 @@ NEXT
 
 i = 1
 j = 1
-
+altd()
 DO WHILE M->j <= 6
 
 	IF EMPTY(dbf[M->i])
@@ -1007,12 +1007,12 @@ DO WHILE M->j <= 6
 		* set to channel "i"
 		ntx = "ntx" + strnum
 		field_n = "field_n" + strnum
-      el = "_el" + strnum
+      _el = "_el" + strnum
       cur_row = "_cr" + strnum
 
 		* fill the channel
 		ch_draw = .T.
-		channel(&ntx, &field_n, &el, &cur_row, M->j, M->i)
+		channel(&ntx, &field_n, &_el, &cur_row, M->j, M->i)
 
 		* next real channel
 		i = M->i + 1

@@ -37,7 +37,12 @@ IF ReadkeY()=K_ESC
    RETURN NIL
 ENDIF
 endif
-kasuj:=select(plik)#sel(plik)
+kasuj:=select(plik)#sel(plik,,.f.,.f.)
+if !kasuj .and. dbinfo(DBI_ISREADONLY)
+   kasuj:=.t.
+   use
+   sel(plik)
+endif
 ord:=ordnumber()
 sequr:=plik="indeks".or.!kasuj
 lPack:=.f.

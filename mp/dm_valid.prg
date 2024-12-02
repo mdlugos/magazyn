@@ -2012,9 +2012,9 @@ if D_DIETANEG (pv#(lam)->proc_vat .or. cz#(lam)->D_ALTCEN) .AND.(_fnowy .or. il=
       endif
     elseif dok_ew#"E"
 #ifdef A_NOPV
-         if dok_zew$"UV" .and. pv#(lam)->proc_vat .or. D_DIETANEG  cz#STANY->cenA_zaK .and.( _fnowy .or. il=0 D_MM .or. g:original#nim .and. (tone(130,3),1=alarm(hb_UTF8ToStr("CZY ZMIENIAĆ CENĘ ZAKUPU ?") ,{"TAK","NIE"},2)))
+         if dok_zew$"UV" .and. pv#(lam)->proc_vat .or. D_DIETANEG  ROUND(STANY->cenA_zaK-cz,A_ZAOKR)<>0 .and.( _fnowy .or. il=0 D_MM .or. g:original#nim .and. (tone(130,3),1=alarm(hb_UTF8ToStr("CZY ZMIENIAĆ CENĘ ZAKUPU ?") ,{"TAK","NIE"},2)))
 #else
-         if D_DIETANEG ( dok_zew$"UV" .and. pv#(lam)->proc_vat .or. cz#STANY->cenA_zaK).and.( _fnowy .or. il=0 D_MM .or. g:original#nim .and. (tone(130,3),1=alarm(hb_UTF8ToStr("CZY ZMIENIAĆ CENĘ ZAKUPU ?") ,{"TAK","NIE"},2)))
+         if D_DIETANEG ( dok_zew$"UV" .and. pv#(lam)->proc_vat .or. ROUND(STANY->cenA_zaK-cz,A_ZAOKR)<>0).and.( _fnowy .or. il=0 D_MM .or. g:original#nim .and. (tone(130,3),1=alarm(hb_UTF8ToStr("CZY ZMIENIAĆ CENĘ ZAKUPU ?") ,{"TAK","NIE"},2)))
 #endif
          pv:=(lam)->proc_vat
          cz:=STANY->cenA_zaK

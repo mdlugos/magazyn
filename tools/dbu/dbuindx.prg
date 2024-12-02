@@ -20,15 +20,15 @@
 PROCEDURE make_ntx
 local saveColor
 PRIVATE filename, files, fi_disp, okee_dokee, cur_el, rel_row, def_ext,;
-		bcur, fi_done, el, cr, ntx, k_exp
+		bcur, fi_done, _el, cr, ntx, k_exp
 
 * set local variables to macro reference specific arrays
 cr = "_cr" + SUBSTR("123456", M->cur_area, 1)
-el = "_el" + SUBSTR("123456", M->cur_area, 1)
+_el = "_el" + SUBSTR("123456", M->cur_area, 1)
 ntx = "ntx" + SUBSTR("123456", M->cur_area, 1)
 
 * get name of current index file
-filename = &ntx[&el[2]]
+filename = &ntx[&_el[2]]
 
 * hi-lite the current index file..even if empty
 saveColor := SetColor(M->color2)
@@ -80,24 +80,24 @@ IF multibox(13, 17, 9, M->bcur, M->boxarray) <> 0 .AND.;
    aseek(&ntx, M->filename) = 0
 	* index file generated and not open
 
-	IF M->n_files < 14 .OR. .NOT. EMPTY(&ntx[&el[2]])
+	IF M->n_files < 14 .OR. .NOT. EMPTY(&ntx[&_el[2]])
 		* room for one more..bring index file into View
 
-		IF EMPTY(&ntx[&el[2]])
+		IF EMPTY(&ntx[&_el[2]])
 			* keep track of number of open files
 			n_files = M->n_files + 1
 
 		ENDIF
 
 		* place in global array
-		&ntx[&el[2]] = M->filename
+		&ntx[&_el[2]] = M->filename
 
 	ENDIF
 ENDIF
 
 * re-write index filename as normal
 saveColor := SetColor(M->color1)
-@ &cr[2], column[M->cur_area] + 2 SAY pad(name(&ntx[&el[2]]), 8)
+@ &cr[2], column[M->cur_area] + 2 SAY pad(name(&ntx[&_el[2]]), 8)
 
 SetColor(saveColor)
 RETURN

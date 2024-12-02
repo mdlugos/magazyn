@@ -539,22 +539,20 @@ FUNCTION DefError(e)
      set cursor on
    #endif
    
-   
-   
-   // used below
-   
-     ? cMessage
-     ?
-     ? 'Stos: '
-     i := 2
-     while ( !Empty(ProcName(i)) )
-       ?? Trim(ProcName(i)) + "(" + hb_ntos(ProcLine(i)) + "), "
-       i++
-     end
-     ?
-     // give up
-     ErrorLevel(1)
-     QUIT
+   OutErr( hb_eol() )
+   OutErr( cMessage )
+
+   n := 1
+   DO WHILE ! Empty( ProcName( ++n ) )
+      OutErr( hb_eol() )
+      OutErr( hb_StrFormat( "Called from %1$s(%2$d)  ", ;
+         ProcName( n ), ;
+         ProcLine( n ) ) )
+   ENDDO
+
+   ErrorLevel( 1 )
+
+   QUIT
    
    return (.f.)
    

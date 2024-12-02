@@ -33,10 +33,16 @@ SET DELETED ON
 IF empty(db)
    db:='.\'
 ENDIF
-i:=RAT(hb_ps(),db)
+i:=RAT(HB_ps(),db)
 
 SET DEFAULT TO (LEFT(DB,i))
 db:=SubStr(db,i+1)
+
+if lower(right(set(_SET_DEFAULT),8))=='roboczy'+HB_ps()
+   SET PATH TO (SET(_SET_DEFAULT)+'..'+HB_ps()+'tmp'+HB_ps()+HB_OsPathListSeparator()+SET(_SET_DEFAULT)+'..'+HB_ps())
+else
+   SET PATH TO (SET(_SET_DEFAULT)+'..'+HB_ps()+'roboczy'+HB_ps()+HB_OsPathListSeparator()+SET(_SET_DEFAULT)+'..'+HB_ps())
+endif
 
 erase (set(_SET_DEFAULT)+"tmp.dbf")
 erase (set(_SET_DEFAULT)+"tmp.dbt")
@@ -51,17 +57,9 @@ endif
 ********************
 PROCEDURE CHGDAT(DB, cdpfrom, cdpto)
 
-LOCAL h,b,f:=SET(_SET_DEFAULT)+db
+LOCAL h,b,f
    close databases
-   if lower(right(set(_SET_DEFAULT),8))!='roboczy'+HB_PS()
-      f:=SET(_SET_DEFAULT)+'..'+HB_PS()+'roboczy'+HB_PS()+DB
-      if !file(f)
-         f:= strtran(f,'roboczy'+HB_PS())
-         if !file(f)
-            f:=SET(_SET_DEFAULT)+db
-         endif
-      endif
-   endif
+   f:=findfile(db)
    erase (left(f,len(f)-4)+ordbagext())
    use (f) SHARED READONLY VIA "VFPCDX" CODEPAGE cdpto
    h:=dbstruct()
@@ -95,7 +93,7 @@ LOCAL h,b,f:=SET(_SET_DEFAULT)+db
    endif
 return
 *********************
-func findfile(x)
+func findfile(x,path)
    local a,l,y:=""
     if (HB_ps()$x)
        if file(x)
@@ -109,7 +107,7 @@ func findfile(x)
        endif
     endif
     if y==""
-       FOR EACH a IN hb_ATokens( set(_SET_DEFAULT)+HB_OsPathListSeparator()+set(_SET_PATH), HB_OsPathListSeparator() )
+       FOR EACH a IN hb_ATokens( SET(_SET_PATH)+HB_OsPathListSeparator()+SET(_SET_DEFAULT), HB_OsPathListSeparator() )
              if file(y:=a+x)
                exit
              endif

@@ -192,7 +192,9 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
 
   if _sinfo=NIL
     _sinfo:={|k,s|_Sinfo(k,s)}
-  elseIF eval(_sinfo,0,_s)
+  endif
+
+  IF eval(_sinfo,0,_s)
     set relation to
     SETCURSor(_scur)
     select (_selar)
@@ -388,6 +390,7 @@ RETURN _sret
 func _Sinfo(k,_s)
 local txt
 static maxord:=0,ord_1,ord_l
+
 if k=0
    maxord:=indexord()
    ord_1:=if(_sbeg=1,maxord,0)
@@ -401,7 +404,7 @@ elseif k=K_ESC
 elseif ( k=K_CTRL_LEFT .or. k=K_CTRL_RIGHT ) .and. ordnumber()<>0
    txt:=eval(_sprompt,0,_s,.t.)
    if k=K_CTRL_RIGHT
-      txt:=at('|',SubStr(txt,_sbeg))
+      txt:=at(I,SubStr(txt,_sbeg))
       if txt=0
          ord_l:=ordnumber()
          RETURN .f.
@@ -419,7 +422,7 @@ elseif ( k=K_CTRL_LEFT .or. k=K_CTRL_RIGHT ) .and. ordnumber()<>0
          ord_1:=ordnumber()
          RETURN .f.
       endif
-      k:=rat('|',left(txt,_sbeg-2))
+      k:=rat(I,left(txt,_sbeg-2))
       _sbeg:=k+1
       k:=ordnumber()
       if k=1

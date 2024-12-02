@@ -100,11 +100,11 @@ PROCEDURE Dbu( param1, param2, param3 )
       IF "-cdx" $ Lower( hb_cmdLine() )
          SET FILETYPE TO CDX
          SET CHARTYPE TO ANSI
-      elseif "-vfp" $ Lower( hb_cmdLine() )
-         //default SET FILETYPE TO VFP
-      else   
+      elseif "-ntx" $ Lower( hb_cmdLine() )
          SET FILETYPE TO NTX
          SET CHARTYPE TO ANSI
+      else  // if "-vfp" $ Lower( hb_cmdLine() )
+         //default SET FILETYPE TO VFP
       endif
 
       SET SERVER LOCAL
@@ -114,10 +114,10 @@ PROCEDURE Dbu( param1, param2, param3 )
 #endif
       IF "-cdx" $ Lower( hb_cmdLine() )
          rddsetdefault( "DBFCDX" )
-      elseif "-vfp" $ Lower( hb_cmdLine() )
-         rddsetdefault( "VFPCDX" )
-      ELSE
+      elseif "-ntx" $ Lower( hb_cmdLine() )
          rddsetdefault( "DBFNTX" )
+      else  //if "-vfp" $ Lower( hb_cmdLine() )
+         rddsetdefault( "VFPCDX" )
       ENDIF
    
 #ifdef ADS_CH_
