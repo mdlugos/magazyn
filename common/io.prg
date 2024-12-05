@@ -208,6 +208,9 @@ local s,a,b,c
                a:=expand(a)
                if fieldpos([codepage])#0 .and. empty(cp)
                   cp:=expand(trim(codepage))
+                  if empty(cp)
+                     cp:=NIL
+                  endif
                endif
             endif
          endif
@@ -289,7 +292,10 @@ local s,a,b,c
                endif
                a:=expand(a)
                if fieldpos([codepage])#0 .and. empty(cp)
-                  cp:=codepage
+                  cp:=expand(trim(codepage))
+                  if empty(cp)
+                     cp:=NIL
+                  endif
                endif
             endif
             b:=findfile(a+'.dbf' D_NETIO)

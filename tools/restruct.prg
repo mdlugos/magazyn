@@ -93,7 +93,7 @@ LOCAL h,b,f
    endif
 return
 *********************
-func findfile(x,path)
+func findfile(x)
    local a,l,y:=""
     if (HB_ps()$x)
        if file(x)
@@ -116,10 +116,8 @@ func findfile(x,path)
                 exit
              endif
    #endif
+             y:=''
        next
-       if i>l
-          y:=""
-       endif
     endif
    return y
    *********************
