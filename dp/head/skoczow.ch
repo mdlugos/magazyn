@@ -31,7 +31,7 @@
     #define A_KOMU_A  "Skoczów, ul. Sportowa 13"
     #define A_AUTOR   "A.D. 1992-2024, Marek Długosz, Cieszyn, ul. Równa 16, tel. 0338522553"
     #define A_MALWA
-    #define A_JMALT
+    //#define A_JMALT
     #define A_KODY "CPV"
     #define A_STOPKA 'Program: System Dieta, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
 #else

@@ -10,8 +10,7 @@
 request A_EXT
 #endif
 
-REQUEST HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_PLWIN, HB_CODEPAGE_UTF8EX
-
+REQUEST HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_PLWIN, HB_CODEPAGE_UTF8EX, VFPCDX
 //#define SIMPLE
 #define NONTXERR
 //#define TCVT(x) tran(x,)
@@ -23,6 +22,8 @@ REQUEST HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_PLWIN, HB_CODEPAGE_UTF8EX
   #require "rddads"
   #include "ads.ch"
 #else
+  #require "rddmisc"
+  #include "hbusrrdd.ch"
 #endif
 
 ANNOUNCE SYSINIT
@@ -78,9 +79,9 @@ PROCEDURE __HBVMInit()
     next
     
     SET(_SET_DEBUG,.t.) //alt_d on
-  
+    altd()
     if sc#0
-      altd()
+      //altd()
       quit
     endif
 

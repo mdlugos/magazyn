@@ -125,7 +125,7 @@ MEMVAR GETLIST,NAZWA_MAG,mag_poz,MAG_BIEZ,;
 
 FIELD WARTOSC,ILOSC,DATA,INDEX,nr_mag,smb_dow,nr_dowodu,pozycja,nr_zlec,dost_odb,kontrahent,;
       przelewem,czekiem,cena,proc_vat,nr_faktury,jm,jm_opcja,przel,info,wart_vat,;
-      numer_kol,uwagi,nazwa,adres,rodz_opak,gram,wart_net,nr_kpr,data_dost,;
+      numer_kol,uwagi,nazwa,adres,rodz_opak,gram,nr_kpr,data_dost,;
       ZAMK_MIES1,ZAMK_MIES2,ZAMKN_ROKU,wart_MIES1,wart_MIES2,wart_ROKU,longname,;
       sub_dok,wart_ewid,d_wartosc,konto,opis_koszt,SJMO,SJMO_MIES1,SJMO_MIES2,SJMO_ROKU,;
       data_vat,cena_k

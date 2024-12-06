@@ -484,7 +484,11 @@ function alarm(txt,parr,ps,pe,keep)
   n:=m:=0
   l:=1
   aeval(parr,{|x|l+=len(x)+1})
+#ifdef __PLATFORM__UNIX  
+  txt:=strtran(txt,hb_BChar(0x0D)+hb_BChar(0x0A),HB_EOL())
+#endif
   txt:=strtran(txt,";",HB_EOL())
+  //txt:=strtran(txt,HB_EOL(),hb_BChar(0x8D)+hb_BChar(0x0A))
   k:=mlcount(txt,cs:=maxcol()-4)
   for i:=1 to k
     m:=max(m,len(TRIM(memoline(txt,cs,i))))
@@ -642,6 +646,9 @@ function message(txt)
     endif
  elseif m$"MC"
    i:=0
+ #ifdef __PLATFORM__UNIX  
+   txt:=strtran(txt,hb_BChar(0x0D)+hb_BChar(0x0A),HB_EOL())
+ #endif
    txt:=strtran(txt,";",HB_EOL())
    k:=mlcount(txt,maxcol()-4)
    m:=1

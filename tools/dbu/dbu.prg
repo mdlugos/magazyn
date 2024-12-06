@@ -896,12 +896,12 @@ FUNCTION GetHelpFile()
 #pragma BEGINDUMP
 //#include "signal.h"
 #include "hbapi.h"
-#include "intrin.h"
+//#include "hbdefs.h"
 //#include "debugapi.h"
 HB_FUNC ( CDBG )
 {
    //raise(SIGTRAP);
-   __debugbreak;
+   //__debugbreak;
    //DebugBreak();
 }
 #pragma ENDDUMP

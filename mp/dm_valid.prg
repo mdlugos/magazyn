@@ -155,7 +155,7 @@ field   data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,ilosc_f,dost_odb,kontrahent
   memvar cz,wz
 #endif
 #ifdef A_VAT
-  field wart_vat,wart_net
+  field wart_vat
 #endif
 #ifdef A_JMO
 #define restouT(x,p) if(x%p=0,str(x/p,6),stuff(str(int(x/p)+x%p/1000,10,3),7,1,"r"))
@@ -1821,17 +1821,21 @@ endif
 #ifndef A_JMALTTOT
     if (lam)->przel#1 .and. miar_opcja .and. il=0
        if prze=0
-#ifdef A_LAN
+  #ifdef A_LAN
           updated(.t.)
-#endif
-#ifndef A_JMO
+  #endif
+  #ifndef A_JMO
+    #ifdef A_JMALT
+        prze:=pm/(lam)->przel
+    #else
         prze:=pm*(lam)->przel
-#endif
-#ifdef A_DIETA
+    #endif 
+  #endif
+  #ifdef A_DIETA
        elseif ROUND(prze-(prze:=ROUND(prze/(lam)->przel,0)*(lam)->przel),3)#0
         tone(164.8,1)
         tone(164.8,1)
-#endif
+  #endif
        endif
     endif
 #endif

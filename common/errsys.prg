@@ -10,9 +10,11 @@
 #include "hbgtinfo.ch"
 #include "dbinfo.ch"
 #ifdef A_ADS
-  #require "rddads"
   #include "ads.ch"
 #else
+   #ifdef __PLATFORM__UNIX  
+//     #include "../../harbour/contrib/rddmisc/vfpcdx.prg"
+   #endif  
 #endif
 #ifdef SIMPLE
 #include "simpleio.ch"
