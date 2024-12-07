@@ -900,8 +900,11 @@ FUNCTION GetHelpFile()
 //#include "debugapi.h"
 HB_FUNC ( CDBG )
 {
-   //raise(SIGTRAP);
-   //__debugbreak;
+#ifdef _MSC_VER   
+   __debugbreak;
    //DebugBreak();
+#else
+   //raise(SIGTRAP);
+#endif   
 }
 #pragma ENDDUMP
