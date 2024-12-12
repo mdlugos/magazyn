@@ -114,7 +114,8 @@ PROCEDURE __SetHelpK()
      hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
   #ifdef __PLATFORM__WINDOWS
   else
-     setmode(min(maxrow()+1,Round((maxcol()+1)*5/16,0)),maxcol()+1)
+   setmode(min(maxrow(),maxcol())+1,max(maxrow(),maxcol())+1)
+   setmode(,) //fix problems
   #endif   
   endif
 #ifdef A_ADS

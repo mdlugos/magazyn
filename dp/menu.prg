@@ -265,8 +265,8 @@ local r:=dania->(recno())
       go if(poprec=0,startrec,poprec)
    endif
    if szukam({2,min(col(),maxcol()-69),maxrow(),,1,9,;
-     hb_UTF8ToStr("Jadłospis"),;
-     {||tran(dtos(data)+posilek,"@R XXXX.XX.XX|X")+I+dania->nazwa+I+dieta+I+dania->gramatura+" "+dania->jedn},;
+      hb_UTF8ToStr("Data───┬P┬────────────Jadłospis")+padl(hb_UTF8ToStr("┬"),dania->(hb_fieldlen([nazwa]))-20,hb_UTF8ToStr("─"))+padc("Dieta",A_DILTH,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬ilość"),;
+     {||tran(dtos(data)+posilek,hb_UTF8ToStr("@R XXXX.XX.XX│X"))+I+dania->nazwa+I+dieta+I+dania->gramatura+" "+dania->jedn},;
      {|k,_s|(_sret:=k=13).or.rele(k,_s,.f.)},keyp})
     set relation to
     poprec:=recno()
@@ -307,7 +307,7 @@ local totrec
     changed:=.t.
     if empty(dan)
 #ifdef A_DODATKI
-       totrec:=hb_fieldlen('pozycja')
+       totrec:=hb_fieldlen([pozycja])
        select ZAPOT
        seek keyp
        dbeval({||FIELD->danie:=MENU->danie},{||len(trim(danie))=totrec.and.danie=menu->pozycja.and.reclock()},{||dtos(data)+posilek=keyp})
@@ -329,9 +329,9 @@ local totrec
           ENDIF
           skip
 #ifdef A_LAN
-          replace pozycja with str(val(pozycja)-1,hb_fieldlen('pozycja')) rest while DTOS(data)+posilek=relewy->(DTOS(data)+posilek) for reclock()
+          replace pozycja with str(val(pozycja)-1,hb_fieldlen([pozycja])) rest while DTOS(data)+posilek=relewy->(DTOS(data)+posilek) for reclock()
 #else
-          replace pozycja with str(val(pozycja)-1,hb_fieldlen('pozycja')) rest while DTOS(data)+posilek=relewy->(DTOS(data)+posilek)
+          replace pozycja with str(val(pozycja)-1,hb_fieldlen([pozycja])) rest while DTOS(data)+posilek=relewy->(DTOS(data)+posilek)
 #endif
           go totrec
        endif

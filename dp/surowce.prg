@@ -734,7 +734,7 @@ do case
        set order to tag zap_skl
         set relation to RELEWY->(dseek(,'data,posilek,dieta',zapot->data,zapot->posilek,'')) into relewy
        dbseek(surowce->skladnik,.f.)
-       szukam({1,min(maxcol()-27,col()+5),maxrow(),,1,6,hb_UTF8ToStr("data────┬ile ")+trim(surowce->jmaG),{||tran(Dtos(data)+posilek+dieta,hb_UTF8ToStr("@R ####.##.##│X│")+REPLICATE("X",A_DILTH))+I+str(ILOSC)},{|k,s|RELe(k,s,upden)},surowce->skladnik+left(dtos(mies_rob),6)})
+       szukam({1,min(maxcol()-27,col()+5),maxrow(),,1,6,hb_UTF8ToStr("Data───┬P┬")+padc(hb_UTF8ToStr("Dieta"),A_DILTH,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬ile ")+trim(surowce->jmaG),{||tran(Dtos(data)+posilek+dieta,hb_UTF8ToStr("@R ####.##.##│X│")+REPLICATE("X",A_DILTH))+I+str(ILOSC)},{|k,s|RELe(k,s,upden)},surowce->skladnik+left(dtos(mies_rob),6)})
     elseif choice=3
        SZUKAM({1,1,maxrow(),,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA;
        +hb_UTF8ToStr(IF(WAZNOSC>0 .and. STANY->STAN>0 .and. STANY->DATA_PRZY+WAZNOSC<date(),"°","│"));

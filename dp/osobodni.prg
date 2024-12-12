@@ -42,7 +42,7 @@ seek dseek(,'data,posilek,dieta',data,posilek,'')
   #define D_ILPIC "@K #####"
 #endif
 
-szukam({0,10,maxrow(),,1,4,hb_UTF8ToStr("Data┬─┬")+padc(hb_UTF8ToStr("Dieta─F8"),A_DILTH,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬──┬Ilość┬Cena"),;
+szukam({0,10,maxrow(),,1,4,hb_UTF8ToStr("Data───┬P┬")+padc(hb_UTF8ToStr("Dieta─F8"),A_DILTH,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬──┬Ilość┬Cena"),;
 {||tran(Dtos(data)+posilek+dieta,hb_UTF8ToStr("@R ####.##.##│X│")+repl("X",A_DILTH))+I+;
 if(menu->(dbseek(relewy->(dtos(data)+posilek))),"J"," ")+;
 if(zapot->(dbseek(relewy->(dtos(data)+posilek))),"Z"," ")+I+;
@@ -57,7 +57,7 @@ local getlist,a,b,c,d,scr
 
    DO CASE 
       CASE _SKEY=0
-    _snagkol:=6
+    DEFAULT _snagkol TO 3
     _spform:={|p,l|tranR(RIGHT(p,l),hb_UTF8ToStr("####.##.##│X│")+repl("X",A_DILTH))}
     if alias()="RELEWY"
        _sfor:={||dieta=" "}
@@ -454,7 +454,7 @@ stat proc f9(g,_f,getlist)
    if startrec#0
       go if(poprec=0,startrec,poprec)
    endif
-   if szukam({2,min(col(),maxcol()-60),maxrow(),,1,9,"Osobo-dni",;
+   if szukam({2,min(col(),maxcol()-60),maxrow(),,1,9,hb_UTF8ToStr("Data───┬P┬Kod───Nazwisko")+padl(hb_UTF8ToStr("┬Ilość┬D┬G"),osoby->(hb_FieldLen([nazwisko])),hb_UTF8ToStr("─")),;
      {||tran(dtos(data)+posilek,hb_UTF8ToStr("@R XXXX.XX.XX│X"))+I+kod_osoby+" "+osoby->nazwisko+I+tran(ile_pos,D_ILPIC)+I+dieta+I+grupa},;
      {|k,_s|(_sret:=k=13).or.rele(k,_s,.f.)},keyp})
     set relation to
@@ -792,7 +792,7 @@ local n,g,s,i,k,d,r,getlist
 
 DO CASE
   CASE _skey=0
-DEFAULT _snagl    TO hb_UTF8ToStr('Kod┬')+pad('Nazwisko',len(nazwisko),hb_UTF8ToStr('─'))+hb_UTF8ToStr('┬Stanowisko')
+DEFAULT _snagl    TO hb_UTF8ToStr('Kod┬')+pad('Nazwisko',hb_FieldLen([nazwisko]),hb_UTF8ToStr('─'))+pad(hb_UTF8ToStr('┬Stanowisko'),hb_FieldLen([stanowisko]),hb_UTF8ToStr('─'))+hb_UTF8ToStr('─┬D┬G')
       if _slth=0
       elseif _spocz>'9'
         SET ORDER TO tag osob_naz
@@ -953,9 +953,9 @@ DEFAULT _snagl    TO hb_UTF8ToStr('Kod┬')+pad('Nazwisko',len(nazwisko),hb_UTF8
         SET RELATION TO RELEWY->(dseek(,'data,posilek,dieta',MAIN->data,MAIN->posilek,MAIN->dieta)) INTO RELEWY, to UpP(kod_osoby) into osoby
 #endif        
         SEEK n
-szukam({1,min(col()+20,maxcol()-30),maxrow(),,1,9,hb_UTF8ToStr("Data────┬─┬D┬Ilość┬─Wartość─┬"),;
-{||kod_osoby+I+tran(Dtos(data)+posilek+dieta,hb_UTF8ToStr("@R ####.##.##│X│X"))+I+tran(ILE_POS,D_ILPIC)+I+strpic(ile_pos*D_CENA,9,A_ZAOKR,"@E ",.t.)+I+osoby->nazwisko},;
-{|k,s|RELe(k,s,upden)},n})
+        szukam({1,min(col()+20,maxcol()-30),maxrow(),,1,9,hb_UTF8ToStr("┬──Data────┬P┬D┬Ilość┬─Wartość─┬"),;
+         {||kod_osoby+I+tran(Dtos(data)+posilek+dieta,hb_UTF8ToStr("@R ####.##.##│X│X"))+I+tran(ILE_POS,D_ILPIC)+I+strpic(ile_pos*D_CENA,9,A_ZAOKR,"@E ",.t.)+I+osoby->nazwisko},;
+         {|k,s|RELe(k,s,upden)},n})
         pop_stat(_skey)
       
    case _skey=-9

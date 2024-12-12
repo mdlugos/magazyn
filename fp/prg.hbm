@@ -1,6 +1,6 @@
 -ofk -w1 -m -n
--gui -gtwvt
-#-std -gtwin
+#-gui -gtwvt
+-std -gtwin
 -lhbwin
 # -lrddads -lace32 rddads.hbc
 -lhbzebra
@@ -15,10 +15,11 @@
 main rejestry konta kontr dok pkval dziennik dok_druk dodatki
 
 #../common/tbrowse
+../common/help
+../common/errsys
+../common/harbinit
 ../common/dm_form
 ../common/io
-../common/error
-../common/help
 ../common/io_2
 ../common/clp_brow
 ../common/mds

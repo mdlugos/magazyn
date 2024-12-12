@@ -79,8 +79,9 @@ PROCEDURE Dbu( param1, param2, param3 )
 #ifdef __PLATFORM__WINDOWS
    else
       // avoid vertical scrolling in windows 
-      setmode(min(maxrow()+1,Round((maxcol()+1)*5/16,0)),maxcol()+1)
-#endif
+      setmode(min(maxrow(),maxcol())+1,max(maxrow(),maxcol())+1)
+      setmode(,) //fix problems
+   #endif
    endif
 
 

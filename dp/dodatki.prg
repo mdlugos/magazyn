@@ -145,7 +145,7 @@ DO CASE
       if hb_gtInfo( HB_GTI_ISGRAPHIC )
          aczojs({"98x32","80x25 (Norm)",hb_UTF8ToStr("Zmieniaj ilość linii"),hb_UTF8ToStr("Zmieniaj wielkość czcionki"),hb_UTF8ToStr("Pełny ekran (Alt+Enter)")},"",@m)
          do case
-         case m<2
+         case m=1
          SetMode(32,98)
          case m=2
          SetMode(25,80)
@@ -159,9 +159,7 @@ DO CASE
       else
 //#endif         
          aczojs({"80x25 (Norm)","80x30","80x43","80x50","80x60","132x25","132x30","132x43","132x50","132x60"},"",@m)
-         sysint(16,3)
-         setmode(25,80)
-         if m<2
+         if m=1
          setmode(25,80)
          elseif m=2
          sysint(16,36)
@@ -170,31 +168,22 @@ DO CASE
          elseif m=4
          setmode(50,80)
          elseif m=5
-         //sysint(16,38) //80x60
-         sysint(16,20226,264)
+         setmode(60,80)
          elseif m=6
-         sysint(16,20226,265) //132x25
-         //sysint(16,32)
+         setmode(25,132)
          elseif m=7
-         sysint(16,33) //132x30
+         setmode(30,132)
          elseif m=8
-         //sysint(16,34) //132x43
-         sysint(16,20226,266)
+         setmode(43,132)
          elseif m=9
-         sysint(16,20226,267) //132x50
+         setmode(50,132)
          elseif m=10
-         //sysint(16,35) //132x60
-         sysint(16,20226,268)
-         endif
-         setmode(,)
-         if maxcol()<79
-            sysint(16,3)
-            setmode(25,80)
-            setmode(25,80)
+         setmode(60,132)
          endif
 //#ifdef __PLATFORM__WINDOWS
       endif
 //#endif
+      setmode(,)
       init screen
 #ifdef A_MYSZ
       sysint(51,0)

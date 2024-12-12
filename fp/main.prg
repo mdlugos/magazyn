@@ -85,14 +85,14 @@ defa:=getlines(defa,HB_OsPathListSeparator())
 if len(defa)=1 .and. empty(defa[1])
    defa[1]:='.'
 endif
-aeval(defa,{|x,i|if(right(x,1)<>HB_ps(),defa[i]+=HB_ps(),)})
+aeval(defa,{|x,i,y|y:=right(x,1),if(y==HB_OsDriveSeparator(),x+=HB_ps()+curdir(x),),if(y<>HB_ps(),defa[i]:=x+HB_ps(),)})
 
-a:=DiskName()+HB_OsDriveSeparator()+HB_ps()+curdir(DiskName())+HB_ps()
+a:=HB_ps()+curdir()+HB_ps()
 
-#ifndef __PLATFORM__UNIX
-if curdir()=HB_ps()
-  a:=HB_ps()+curdir()+HB_ps()
-endif
+#ifndef __PLATFORM__UNIX  
+  if curdir()<>HB_ps()
+   a:=DiskName()+HB_OsDriveSeparator()+a
+  endif
 #endif
 
 aeval(defa,{|x,j,i|defa[j]:=if(x='.'+HB_ps(),a+SubStr(x,3),if(x='..'+HB_ps().and.(i:=rat(HB_ps(),left(a,len(a)-1)))>0,left(a,i)+SubStr(x,4),x))})

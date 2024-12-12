@@ -106,7 +106,7 @@ memvar it_menudod
          if hb_gtInfo( HB_GTI_ISGRAPHIC )
             aczojs({"98x32","80x25 (Norm)",hb_UTF8ToStr("Zmieniaj ilość linii"),hb_UTF8ToStr("Zmieniaj wielkość czcionki"),hb_UTF8ToStr("Pełny ekran (Alt+Enter)")},"",@m)
             do case
-            case m<2
+            case m=1
             SetMode(32,98)
             case m=2
             SetMode(25,80)
@@ -127,10 +127,11 @@ memvar it_menudod
               setmode(50,80)
            elseif m=4
               setmode(50,128)
-           else
+           elseif m=1
               setmode(25,80)
-            endif
+           endif
          endif
+         setmode(,)
 
       case m = 6
    if stary_rok#NIL
