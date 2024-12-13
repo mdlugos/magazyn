@@ -44,7 +44,7 @@ su:=surowce->(recno())
 select elementy
 SET ORDER TO tag ele_naz
 el:=recno()
-znalaz:=SZUKAM({0,min(col(),maxcol()-30),maxrow(),,1,len(trim(na)),hb_UTF8ToStr("PRZEGLĄD ELEMENTÓW"),{||NAZWA+I+jedn D_PROC_EN},{|k,s|ele(k,s,.t.)},UpP(trim(na))})
+znalaz:=SZUKAM({0,min(col(),maxcol()-30),MaxRow(),,1,len(trim(na)),hb_UTF8ToStr("PRZEGLĄD ELEMENTÓW"),{||NAZWA+I+jedn D_PROC_EN},{|k,s|ele(k,s,.t.)},UpP(trim(na))})
 set order to tag ele_kod
   select surowce
     SET ORDER TO tag sur_kod
@@ -138,7 +138,7 @@ do case
      set order to tag zaw_ele
      set relation to skladnik into surowce
      dbseek(elementy->element,.f.)
-       szukam({1,min(col()+5,maxcol()-70),maxrow(),,0,0,hb_UTF8ToStr('ZAWARTOŚĆ ')+elementy->jedn+ hb_UTF8ToStr(' W SKŁADNIKACH'),{||surowce->(nazwa+I+str(zawar->ilosc)+"/"+str(gram)+" "+surowce->jedN)},{|_skey,_s D_MYSZ|_skey:=if(_skey=13,9,_skey),sur(_skey,_s,.f. D_MYSZ)},elementy->element})
+       szukam({1,min(col()+5,maxcol()-70),MaxRow(),,0,0,hb_UTF8ToStr('ZAWARTOŚĆ ')+elementy->jedn+ hb_UTF8ToStr(' W SKŁADNIKACH'),{||surowce->(nazwa+I+str(zawar->ilosc)+"/"+str(gram)+" "+surowce->jedN)},{|_skey,_s D_MYSZ|_skey:=if(_skey=13,9,_skey),sur(_skey,_s,.f. D_MYSZ)},elementy->element})
      pop_stat(_skey)
 
    case _skey=13
@@ -154,7 +154,7 @@ return .f.
 ***********
 func zaw_ar(atot,ilo,dan,dat,ign)
 
-//memvar maxcol(),maxrow()
+//memvar maxcol(),MaxRow()
 
 field data,posilek,danie,dieta
 
@@ -446,7 +446,7 @@ stat proc edok3(_f)
       set order to tag ele_naZ
       if dbseek(UpP(na)) .and. alarm(hb_UTF8ToStr("TAKA NAZWA JUŻ ISTNIEJE;CZY DOPISAĆ MIMO WSZYSTKO"),{"TAK","NIE"})=2 .OR. empty(NA)
         @ 4,_fco1,5,_fco2 BOX UNICODE '║ ║║╝─╚║ ' color _sbkgr
-        RESTSCREEN(1+2*_fskip+_frow,_fco1,maxrow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow)*D_REST+1))
+        RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow)*D_REST+1))
         _fpopkey:=.f.
         return
       endif

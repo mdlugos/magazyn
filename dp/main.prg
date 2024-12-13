@@ -33,8 +33,7 @@ else
 endif
 
 defa:=getlines(defa,HB_OsPathListSeparator())
-
-if len(defa)=1 .and. empty(defa[1])
+if defa[1]==''
    defa[1]:='.'
 endif
 aeval(defa,{|x,i,y|y:=right(x,1),if(y==HB_OsDriveSeparator(),x+=HB_ps()+curdir(x),),if(y<>HB_ps(),defa[i]:=x+HB_ps(),)})
@@ -98,7 +97,7 @@ set default to (defa+"roboczy"+HB_ps())
 #endif
 #endif
 
-i:={maxrow(),maxcol(),}
+i:={MaxRow(),maxcol(),}
 
    txt:="dieta.ini"
    do while inirest(@txt)
@@ -115,8 +114,8 @@ i:={maxrow(),maxcol(),}
    enddo
 
 
-   if maxrow()>i[2] .or. maxcol()>i[2]
-     i[1]:=min(i[1],maxrow())
+   if MaxRow()>i[2] .or. maxcol()>i[2]
+     i[1]:=min(i[1],MaxRow())
      i[2]:=min(i[2],maxcol())
      i[3]:=savescreen(0,0,i[1],i[2])
      clear screen
@@ -179,24 +178,24 @@ endif
 
           @ 4,maxcol()/2-4 SAY " M E N U " COLOR if(isCOLOR(),_sbkgr,"W+")
 
-          @ maxrow()-2,0,maxrow(),maxcol() BOX UNICODE "╔═╗║╝═╚║ "
+          @ MaxRow()-2,0,MaxRow(),maxcol() BOX UNICODE "╔═╗║╝═╚║ "
 
   IF STARY_ROK#NIL
-    @ maxrow()-1,9 say stary_rok+' !' color if(isCOLOR(),"*"+_sbkgr,"W*+")
+    @ MaxRow()-1,9 say stary_rok+' !' color if(isCOLOR(),"*"+_sbkgr,"W*+")
   else
-    @ maxrow()-1,9 say "WYBÓR OPCJI" UNICODE color if(isCOLOR(),_sbnorm,"W+")
+    @ MaxRow()-1,9 say "WYBÓR OPCJI" UNICODE color if(isCOLOR(),_sbnorm,"W+")
   ENDIF   
 
-          @ maxrow()-1,25 SAY "POMOC  f2 - f7 BEZPŚREDNI DOSTĘP DO DANYCH esc WYJŚCIE" UNICODE color if(isCOLOR(),_sbnorm,"W+")
+          @ MaxRow()-1,25 SAY "POMOC  f2 - f7 BEZPŚREDNI DOSTĘP DO DANYCH esc WYJŚCIE" UNICODE color if(isCOLOR(),_sbnorm,"W+")
 
       SET COLOR TO I
-          @ maxrow()-1,2 BOX '►' UNICODE
-          @ maxrow()-1,4 BOX '◄' UNICODE
-          @ maxrow()-1,6 BOX '◄┘' UNICODE
-          @ maxrow()-1,22 SAY "F1"
-          @ maxrow()-1,32 SAY "F2"
-          @ maxrow()-1,37 SAY "F7"
-          @ maxrow()-1,68 say "Esc"
+          @ MaxRow()-1,2 BOX '►' UNICODE
+          @ MaxRow()-1,4 BOX '◄' UNICODE
+          @ MaxRow()-1,6 BOX '◄┘' UNICODE
+          @ MaxRow()-1,22 SAY "F1"
+          @ MaxRow()-1,32 SAY "F2"
+          @ MaxRow()-1,37 SAY "F7"
+          @ MaxRow()-1,68 say "Esc"
 //      hb_gtInfo( HB_GTI_BOXCP, a)
 
       SET MESSAGE TO 5 CENTER
@@ -234,7 +233,7 @@ endif
       ENDIF
 
       level1:=menu
-      setpos(maxrow()/2,maxcol()/2)
+      setpos(MaxRow()/2,maxcol()/2)
 begin sequence
       DO CASE
 

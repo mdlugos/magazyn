@@ -1,9 +1,10 @@
-#define PC852
+#define A_UNICODE 'UTF8EX'
+#define PC852 'PLWIN'
 #include "lan.ch"
 #ifdef __PLATFORM__WINDOWS
  #define A_WIN_PRN .t.
  #define PLWIN
- #define A_STOPKA 'Program: System Dieta, '+wersja()+', producent: Firma Usàug Informatycznych Marek Dàugosz, 43-400 Cieszyn, ul. R¢wna 16'
+ #define A_STOPKA 'Program: System Dieta, '+wersja()+', producent: Firma Us≈Çug Informatycznych Marek D≈Çugosz, 43-400 Cieszyn, ul. R√≥wna 16'
 #endif
 //#define A_CDX DBFCDX
 #define A_MYSZ
@@ -36,8 +37,8 @@
 #else
 #define A_SUMK    -39081393255
 #define A_KOMU_N  'Centrum Reumatologii Sp. z o.o.'
-#define A_KOMU_A  "Ustro‰, ul. Szpitalna 11"
-#define A_AUTOR   "A.D. 2016, Marek Dàugosz, Cieszyn, ul. R¢wna 16, tel. 338522553"
+#define A_KOMU_A  "Ustro≈Ñ, ul. Szpitalna 11"
+#define A_AUTOR   "A.D. 2016, Marek D≈Çugosz, Cieszyn, ul. R√≥wna 16, tel. 338522553"
 #endif
 #define A_DIETA
 #define A_FILELIMIT '45'

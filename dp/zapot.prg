@@ -696,7 +696,7 @@ LOCAL Z,s,pg,_s
     select menu
     set relation to danie into dania
 
-    Z:=szukam({0,min(maxcol()-60,col()),maxrow(),,,,;
+    Z:=szukam({0,min(maxcol()-60,col()),MaxRow(),,,,;
      hb_UTF8ToStr('Jadłospis'),{||pozycja+I+dania->(nazwa+I+dieta+I+gramatura+" "+jedn)},,keyp})
 
   else
@@ -710,7 +710,7 @@ LOCAL Z,s,pg,_s
  select dania
  set order to tag dan_naz
 
-    _s:={0,min(maxcol()-60,col()),maxrow(),,1,len(trim(dan))+1,;
+    _s:={0,min(maxcol()-60,col()),MaxRow(),,1,len(trim(dan))+1,;
          'Danie',{||posilek+"/"+nazwa+if(""=opis,if(sklad->(dbseek(dania->danie)),I,"!"),"&")+dieta+I+gramatura+" "+jedn},;
          {|k,s D_MYSZ|danszuk(k,s,.t. D_MYSZ)},trim(dseek(,'posilek,nazwa',pg,dan))}
 
@@ -757,7 +757,7 @@ local r:=surowce->(recno())
    if startrec#0
       go if(poprec=0,startrec,poprec)
    endif
-   if szukam({2,min(col(),maxcol()-60),maxrow(),,1,9,;
+   if szukam({2,min(col(),maxcol()-60),MaxRow(),,1,9,;
      "Zapotrzebowania",;
      {||tran(dtos(data)+posilek,"@R XXXX.XX.XX|X")+I+surowce->nazwa+I+str(ilosc)+" "+surowce->jmaG+I+dieta},;
      {|k,_s|(_sret:=k=13).or.rele(k,_s,.f.)},keyp})
@@ -937,7 +937,7 @@ FIELD INDEX,NAZWA,stan,jm,data_przy,waznosc
 #else
 #define D_KODY
 #endif
-        SZUKAM({0,1,maxrow(),,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
+        SZUKAM({0,1,MaxRow(),,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
         +hb_UTF8ToStr(IF(WAZNOSC>0 .and. STANY->STAN>0 .and. STANY->DATA_PRZY+WAZNOSC<date(),"°","│"));
         +STR(STANY->STAN)+" "+JM},{|_skey,_s D_MYSZ|if(_skey=13,.f.,STANMAG(_skey,_s D_MYSZ))},"",.F.})
 return

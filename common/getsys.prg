@@ -126,7 +126,7 @@ local NumFlag:=.f.,b,x,y,key,mfl,maxlth:=0
     // activate the GET for reading
     if get:exitstate=GE_NOEDIT
        setcursor(0)
-       get:colordisp(getlines(get:colorspec,',')[2])
+       get:colordisp(hb_ATokens(get:colorspec,',')[2])
        get:exitstate:=GE_NOEXIT
     else
        get:SetFocus()
@@ -201,11 +201,11 @@ local NumFlag:=.f.,b,x,y,key,mfl,maxlth:=0
     // de-activate the GET
     if get:HasFocus
       if get:type$"CM" .and. valtype(get:cargo)="L" .and. get:cargo
-         @ get:row,get:col say space(min(maxlth,val(SubStr(get:picture,1+at("S",get:picture))))) color getlines(get:colorspec,',')[1]
+         @ get:row,get:col say space(min(maxlth,val(SubStr(get:picture,1+at("S",get:picture))))) color hb_ATokens(get:colorspec,',')[1]
       endif
       get:KillFocus()
     else
-      get:colordisp(getlines(get:colorspec,',')[1])
+      get:colordisp(hb_ATokens(get:colorspec,',')[1])
       setcursor(if(set(_SET_INSERT),2,1))
     endif
 
@@ -377,7 +377,7 @@ local bKeyBlock
       get:display()
       get:changed:=.t.
     else
-      a:=getlines(b,.t.)
+      a:=hb_ATokens(b,.t.)
       c:=''
       if len(a)=1
          kibord(a[1])
@@ -1249,9 +1249,9 @@ static proc getchr(get,expandable)
       endif
    ENDIF
 
-   IF r2>maxrow() // poza ekran
-      r1-=r2-maxrow()
-      r2:=maxrow()
+   IF r2>MaxRow() // poza ekran
+      r1-=r2-MaxRow()
+      r2:=MaxRow()
       IF r1<0
          r1:=0
       ENDIF

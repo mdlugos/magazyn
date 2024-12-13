@@ -106,8 +106,7 @@ else
 endif
 
 defa:=getlines(defa,HB_OsPathListSeparator())
-
-if len(defa)=1 .and. empty(defa[1])
+if defa[1]==''
    defa[1]:='.'
 endif
 aeval(defa,{|x,i,y|y:=right(x,1),if(y==HB_OsDriveSeparator(),x+=HB_ps()+curdir(x),),if(y<>HB_ps(),defa[i]:=x+HB_ps(),)})
@@ -233,7 +232,7 @@ private dzisiaj:=date()
 #endif
 
 /*
-   i:={maxrow(),maxcol(),}
+   i:={MaxRow(),maxcol(),}
    txt:="magazyn.ini"
    do while inirest(@txt)
 begin sequence
@@ -241,8 +240,8 @@ begin sequence
 end sequence
    enddo
 
-   if maxrow()>i[2] .or. maxcol()>i[2]
-     i[1]:=min(i[1],maxrow())
+   if MaxRow()>i[2] .or. maxcol()>i[2]
+     i[1]:=min(i[1],MaxRow())
      i[2]:=min(i[2],maxcol())
      i[3]:=savescreen(0,0,i[1],i[2])
      clear screen
@@ -369,7 +368,7 @@ if iscolor()
 else
   set color to w
 endif
-    dispbegin()
+//    dispbegin()
    CLEAR screen
       ? padc(firma_n,maxcol())
 
@@ -380,28 +379,28 @@ endif
           @ 4,maxcol()/2-29,7,maxcol()/2+30 BOX UNICODE "╔═╗║╝═╚║ "
           @ 4,maxcol()/2-4 SAY " M E N U " COLOR if(iscolor(),_sbkgr,"W+")
 
-          @ maxrow()-2,0,maxrow(),maxcol() BOX UNICODE "╔═╗║╝═╚║ "
+          @ MaxRow()-2,0,MaxRow(),maxcol() BOX UNICODE "╔═╗║╝═╚║ "
 
-          @ maxrow()-1,1 SAY "                     -wybór opcji    -                  -wyjście" UNICODE color if(iscolor(),_sbnorm,"W+")
+          @ MaxRow()-1,1 SAY "                     -wybór opcji    -                  -wyjście" UNICODE color if(iscolor(),_sbnorm,"W+")
 
       SET COLOR TO I
 
-          @ maxrow()-1,2 SAY "K"
-          @ maxrow()-1,4 SAY "D"
-          @ maxrow()-1,6  SAY "R"
-          @ maxrow()-1,8  SAY "Z"
-          @ maxrow()-1,10 SAY "P"
-          @ maxrow()-1,12 BOX "─►" UNICODE
-          @ maxrow()-1,15 BOX '◄─' UNICODE
-          @ maxrow()-1,18 BOX '◄─┘' UNICODE
-          @ maxrow()-1,35 SAY "F1"
-          @ maxrow()-1,40 SAY "P O M O C" color (_sbnorm)
-          @ maxrow()-1,53 say "Esc"
+          @ MaxRow()-1,2 SAY "K"
+          @ MaxRow()-1,4 SAY "D"
+          @ MaxRow()-1,6  SAY "R"
+          @ MaxRow()-1,8  SAY "Z"
+          @ MaxRow()-1,10 SAY "P"
+          @ MaxRow()-1,12 BOX "─►" UNICODE
+          @ MaxRow()-1,15 BOX '◄─' UNICODE
+          @ MaxRow()-1,18 BOX '◄─┘' UNICODE
+          @ MaxRow()-1,35 SAY "F1"
+          @ MaxRow()-1,40 SAY "P O M O C" color (_sbnorm)
+          @ MaxRow()-1,53 say "Esc"
 
   IF STARY_ROK#NIL
-     @ maxrow()-1,72 say str(year(stary_rok),4)+' !' COLOR if(iscolor(),"*"+_sbkgr,"W*+")
+     @ MaxRow()-1,72 say str(year(stary_rok),4)+' !' COLOR if(iscolor(),"*"+_sbkgr,"W*+")
   else
-     @ maxrow()-1,72 say "      " COLOR if(iscolor(),"*"+_sbkgr,"W*+")
+     @ MaxRow()-1,72 say "      " COLOR if(iscolor(),"*"+_sbkgr,"W*+")
   ENDIF
 
       SET MESSAGE TO 5 CENTER
@@ -414,7 +413,7 @@ endif
       @ 6,maxcol()/2+8  PROMPT "Zestawienia"  UNICODE MESSAGE 'Wydruki zestawień.'
       @ 6,maxcol()/2+20 PROMPT "Pozostałe"    UNICODE MESSAGE 'Dodatkowe funkcje programu.'
 
-    dispend()
+    //dispend()
       //hb_gtInfo( HB_GTI_BOXCP, a)
       menu:=level1
       MENU TO menu
@@ -850,30 +849,16 @@ field index
     select 10
  
     if Empty(Findfile('daty.dbf')) .and. !Empty(txt:=Findfile("daty.ini"))
-      a:={}
-      do while inirestold(@txt)
-        i:=at(':=',txt)
-        if i>0
-          aadd(a,{left(txt,i-1),type(SubStr(txt,i+2)),10,2})
-        endif
-      enddo
+      a:=getlines(memoread(txt))
+      aeval(a,{|x,i,c|c:=getlines(x,':='),if(len(c)=2,a[i]:={c[1],type(c[2]),10,2,,c[2]},)})
       dbcreate('daty',a)
       nUSE daty
       dbappend()
-      txt:="daty.ini"
-      do while inirestold(@txt)
-        i:=at(':=',txt)
-        if i>0
-          txt:='DATY->'+txt
-          begin sequence
-            (&txt,txt:=NIL)
-          end
-        endif
-      enddo
+      aeval(a,{|x,i|fieldput(i,x[6])})
       UNLOCK
     endif
-    nUSE daty
- #else
+    nuse daty
+  #else
     if Empty(txt:=Findfile("daty.ini"))
        nUSE daty
        txt:=''

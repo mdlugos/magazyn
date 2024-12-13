@@ -198,10 +198,10 @@ DO WHILE .T.
      rf:=firMy->(recno())
      set order to 1
 #ifdef A_FK
-    znalaz:= szukam({1,40,maxrow(),,1,0,hb_UTF8ToStr("Przegląd ")+dok,;
+    znalaz:= szukam({1,40,MaxRow(),,1,0,hb_UTF8ToStr("Przegląd ")+dok,;
         {||nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)+hb_UTF8ToStr(if(data>DatY->d_z_mies1 .and. kto_pisal=HB_UCHAR(0x00A0),"│","┼"))+D_KH+I+DTOV(data)+I+D_KH1},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
 #else
-    znalaz:= szukam({1,40,maxrow(),,1,0,hb_UTF8ToStr("Przegląd ")+dok,;
+    znalaz:= szukam({1,40,MaxRow(),,1,0,hb_UTF8ToStr("Przegląd ")+dok,;
         {||nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)+hb_UTF8ToStr(if(data>DatY->d_z_mies1 .and. kto_pisal=HB_UCHAR(0x00A0),"│","┼"))+DTOV(data)+I+dost_odb},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
 #endif
      firMy->(dbgoto(rf))
@@ -1136,7 +1136,7 @@ RETURN(.t.)
 ***************************
 #ifdef A_OBR
 function nzval(nz)
-return szukam({0,10,maxrow(),,1,0,"",{||konto+I+opis_koszt},{|_skey,_s|zlec_obr(_skey,_s)},nz})
+return szukam({0,10,MaxRow(),,1,0,"",{||konto+I+opis_koszt},{|_skey,_s|zlec_obr(_skey,_s)},nz})
 ***************************
 function zlec_obr(_skey,_s)
 
@@ -1237,7 +1237,7 @@ DO CASE
       set order to "main_zle"
       set relation to nr_mag+index into indx_mat
       seek stanowis->konto
-         szukam({1,17,maxrow(),,1,0,trim(stanowis->opis_koszt),{||index+I+DTOV(data)+I+nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)+I+str(pm*ilosc,9,ILDEC)+I+indx_mat->jm+I+indx_mat->nazwa},{|_skey,_s|_skey=K_ESC},stanowis->konto+mag_biez})
+         szukam({1,17,MaxRow(),,1,0,trim(stanowis->opis_koszt),{||index+I+DTOV(data)+I+nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)+I+str(pm*ilosc,9,ILDEC)+I+indx_mat->jm+I+indx_mat->nazwa},{|_skey,_s|_skey=K_ESC},stanowis->konto+mag_biez})
       select indx_mat
       goto k
       select main
@@ -1452,7 +1452,7 @@ ames:={}
    asize(_s,max(len(_s),_sLEN))
    _srowb:=1
    _scol1:=0
-   _srowe:=maxrow()
+   _srowe:=MaxRow()
    _sbeg:=1
    _slth:=0
    _swar:=NIL
@@ -2609,9 +2609,9 @@ DO CASE
 
 
 #ifdef A_KB
-               if szukam({1,14,maxrow(),,15,_slth-1,'DOKUMENTY',{||smb_dow+nr_dowodu+I+DTOV(data)+I+nr_faktury+I+dost_odb},,txt})
+               if szukam({1,14,MaxRow(),,15,_slth-1,'DOKUMENTY',{||smb_dow+nr_dowodu+I+DTOV(data)+I+nr_faktury+I+dost_odb},,txt})
 #else
-               if szukam({1,14,maxrow(),,15,_slth-1,'DOKUMENTY',{||smb_dow+nr_dowodu+I+DTOV(data)+I+dost_odb},,txt})
+               if szukam({1,14,MaxRow(),,15,_slth-1,'DOKUMENTY',{||smb_dow+nr_dowodu+I+DTOV(data)+I+dost_odb},,txt})
                   if /*dok_zew="V" .and.*/ dok_p_r="F"
                     n_f:=nr_faktury
                     @ 3,2 say "    NIP      " color _sbkgr
@@ -3140,7 +3140,7 @@ stat func nipval(i,n)
 field longname
 local ord:=ordsetfocus('firm_nip'),rec:=recno()
 set filter to rec#recno()
-if !dbseek(strtran(i,'-','')) .or. !szukam({1,4,maxrow(),,1,0,'Inne firmy o tym NIPie:',{||numer_kol+I+nazwa+I+ufieldget([longname])},,strtran(i,'-','')})
+if !dbseek(strtran(i,'-','')) .or. !szukam({1,4,MaxRow(),,1,0,'Inne firmy o tym NIPie:',{||numer_kol+I+nazwa+I+ufieldget([longname])},,strtran(i,'-','')})
    dbgoto(rec)
 else
    lock
@@ -3470,7 +3470,7 @@ if szukam(_s) .and. !eof()
    //s:=xml2json(xml_ksef,'Faktura')
    //altd()
    //hb_memowrit('fra.xml',xml_ksef,.f.)
-   //DEFAULT scr TO SaveScreen( 0, 0, Maxrow(), Maxcol() )
+   //DEFAULT scr TO SaveScreen( 0, 0, MaxRow(), Maxcol() )
    //fview('fra.xml')
    //REST SCREEN FROM scr
    //hb_memowrit('fra.json',hb_jsonencode(xml2json(xml_ksef,'Faktura'),.t.),.f.)

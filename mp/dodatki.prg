@@ -127,7 +127,7 @@ DO CASE
          #define D_Z1 nowy->d_z_mies1
          #define D_Z3 nowy->d_z_rok
 #else
-         txt:=getlines(memoread(txt+"daty.ini"),.t.)
+         txt:=hb_ATokens(memoread(txt+"daty.ini"),.t.)
          #define D_Z1 &(SubStr(txt[1],at(':=',txt[1])+2))
          #define D_Z3 &(SubStr(txt[3],at(':=',txt[3])+2))
 #endif
@@ -352,7 +352,7 @@ IF dz1>DatY->d_z_mies1
      nuse (defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty") alias stary readonly
      #define D_Z1 stary->d_z_mies1
 #else
-     m:=getlines(memoread(defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty.ini"),.t.)[1]
+     m:=hb_ATokens(memoread(defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty.ini"),.t.)[1]
      #define D_Z1 &(SubStr(m,at(':=',m)+2))
 #endif
      if D_Z1<DatY->d_z_rok
@@ -689,7 +689,7 @@ if stary_rok=dz1
      #define D_Z1 ndat->d_z_mies1
 #else
      use
-     m:=getlines(memoread(dz2+"daty.ini"),.t.)[1]
+     m:=hb_ATokens(memoread(dz2+"daty.ini"),.t.)[1]
      #define D_Z1 &(SubStr(m,at(':=',m)+2))
 #endif
    set color to (_sel)

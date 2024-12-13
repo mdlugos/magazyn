@@ -208,12 +208,12 @@ memvar keystroke,help_code,func_sel,cur_area,cur_dbf,field_list,frame,;
          // browses for each user
          WHILE (( keystroke := INKEY()) == 0 )
             IF (( nRefreshTimer + TB_REFRESH_RATE ) < SECONDS() )
-               DISPBEGIN()
+               //DISPBEGIN()
                anCursPos := { ROW(), COL() }
                FreshOrder( oB )
                StatLine( oB, lAppend, cAlias )
                SETPOS( anCursPos[1], anCursPos[2] )
-               DISPEND()
+               //DISPEND()
                nRefreshTimer := SECONDS()
             ENDIF
          END

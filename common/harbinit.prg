@@ -56,7 +56,6 @@ PROCEDURE __HBVMInit()
 //    hb_SetTermCP( 'UTF8')
 //  #endif
 #endif
-
       hb_SetTermCP( hb_cdpTerm() )
       Set(_SET_OSCODEPAGE, hb_cdpOS())
 
@@ -114,8 +113,14 @@ PROCEDURE __SetHelpK()
      hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
   #ifdef __PLATFORM__WINDOWS
   else
-   setmode(min(maxrow(),maxcol())+1,max(maxrow(),maxcol())+1)
-   setmode(,) //fix problems
+#ifdef A_UNICODE
+   //hb_Run('chcp 65001 > NUL')
+   //hb_SetTermCP( hb_cdpTerm() )
+   //hb_SetTermCP( 'UTF8')
+#endif      
+   //setmode(min(MaxRow(),maxcol())+1,max(MaxRow(),maxcol())+1)
+   //hb_Run('mode con: cols='+hb_ntoc(maxcol()+1)+'  lines='+hb_ntoc(maxrow()+1))
+   //setmode(,) //fix problems ?
   #endif   
   endif
 #ifdef A_ADS
@@ -176,7 +181,7 @@ public pcl:=.f.
 #else
     SetKey(K_ALT_RET,n,t)
 #endif
-    SetKey(K_ALT_K,{|get,b|get:=GetActive(),b:= hb_gtInfo( HB_GTI_CLIPBOARDDATA ),if(""<>b,kibord(getlines(b,.t.)[1]),),.t.},t)
+    SetKey(K_ALT_K,{|get,b|get:=GetActive(),b:= hb_gtInfo( HB_GTI_CLIPBOARDDATA ),if(""<>b,kibord(hb_ATokens(b,.t.)[1]),),.t.},t)
     SetKey(K_ALT_B,{|get|get:=GetActive(),hb_gtInfo( HB_GTI_CLIPBOARDDATA, Alltrim(get:buffer) ),.t.},t)
     SetKey(K_F10,i,t)
     SetKey(K_CTRL_L,i,t)

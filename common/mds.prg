@@ -225,7 +225,7 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
   _scol2:=min(maxcol(),int(_scol2))
 
 
-  _srowe:=if(_srowe=NIL,maxrow(),min(maxrow(),int(_srowe)))
+  _srowe:=if(_srowe=NIL,MaxRow(),min(MaxRow(),int(_srowe)))
   _srowb:=if(_srowb=NIL,0,int(_srowb))
 
   _srow=ROW()
@@ -467,7 +467,7 @@ local ret,scrlok
                dx:=min(max(dx,_srowb)-_srow1+1,_srowe-_srow2)
                if cx#0 .or. dx#0
                   MHIDE()
-                  dispbegin()
+                  //dispbegin()
                   scrlok:=savescreen(_srow1-1,_scol1-1,_srow2,_scol2)
                   RESTSCREEN(_srow1-1,_scol1-1,_srow2,_scol2,SUBSTR(_scr,1+(_srow1-1-_srowb)*(_scoln+2)*D_REST))
                   _srow1+=dx
@@ -480,7 +480,7 @@ local ret,scrlok
                      _scr:=savescreen(_srowb,_scol1-1,_srowe,_scol2)
                   endif
                   restscreen(_srow1-1,_scol1-1,_srow2,_scol2,scrlok)
-                  dispend()
+                  //dispend()
                   MSHOW()
                endif
                bx:=inkey(0,INKEY_MOVE + INKEY_LUP)
@@ -490,7 +490,7 @@ local ret,scrlok
                   bx:=1
                endif
                cx:=max(0,min(maxcol(),mcol()))
-               dx:=max(0,min(maxrow(),mrow()))
+               dx:=max(0,min(MaxRow(),mrow()))
             enddo
             sysint(51,10,0,-1,30464)
             MHIDE()

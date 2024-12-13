@@ -121,7 +121,7 @@ elseif key=K_INS .or. key=43
    l:=len(b)
    key:=_scoln
    aeval(b,{|x|key:=max(key,x[3])})
-   win:=window(l,int(1+l/maxrow())*key,"w+/GR,i,,bg+/Gr,w+/b")
+   win:=window(l,int(1+l/MaxRow())*key,"w+/GR,i,,bg+/Gr,w+/b")
    key:=indexord()
    getlist:={}
    af:=array(l)
@@ -133,8 +133,8 @@ elseif key=K_INS .or. key=43
 #ifdef A_PENS
 #define FieldnamE(i) if(b[i,1]='Nazwa','Nazwisko',b[i,1])
 #endif
-        a:=(win[4]-win[2])/int(1+l/maxrow())-13
-        @ win[1]+1+(i-1)%maxrow(),win[2]+1+(win[4]-win[2])*int((i-1)/maxrow())/int(1+l/maxrow())  say tran(pad(lower(strtran(FieldnamE(i),"_"," ")+":"),11),"!XXXXXXXXXX")
+        a:=(win[4]-win[2])/int(1+l/MaxRow())-13
+        @ win[1]+1+(i-1)%MaxRow(),win[2]+1+(win[4]-win[2])*int((i-1)/MaxRow())/int(1+l/MaxRow())  say tran(pad(lower(strtran(FieldnamE(i),"_"," ")+":"),11),"!XXXXXXXXXX")
 
         //getl af[i]
         AAdd(GetList,_GET_( af[i], "af[i]",,,))

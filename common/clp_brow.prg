@@ -12,7 +12,7 @@ function browse(plik)
 
 LOCAL DIR:={},DIR1,i,txt,scr_buf,m,n,f,b
 
-local nTop:=3, nLeft:=0, nBottom:=maxrow()-2, nRight:=maxcol()
+local nTop:=3, nLeft:=0, nBottom:=MaxRow()-2, nRight:=maxcol()
 
 local oB, lMore, lAppend, lKillAppend,;
     nKey, nCursSave, lGotKey,block
@@ -762,23 +762,23 @@ return (nCount)
 **************************************
 PROCEDURE POWR_DBED
 //local bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
-  @ maxrow()-1,0  CLEAR
-  @ maxrow()-1,0  SAY '   -wyjście     -edycja      -filtr    -pokaż ukryte       -ukryj rekord' UNICODE
-  @ maxrow(),27 SAY '- nawigacja       -szybkie szukanie'
-  @ maxrow()-1,0  SAY 'Esc'  COLOR "I"
-  @ maxrow()-1,13 SAY "Ent" COLOR "I"
-  @ maxrow()-1,26 say "F9"  COLOR "I"
-  @ maxrow()-1,37 SAY 'F2'  COLOR "I"
-  @ maxrow()-1,56 SAY 'Del'  COLOR "I"
-  @ maxrow(),0  BOX '↑' UNICODE COLOR "I"
-  @ maxrow(),2  BOX '↓' UNICODE COLOR "I"
-  @ maxrow(),4  BOX '→' UNICODE COLOR "I"
-  @ maxrow(),6  BOX '←' UNICODE COLOR "I"
-  @ maxrow(),8  SAY 'Home'  COLOR "I"
-  @ maxrow(),13 SAY 'End'  COLOR "I"
-  @ maxrow(),17 SAY 'PgUp'  COLOR "I"
-  @ maxrow(),22 SAY 'PgDn'  COLOR "I"
-  @ maxrow(),42 SAY 'F3'  COLOR "I"
+  @ MaxRow()-1,0  CLEAR
+  @ MaxRow()-1,0  SAY '   -wyjście     -edycja      -filtr    -pokaż ukryte       -ukryj rekord' UNICODE
+  @ MaxRow(),27 SAY '- nawigacja       -szybkie szukanie'
+  @ MaxRow()-1,0  SAY 'Esc'  COLOR "I"
+  @ MaxRow()-1,13 SAY "Ent" COLOR "I"
+  @ MaxRow()-1,26 say "F9"  COLOR "I"
+  @ MaxRow()-1,37 SAY 'F2'  COLOR "I"
+  @ MaxRow()-1,56 SAY 'Del'  COLOR "I"
+  @ MaxRow(),0  BOX '↑' UNICODE COLOR "I"
+  @ MaxRow(),2  BOX '↓' UNICODE COLOR "I"
+  @ MaxRow(),4  BOX '→' UNICODE COLOR "I"
+  @ MaxRow(),6  BOX '←' UNICODE COLOR "I"
+  @ MaxRow(),8  SAY 'Home'  COLOR "I"
+  @ MaxRow(),13 SAY 'End'  COLOR "I"
+  @ MaxRow(),17 SAY 'PgUp'  COLOR "I"
+  @ MaxRow(),22 SAY 'PgDn'  COLOR "I"
+  @ MaxRow(),42 SAY 'F3'  COLOR "I"
 //  hb_gtInfo( HB_GTI_BOXCP, bcp)
 
 RETURN
@@ -789,21 +789,21 @@ RETURN
 PROCEDURE POWR_GET
 //local bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
 
-  @ maxrow()-1,0  CLEAR
-  @ maxrow()-1,0  SAY     '             -wyjście z pola z zapisem zmian      -wyjscie z przywr.starej wart.' UNICODE
-  @ maxrow(),0  SAY     '   -tryb wstawiania <insert> /zamiany znaków' UNICODE
-  @ maxrow(),65 SAY     '- edycja w polu'
-  @ maxrow()-1,0  SAY 'Ent' COLOR "I"
-  @ maxrow()-1,4  SAY 'PgUp' COLOR "I"
-  @ maxrow()-1,9  SAY 'PgDn' COLOR "I"
-  @ maxrow()-1,47 SAY 'Esc' COLOR "I"
-  @ maxrow(),0  SAY 'Ins' COLOR "I"
-  @ maxrow(),47  BOX '↑' UNICODE COLOR "I"
-  @ maxrow(),50  BOX '↓' UNICODE COLOR "I"
-  @ maxrow(),53  BOX '→' UNICODE COLOR "I"
-  @ maxrow(),55  BOX '←' UNICODE COLOR "I"
-  @ maxrow(),57 SAY 'Home' COLOR "I"
-  @ maxrow(),62 SAY 'End' COLOR "I"
+  @ MaxRow()-1,0  CLEAR
+  @ MaxRow()-1,0  SAY     '             -wyjście z pola z zapisem zmian      -wyjscie z przywr.starej wart.' UNICODE
+  @ MaxRow(),0  SAY     '   -tryb wstawiania <insert> /zamiany znaków' UNICODE
+  @ MaxRow(),65 SAY     '- edycja w polu'
+  @ MaxRow()-1,0  SAY 'Ent' COLOR "I"
+  @ MaxRow()-1,4  SAY 'PgUp' COLOR "I"
+  @ MaxRow()-1,9  SAY 'PgDn' COLOR "I"
+  @ MaxRow()-1,47 SAY 'Esc' COLOR "I"
+  @ MaxRow(),0  SAY 'Ins' COLOR "I"
+  @ MaxRow(),47  BOX '↑' UNICODE COLOR "I"
+  @ MaxRow(),50  BOX '↓' UNICODE COLOR "I"
+  @ MaxRow(),53  BOX '→' UNICODE COLOR "I"
+  @ MaxRow(),55  BOX '←' UNICODE COLOR "I"
+  @ MaxRow(),57 SAY 'Home' COLOR "I"
+  @ MaxRow(),62 SAY 'End' COLOR "I"
 
 //  hb_gtInfo( HB_GTI_BOXCP, bcp)
  RETURN
@@ -980,10 +980,10 @@ if h<0
    return
 endif
 
-  a:=array(3*maxrow())
+  a:=array(3*MaxRow())
   j:=0
   txt:=sk(.t.,a,h)
-  b:=tbrowseNew(0,0,maxrow(),maxcol())
+  b:=tbrowseNew(0,0,MaxRow(),maxcol())
   c:=tbcolumnNew("",{||SubStr(txt,j+1)})
 c:width:=maxcol()+1
 b:addcolumn(c)
@@ -1004,7 +1004,7 @@ c[K_HOME]     :={|b|j:=0,b:refreshall()}
 
 if nextkey()=0 //.and. fseek(h,0,2) < 65536
   b:forcestable()
-  @ maxrow(),maxcol()-31 SAY 'ALT+B - kopiuj CAŁOŚĆ do schowka' UNICODE COLOR _sramka
+  @ MaxRow(),maxcol()-31 SAY 'ALT+B - kopiuj CAŁOŚĆ do schowka' UNICODE COLOR _sramka
 endif
 
 do while .t.
@@ -1026,7 +1026,7 @@ do while .t.
       eval(c[key],b)
       if scrlflag=1
         scrltxt()
-        dispbegin()
+        //dispbegin()
         b:stabilize()
         if !b:hitbottom
            scrltxt()
@@ -1035,17 +1035,17 @@ do while .t.
         else
            scrlua()
         endif
-        dispend()
+        //dispend()
       elseif scrlflag=-1
-        dispbegin()
+        //dispbegin()
         b:stabilize()
         if !b:hittop
            scrlub()
-           dispend()
+           //dispend()
            while nextkey()=K_UP;inkey();end
            scrlua()
         else
-           dispend()
+           //dispend()
         endif
       endif
       scrlflag:=0

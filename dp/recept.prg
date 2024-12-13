@@ -160,7 +160,7 @@ stat proc rdok3(_f)
       set order to tag dan_naz
       if dbseek(dseek(,'posilek,nazwa',pg,na)).and.gra+jed+die=gramatura+jedn+dieta .OR. empty(NA)
         @ 5,_fco1,6,_fco2 BOX UNICODE '║ ║║╝─╚║ ' color _sbkgr
-        RESTSCREEN(1+2*_fskip+_frow,_fco1,maxrow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow)*D_REST+1))
+        RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow)*D_REST+1))
         _fpopkey:=.f.
         return
       endif
@@ -303,7 +303,7 @@ local r:=surowce->(recno()),s:=dania->(recno())
 
    set relation to skladnik into surowce
    go if(poprec=0,startrec,poprec)
-    if szukam({2,min(col(),maxcol()-60),maxrow(),,0,0,curprompt,;
+    if szukam({2,min(col(),maxcol()-60),MaxRow(),,0,0,curprompt,;
      {||surowce->nazwa+I+str(ilosc)+" "+surowce->jedN},;
      {|k,_s D_MYSZ|(_sret:=k=13).or.sur(k,_s,.f. D_MYSZ)},keyp})
     set relation to

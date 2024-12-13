@@ -477,7 +477,7 @@ public doc_brut
 #else
    #define D_MYSZ
 #endif
-return  szukam({1,0,maxrow(),,,,,,{|k,s D_MYSZ|przeg(k,s,@ent,@stat_ord D_MYSZ)},''})
+return  szukam({1,0,MaxRow(),,,,,,{|k,s D_MYSZ|przeg(k,s,@ent,@stat_ord D_MYSZ)},''})
 
 ***********************
 static FUNCTION przeg(_skey,_s,ent,stat_ord D_MYSZ)

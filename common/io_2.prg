@@ -126,7 +126,7 @@ local b,d,y,r
     if b>1
        c:=strtran(left(c,b-1),':=',',')
     endif
-    b:=getlines(c,',')
+    b:=hb_ATokens(c,',')
     for d:=len(b) To 1 step -1
        c:=b[d]:=alltrim(b[d])
        y:=len(c)
@@ -139,37 +139,6 @@ local b,d,y,r
        endif
     next d
 return b
-***************************
-function inirestold(x)
-static a,l,i
-if a=NIL
-   x:=findfile(x)
-   if ""#x
-      a:=memoread(x)
-      a:=getlines(a,.t.)
-      i:=0
-      l:=len(a)
-   else
-      i:=l:=0
-   endif
-endif
-do while .t.
-   ++i
-   if i>l
-      x:=a:=NIL
-      return .f.
-   endif
-   x:=a[i]
-   if x='&:'
-      x:=SubStr(x,3)
-   elseif '&:'$x
-      x:=Trim(left(x,at('&:',x)-1))
-   endif
-   if x#';'
-      exit
-   endif
-enddo
-return .t.
 ****************
 function inirest(x)
 local a,l:=0,i,j,c,y
@@ -177,7 +146,7 @@ local a,l:=0,i,j,c,y
    x:=findfile(x)
    if ""#x
       a:=memoread(x)
-      a:=getlines(a,.t.)
+      a:=hb_ATokens(a,.t.)
       l:=len(a)
    endif
 
@@ -1997,30 +1966,23 @@ return left(y,i)
 func getlines(txt,delim)
 local a:={},i,j
 
-if valtype(delim)='N'
-    j:=delim
-    delim:=NIL
-endif
-
-if delim=NIL
+if valtype(delim)=='N'
+   j:=delim
    if chr(13)+chr(10)$txt
-     delim:=chr(13)+chr(10)
+      delim:=chr(13)+chr(10)
    else
-     delim:=chr(10)
+      delim:=chr(10)
    endif
-endif
-
-if j#NIL
-    for i:=1 to mlcount(txt,j,8,,delim)
-      aadd(a,memoline(txt,j,i,8,,delim))
-    next
-    return a
+   for i:=1 to mlcount(txt,j,8,,delim)
+     aadd(a,memoline(txt,j,i,8,,delim))
+   next
+   return a
 endif
 
 a:=hb_ATokens(txt,delim)
 
 i:=len(a)
-if i>1 .and. a[i]==''
+if empty(a[i])
    asize(a,i-1)
 endif
 

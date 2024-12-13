@@ -305,7 +305,7 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
       (&(SubStr(ap[1],3)),asize(adel(ap,1),--l))
    end
    for i:=1 to l
-      ap[i]:=asize(getlines(ap[i],";"),6)
+      ap[i]:=asize(hb_ATokens(ap[i],";"),6)
    next
 
    win:=window(l,60,_sbnorm)

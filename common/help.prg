@@ -68,9 +68,9 @@ endif
       ENDIF
    ENDIF
 
-   IF r2>maxrow() // poza ekran
-      r1-=r2-maxrow()
-      r2=maxrow()
+   IF r2>MaxRow() // poza ekran
+      r1-=r2-MaxRow()
+      r2=MaxRow()
       IF r1<0
          r1=0
       ENDIF
@@ -140,7 +140,7 @@ osk:=HB_SETKEYSAVE()
           HB_MEMOWRIT(HTEXT,strtran(txt,chr(141)+chr(10)),.f.)
     elseif k=K_CTRL_P .and. 1=alarm(hb_UTF8ToStr("Czy drukować"),{"Tak","Nie"},2)
           set console off
-          k:=getlines(hardcr(txt),.t.)
+          k:=hb_ATokens(hardcr(txt),.t.)
           print()
 #ifdef A_HPDF
   #define D_HWPRN A_HPDF

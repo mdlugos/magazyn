@@ -16,7 +16,7 @@ _fl:=1
 _fpos:=1
 _fposg:=1
 _fpopkey:=.f.
-_fscr:=savescreen(0,_fco1,maxrow(),_fco2)
+_fscr:=savescreen(0,_fco1,MaxRow(),_fco2)
 //_fnowy:=.f.
 
   begin sequence
@@ -95,11 +95,11 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
 
     if nextkey()=0 .and. !stat .and. !_fpopkey .and. _flp>1
        stat:={_fi,recno()}
-       _fj:=max(0,max(_fl,_fi)-int((maxrow()-_frow)/_fskip)+1)
+       _fj:=max(0,max(_fl,_fi)-int((MaxRow()-_frow)/_fskip)+1)
        skip _fj+1-_fi
        _fl:=_fi:=_fj+1
        _fpos:=_fkey:=0
-       while _fi<=_flp .and. _frow+_fskip*(_fi-_fj+1)<=maxrow()
+       while _fi<=_flp .and. _frow+_fskip*(_fi-_fj+1)<=MaxRow()
 #ifdef __PLATFORM__DOS
          @ _fskip*(_fi-_fj)+_frow,_fco1,_fskip*(_fi-_fj+1)+_frow,_fco2 BOX UNICODE IF( _flp<=_fi,'║ ║║╝═╚║ ','║ ║║╝─╚║ ') COLOR _sbkgr
 #else
@@ -238,7 +238,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
               _fi-=job
               stat:=.t.
               --_fj
-              if _fskip*(_fl-_fj+1)+_frow>maxrow()
+              if _fskip*(_fl-_fj+1)+_frow>MaxRow()
                  --_fl
                  if _fl=_flp-1
                      @ _fskip*(_fl-_fj+1)+_frow,_fco1 BOX '╙'+replicate('─',_fco2-_fco1-1)+'╜' UNICODE
@@ -259,7 +259,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
               job:=_fl-_fi+1
               skip job
               _fi+=job
-              if _frow+_fskip*(_fi-_fj+1)>maxrow()
+              if _frow+_fskip*(_fi-_fj+1)>MaxRow()
                 stat:=.t.
                 ++_fj
                 ++_fl
@@ -297,7 +297,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                     if _fi<_fl
                        hb_scroll(_fk,_fco1,_frow+_fskip*(_fl-_fj+1),_fco2,_fskip)
                        --_fl
-                       RESTSCREEN(1+_fskip*(_fl-_fj+1)+_frow,_fco1,maxrow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(1+_fskip*(_fl-_fj+1)+_frow)+1))
+                       RESTSCREEN(1+_fskip*(_fl-_fj+1)+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(1+_fskip*(_fl-_fj+1)+_frow)+1))
                        *********
                        _fkey:=_fi
                        do while _fk<=_frow+_fskip*(_fl-_fj)
@@ -317,7 +317,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                       --_fj
                       stat:=.t.
                    else
-                      RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,maxrow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow)+1))
+                      RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow)+1))
                       @ _fskip*(_fl-_fj+1)+_frow,_fco1 BOX '╚'+replicate('═',_fco2-_fco1-1)+'╝' UNICODE
                    endif
                 else
@@ -342,7 +342,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
                    ELSEif _fi-_fj=0
                     stat:=.t.
                     --_fj
-                    if _fskip*(_fl-_fj+1)+_frow>maxrow()
+                    if _fskip*(_fl-_fj+1)+_frow>MaxRow()
                          --_fl
                         if _fl=_flp-1
                           @ _fskip*(_fl-_fj+1)+_frow,_fco1 BOX '╙'+replicate('─',_fco2-_fco1-1)+'╜' UNICODE
@@ -369,7 +369,7 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
               case _fkey=K_PGDN .or. _fkey=K_ENTER // PgDn
             skip
             ++_fi
-          if _frow+_fskip*(_fi-_fj+1)>maxrow()
+          if _frow+_fskip*(_fi-_fj+1)>MaxRow()
             stat:=.t.
             ++_fj
             ++_fl
@@ -394,13 +394,13 @@ _fscr:=savescreen(0,_fco1,maxrow(),_fco2)
   enddo
   recover using stat
     if stat#NIL
-      RESTSCREEN(0,_fco1,maxrow(),_fco2,_fscr)
+      RESTSCREEN(0,_fco1,MaxRow(),_fco2,_fscr)
       set cursor off
       SET COLOR TO (_SNORM)
       break(stat)
     endif
   end sequence
-  RESTSCREEN(0,_fco1,maxrow(),_fco2,_fscr)
+  RESTSCREEN(0,_fco1,MaxRow(),_fco2,_fscr)
   set cursor off
   SET COLOR TO (_SNORM)
 

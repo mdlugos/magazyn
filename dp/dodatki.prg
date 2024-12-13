@@ -183,8 +183,9 @@ DO CASE
 //#ifdef __PLATFORM__WINDOWS
       endif
 //#endif
-      setmode(,)
+      //setmode(,)
       init screen
+      CLEAR screen
 #ifdef A_MYSZ
       sysint(51,0)
 #endif
@@ -491,7 +492,7 @@ begin sequence
 #define zmienna3 daty->d_z_rok
 use (di+"DATY") readonly shared
 #else
-   txt:=asize(getlines(memoread(di+"daty.ini"),.t.),3)
+   txt:=asize(hb_ATokens(di+"daty.ini"),.t.),3)
    for i:=1 to 3
      txt[i]:=&(SubStr(txt[i],at(":=",txt[i])+2))
    next i
@@ -513,7 +514,7 @@ if od<=zmienna3
 #ifdef A_DDBF
 use (di+"DATY") readonly shared
 #else
-   txt:=asize(getlines(memoread(di+"daty.ini"),.t.),3)
+   txt:=asize(hb_ATokens(memoread(di+"daty.ini"),.t.),3)
    for i:=1 to 3
      txt[i]:=&(SubStr(txt[i],at(":=",txt[i])+2))
    next i

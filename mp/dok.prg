@@ -307,7 +307,7 @@ endif
   if nk#NIL
 #ifdef wtoT
     nkp:=SubStr(nk,6)
-    if empty(nkp) .and. D_LPVALFIELD(POZYCJA)>maxrow() .and. pozycja>D_LP0
+    if empty(nkp) .and. D_LPVALFIELD(POZYCJA)>MaxRow() .and. pozycja>D_LP0
        nkp:=pozycja
     endif
 #else
@@ -1143,7 +1143,7 @@ procedure dok2(_f,getlist)
 #endif
     get:display()
     if dok_kh
-       get:postblock:={|g|szukam({1,14,maxrow(),,1,0,'FIRMY',,{|_skey,_s|gfirma(_skey,_s,getlist)},TRIM(d_o)})}
+       get:postblock:={|g|szukam({1,14,MaxRow(),,1,0,'FIRMY',,{|_skey,_s|gfirma(_skey,_s,getlist)},TRIM(d_o)})}
     elseif dok_zew="W" .and. dok="M"
        get:postblock:={||!empty(SubStr(d_o,3)).or.aczojs(magazyny),.t.}
 #ifdef A_MULTIDI
@@ -1157,7 +1157,7 @@ procedure dok2(_f,getlist)
 #ifdef A_FA
   if dok_p_r="F"
 #ifdef A_CENSPEC
-      get:postblock:={|g|szukam({1,14,maxrow(),,1,0,'FIRMY',,{|_skey,_s|gfirma(_skey,_s,getlist)},TRIM(d_o)})}
+      get:postblock:={|g|szukam({1,14,MaxRow(),,1,0,'FIRMY',,{|_skey,_s|gfirma(_skey,_s,getlist)},TRIM(d_o)})}
 #endif
 #ifdef A_MM
 #define D_MM
@@ -1166,7 +1166,7 @@ procedure dok2(_f,getlist)
 #endif
 
     if SubStr(dok,2)="K"
-      @ 4,2 GET n_f PICTURE "@K!S13" valid {|x|x:=recno(),empty(n_f).and.szukam({1,1,maxrow(),,1,0,'DOKUMENTY',{||smb_dow+nr_dowodu+I+dtoc(data)+I+dost_odb},{|_skey,_s|(_sret:=_skey=13).or._skey=27.or._skey=0.and.(if(val(d_o)=0,,_sfor:={||dost_odb=hb_bleft(d_o,A_NRLTH)}),dbseek(D_MM '',,.t.),dbskip(),.f.)},D_MM ''}).and.(dd:=data,n_f:=pad(KEY_DOK+nr_dowodu,hb_fieldlen('nr_faktury')),updated(.t.),.t.),dbgoto(x),.t.}
+      @ 4,2 GET n_f PICTURE "@K!S13" valid {|x|x:=recno(),empty(n_f).and.szukam({1,1,MaxRow(),,1,0,'DOKUMENTY',{||smb_dow+nr_dowodu+I+dtoc(data)+I+dost_odb},{|_skey,_s|(_sret:=_skey=13).or._skey=27.or._skey=0.and.(if(val(d_o)=0,,_sfor:={||dost_odb=hb_bleft(d_o,A_NRLTH)}),dbseek(D_MM '',,.t.),dbskip(),.f.)},D_MM ''}).and.(dd:=data,n_f:=pad(KEY_DOK+nr_dowodu,hb_fieldlen('nr_faktury')),updated(.t.),.t.),dbgoto(x),.t.}
       @ 4,16 GET dd
 //#ifndef A_NVAT
       iv:=ascan(avat,{|y|y[2]#0})
@@ -2696,7 +2696,7 @@ IF p='DOK4'
    unlock
    ++posproc
    ++_flp
-   if _fskip*(_fl-_fj+2)+_frow>maxrow()
+   if _fskip*(_fl-_fj+2)+_frow>MaxRow()
       if _fl=_flp-1
          @ _fskip*(_fl-_fj+1)+_frow,_fco1 BOX '╙'+replicate('─',_fco2-_fco1-1)+'╜' UNICODE color _sbkgr
       endif
@@ -3746,7 +3746,7 @@ if _flp>D_LPVAL(dm->pozycja) .or. if(_flp=0, dm->pozycja >D_LP0,_fi#D_LPVALFIELD
    select dm
    _fj:=0
    _fl:=_fi:=1
-   RESTSCREEN(_frow+2,_fco1,maxrow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(_frow+2)+1))
+   RESTSCREEN(_frow+2,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(_frow+2)+1))
    @ _frow+2,_fco1,_frow+4,_fco2 BOX UNICODE if(pozycja>D_LP1,'║ ║║╜─╙║ ','║ ║║╝═╚║ ') color _SBKGR
    _fpopkey:=.f.
    dok11(_f)

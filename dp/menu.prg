@@ -234,7 +234,7 @@ local a:={},b:={},i
    LOCK
    //dbcommit()
    ++_flp
-   if _fskip*(_fl-_fj+2)+_frow>maxrow()
+   if _fskip*(_fl-_fj+2)+_frow>MaxRow()
       if _fl=_flp-1
 #ifdef __PLATFORM__DOS
          @ _fskip*(_fl-_fj+1)+_frow,_fco1 BOX '╚'+replicate('─',_fco2-_fco1-1)+'╝' UNICODE color _sbkgr
@@ -264,7 +264,7 @@ local r:=dania->(recno())
    if startrec#0
       go if(poprec=0,startrec,poprec)
    endif
-   if szukam({2,min(col(),maxcol()-69),maxrow(),,1,9,;
+   if szukam({2,min(col(),maxcol()-69),MaxRow(),,1,9,;
       hb_UTF8ToStr("Data───┬P┬────────────Jadłospis")+padl(hb_UTF8ToStr("┬"),dania->(hb_fieldlen([nazwa]))-20,hb_UTF8ToStr("─"))+padc("Dieta",A_DILTH,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬ilość"),;
      {||tran(dtos(data)+posilek,hb_UTF8ToStr("@R XXXX.XX.XX│X"))+I+dania->nazwa+I+dieta+I+dania->gramatura+" "+dania->jedn},;
      {|k,_s|(_sret:=k=13).or.rele(k,_s,.f.)},keyp})
@@ -570,7 +570,7 @@ LOCAL DAC,ZNALAZ,recme,recr,recd,_s
  ZNALAZ:=dbseek(dseek(,'posilek,nazwa',pg,dan))
 
  if !ZNALAZ
-    _s:={0,min(maxcol()-60,col()),maxrow(),,1,len(trim(dan))+1,;
+    _s:={0,min(maxcol()-60,col()),MaxRow(),,1,len(trim(dan))+1,;
          'Danie',{||posilek+"/"+left(nazwa,40)+if(""=opis,if(sklad->(dbseek(dania->danie)),I,"!"),"&")+left(dieta,A_DILTH)+I+gramatura+" "+jedn},;
          {|k,s D_MYSZ|danszuk(k,s,.t. D_MYSZ)},trim(dseek(,'posilek,nazwa',pg,dan))}
     if ordnumber('dan_uni')>0 .and. UpP(nazwa)<>UpP(trim(dan))
@@ -622,7 +622,7 @@ DEFAULT upden TO .t.
   SET ORDER TO tag skl_dan
   select dania
  set order to tag dan_naz
-return  szukam({0,maxcol()/2-30,maxrow(),,1,0,;
+return  szukam({0,maxcol()/2-30,MaxRow(),,1,0,;
      'Danie',{||posilek+"/"+left(nazwa,40)+if(""=opis,if(sklad->(dbseek(dania->danie)),I,"!"),"&")+left(dieta,A_DILTH)+I+gramatura+" "+jedn},;
     {|_skey,_s D_MYSZ|if(upden .and. _skey=13,_skey:=9,),danszuk(_skey,_s,upden D_MYSZ)},""})
 ******************
@@ -771,7 +771,7 @@ DO CASE
         set relation to RELEWY->(dseek(,'data,posilek,dieta',MENU->data,MENU->posilek,'')) into relewy
         SEEK dania->(danie)
 
-szukam({1,min(col()+5,maxcol()-30),maxrow(),,1,6,"DATA",;
+szukam({1,min(col()+5,maxcol()-30),MaxRow(),,1,6,"DATA",;
 {||tran(Dtos(data)+posilek+dieta,hb_UTF8ToStr("@R ####.##.##│X│XXXX"))},{|k,s|RELe(k,s,upden)},dania->danie+left(dtos(mies_rob),6)})
     pop_stat(_skey)
 

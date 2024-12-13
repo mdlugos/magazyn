@@ -100,8 +100,8 @@ PROCEDURE Main( ... )
    
    if empty(cFile)
       oTable := oServer:Query("SELECT * FROM `"+cTable+"`")
-      oBrowser := TBrowseSQL():New( 1, 1, maxrow() -1 , maxcol() - 1, oServer, oTable, cTable )
-      @ 0, 0, maxrow(), maxcol() box hb_UTF8ToStrBox("╒═╕│╛═╘│")
+      oBrowser := TBrowseSQL():New( 1, 1, MaxRow() -1 , maxcol() - 1, oServer, oTable, cTable )
+      @ 0, 0, MaxRow(), maxcol() box hb_UTF8ToStrBox("╒═╕│╛═╘│")
       @ 2, 0 say "╞"
       @ 2, maxcol() say "╡"
       oBrowser:headSep := hb_UTF8ToStrBox(" ═")

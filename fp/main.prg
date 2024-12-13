@@ -81,8 +81,7 @@ else
 endif
 
 defa:=getlines(defa,HB_OsPathListSeparator())
-
-if len(defa)=1 .and. empty(defa[1])
+if defa[1]==''
    defa[1]:='.'
 endif
 aeval(defa,{|x,i,y|y:=right(x,1),if(y==HB_OsDriveSeparator(),x+=HB_ps()+curdir(x),),if(y<>HB_ps(),defa[i]:=x+HB_ps(),)})
@@ -128,7 +127,7 @@ STARY_ROK=NIL
 #endif
 
 set default to (defa+"roboczy"+HB_ps())
-i:={maxrow(),maxcol()}
+i:={MaxRow(),maxcol()}
 
 #ifdef DatE
 public dzisiaj:=date()
@@ -249,19 +248,19 @@ if iscolor()
 else
   set color to w
 endif
-   dispbegin()
+   //dispbegin()
    CLEAR screen
       ?? padc("FIKS dla: "+firma_n+"; "+TRIM(operator),maxcol())
 if iscolor()
       SET COLOR TO BG+/br
       @ 1,0 clear to 2,maxcol()
-      @ maxrow(),0
+      @ MaxRow(),0
 endif
 
-      @ maxrow(),1 SAY "                       -wybór opcji    -                  -wyjście" UNICODE color if(iscolor(),"W+/br","W+")
+      @ MaxRow(),1 SAY "                       -wybór opcji    -                  -wyjście" UNICODE color if(iscolor(),"W+/br","W+")
 
       SET COLOR TO I
-          @ maxrow(),2 SAY "K"
+          @ MaxRow(),2 SAY "K"
                       SAYl "D"
                       SAYl "R"
 #ifdef A_DPS
@@ -274,14 +273,14 @@ endif
                       SAYl "─>" UNICODE
           SAYl "<─" UNICODE
           SAYl "<─┘" UNICODE
-          @ maxrow(),37 SAY "F1"
-          @ maxrow(),42 SAY "P O M O C" color "W+/br"
-          @ maxrow(),55 say "Esc"
+          @ MaxRow(),37 SAY "F1"
+          @ MaxRow(),42 SAY "P O M O C" color "W+/br"
+          @ MaxRow(),55 say "Esc"
 
   IF STARY_ROK#NIL
-     @ maxrow(),72 say str(year(stary_rok),4)+' !' COLOR if(iscolor(),"*+GR/br","W*+")
+     @ MaxRow(),72 say str(year(stary_rok),4)+' !' COLOR if(iscolor(),"*+GR/br","W*+")
   else
-     @ maxrow(),72 say "      " COLOR if(iscolor(),"N/br","N")
+     @ MaxRow(),72 say "      " COLOR if(iscolor(),"N/br","N")
   ENDIF
 
       SET MESSAGE TO 1 CENTER
@@ -310,13 +309,13 @@ endif
       @ 2,col()+1  PROMPT "Zestawienia" UNICODE MESSAGE 'Wydruki zestawień.'
       @ 2,col()+1  PROMPT "Pozostałe"   UNICODE MESSAGE 'Dodatkowe funkcje programu.'
 #endif
-      dispend()
+      //dispend()
       menu:=it_level1
       MENU TO menu
 
       set color to (_snorm)
 
-      @ maxrow(),0
+      @ MaxRow(),0
 
       IF menu=0
          menu:=tak(hb_UTF8ToStr("Czy rzeczywiscie kończysz pracę"),18,,.t.,0)
@@ -415,26 +414,12 @@ set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_ps())
 
 #ifdef A_LAN
    if Empty(Findfile('daty.dbf')) .and. !Empty(txt:=Findfile("daty.ini"))
-     a:={}
-     do while inirestold(@txt)
-       i:=at(':=',txt)
-       if i>0
-         aadd(a,{left(txt,i-1),type(SubStr(txt,i+2)),10,2})
-       endif
-     enddo
+     a:=getlines(memoread(txt))
+     aeval(a,{|x,i,c|c:=getlines(x,':='),if(len(c)=2,a[i]:={c[1],type(c[2]),10,2,,c[2]},)})
      dbcreate('daty',a)
      nUSE daty
      dbappend()
-     txt:="daty.ini"
-     do while inirestold(@txt)
-       i:=at(':=',txt)
-       if i>0
-         txt:='DATY->'+txt
-         begin sequence
-           (&txt,txt:=NIL)
-         end
-       endif
-     enddo
+     aeval(a,{|x,i|fieldput(i,x[6])})
      UNLOCK
    endif
    nuse daty

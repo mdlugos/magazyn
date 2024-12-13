@@ -281,16 +281,16 @@ FUNCTION __ReportForm( cFRMName, lPrinter, cAltFile, lNoConsole, bFor, ;
      NEXT
 
      // Send a cr/lf for the last line
-     if row()>=maxrow()-1
-       if row()=maxrow()
+     if row()>=MaxRow()-1
+       if row()=MaxRow()
          scrllf()
-         hb_scroll(0,0,maxrow(),maxcol(),1)
+         hb_scroll(0,0,MaxRow(),maxcol(),1)
        else
-         setpos(maxrow(),0)
+         setpos(MaxRow(),0)
        endif
        scrllf()
        ?
-       setpos(maxrow()-1,0)
+       setpos(MaxRow()-1,0)
        scrltxt()
      else
        ?
@@ -340,17 +340,17 @@ FUNCTION __ReportForm( cFRMName, lPrinter, cAltFile, lNoConsole, bFor, ;
       NEXT
 
       // Send a cr/lf for the last line
-     if row()>=maxrow()-1
-       if row()=maxrow()
+     if row()>=MaxRow()-1
+       if row()=MaxRow()
          scrllf()
-         hb_scroll(0,0,maxrow(),maxcol(),1)
+         hb_scroll(0,0,MaxRow(),maxcol(),1)
        else
-         setpos(maxrow(),0)
+         setpos(MaxRow(),0)
        endif
        scrllf()
        ?
        scrltxt()
-       setpos(maxrow()-1,0)
+       setpos(MaxRow()-1,0)
      else
        ?
      endif
@@ -804,16 +804,16 @@ STATIC FUNCTION PrintIt( cString )
    scrltxt()
    ?? cString
 
-     if row()>=maxrow()-1
-       if row()=maxrow()
+     if row()>=MaxRow()-1
+       if row()=MaxRow()
          scrllf()
-         hb_scroll(0,0,maxrow(),maxcol(),1)
+         hb_scroll(0,0,MaxRow(),maxcol(),1)
        else
-         setpos(maxrow(),0)
+         setpos(MaxRow(),0)
        endif
        scrllf()
        ?
-       setpos(maxrow()-1,0)
+       setpos(MaxRow()-1,0)
        scrltxt()
      else
        ?

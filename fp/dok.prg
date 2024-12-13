@@ -184,11 +184,11 @@ func dok //append - .t. append blank .f. - noedit
        if empty(ad[AD_POLA,l,AP_FIELD])
          k:=&('{'+ad[AD_POLA,l,AP_NAME]+',j}')
          j:=max(k[2],j)
-         i:=if(empty(k[1]),maxrow()-5-i,k[1])
+         i:=if(empty(k[1]),MaxRow()-5-i,k[1])
          --l
        else
-         aadd(ad[AD_POLA],asize({str(maxrow()-5-i)+','+str(j)},AP_POZWN-1))
-         i:=maxrow()-5
+         aadd(ad[AD_POLA],asize({str(MaxRow()-5-i)+','+str(j)},AP_POZWN-1))
+         i:=MaxRow()-5
        endif
     else
        fixpoz:={}

@@ -66,7 +66,7 @@ memvar it_menudod
          #define D_Z1 nowy->d_z_mies1
          #define D_Z3 nowy->d_z_rok
 #else
-         a:=getlines(memoread(m+"daty.ini"),.t.)
+         a:=hb_ATokens(asize(memoread(m+"daty.ini"),.t.)
          #define D_Z1 &(SubStr(a[1],at(':=',a[1])+2))
          #define D_Z3 &(SubStr(a[3],at(':=',a[3])+2))
 #endif
@@ -198,7 +198,7 @@ IF dz1>DatY->d_z_mies1
      nuse (defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty") new alias stary
      #define D_Z1 stary->d_z_mies1
 #else
-     m:=getlines(memoread(defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty.ini"),.t.)[1]
+     m:=hb_ATokens(memoread(defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty.ini"),.t.)[1]
      #define D_Z1 &(SubStr(m,at(':=',m)+2))
 #endif
      if D_Z1<DatY->d_z_rok
@@ -457,7 +457,7 @@ if stary_rok=DatY->d_z_mies1
      #define D_Z1 ndat->d_z_mies1
 #else
      use
-     m:=getlines(memoread(w+"daty.ini"),.t.)[1]
+     m:=hb_ATokens(memoread(w+"daty.ini"),.t.)[1]
      #define D_Z1 &(SubStr(m,at(':=',m)+2))
 #endif
    set color to (_sel)

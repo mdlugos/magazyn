@@ -602,9 +602,9 @@ function window(rown,coln,color)
       ENDIF
    ENDIF
 
-   IF r2>maxrow() // poza ekran
-      r1-=r2-maxrow()
-      r2=maxrow()
+   IF r2>MaxRow() // poza ekran
+      r1-=r2-MaxRow()
+      r2=MaxRow()
       IF r1<0
          r1:=0
       ENDIF
@@ -811,9 +811,9 @@ IF _c
       ENDIF
    ENDIF
 
-   IF _c>maxrow() // poza ekran
-      _a=_a-_c+maxrow()
-      _c=maxrow()
+   IF _c>MaxRow() // poza ekran
+      _a=_a-_c+MaxRow()
+      _c=MaxRow()
       IF _a<0
          _a=0
       ENDIF
@@ -822,7 +822,7 @@ IF _c
    _s=SAVESCREEN(_a,_b,_c,_d)
    r:=row()
    c:=col()
-   IF LEN(ARRAY)<maxrow()
+   IF LEN(ARRAY)<MaxRow()
       @ _a,_b,_c,_d BOX UNICODE '╔═╗║╝═╚║' COLOR "GR+/GR"
     ELSE
 #ifdef __PLATFORM__DOS
