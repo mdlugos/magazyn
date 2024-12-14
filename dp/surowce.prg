@@ -39,11 +39,20 @@ begin sequence
       set order to tag zap_skl
   select elementy
       SET ORDER TO tag ele_kod
+  
+  r:=min(maxcol(),hb_FieldLen([nazwa])+22)
+
   select SUROWCE
       SET ORDER TO tag sur_kod
 
   dbseek(keyp,.f.)
   curprompt:=trim(nazwa)+" "+jmaG
+
+  r:=min(r,hb_FieldLen([nazwa])+min(7,hb_FieldLen([indx_maT]))+13)
+  if col()+r>maxcol()
+     setpos(row(),maxcol()-r)
+  endif
+  
   select zawar
   SET ORDER TO tag zaw_skl
 
@@ -56,7 +65,7 @@ begin sequence
 if deep
    inkey()
    if !eof()
-    FORM_EDIT({20,61,5,1,999,;
+    FORM_EDIT({col(),col()+r,5,1,999,;
 {|f|sDOK1(f)},;
 {|f|sdok2(f,{},deep)},;
 {||setcursor(0)},;
@@ -66,7 +75,7 @@ if deep
     endif
 else
     lock
-    FORM_EDIT({20,61,5,1,999,;
+    FORM_EDIT({col(),col()+r,5,1,999,;
 {|f|sDOK1(f)},;
 {|f,g|sdok2(f,g,deep)},;
 {|f|sdok3(f)},;
@@ -111,7 +120,7 @@ SET COLOR TO (_sbkgr)
   @ 5,_fco1+3 say 'F9'
   @ 0,_fco1+1 say "ZAWARTOŚĆ ELEMENTÓW" UNICODE
   @ 1,_fco1+9 say "składnik" UNICODE
-  @ 1,_fco1+25 SAY 'kod magazynu'
+  @ 1,_fco2-13 SAY 'kod magazynu'
 #ifdef A_KODY
   @  3,_fco1+2  say A_KODY+':'
 #else
@@ -119,12 +128,16 @@ SET COLOR TO (_sbkgr)
   @ 3,_fco1+5 say 'cena            ważna od' UNICODE
 #endif
 #endif
+#ifdef A_ODPAD
+  @ 4,_fco1+2 say left('1      =          , potrzeba        na 100 g części jadalnej',_fco2-_fco1-2) UNICODE
+#else
   @ 4,_fco1+2 say '1      =          , zawartość w     :' UNICODE
+#endif
 
 RETURN
 ***********
 stat proc sdok2(_f,getlist,deep)
-  local now,greader
+  local now,greader,i,od
   field index,stan,jm,waznosc,data_przy,jedN
   select surowce
   if !nowy
@@ -145,12 +158,31 @@ stat proc sdok2(_f,getlist,deep)
 #endif
   @  5,_fco1+3 BOX if(empty(deep),'F9','══') UNICODE COLOR (_sbkgr)
   @  2,_fco1+2  get now picture "@K" valid {||nowy:=if(now=" ",!nowy,nowy),now:=if(nowy,"NOWY   ","POPRAWA"),.t.}
-  @  2,_fco1+10 get NA picture "@KS23"
-  @  2,_fco1+34 get in picture "@!KS"+str(min(7,hb_fieldlen('indx_maT')),1)
+  i:=min(7,hb_fieldlen('indx_maT'))
+  @  2,_fco1+10 get NA picture "@KS"+hb_ntoc(_fco2-_fco1-i-12)
+  @  2,_fco2-i-1 get in picture "@!KS"+hb_ntoc(i)
   @  4,_fco1+4  get jem picture "@K"
   @  4,_fco1+11 get prz picture "@K 9999" valid prz#0 .or.alarm(hb_UTF8ToStr("MUSI BYĆ RÓŻNY OD ZERA"),,3,3)=NIL
   @  4,_fco1+16 get jed picture "@K"
-  @  4,_fco1+34 get gra PICTURE "@K 9999.9"
+  @  4,_fco1+31 get gra PICTURE "@K 9999.9"
+#ifdef A_ODPAD
+  select zawar
+  i:=recno()
+  SET ORDER TO tag zaw_ele
+  if dbseek(A_ODPAD + keyp,.f.) .and. elementy->(dbseek(A_ODPAD,.f.))
+    od:=zawar->ilosc
+    if elementy->jedn='g'
+      atail(getlist):postblock:={|g|if(g:CHANGED,hb_DispOutAt(4,_fco1+41,pad(hb_ntoc(gra-od,0),4),_sbnorm),),.t.}
+      @  4,_fco1+41 SAY pad(hb_ntoc(gra-od,0),4) COLOR _sbnorm
+    elseif elementy->jedn='%'
+      @  4,_fco1+41 SAY pad(hb_ntoc(gra*(100-od)/100,0),4) COLOR _sbnorm
+      atail(getlist):postblock:={|g|if(g:CHANGED,hb_DispOutAt(4,_fco1+41,pad(hb_ntoc(gra*(100-od)/100,0),4),_sbnorm),),.t.}
+    endif
+  endif
+  SET ORDER TO tag zaw_skl
+  goto i
+  select surowce
+#endif
 #ifdef A_KODY
   @  3,_fco1+len(A_KODY)+4  get kw WHEN .f. COLOR _sbnorm
   if !nowy .and. fieldpos('OPIS')<>0
@@ -385,7 +417,7 @@ static fpstart:=0
       endif
     endif
 
-    @ _fk,_fco1+6 GET na PICTURE "@KS20" VALID {|k,r|if(k:changed.and.fpstart=0,fpstart:=1,),k:=setkey(-8,NIL),r:=elval(_f,@na,@poprec,oldrec,startrec) .and. showel(_f,getlist),setkey(-8,k),r}
+    @ _fk,_fco1+6 GET na PICTURE "@KS"+hb_nToc(_fco2-_fco1-21) VALID {|k,r|if(k:changed.and.fpstart=0,fpstart:=1,),k:=setkey(-8,NIL),r:=elval(_f,@na,@poprec,oldrec,startrec) .and. showel(_f,getlist),setkey(-8,k),r}
     GETL il picture "#####.###" valid {|k|if(k:changed.and.fpstart=0,fpstart:=2,),.t.}
      __setproc(procname(0))
     fpstart:=0
@@ -495,8 +527,25 @@ local totrec
         endif
 
       element:=elementy->element
+#ifdef A_ODPAD
+      if oldrec#0 .or. element#A_ODPAD .or. round(il-ilosc,3)=0
+      elseif elementy->jedn='g'
+        if 1=alarm(hb_UTF8ToStr('Czy zmienić wydajność części jadalnej?'),{'Tak','Nie'})
+          gra:=surowce->gram:=gra+il-ilosc
+        endif
+        @  4,_fco1+31 SAY gra PICTURE "@K 9999.9" COLOR _sbnorm
+        @  4,_fco1+41 SAY pad(hb_ntoc(gra-IL,0),4) COLOR _sbnorm
+      elseif elementy->jedn='%'
+        if 1=alarm(hb_UTF8ToStr('Czy przeliczyć wydajność na 100 g części jadalnej?'),{'Tak','Nie'})
+          gra:=surowce->gram:=round(10000/(100-IL),1)
+        endif
+        @  4,_fco1+31 SAY gra PICTURE "@K 9999.9" COLOR _sbnorm
+        @  4,_fco1+41 SAY pad(hb_ntoc(gra*(100-IL)/100,0),4) COLOR _sbnorm
+      endif
+#endif        
+
       ILOSC:=IL
-        if il=0
+      if il=0
           delete
           _fnowy:=.t.
 #ifdef A_LPNUM

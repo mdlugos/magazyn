@@ -9,12 +9,13 @@
 #../common/mlcfunc.c ../common/cppl852m.c ../common/cp_utf8m.c
 
 main osobodni menu recept zapot surowce druki element dodatki
-
+../../harbour/contrib/rddmisc/vfpcdx
 #../common/tbrowse
 ../common/dm_form
 ../common/io
-../common/error
 ../common/help
+../common/errsys
+../common/harbinit
 ../common/io_2
 ../common/clp_brow
 ../common/mds

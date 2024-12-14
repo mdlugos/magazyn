@@ -10,6 +10,9 @@
 #define PLWIN
 #define PROC_EN memvar->proc_en
 #define A_WO_JAD '  3'
+#define A_WODA '  6'
+#define A_ODPAD '  1'
+//#define A_WORYN  //czy odapd w % czy w gramach
 #define A_DILTH 9
 #define A_ZAP_DAN
 #define A_CDX VFPCDX
