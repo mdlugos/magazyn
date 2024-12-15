@@ -152,7 +152,7 @@ setkey(K_F2,{||magazyn()})
 setkey(K_F3,{||relewy->(jad_in(.t.))})
 setkey(K_F4,{|x|x:=setkey(K_F4,),dania->(rec_in(.t.,.f.)),setkey(K_F4,x)})
 setkey(K_F5,{|x|x:=setkey(K_F5,),surowce->(sur_in(.t.,.f.)),setkey(K_F5,x)})
-setkey(K_F6,{|x|x:=setkey(K_F6,),aczojs(zaw_ar({},,dania->danie),"",1,,hb_UTF8ToStr("Zawartość w: ")+dania->nazwa),setkey(K_F6,x)})
+setkey(K_F6,{|x|x:=setkey(K_F6,),aczojs(zaw_ar({},,dania->danie),"",1,,hb_UTF8ToStr("Zawartość w: ")+Trim(dania->nazwa)),setkey(K_F6,x)})
 setkey(K_F7,{|x|x:=setkey(K_F7,),aczojs(zaw_ar({},,,relewy->(dtos(data)+posilek+dieta)),"",1,,hb_UTF8ToStr("Zawartość w posiłku ")+relewy->(dtoc(data)+"/"+posilek+trim(dieta))),setkey(K_F7,x)})
 
 DO WHILE .T.
@@ -347,6 +347,7 @@ use
 return
 *********************************
 proc reuse()
+   local i
 close databases
 set default to (defa+if(stary_rok#NIL,stary_rok,"roboczy")+HB_ps())
       select 0
@@ -375,6 +376,20 @@ set default to (defa+if(stary_rok#NIL,stary_rok,"roboczy")+HB_ps())
 #endif
       SEL("sklad",2)
       SEL("elementy",2)
+#ifdef PROC_EN
+      LOCATE for jedn="%" .and. SubStr(jedn,2)<>'   '
+      i:=0
+      do while found()
+         if ++i>Len(PROC_EN)
+            aadd(PROC_EN,array(4))
+         endif
+         PROC_EN[i,1]:=substr(field->jedn,2)
+         PROC_EN[i,2]:=if('uszcz'$lower(field->nazwa),9,4)
+         PROC_EN[i,3]:=field->element
+         PROC_EN[i,4]:=0
+         continue
+      end do
+#endif
       sel("zawar",2)
 #ifdef A_NORMY
       sel("normy",1)

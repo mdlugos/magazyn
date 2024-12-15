@@ -158,7 +158,7 @@ func zaw_ar(atot,ilo,dan,dat,ign)
 
 field data,posilek,danie,dieta
 
-local aret:={},d,g,stat,b,i,j,k  //mes:=message("Chwileczkę ")
+local aret:={},d,g,stat,b,i,j,k,tot  //mes:=message("Chwileczkę ")
 
 stat:=push_stat()
 
@@ -262,6 +262,14 @@ endif
 
 select elementy
 
+#ifdef A_ODPADKI
+  b:=space(hb_fieldlen([element]))
+  j:=ascan(atot,{|x|x[1]=b})
+  tot:=if(j=0,0,atot[j,2])
+#define D_ODPAD(x) if(x[1]==A_ODPADKI,x[2]/tot,x[2])
+#else  
+#define D_ODPAD(x) x[2]
+#endif
 #ifdef PROC_EN
  k:=0
  for i:=1 to len(PROC_EN)
@@ -284,36 +292,52 @@ select elementy
    endif
  next i
  endif
+#endif 
  asort(atot,,,{|x,y|x[1]<y[1]})
- aeval(atot,{|x|dbseek(x[1],.f.),aadd(aret,if(empty(jedn),'*'+SubStr(nazwa,2),nazwa+if(jedn='%',str(x[2],4)+" "+'%',str(x[2],10,3)+" "+jedn)))})
-#else
- asort(atot,,,{|x,y|x[1]<y[1]})
- aeval(atot,{|x|dbseek(x[1],.f.),aadd(aret,nazwa+str(x[2],10,3)+" "+jedn)})
+ k:=if(empty(atot[1,1]),1,0)
+#ifdef A_NORMY
+ j:=len(aret)
 #endif
+ aeval(atot,{|x|dbseek(x[1],.f.),aadd(aret,if(empty(jedn),'*'+SubStr(Trim(nazwa),2),nazwa+if(jedn='%',str( D_ODPAD( x ) ,10)+" "+'%',str(x[2],10,3)+" "+jedn)))},1+k)
 #ifdef A_NORMY
  if ign==NIL .and. !empty(d) .and. len(dat)<9
    select normy
-   aeval(aret,{|x,y|i:=atot[y,1],dbseek(i),__dblocate({||dind(d,dieta)},{||element=i}),if(found(),if(atot[y,2]<zaw_min,aret[y]+=hb_UTF8ToStr(' << niedobór'),aret[y]+=if(atot[y,2]>zaw_max,' >> przekroczenie','    w normie')),)})
+   k-=j
+   aeval(aret,{|x,y|i:=atot[y+k,1],dbseek(i),__dblocate({||dind(d,dieta)},{||element=i}),if(found(),if( D_ODPAD( atot[y+k] ) <zaw_min,aret[y]+=hb_UTF8ToStr(' << niedobór'),aret[y]+=if( D_ODPAD( atot[y+k] ) >zaw_max,' >> przekroczenie','    w normie')),)},j+1)
  endif
 #endif
-
  pop_stat(stat)
  //message(mes)
 return aret
 ***********
 proc mal(atot,ilo,ign)
-local i,il,a,b,c
+  local i,il,e
 
+   //jestem w select zawar   
+  if ilo=0 
+   return
+  endif
+#ifdef A_ODPADKI
+   e:=space(hb_FieldLen([element]))
+   i:=ascan(atot,{|x|x[1]==e})
+   if i=0
+     // ilość znormalizowana pęczek 100 g albo 1 szt waga ta sama
+     aadd(atot,{e,ilo/surowce->gram})
+   else
+     atot[i,2]+=ilo/surowce->gram
+   endif
+#endif   
    seek surowce->skladnik
    do while skladnik==surowce->skladnik .and. !eof()
       message(100)
-      il:=ilo*ilosc/surowce->gram
+      e:=element
 #ifdef PROC_EN
-      if (.f.==ign) .or. elementy->(dbseek(zawar->element,.f.) .and. !elementy->ignoruj)
+      if (.f.==ign) .or. elementy->(dbseek(e,.f.) .and. !ignoruj)
 #endif
-        i:=ascan(atot,{|x|x[1]==element})
+        i:=ascan(atot,{|x|x[1]==e})
+        il:=ilo*ilosc/surowce->gram
         if i=0
-          aadd(atot,{element,il})
+          aadd(atot,{e,il})
         else
           atot[i,2]+=il
         endif

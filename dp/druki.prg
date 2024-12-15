@@ -1276,6 +1276,9 @@ select dania
 ?
 #ifdef A_ODPADKI
 gr := val(gramatura)
+select elementy
+set order to tag ele_kod
+seek A_ODPADKI
 select zawar
 set order to tag zaw_ele
 #endif
@@ -1289,9 +1292,15 @@ do while danie==dania->danie
    message(1)
    ? cpad(surowce->nazwa,46,,3),ilosc,surowce->jedN
 #ifdef A_ODPADKI
+   // jaki procent w całośći dania ma ten składnik z odjęciem odpadków
+   // 100 * ilosc / gr
    if gr>0.1
     zawar->(dbseek(A_ODPADKI+surowce->skladnik,.f.))
-    ?? str(100 * ilosc * (1 - zawar->ilosc/surowce->gram) / gr, 4)+' %'
+    if elementy->jedn='%'
+      ?? str(100 * ilosc * (1 - zawar->ilosc/100) / gr, 4)+' %'
+   else
+      ?? str(100 * ilosc * (1 - zawar->ilosc/surowce->gram) / gr, 4)+' %'
+    endif
    endif
 #endif
    skip

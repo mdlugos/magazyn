@@ -128,7 +128,7 @@ SET COLOR TO (_sbkgr)
   @ 3,_fco1+5 say 'cena            ważna od' UNICODE
 #endif
 #endif
-#ifdef A_ODPAD
+#ifdef A_ODPADKI
   @ 4,_fco1+2 say left('1      =          , potrzeba        na 100 g części jadalnej',_fco2-_fco1-2) UNICODE
 #else
   @ 4,_fco1+2 say '1      =          , zawartość w     :' UNICODE
@@ -165,11 +165,11 @@ stat proc sdok2(_f,getlist,deep)
   @  4,_fco1+11 get prz picture "@K 9999" valid prz#0 .or.alarm(hb_UTF8ToStr("MUSI BYĆ RÓŻNY OD ZERA"),,3,3)=NIL
   @  4,_fco1+16 get jed picture "@K"
   @  4,_fco1+31 get gra PICTURE "@K 9999.9"
-#ifdef A_ODPAD
+#ifdef A_ODPADKI
   select zawar
   i:=recno()
   SET ORDER TO tag zaw_ele
-  if dbseek(A_ODPAD + keyp,.f.) .and. elementy->(dbseek(A_ODPAD,.f.))
+  if dbseek(A_ODPADKI + keyp,.f.) .and. elementy->(dbseek(A_ODPADKI,.f.))
     od:=zawar->ilosc
     if elementy->jedn='g'
       atail(getlist):postblock:={|g|if(g:CHANGED,hb_DispOutAt(4,_fco1+41,pad(hb_ntoc(gra-od,0),4),_sbnorm),),.t.}
@@ -527,8 +527,8 @@ local totrec
         endif
 
       element:=elementy->element
-#ifdef A_ODPAD
-      if oldrec#0 .or. element#A_ODPAD .or. round(il-ilosc,3)=0
+#ifdef A_ODPADKI
+      if oldrec#0 .or. element#A_ODPADKI .or. round(il-ilosc,3)=0
       elseif elementy->jedn='g'
         if 1=alarm(hb_UTF8ToStr('Czy zmienić wydajność części jadalnej?'),{'Tak','Nie'})
           gra:=surowce->gram:=gra+il-ilosc
