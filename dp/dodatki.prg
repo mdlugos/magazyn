@@ -481,7 +481,7 @@ SELECT (select('DATY'))
 di:=getenv("MAGDEF")
 if empty(di)
   x:=rat(HB_ps(),left(defa,len(defa)-1))
-  di:=if(x=0,defa+'..'+HB_ps(),left(defa,x))+'magazyn'+HB_ps()
+  di:=if(x=0,hb_PathNormalize(defa+'..'+HB_ps()),left(defa,x))+'magazyn'+HB_ps()
 endif
 di+="roboczy"+HB_ps()
 

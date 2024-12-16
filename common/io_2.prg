@@ -207,10 +207,6 @@ local a,l,i,y:=""
  if (HB_ps()$x)
     if file(x)
        y:=x
-#ifdef __PLATFORM__UNIX
-    elseif file(l:=Lower(strtran(x,'\','/')))
-       y:=l
-#endif
     else
        x:=SubStr(x,rat(HB_ps(),x)+1)
     endif
@@ -219,29 +215,12 @@ local a,l,i,y:=""
     a:=getlines(set(_SET_DEFAULT)+HB_OsPathListSeparator()+set(_SET_PATH),HB_OsPathListSeparator())
     l:=len(a)
     for i:=1 to l
-/*
-       if empty(a[i])
-          y:=x
-          if file('.'+HB_ps()+x)
-             exit
-          endif
-       else
-*/
-          y:=a[i]+x
-          if file(y)
-            exit
-          endif
-#ifdef __PLATFORM__UNIX
-          y:=strtran(a[i]+Lower(x),'\','/')
-          if file(y)
-             exit
-          endif
-#endif
-//       endif
-    next
-    if i>l
-       y:=""
-    endif
+      y:=a[i]+x
+      if file(y)
+        exit
+      endif
+      y:=""
+   next
  endif
 #ifdef A_NETIO
  if !empty(netio) .and. y=netio

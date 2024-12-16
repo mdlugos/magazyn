@@ -970,7 +970,7 @@ do case
 
       if empty(_stxt)
          _skey:=rat(HB_ps(),left(defa,len(defa)-1))
-         _stxt:=if(_skey=0,defa+'..'+HB_ps(),left(defa,_skey))+'magazyn'+HB_ps()
+         _stxt:=hb_PathNormalize( if(_skey=0,defa+'..'+HB_ps(),left(defa,_skey))+'magazyn'+HB_ps() )
       endif
       _STXT+="roboczy"+HB_ps()
       if file(_stxt+"indx_mat.dbf")

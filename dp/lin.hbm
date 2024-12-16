@@ -1,5 +1,8 @@
 -odi -w1 -m -n
 #-debug -inc -rebuild
+#-i../../Qt/6.8.1/gcc_64/include
+#-L../../Qt/6.8.1/gcc_64/lib
+#-gui -gtqtc
 #-gui -gtxwc
 #-gttrm
 #-lhbcups hbcups.hbc 

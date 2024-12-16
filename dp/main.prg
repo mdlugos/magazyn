@@ -33,10 +33,10 @@ else
 endif
 
 defa:=getlines(defa,HB_OsPathListSeparator())
-if defa[1]==''
-   defa[1]:='.'
+if empty(defa)
+   defa:={'.'}
 endif
-aeval(defa,{|x,i,y|y:=right(x,1),if(y==HB_OsDriveSeparator(),x+=HB_ps()+curdir(x),),if(y<>HB_ps(),defa[i]:=x+HB_ps(),)})
+aeval(defa,{|x,i,y|y:=right(x,1),if(y==HB_OsDriveSeparator(),x+=HB_ps()+curdir(x),),defa[i]:=hb_PathNormalize(x)})
 
 a:=HB_ps()+curdir()+HB_ps()
 
