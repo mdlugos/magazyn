@@ -93,6 +93,24 @@ PROCEDURE Dbu( param1, param2, param3 )
 
    REQUEST HB_LANG_PL, HB_CODEPAGE_PL852, HB_CODEPAGE_UTF8EX, HB_CODEPAGE_PLMAZ, HB_CODEPAGE_PLWIN
 
+   hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
+   HB_CDPSELECT('UTF8EX')
+   HB_LANGSELECT('PL')
+   
+   if "-oem" $ Lower( hb_cmdLine() )
+      SET(_SET_DBCODEPAGE, 'PL852')
+   else
+      SET(_SET_DBCODEPAGE, 'PLWIN')
+   endif
+ 
+   hb_SetTermCP( hb_cdpTerm() )
+   Set(_SET_OSCODEPAGE, hb_cdpOS())
+   
+   SET(_SET_DEBUG,.t.) //alt_d on
+   
+   SetKey( K_ALT_V, {|| hb_gtInfo( HB_GTI_CLIPBOARDPASTE, .T. ) } )
+   hb_gtInfo( HB_GTI_COMPATBUFFER, .F. ) //before save screen
+
 #ifdef ADS_CH_
    IF "-ads" $ Lower( hb_cmdLine() )
       //rddRegister( "ADS", 1 )
@@ -100,12 +118,15 @@ PROCEDURE Dbu( param1, param2, param3 )
 
       IF "-cdx" $ Lower( hb_cmdLine() )
          SET FILETYPE TO CDX
-         SET CHARTYPE TO ANSI
       elseif "-ntx" $ Lower( hb_cmdLine() )
          SET FILETYPE TO NTX
-         SET CHARTYPE TO ANSI
       else  // if "-vfp" $ Lower( hb_cmdLine() )
          //default SET FILETYPE TO VFP
+      endif
+      if "-oem" $ Lower( hb_cmdLine() )
+         SET CHARTYPE TO OEM
+      else
+         SET CHARTYPE TO ANSI
       endif
 
       SET SERVER LOCAL
@@ -120,22 +141,9 @@ PROCEDURE Dbu( param1, param2, param3 )
       else  //if "-vfp" $ Lower( hb_cmdLine() )
          rddsetdefault( "VFPCDX" )
       ENDIF
-   
 #ifdef ADS_CH_
    ENDIF
 #endif
-   hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
-   HB_CDPSELECT('UTF8EX')
-   HB_LANGSELECT('PL')
-   SET(_SET_DBCODEPAGE, 'PLWIN')
-   
-   hb_SetTermCP( hb_cdpTerm() )
-   Set(_SET_OSCODEPAGE, hb_cdpOS())
-   
-   SET(_SET_DEBUG,.t.) //alt_d on
-   
-   SetKey( K_ALT_V, {|| hb_gtInfo( HB_GTI_CLIPBOARDPASTE, .T. ) } )
-   hb_gtInfo( HB_GTI_COMPATBUFFER, .F. ) //before save screen
 
    SET CURSOR OFF                                && cursors are for gets
    SAVE SCREEN                                   && the screen you save...

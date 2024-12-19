@@ -3,7 +3,8 @@
 #-debug -inc -rebuild
 #-gtxwc
 #-gttrm
-hbcups.hbc 
+-gui ../../harbour/contrib/gtqtc/gtqtc.hbc
+hbcups.hbc
 #-lhbhpdf hbhpdf.hbc
 #rddads.hbc
 hbmxml.hbc
