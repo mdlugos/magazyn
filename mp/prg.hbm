@@ -1,6 +1,7 @@
 -oma -w1 -m -n
 -debug -inc -rebuild
 #-gtwvt
+#gtqtc.hbc
 hbwin.hbc
 #-lelzabdr
 hbzebra.hbc

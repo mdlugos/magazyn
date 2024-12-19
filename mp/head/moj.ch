@@ -18,7 +18,7 @@
   #define A_ZEBRA
 #endif
 #define A_CDX VFPCDX
-#define A_ADS 1
+//#define A_ADS 1
 
 #ifdef A_ADS
 //#define ordKeyVal() evaldb(ordKey())
