@@ -1923,9 +1923,6 @@ return fread(x,@y,z)
 ************
 func hiattr(x)
 return altattr(x,24)
-************
-func sysint()
-return 0
 /************
 func tranr(x,y)
 

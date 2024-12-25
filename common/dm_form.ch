@@ -59,7 +59,8 @@ memvar _slinia,_sramka,_sbkgr,_snorm,_sel,_sunsel,_sbnorm
 #define _fpopkey   _f[21]
 #define _fnowy     _f[22]
 #define _fscr      _f[23]
-#define _fLEN      23
+#define _fscr0     _f[24]
+#define _fLEN      24
 
 #command HIGHLIGHT LINE <row> => restscreen(<row>,_scol1,<row>,_scol2-1,hiattr(_sprpt:=savescreen(<row>,_scol1,<row>,_scol2-1)));
 ;        PROMPT LINE <row>

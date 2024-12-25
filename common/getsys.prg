@@ -150,7 +150,7 @@ local NumFlag:=.f.,b,x,y,key,mfl,maxlth:=0
       do while (key:=INKey(0, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN ),key>=K_MINMOUSE .and. key<=K_MAXMOUSE)
          x:=mcol()
          y:=mrow()
-         if key=1002
+         if key=K_LBUTTONDOWN
             b:=1
          else
             b:=2

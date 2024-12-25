@@ -35,6 +35,13 @@ begin sequence
       SET ORDER TO tag menu_rel
   select dania
       SET ORDER TO tag dan_kod
+
+      r:=min(maxcol(),hb_fieldlen('nazwa')+A_DILTH+23)
+      if col()+r>maxcol()
+        setpos(row(),maxcol()-r)
+      endif
+      
+
   SELECT RELEWY
   dbseek(dseek(,'data,posilek,dieta',keyp[1],keyp[2],''),.f.)
   keyp:=dtos(keyp[1])+keyp[2]
@@ -51,9 +58,9 @@ begin sequence
   inkey()
     if !eof()
     F3:=setkey(-2,NIL)
-    FORM_EDIT({14-A_DILTH,76,3,1,999,;
+    FORM_EDIT({col(),col()+r,3,1,999,;
 {|f|MDOK1(f)},;
-{||mdok2({})},;
+{|f|mdok2(f,{})},;
 {||setcursor(0)},;
 {||DBSELECTAREA("MENU"),ordsetfocus("menu_rel")},;
 {|f|Mdok4(f,{},deep)},;
@@ -63,10 +70,10 @@ begin sequence
 else
     lock
 
-    FORM_EDIT({14-A_DILTH,76,3,1,999,;
+    FORM_EDIT({col(),col()+r,3,1,999,;
 {|f|MDOK1(f)},;
-{|f,g|mdok2(g)},;
-{|f,g|dok3(f,g,@poprec,@keyp,@startrec),showh(relewy->data,relewy->posilek)},;
+{|f,g|mdok2(f,g)},;
+{|f,g|dok3(f,g,@poprec,@keyp,@startrec),showh(f,relewy->data,relewy->posilek)},;
 {||DBSELECTAREA("MENU"),ordsetfocus("menu_rel")},;
 {|f,g|Mdok4(f,g,deep)},;
 {|f|Mdok5(f)}})
@@ -93,21 +100,22 @@ static PROCEDURE MDOK1(_f)
   hb_scroll(0,_fco1,0,_fco2)
   @ 0,_fco1,3,_fco2 BOX UNICODE '╔═╗║║ ║║ '
   @ 0,_fco1+1 SAY "JADŁOSPIS" UNICODE
-  @ 1,10 say "Ilość" UNICODE
-  @ 1,20 say "Cena" 
-  @ 1,40 say "Data"
-  @ 1,46 say "Pos."
-  @ 1,53 say "Zapotrzebowanie"
+  @ 1,_fco1+1 say "Ilość" UNICODE
+  @ 1,_fco1+11 say "Cena" 
+  @ 1,_fco1+22 say "Data"
+  @ 1,_fco1+31 say "Posiłek" UNICODE
+  @ 1,_fco2-16 say "Zapotrzebowanie"
   @ 3,_fco1,5,_fco2 BOX UNICODE '╠═╣║╝═╚║ '
-  @ 3,12 SAY '════Danie═══════════════════════════════════Gramatura═Dieta═Ilp' UNICODE
+  @ 3,_fco1+6 SAY 'Danie'+padl('Gramatura═Dieta',_fco2-_fco1-12-A_DILTH,'═')
+  @ 3,_fco2-4 SAY 'Ilp'
 
 return
 ********
-static proc showh(da,kon)
-  @ 2,10 say ile_pos picture D_ILPIC color _sbkgr
-  @ 2,17 say strpic(WARTOSC/ile_pos,7,A_ZAOKR,"@E ",.t.) color _sbkgr
-  @ 2,49 say SubStr(posilki[max(1,ascan(posilki,kon))],3,11) COLOR _sbkgr
-  @ 2,60 say if(zapot->(dbseek(dtos(da)+kon,.f.)),"jest","brak") color _sbkgr
+static proc showh(_f,da,kon)
+  @ 2,_fco1+1 say ile_pos picture D_ILPIC color _sbkgr
+  @ 2,_fco1+8 say strpic(WARTOSC/ile_pos,7,A_ZAOKR,"@E ",.t.) color _sbkgr
+  @ 2,_fco1+33 say SubStr(posilki[max(1,ascan(posilki,kon))],3,11) COLOR _sbkgr
+  @ 2,_fco2-5 say if(zapot->(dbseek(dtos(da)+kon,.f.)),"jest","brak") color _sbkgr
 
 #ifdef A_WAGI
   pg:=SubStr(PosGr,at(kon,PosStr),1)
@@ -116,7 +124,7 @@ static proc showh(da,kon)
 #endif
 return
 ********
-static proc mdok2(getlist)
+static proc mdok2(_f,getlist)
   local da,kon
   select relewy
   if eof()
@@ -126,9 +134,9 @@ static proc mdok2(getlist)
      da:=data
      kon:=posilek
   endif
-  showh(da,kon)
-  @ 2,35 get da valid {||showh(da,kon),.t.}
-  @ 2,47 get kon valid {|y|y:=aczojs(posilki),showh(da,kon),y}
+  showh(_f,da,kon)
+  @ 2,_fco1+18 get da valid {||showh(_f,da,kon),.t.}
+  @ 2,_fco1+30 get kon valid {|y|y:=aczojs(posilki),showh(_f,da,kon),y}
   __setproc(procname(0))
 
 return
@@ -185,12 +193,12 @@ static proc mDOK4(_f,getlist,deep)
      lock
   endif
   //@ _fk, 15 SAY chr(29)
-  @ _fk, _fco1+6 GET dan PICTURE "@KS"+lTrim(sTr(49-A_DILTH)) VALID {|r,k|if(r:changed.and.fpstart=0,fpstart:=1,),k:=setkey(-8,NIL),r:=danval(_f,getlist) .and. showgram(_f),setkey(-8,k),r}
+  @ _fk, _fco1+6 GET dan PICTURE "@KS"+lTrim(sTr(_fco2-_fco1-22-A_DILTH)) VALID {|r,k|if(r:changed.and.fpstart=0,fpstart:=1,),k:=setkey(-8,NIL),r:=danval(_f,getlist) .and. showgram(_f),setkey(-8,k),r}
   //SAYL chr(9)
-  @ _fk, 69-A_DILTH GET DIE PICTURE "@KS"+HB_MACRO2STRING(A_DILTH) VALID {|g|if(g:changed.and.fpstart=0,fpstart:=2,),dival(g).and.showgram(_f)}
+  @ _fk, _fco2-A_DILTH-6 GET DIE PICTURE "@KS"+HB_MACRO2STRING(A_DILTH) VALID {|g|if(g:changed.and.fpstart=0,fpstart:=2,),dival(g).and.showgram(_f)}
 #ifdef A_DODATKI
   //SAYL chr(9)
-  @ _fk, 70 GET ilp PICTURE D_ILPIC VALID showgram(_f) SEND block:={|x|if(x<>NIL,ilp:=if(round(x-ipcalc(die),1)<>0,x,0),if(ilp=0,ipcalc(die),ilp))}
+  @ _fk, _fco2-6 GET ilp PICTURE D_ILPIC VALID showgram(_f) SEND block:={|x|if(x<>NIL,ilp:=if(round(x-ipcalc(die),1)<>0,x,0),if(ilp=0,ipcalc(die),ilp))}
 #endif
   //SAYL chr(3)
   __setproc(procname(0))
@@ -258,15 +266,16 @@ return
 #endif
 ********
 stat proc f9(g,_f,getlist)
-local r:=dania->(recno())
+local rd:=dania->(recno()),r
    oldrec:=recno()
    set relation to danie into dania
    if startrec#0
       go if(poprec=0,startrec,poprec)
    endif
-   if szukam({2,min(col(),maxcol()-69),MaxRow(),,1,9,;
-      hb_UTF8ToStr("Data───┬P┬────────────Jadłospis")+padl(hb_UTF8ToStr("┬"),dania->(hb_fieldlen([nazwa]))-20,hb_UTF8ToStr("─"))+padc("Dieta",A_DILTH,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬ilość"),;
-     {||tran(dtos(data)+posilek,hb_UTF8ToStr("@R XXXX.XX.XX│X"))+I+dania->nazwa+I+dieta+I+dania->gramatura+" "+dania->jedn},;
+   r:=dania->(min(hb_fieldlen([nazwa]),maxcol()-25-A_DILTH))
+   if szukam({2,,,,1,9,;
+      hb_UTF8ToStr("Data───┬P┬────────────Jadłospis")+padl(hb_UTF8ToStr("┬"),r-20,hb_UTF8ToStr("─"))+padc("Dieta",A_DILTH,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬ilość"),;
+     {||tran(dtos(data)+posilek,hb_UTF8ToStr("@R XXXX.XX.XX│X"))+I+left(dania->nazwa,r)+I+dieta+I+dania->gramatura+" "+dania->jedn},;
      {|k,_s|(_sret:=k=13).or.rele(k,_s,.f.)},keyp})
     set relation to
     poprec:=recno()
@@ -293,7 +302,7 @@ local r:=dania->(recno())
    else
     set relation to
     poprec:=0
-    dania->(dbgoto(r))
+    dania->(dbgoto(rd))
    endif
    go oldrec
 return
@@ -368,16 +377,16 @@ return
 **********
 static function showgram(_f)
 
-@ _fk,60 - A_DILTH SAY dania->gramatura color _sbkgr
+@ _fk,_fco2 - 16 - A_DILTH SAY dania->gramatura color _sbkgr
 SAYL dania->jedn color _sbkgr
 #ifdef A_DODATKI
 if ilp=0
-   @ _fk, 75 SAY ' ' color _sbkgr
+   @ _fk, _fco2-1 SAY ' ' color _sbkgr
    return .t.
 endif
-@ _fk, 75 BOX '■' UNICODE color _sbkgr
+@ _fk, _fco2-1 BOX '■' UNICODE color _sbkgr
 #else
-  @ _fk, 70 SAY ipcalc(die) PICTURE D_ILPIC COLOR _sbkgr
+  @ _fk, _fco2-6 SAY ipcalc(die) PICTURE D_ILPIC COLOR _sbkgr
 #endif
 
 return .t.
@@ -557,9 +566,9 @@ static function danval(_f,getlist)
 
 field danie,posilek,DATA,nazwa,gramatura,jedn,dieta
 
-LOCAL DAC,ZNALAZ,recme,recr,recd,_s
+LOCAL r,ZNALAZ,recme,recr,recd,_s
   dan:=pad(dan,dania->(hb_fieldlen('nazwa')))
-  if empty(dan) .or. dan=dania->nazwa
+  if empty(dan) .or. dan==dania->nazwa
      return .t.
   endif
   recme=recno()
@@ -570,8 +579,9 @@ LOCAL DAC,ZNALAZ,recme,recr,recd,_s
  ZNALAZ:=dbseek(dseek(,'posilek,nazwa',pg,dan))
 
  if !ZNALAZ
-    _s:={0,min(maxcol()-60,col()),MaxRow(),,1,len(trim(dan))+1,;
-         'Danie',{||posilek+"/"+left(nazwa,40)+if(""=opis,if(sklad->(dbseek(dania->danie)),I,"!"),"&")+left(dieta,A_DILTH)+I+gramatura+" "+jedn},;
+    r:=min(maxcol()-15-A_DILTH,hb_fieldlen([nazwa]))
+    _s:={0,,,,1,len(trim(dan))+1,;
+         'Danie',{||posilek+"/"+left(nazwa,r)+if(""=opis,if(sklad->(dbseek(dania->danie)),I,"!"),"&")+left(dieta,A_DILTH)+I+gramatura+" "+jedn},;
          {|k,s D_MYSZ|danszuk(k,s,.t. D_MYSZ)},trim(dseek(,'posilek,nazwa',pg,dan))}
     if ordnumber('dan_uni')>0 .and. UpP(nazwa)<>UpP(trim(dan))
        set order to tag dan_uni
@@ -616,28 +626,42 @@ LOCAL DAC,ZNALAZ,recme,recr,recd,_s
 RETURN .F.
 ******************
 func dan_kat(upden)
+local r,_s:=array(_sLEN)
 DEFAULT upden TO .t.
 //  private kon:=" "
   select sklad
   SET ORDER TO tag skl_dan
   select dania
  set order to tag dan_naz
-return  szukam({0,maxcol()/2-30,MaxRow(),,1,0,;
-     'Danie',{||posilek+"/"+left(nazwa,40)+if(""=opis,if(sklad->(dbseek(dania->danie)),I,"!"),"&")+left(dieta,A_DILTH)+I+gramatura+" "+jedn},;
-    {|_skey,_s D_MYSZ|if(upden .and. _skey=13,_skey:=9,),danszuk(_skey,_s,upden D_MYSZ)},""})
+ r:=min(maxcol()-15-A_DILTH,hb_fieldlen([nazwa]))
+ _sbeg    :=1
+ _slth    :=0
+ _sprompt :={||posilek+I+left(nazwa,r)+if(""=opis,if(sklad->(dbseek(dania->danie)),I,"!"),"&")+left(dieta,A_DILTH)+I+gramatura+" "+jedn}
+ _sinfo   :={|_skey,_s D_MYSZ|if(upden .and. _skey=13,_skey:=9,),danszuk(_skey,_s,upden,r D_MYSZ)}
+ _spocz   :=""
+
+return  szukam(_s)
 ******************
-FUNCTION danszuk(_skey,_s,upden D_MYSZ)
+FUNCTION danszuk(_skey,_s,upden,r D_MYSZ)
 local o
 //memvar changed
 
 DO CASE
-  CASE _skey=0 .and. alias()="DANIA"
-    _spform:={|p|tranr(p,"X/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")}
+  CASE _skey=0
+   if alias()="DANIA"
+      DEFAULT _snagkol TO 0
+      DEFAULT _snagl TO 'P┬'+padc('Danie',r,'─')+'┬'+padc('Dieta',A_DILTH,'─')+'┬Gramatura'
+      _spform:={|p|tranr(p,"X"+I+REPLICATE("X",r))}
     if [at(] $ lower(INDEXKEY(0))
        _sp2s:={|x|dseek(,'posilek,nazwa',left(x,1),SubStr(x,2))}
        _ss2p:={|x|if(len(x)>0,SubStr(posstr,asc(x)%16,1)+SubStr(x,2),"")}
-       _spform:={|p,l|tranr(eval(_ss2p,p,l),"X/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")}
+       _spform:={|p,l|tranr(eval(_ss2p,p,l),"X"+I+REPLICATE("X",r))}
     endif
+   else
+      DEFAULT _snagl TO 'Danie┬'+padc('Dieta',A_DILTH,'─')+'┬Gramatura'
+      DEFAULT _snagkol TO r-5
+   endif
+
     if _slth>0
     //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     if ! ( (EvaldB(_swar,_spocz).or.dbseek(_spocz)).and._skip(0,,_s) )
@@ -696,11 +720,11 @@ DO CASE
     _sbeg:=1
     _spocz:=dseek(,'nazwa',_spocz)
     //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
-    _spform:={|p|tranr(p,"X/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")}
+    _spform:={|p|tranr(p,"X"+I+REPLICATE("X",r))}
     if [at(] $ lower(INDEXKEY(0))
        _sp2s:={|x|dseek(,'posilek,nazwa',left(x,1),SubStr(x,2))}
        _ss2p:={|x|if(len(x)>0,SubStr(posstr,asc(x)%16,1)+SubStr(x,2),"")}
-       _spform:={|p,l|tranr(Eval(_ss2p,p,l),"X/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")}
+       _spform:={|p,l|tranr(Eval(_ss2p,p,l),"X"+I+REPLICATE("X",r))}
     endif
     refresh(1,_s)
 
@@ -771,7 +795,7 @@ DO CASE
         set relation to RELEWY->(dseek(,'data,posilek,dieta',MENU->data,MENU->posilek,'')) into relewy
         SEEK dania->(danie)
 
-szukam({1,min(col()+5,maxcol()-30),MaxRow(),,1,6,"DATA",;
+szukam({1,col(),,,1,6,"DATA",;
 {||tran(Dtos(data)+posilek+dieta,hb_UTF8ToStr("@R ####.##.##│X│XXXX"))},{|k,s|RELe(k,s,upden)},dania->danie+left(dtos(mies_rob),6)})
     pop_stat(_skey)
 

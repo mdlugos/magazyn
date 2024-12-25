@@ -2,9 +2,53 @@
 #include "getexitm.ch"
 #include "inkey.ch"
 
+#define D_REST 4
+
+#ifdef A_MYSZ
+static proc drag_mysz(_f,job)
+local scrlok,delta:={1,0,0}
+
+        MSHOW()
+        scrlok:=savescreen(_fscr0,_fco1,_frow+(_fl-_fj+1)*_fskip,_fco2)
+        do while delta[1]=1
+           if delta[2]#0 .or. delta[3]#0
+              dispbegin()
+              RESTSCREEN(_fscr0,_fco1,MaxRow(),_fco2,_fscr)
+              _fscr0+=delta[3]
+              _frow+=delta[3]
+              _fco1+=delta[2]
+              _fco2+=delta[2]
+              setpos(row()+delta[3],col()+delta[2])
+              _fscr:=savescreen(_fscr0,_fco1,MaxRow(),_fco2)
+              restscreen(_fscr0,_fco1,_frow+(_fl-_fj+1)*_fskip,_fco2,scrlok)
+              dispend()
+           endif
+           delta[1]:=inkey(0,INKEY_MOVE + INKEY_LUP)
+           if delta[1]=1003
+              delta[1]:=0
+           else
+              delta[1]:=1
+           endif
+           delta[2]:=max(0,min(maxcol(),mcol()))-job[2]
+           delta[3]:=max(0,min(MaxRow(),mrow()))-job[3]
+           _fk:=_frow+_fskip*(_fi-_fj)
+           if delta[2]+_fco1<0 .or. delta[2]+_fco2>maxcol() .or. delta[3]+_fscr0<0 .or. delta[3]+_fk+_fskip>maxrow()
+              exit
+           endif
+           job[2]+=delta[2]
+           job[3]+=delta[3]
+        enddo
+        MHIDE()
+        if _frow+(_fl-_fj+1)*_fskip>maxrow()
+         _fl:=Int((maxrow()-_frow)/_fskip)+_fj-1
+         RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow-_fscr0)+1))
+         @ _fskip*(_fl-_fj+1)+_frow,_fco1 BOX '╙'+replicate('─',_fco2-_fco1-1)+'╜' UNICODE COLOR _sbkgr
+        endif
+return
+#endif
 
 PROCEDURE FORM_EDIT(_f)
-local stat,rmpos,getlist,job
+local stat,rmpos,getlist,job,scrlok
 *parameters _fco1,_fco2,_frow,_fskip,_flpmax,_fdmpre,_fdmget,_fdmpost,_fmainpre,_fmainget,_fmainpost,_flastexit
 
 asize(_f,_fLEN)
@@ -16,7 +60,13 @@ _fl:=1
 _fpos:=1
 _fposg:=1
 _fpopkey:=.f.
-_fscr:=savescreen(0,_fco1,MaxRow(),_fco2)
+if _fco2<0
+   DEFAULT _fco1 TO col()
+   _fco1:=min(_fco1,maxcol()+_fco2)
+   _fco2:=_fco1-_fco2
+endif
+DEFAULT _fscr0 TO 0
+_fscr:=savescreen(_fscr0,_fco1,MaxRow(),_fco2)
 //_fnowy:=.f.
 
   begin sequence
@@ -31,26 +81,35 @@ _fscr:=savescreen(0,_fco1,MaxRow(),_fco2)
 
     SET COLOR TO (_snorm)
 
-    __SetProc(procname(1))
-
-    getlist:={}
-    eval(_fdmget,_f,getlist)
-
-    rmpos:=_fposg
 #ifdef A_MYSZ
     if job#NIL .and. readkey()=GE_MOUSE
        job:=readkey(,)
-       if job[1]=2 .or. job[2]<=_fco1 .or. job[2]>=_fco2 .or. job[3]=0 .or. job[3]>_frow+_fskip
-          exit
+       if job[1]=2 .or. job[2]<=_fco1 .or. job[2]>_fco2 .or. job[3]<=_fscr0 .or. job[3]>_frow+_fskip-1
+         exit
        endif
-       job:=ascan(getlist,{|g|g:row=job[3] .and. g:col<=job[2] .and. g:col+len(tran(g:varGet(),g:picture))-1>=job[2]})
-       if job#0
-         rmpos:=job
-       endif
+       drag_mysz(_f,job)
+    else
+      job:=NIL
     endif
 #endif
 
-    READmodal(getlist,@rmpos)
+__SetProc(procname(1))
+
+getlist:={}
+eval(_fdmget,_f,getlist)
+
+rmpos:=_fposg
+
+#ifdef A_MYSZ
+if job#NIL
+   scrlok:=ascan(getlist,{|g|g:row=job[3] .and. g:col<=job[2] .and. g:col+len(tran(g:varGet(),g:picture))-1>=job[2]})
+   if scrlok#0
+     rmpos:=scrlok
+   endif
+endif
+#endif
+
+READmodal(getlist,@rmpos)
 //#ifdef A_HBGET
     //_fposg:=__GetListLast():ReadStats( 14 ) //GetListPos()
 //#else
@@ -67,10 +126,10 @@ _fscr:=savescreen(0,_fco1,MaxRow(),_fco2)
 #ifdef A_MYSZ
     if _fkey=GE_MOUSE
            job:=readkey(,)
-           if job[1]=2 .or. job[2]<=_fco1 .or. job[2]>=_fco2 .or. job[3]=0 .or. job[3]>_frow+(_fl-_fj+1)*_fskip
+           if job[1]=2 .or. job[2]<=_fco1 .or. job[2]>_fco2 .or. job[3]<=_fscr0 .or. job[3]>_frow+(_fl-_fj+1)*_fskip
               exit
            endif
-           if job[3]<_frow+_fskip-1
+           if job[3]<=_frow+_fskip-1
               loop
            endif
     endif
@@ -86,10 +145,11 @@ _fscr:=savescreen(0,_fco1,MaxRow(),_fco2)
 
     stat:=(_fi=1 .and. _fl=1)
 #ifdef A_MYSZ
-    if _fkey=GE_MOUSE .and. job[3]<=_frow+(_fl-_fj+1)*_fskip
-       job:=max(min(_fl,int((job[3]-_frow)/_fskip)+_fj),1+_fj)
-        skip job-_fi
-        _fi:=job
+    if _fkey=GE_MOUSE //.and. job[3]<=_frow+(_fl-_fj+1)*_fskip
+        _fkey:=max(min(_fl,int((job[3]-_frow)/_fskip)+_fj),1+_fj)
+        skip _fkey-_fi
+        _fi:=_fkey
+        drag_mysz(_f,job)
     endif
 #endif
 
@@ -147,7 +207,7 @@ _fscr:=savescreen(0,_fco1,MaxRow(),_fco2)
 #ifdef A_MYSZ
       job:=0
       if (_fkey:=nextkey(INKEY_KEYBOARD + INKEY_LDOWN))#0
-         if _fkey=1002
+         if _fkey=K_LBUTTONDOWN
            _fkey:=0
            job:=1
          endif
@@ -230,8 +290,8 @@ _fscr:=savescreen(0,_fco1,MaxRow(),_fco2)
 #ifdef A_MYSZ
         if _fkey=GE_MOUSE .and. !_fnowy
            job:=readkey(,)
-           if job[1]=2 .or. job[2]<=_fco1 .or. job[2]>=_fco2 .or. job[3]<_frow+_fskip-1 .or. job[3]>_frow+_fskip*(_fl-_fj+1)
-              _fkey:=K_CTRL_L //K_CTRL_W
+           if job[1]=2 .or. job[2]<=_fco1 .or. job[2]>_fco2 .or. job[3]<_frow+_fskip-1 .or. job[3]>_frow+_fskip*(_fl-_fj+1)
+              exit //_fkey:=K_CTRL_L //K_CTRL_W
 
            elseif job[3]=_frow+_fskip-1 .and. _fj>0
               job:=_fi-_fj
@@ -281,13 +341,14 @@ _fscr:=savescreen(0,_fco1,MaxRow(),_fco2)
               ENDIF
               loop
            else
-              job:=max(min(_flp,int((job[3]-_frow)/_fskip)+_fj),1)
-              skip job-_fi
-              _fi:=job
+              _fkey:=max(min(_flp,int((job[3]-_frow)/_fskip)+_fj),1)
+              skip _fkey-_fi
+              _fi:=_fkey
+              drag_mysz(_f,job)
+              loop
            endif
         endif
 #endif
-#define D_REST 4
             DO CASE
 
               CASE _fnowy
@@ -297,7 +358,7 @@ _fscr:=savescreen(0,_fco1,MaxRow(),_fco2)
                     if _fi<_fl
                        hb_scroll(_fk,_fco1,_frow+_fskip*(_fl-_fj+1),_fco2,_fskip)
                        --_fl
-                       RESTSCREEN(1+_fskip*(_fl-_fj+1)+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(1+_fskip*(_fl-_fj+1)+_frow)+1))
+                       RESTSCREEN(1+_fskip*(_fl-_fj+1)+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(1+_fskip*(_fl-_fj+1)+_frow-_fscr0)+1))
                        *********
                        _fkey:=_fi
                        do while _fk<=_frow+_fskip*(_fl-_fj)
@@ -317,14 +378,14 @@ _fscr:=savescreen(0,_fco1,MaxRow(),_fco2)
                       --_fj
                       stat:=.t.
                    else
-                      RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow)+1))
+                      RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow-_fscr0)+1))
                       @ _fskip*(_fl-_fj+1)+_frow,_fco1 BOX '╚'+replicate('═',_fco2-_fco1-1)+'╝' UNICODE
                    endif
                 else
                    skip
                    //hb_scroll(_fk,_fco1,_fk+_fskip-1,_fco2,0)
                    if _fskip<2
-                     @ _frow+_fskip*(_fi-_fj), _fco1 BOX '║'+space(_fco2-_fco1-2)+'║' UNICODE
+                     @ _frow+_fskip*(_fi-_fj), _fco1 BOX '║'+space(_fco2-_fco1-1)+'║' UNICODE
                    else
                      @  _fk,_fco1,_fk+_fskip-1,_fco2 BOX UNICODE '║ ║║║ ║║ '
                    endif
@@ -394,13 +455,13 @@ _fscr:=savescreen(0,_fco1,MaxRow(),_fco2)
   enddo
   recover using stat
     if stat#NIL
-      RESTSCREEN(0,_fco1,MaxRow(),_fco2,_fscr)
+      RESTSCREEN(_fscr0,_fco1,MaxRow(),_fco2,_fscr)
       set cursor off
       SET COLOR TO (_SNORM)
       break(stat)
     endif
   end sequence
-  RESTSCREEN(0,_fco1,MaxRow(),_fco2,_fscr)
+  RESTSCREEN(_fscr0,_fco1,MaxRow(),_fco2,_fscr)
   set cursor off
   SET COLOR TO (_SNORM)
 

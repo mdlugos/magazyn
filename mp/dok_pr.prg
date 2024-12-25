@@ -665,67 +665,25 @@ DO CASE
             przeg(2,_s,@ent,@stat_ord)
 
         elseif doc_opcja .and. bx=1 .and. dx=row() .and. cx=_scol1+16
-            sysint(51,1)
-            sysint(51,10,0,0,7168+16)
-            do while bx#0
-              sysint(51,3,@bx)
-            enddo
-            sysint(51,10,0,-1,30464)
-            sysint(51,2)
             set order to 1
             przeg(2,_s,@ent,@stat_ord)
         elseif doc_opcja .and. bx=1 .and. dx=row() .and. cx=_scol1+21
-            sysint(51,1)
-            sysint(51,10,0,0,7168+16)
-            do while bx#0
-              sysint(51,3,@bx)
-            enddo
-            sysint(51,10,0,-1,30464)
-            sysint(51,2)
             set order to 2
             przeg(2,_s,@ent,@stat_ord)
 #else
 #ifdef A_DMDATA
         elseif doc_opcja .and. bx=1 .and. dx=row() .and. cx=_scol1-1
-            sysint(51,1)
-            sysint(51,10,0,0,7168+16)
-            do while bx#0
-              sysint(51,3,@bx)
-            enddo
-            sysint(51,10,0,-1,30464)
-            sysint(51,2)
             set order to 2
             przeg(26,_s,@ent,@stat_ord)
         elseif doc_opcja .and. bx=1 .and. dx=row() .and. cx=DBEG-1
-            sysint(51,1)
-            sysint(51,10,0,0,7168+16)
-            do while bx#0
-              sysint(51,3,@bx)
-            enddo
-            sysint(51,10,0,-1,30464)
-            sysint(51,2)
             set order to 1
             przeg(26,_s,@ent,@stat_ord)
 #ifdef A_KHNUM
         elseif doc_opcja .and. bx=1 .and. dx=row() .and. cx=DBEG-5
-            sysint(51,1)
-            sysint(51,10,0,0,7168+16)
-            do while bx#0
-              sysint(51,3,@bx)
-            enddo
-            sysint(51,10,0,-1,30464)
-            sysint(51,2)
             set order to 2
             przeg(26,_s,@ent,@stat_ord)
 #ifdef A_KHNAZ
         elseif doc_opcja .and. bx=1 .and. dx=row() .and. cx=DBEG+A_KHNAZ-1
-            sysint(51,1)
-            sysint(51,10,0,0,7168+16)
-            do while bx#0
-              sysint(51,3,@bx)
-            enddo
-            sysint(51,10,0,-1,30464)
-            sysint(51,2)
             set order to 3
             przeg(2,_s,@ent,@stat_ord)
 #endif
@@ -734,37 +692,16 @@ DO CASE
 #endif
         elseif !doc_opcja .and. bx=1 .and. dx=row() .and. cx=_scol1-1
 
-            sysint(51,1)
-            sysint(51,10,0,0,7168+16)
-            do while bx#0
-              sysint(51,3,@bx)
-            enddo
-            sysint(51,10,0,-1,30464)
-            sysint(51,2)
             set order to 1
             przeg(2,_s,@ent,@stat_ord)
 
         elseif !doc_opcja .and. bx=1 .and. dx=row() .and. cx=_scol1+STDBG+1
 
-            sysint(51,1)
-            sysint(51,10,0,0,7168+16)
-            do while bx#0
-              sysint(51,3,@bx)
-            enddo
-            sysint(51,10,0,-1,30464)
-            sysint(51,2)
             set order to 2
             przeg(26,_s,@ent,@stat_ord)
 #ifndef A_NOMZ
         elseif !doc_opcja .and. bx=1 .and. dx=row() .and. cx=_scol1+ZLBEG-2
 
-            sysint(51,1)
-            sysint(51,10,0,0,7168+16)
-            do while bx#0
-              sysint(51,3,@bx)
-            enddo
-            sysint(51,10,0,-1,30464)
-            sysint(51,2)
             set order to 2
             przeg(2,_s,@ent,@stat_ord)
 #endif

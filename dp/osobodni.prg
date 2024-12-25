@@ -1,5 +1,6 @@
 #define I hb_UTF8ToStr("│")
 #include "dm_form.ch"
+#include "inkey.ch"
 Field kod_osoby,nazwisko,stanowisko,ile_pos,grupa,d_wartosc,wart_tot,posilek,data,dieta,kto_pisal,pozycja
 
 
@@ -42,7 +43,7 @@ seek dseek(,'data,posilek,dieta',data,posilek,'')
   #define D_ILPIC "@K #####"
 #endif
 
-szukam({0,10,MaxRow(),,1,4,hb_UTF8ToStr("Data───┬P┬")+padc(hb_UTF8ToStr("Dieta─F8"),A_DILTH,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬──┬Ilość┬Cena"),;
+szukam({0,,,col(),1,4,hb_UTF8ToStr("Data───┬P┬")+padc(hb_UTF8ToStr("Dieta─F8"),A_DILTH,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬──┬Ilość┬Cena"),;
 {||tran(Dtos(data)+posilek+dieta,hb_UTF8ToStr("@R ####.##.##│X│")+repl("X",A_DILTH))+I+;
 if(menu->(dbseek(relewy->(dtos(data)+posilek))),"J"," ")+;
 if(zapot->(dbseek(relewy->(dtos(data)+posilek))),"Z"," ")+I+;
@@ -362,7 +363,7 @@ proc dok3(_f,getlist,poprec,keyp,startrec)
          eval(_fmainpre,_f)
          if dbseek(dtos(da)+kon,.f.)
             @ 4,_fco1,5,_fco2 BOX UNICODE '║ ║║╝─╚║ ' color _sbkgr
-            RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*2*(1+2*_fskip+_frow)+1))
+            RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*2*(1+2*_fskip+_frow-_fscr0)+1))
             _fpopkey:=.f.
             poprec:=0
             select relewy
@@ -435,7 +436,7 @@ static fpstart:=0
     di:=gr:=" "
     _fpos:=1
   endif
-  @ _fk,6 GET kos PICTURE "@RK XXX,XXXXXXXXXXXXXXXXXXXXXXXXXXX" VALID {|k,r|if(k:changed.and.fpstart=0,fpstart:=1,),k:=setkey(-8,NIL),r:=kosval(_f,getlist).and.showwar(_f,il,di),setkey(-8,k),r}
+  @ _fk,6 GET kos PICTURE "@RK XXX;XXXXXXXXXXXXXXXXXXXXXXXXXXX" VALID {|k,r|if(k:changed.and.fpstart=0,fpstart:=1,),k:=setkey(-8,NIL),r:=kosval(_f,getlist).and.showwar(_f,il,di),setkey(-8,k),r}
   @ _fk,38 GET il PICTURE D_ILPIC valid {|k|if(k:changed.and.fpstart=0,fpstart:=2,),showwar(_f,il,di)}
   @ _fk,45 GET di valid aczojs(diety).and.showwar(_f,il,di)
   @ _fk,47 get gr valid aczojs(grupy)
@@ -454,7 +455,7 @@ stat proc f9(g,_f,getlist)
    if startrec#0
       go if(poprec=0,startrec,poprec)
    endif
-   if szukam({2,min(col(),maxcol()-60),MaxRow(),,1,9,hb_UTF8ToStr("Data───┬P┬Kod───Nazwisko")+padl(hb_UTF8ToStr("┬Ilość┬D┬G"),osoby->(hb_FieldLen([nazwisko])),hb_UTF8ToStr("─")),;
+   if szukam({2,col(),,,1,9,hb_UTF8ToStr("Data───┬P┬Kod───Nazwisko")+padl(hb_UTF8ToStr("┬Ilość┬D┬G"),osoby->(hb_FieldLen([nazwisko])),hb_UTF8ToStr("─")),;
      {||tran(dtos(data)+posilek,hb_UTF8ToStr("@R XXXX.XX.XX│X"))+I+kod_osoby+" "+osoby->nazwisko+I+tran(ile_pos,D_ILPIC)+I+dieta+I+grupa},;
      {|k,_s|(_sret:=k=13).or.rele(k,_s,.f.)},keyp})
     set relation to
@@ -590,18 +591,17 @@ do while _fpopkey .and. (!_fnowy .or. _fi=1)
   @ _fk,_fco2-1 say chr(17) color _sbkgr
 
 #ifdef A_MYSZ
-     sysint(51,1)
-     bx:=cx:=dx:=0
-     do while (_fkey:=inkey())=0
-        sysint(51,3,@bx,@cx,@dx)
-        if bx#0
-            _fkey:=14
-            cx:=round(cx*.125,0)
-            dx:=round(dx*.125,0)
-            exit
-        endif
-     enddo
-     sysint(51,2)
+   _fkey:=INKey(0, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)
+   if _fkey>=K_MINMOUSE .and. _fkey<=K_MAXMOUSE
+      if _fkey=K_LBUTTONDOWN
+         bx:=1
+      else
+         bx:=2
+      endif
+      cx:=mcol()
+      dx:=mrow()
+      _fkey:=14
+   endif
 #else
    _fkey:=inkey(0)
 #endif
@@ -719,9 +719,7 @@ LOCAL ZNALAZ,recm,recr,reco,r
 field ile_pos,kod_osoby,nazwisko,stanowisko,grupa
 
   IF KOS=osoby->KOD_OSOBY .and. !kos="   "
-     if kos#osoby->KOD_OSOBY+osoby->nazwisko
-        kos:=osoby->KOD_OSOBY+osoby->nazwisko
-     endif
+     kos:=osoby->KOD_OSOBY+osoby->nazwisko
      if il=0
         il:=1
         di:=osoby->dieta
@@ -738,9 +736,7 @@ field ile_pos,kod_osoby,nazwisko,stanowisko,grupa
     set order to tag osob_kod
     set relation to
 
-  ZNALAZ:=szukam({0,min(col(),maxcol()-60),MaxRow(),,1,len(trim(kos)),,;
-  {||kod_osoby+I+nazwisko+I+stanowisko+I+dieta+I+grupa},;
-    {|k,s|sosob(k,s,.f.)},UpP(trim(kos))})
+  ZNALAZ:=szukam({0,col(),,,1,len(trim(kos)),,,{|k,s|sosob(k,s,.f.)},UpP(trim(kos))})
   select relewy
     go recr
   SELECT osoby
@@ -781,7 +777,6 @@ FUNCTION KATALOG(_s)
 DEFAULT _s        TO array(_sLEN)
 DEFAULT _sbeg     TO 1
 DEFAULT _slth     TO 0
-DEFAULT _sprompt  TO {||kod_osoby+I+nazwisko+I+stanowisko+I+dieta+I+grupa}
 DEFAULT _sinfo    TO {|_skey,_s|sosob(if(_skey=13,9,_skey),_s,.t.)}
 DEFAULT _spocz    TO ''
 RETURN szukam(_s)
@@ -792,7 +787,8 @@ local n,g,s,i,k,d,r,getlist
 
 DO CASE
   CASE _skey=0
-DEFAULT _snagl    TO hb_UTF8ToStr('Kod┬')+pad('Nazwisko',hb_FieldLen([nazwisko]),hb_UTF8ToStr('─'))+pad(hb_UTF8ToStr('┬Stanowisko'),hb_FieldLen([stanowisko]),hb_UTF8ToStr('─'))+hb_UTF8ToStr('─┬D┬G')
+   DEFAULT _sprompt  TO {||kod_osoby+I+nazwisko+I+stanowisko+I+dieta+I+grupa}
+   DEFAULT _snagl    TO hb_UTF8ToStr('Kod┬')+pad('Nazwisko',hb_FieldLen([nazwisko]),hb_UTF8ToStr('─'))+pad(hb_UTF8ToStr('┬Stanowisko'),hb_FieldLen([stanowisko]),hb_UTF8ToStr('─'))+hb_UTF8ToStr('─┬D┬G')
       if _slth=0
       elseif _spocz>'9'
         SET ORDER TO tag osob_naz
@@ -953,7 +949,7 @@ DEFAULT _snagl    TO hb_UTF8ToStr('Kod┬')+pad('Nazwisko',hb_FieldLen([nazwisko
         SET RELATION TO RELEWY->(dseek(,'data,posilek,dieta',MAIN->data,MAIN->posilek,MAIN->dieta)) INTO RELEWY, to UpP(kod_osoby) into osoby
 #endif        
         SEEK n
-        szukam({1,min(col()+20,maxcol()-30),MaxRow(),,1,9,hb_UTF8ToStr("┬──Data────┬P┬D┬Ilość┬─Wartość─┬"),;
+        szukam({1,col(),,,1,9,hb_UTF8ToStr("┬──Data────┬P┬D┬Ilość┬─Wartość─┬"),;
          {||kod_osoby+I+tran(Dtos(data)+posilek+dieta,hb_UTF8ToStr("@R ####.##.##│X│X"))+I+tran(ILE_POS,D_ILPIC)+I+strpic(ile_pos*D_CENA,9,A_ZAOKR,"@E ",.t.)+I+osoby->nazwisko},;
          {|k,s|RELe(k,s,upden)},n})
         pop_stat(_skey)

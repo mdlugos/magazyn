@@ -118,7 +118,7 @@ PROCEDURE __SetHelpK()
    //hb_SetTermCP( hb_cdpTerm() )
    //hb_SetTermCP( 'UTF8')
 #endif      
-   //setmode(min(MaxRow(),maxcol())+1,max(MaxRow(),maxcol())+1)
+   setmode(min(MaxRow(),maxcol()*5/16)+1,maxcol()+1)
    //hb_Run('mode con: cols='+hb_ntoc(maxcol()+1)+'  lines='+hb_ntoc(maxrow()+1))
    //setmode(,) //fix problems ?
   #endif   
@@ -224,7 +224,6 @@ CLEAR screen
 #endif
 @ 18,0 say padc(hb_UTF8ToStr("PROSZĘ CHWILĘ POCZEKAĆ !"),maxcol()) color "*"+setcolor()
 #ifdef A_MYSZ
-sysint(51,0)
 #else
 MHIDE()
 #endif

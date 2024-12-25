@@ -3746,7 +3746,7 @@ if _flp>D_LPVAL(dm->pozycja) .or. if(_flp=0, dm->pozycja >D_LP0,_fi#D_LPVALFIELD
    select dm
    _fj:=0
    _fl:=_fi:=1
-   RESTSCREEN(_frow+2,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(_frow+2)+1))
+   RESTSCREEN(_frow+2,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(2+_frow-_fscr0)+1))
    @ _frow+2,_fco1,_frow+4,_fco2 BOX UNICODE if(pozycja>D_LP1,'║ ║║╜─╙║ ','║ ║║╝═╚║ ') color _SBKGR
    _fpopkey:=.f.
    dok11(_f)
@@ -3761,7 +3761,7 @@ else
      _fkey:=inkey(2, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)
      bx:=cx:=dx:=0
      if _fkey>=K_MINMOUSE .and. _fkey<=K_MAXMOUSE
-        if _fkey=1002
+        if _fkey=K_LBUTTONDOWN
            bx:=1
         else
            bx:=2
@@ -3793,7 +3793,7 @@ endif
      _fkey:=inkey(0, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)
      bx:=cx:=dx:=0
      if _fkey>=K_MINMOUSE .and. _fkey<=K_MAXMOUSE
-        if _fkey=1002
+        if _fkey=K_LBUTTONDOWN
            bx:=1
         else
            bx:=2

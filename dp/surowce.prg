@@ -207,19 +207,19 @@ if empty(deep)
 #endif
   getlist[1]:reader:=getlist[4]:reader:=getlist[5]:reader:=getlist[6]:reader:=getlist[7]:reader:=;
   {|g,k|k:=setkey(-1,{|p,g|g:=getactive(),g:changed:=;
-  SZUKAM({2,1,MaxRow(),,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
+  SZUKAM({2,1,,,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
   +hb_UTF8ToStr(IF(WAZNOSC>0 .and. STANY->STAN>0 .and. STANY->DATA_PRZY+WAZNOSC<date(),"°","│"));
   +STR(STANY->STAN)+" "+JM},{|k,s D_MYSZ|stanmag(k,s D_MYSZ)},"",.T.}).and.showhead(getlist);
   }),eval(greader,g),setkey(-1,k)}
   getlist[2]:reader:=;
   {|g,k|k:=setkey(-1,{|p,g|g:=getactive(),g:changed:=;
-  SZUKAM({2,1,MaxRow(),,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
+  SZUKAM({2,1,,,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
   +hb_UTF8ToStr(IF(WAZNOSC>0 .and. STANY->STAN>0 .and. STANY->DATA_PRZY+WAZNOSC<date(),"°","│"));
   +STR(STANY->STAN)+" "+JM},{|k,s|stanmag(k,s)},UpP(trim(na)),.T.}).and.showhead(getlist);
   }),eval(greader,g),setkey(-1,k)}
   getlist[3]:reader:=;
   {|g,k|k:=setkey(-1,{|p,g|g:=getactive(),g:changed:=;
-  SZUKAM({2,1,MaxRow(),,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
+  SZUKAM({2,1,,,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
   +hb_UTF8ToStr(IF(WAZNOSC>0 .and. STANY->STAN>0 .and. STANY->DATA_PRZY+WAZNOSC<date(),"°","│"));
   +STR(STANY->STAN)+" "+JM},{|k,s|stanmag(k,s)},UpP(trim(in)),.T.}).and.showhead(getlist);
   }),eval(greader,g),setkey(-1,k)}
@@ -290,7 +290,7 @@ stat proc sdok3(_f)
 #else
         @ 6,_fco1,7,_fco2 BOX UNICODE '║ ║║╜─╙║ ' color _sbkgr
 #endif        
-        RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow)*D_REST+1))
+        RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow-_fscr0)*D_REST+1))
         _fpopkey:=.f.
         return
       endif
@@ -430,7 +430,7 @@ endif
 RETURN
 ********
 stat proc f9(g,_f,getlist)
-   local r:=elementy->(recno()),curprompt,s:=surowce->(recno()),are:=select()
+   local r:=elementy->(recno()),curprompt,s:=surowce->(recno()),are:=select(),lr
    oldrec:=recno()
    if startrec=0
       poprec:=0
@@ -453,7 +453,7 @@ stat proc f9(g,_f,getlist)
             varput(getlist,'gra',surowce->gram)
             updated(.t.)
             @ 6,_fco1,7,_fco2 BOX '║ ║║╝─╚║ ' color _sbkgr
-            RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow)*D_REST+1))
+            RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow-_fscr0)*D_REST+1))
             surowce->(dbgoto(s))
             dbseek(surowce->skladnik)
 #ifdef A_LAN
@@ -488,8 +488,9 @@ stat proc f9(g,_f,getlist)
    endif
    set relation to element into elementy
    go if(poprec=0,startrec,poprec)
-   if szukam({2,min(col(),maxcol()-60),MaxRow(),,0,0,curprompt,;
-     {||elementy->nazwa+I+str(ilosc)+" "+elementy->jedn},;
+   lr:=min(maxcol()-16,elemety->(hb_fieldlen([nazwa])))
+   if szukam({2,col(),,,0,0,curprompt,;
+     {||left(elementy->nazwa,lr)+I+str(ilosc)+" "+elementy->jedn},;
      {|k,_s|(_sret:=k=13).or.ele(k,_s,.f.)},keyf9})
     set relation to
     poprec:=recno()
@@ -581,30 +582,40 @@ stat func showel(_f)
 return .t.
 *****************
 func SURowce(upden)
+  local r:=6
 DEFAULT upden TO .t.
 SELECT SUROWCE
 SET ORDER TO tag sur_naZ
-select zawar
-set order to tag "zaw_skl"
 #ifdef A_ELZ
 select cennik
 set order to 1
+r+=hb_fieldLen([cena])+12
+SELECT SUROWCE
+#else
+#ifdef A_KODY
+r+=hb_FieldLen([KOD])+1
+#endif
+#endif
+r:=min(hb_FieldLen([nazwa]),maxcol()-r)
+select zawar
+set order to tag "zaw_skl"
+#ifdef A_ELZ
 select surowce
 set relation to skladnik into cennik
-return SZUKAM({0,maxcol()/2-35,,,1,0,hb_UTF8ToStr("PRZEGLĄD SUROWCÓW CENA DATA"),{||NAZWA+if(zawar->(found()),I,"!")+jmaG+I+str(cennik->cena)+I+dtoc(cennik->data)},{|_skey,_s D_MYSZ|if(upden .and. _skey=13,_skey:=9,),sur(_skey,_s,upden D_MYSZ)},""})
+return SZUKAM({0,,,,1,0,hb_UTF8ToStr("PRZEGLĄD SUROWCÓW CENA DATA"),{||Left(NAZWA,r)+if(zawar->(found()),I,"!")+jmaG+I+str(cennik->cena)+I+dtoc(cennik->data)},{|_skey,_s D_MYSZ|if(upden .and. _skey=13,_skey:=9,),sur(_skey,_s,upden D_MYSZ)},""})
 #else
 select surowce
 set relation to skladnik into zawar
 #ifdef A_KODY
-return SZUKAM({0,maxcol()/2-30,,,12,0,hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),{||KOD+"│"+NAZWA+if(zawar->(found()),I,"!")+jmaG},{|_skey,_s D_MYSZ|if(upden .and. _skey=13,_skey:=9,),sur(_skey,_s,upden D_MYSZ)},""})
+return SZUKAM({0,,,,12,0,hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),{||KOD+"│"+Left(NAZWA,r)+if(zawar->(found()),I,"!")+jmaG},{|_skey,_s D_MYSZ|if(upden .and. _skey=13,_skey:=9,),sur(_skey,_s,upden D_MYSZ)},""})
 #else
-return SZUKAM({0,maxcol()/2-20,,,1,0,hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),{||NAZWA+if(zawar->(found()),I,"!")+jmaG},{|_skey,_s D_MYSZ|if(upden .and. _skey=13,_skey:=9,),sur(_skey,_s,upden D_MYSZ)},""})
+return SZUKAM({0,,,,1,0,hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),{||Left(NAZWA,r)+if(zawar->(found()),I,"!")+jmaG},{|_skey,_s D_MYSZ|if(upden .and. _skey=13,_skey:=9,),sur(_skey,_s,upden D_MYSZ)},""})
 #endif
 #endif
 *******************
 FUNCTION SURVAL(_f,getlist,na,poprec,oldrec,startrec,aflag,apos)
 
-local da,sk,su,re,za,znalaz,sel
+local r:=if(alias()="ZAPOT",6,12),da,sk,su,re,za,znalaz,sel
 
 /*
 #ifdef A_GOCZ
@@ -624,19 +635,24 @@ za:=zapot->(recno())
 #ifdef A_ELZ
 select cennik
 set order to 1
+r+=hb_fieldLen([cena])+12
 select surowce
 su:=recno()
 SET ORDER TO tag sur_naZ
 set relation to skladnik into cennik
-znalaz:=SZUKAM({0,,MaxRow(),maxcol(),1,len(trim(na)),hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),if(alias(sel)="ZAPOT",{||NAZWA+I+jmaG+I+str(cennik->cena)+I+dtoc(cennik->data)},{||NAZWA+"("+jmaG+hb_UTF8ToStr(")│")+surowce->jedN}),{|k,s D_MYSZ|sur(k,s,.t. D_MYSZ)},UpP(trim(na))})
+r:=min(hb_FieldLen([nazwa]),maxcol()-r)
+znalaz:=SZUKAM({0,,,,1,len(trim(na)),hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),if(alias(sel)="ZAPOT",{||left(NAZWA,r)+I+jmaG+I+str(cennik->cena)+I+dtoc(cennik->data)},{||left(NAZWA,r)+"("+jmaG+hb_UTF8ToStr(")│")+surowce->jedN}),{|k,s D_MYSZ|sur(k,s,.t. D_MYSZ)},UpP(trim(na))})
 #else
 select surowce
 su:=recno()
 SET ORDER TO tag sur_naZ
 #ifdef A_KODY
-znalaz:=SZUKAM({0,min(col(),maxcol()-40),MaxRow(),,12,len(trim(na)),hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),if(alias(sel)="ZAPOT",{||KOD+I+NAZWA+I+jmaG},{||KOD+I+NAZWA+"("+jmaG+hb_UTF8ToStr(")│")+surowce->jedN}),{|k,s D_MYSZ|sur(k,s,.t. D_MYSZ)},UpP(trim(na))})
+r+=hb_FieldLen([KOD])+1
+r:=min(hb_FieldLen([nazwa]),maxcol()-r)
+znalaz:=SZUKAM({0,,,,12,len(trim(na)),hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),if(alias(sel)="ZAPOT",{||KOD+I+left(NAZWA,r)+I+jmaG},{||KOD+I+left(NAZWA,r)+"("+jmaG+hb_UTF8ToStr(")│")+surowce->jedN}),{|k,s D_MYSZ|sur(k,s,.t. D_MYSZ)},UpP(trim(na))})
 #else
-znalaz:=SZUKAM({0,min(col(),maxcol()-30),MaxRow(),,1,len(trim(na)),hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),if(alias(sel)="ZAPOT",{||NAZWA+I+jmaG},{||NAZWA+"("+jmaG+hb_UTF8ToStr(")│")+surowce->jedN}),{|k,s D_MYSZ|sur(k,s,.t. D_MYSZ)},UpP(trim(na))})
+r:=min(hb_FieldLen([nazwa]),maxcol()-r)
+znalaz:=SZUKAM({0,,,,1,len(trim(na)),hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),if(alias(sel)="ZAPOT",{||left(NAZWA,r)+I+jmaG},{||left(NAZWA,r)+"("+jmaG+hb_UTF8ToStr(")│")+surowce->jedN}),{|k,s D_MYSZ|sur(k,s,.t. D_MYSZ)},UpP(trim(na))})
 #endif
 #endif
   set order to tag sur_kod
@@ -674,7 +690,7 @@ RETURN .F.
 function sur(_skey,_s,upden D_MYSZ)
 field index,nazwa,stan,jm,waznosc,data_przy
 static choice:=0
-local stat
+local stat,r
 do case
   CASE _SKEY=0 .and. alias()="SUROWCE"
     set order to tag sur_naz
@@ -773,11 +789,12 @@ do case
 #endif
        select dania
        set order to tag dan_kod
+       r:=min(maxcol()-12-A_DILTH,hb_fieldlen([nazwa]))
        select sklad
        set order to tag skl_skl
        set relation to danie into dania
        dbseek(surowce->skladnik,.f.)
-       szukam({1,min(maxcol()-60,col()+5),MaxRow(),,0,0,'Danie',{||dania->(nazwa+if(""=opis,I,"&")+left(dieta,A_DILTH)+I+gramatura+" "+jedn)},{|_skey,_s D_MYSZ|_skey:=if(_skey=13,9,_skey),danszuk(_skey,_s,upden D_MYSZ)},surowce->skladnik})
+       szukam({1,col(),,,0,0,,{||dania->(left(nazwa,r)+if(""=opis,I,"&")+left(dieta,A_DILTH)+I+gramatura+" "+jedn)},{|_skey,_s D_MYSZ|_skey:=if(_skey=13,9,_skey),danszuk(_skey,_s,upden,r D_MYSZ)},surowce->skladnik})
     elseif choice=2
        select zapot
        set order to tag zap_skl
@@ -785,7 +802,7 @@ do case
        dbseek(surowce->skladnik,.f.)
        szukam({1,min(maxcol()-27,col()+5),MaxRow(),,1,6,hb_UTF8ToStr("Data───┬P┬")+padc(hb_UTF8ToStr("Dieta"),A_DILTH,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬ile ")+trim(surowce->jmaG),{||tran(Dtos(data)+posilek+dieta,hb_UTF8ToStr("@R ####.##.##│X│")+REPLICATE("X",A_DILTH))+I+str(ILOSC)},{|k,s|RELe(k,s,upden)},surowce->skladnik+left(dtos(mies_rob),6)})
     elseif choice=3
-       SZUKAM({1,1,MaxRow(),,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA;
+       SZUKAM({1,1,,,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA;
        +hb_UTF8ToStr(IF(WAZNOSC>0 .and. STANY->STAN>0 .and. STANY->DATA_PRZY+WAZNOSC<date(),"°","│"));
        +STR(STANY->STAN)+" "+JM},{|_skey,_s D_MYSZ|if(_skey=13,.f.,STANMAG(_skey,_s D_MYSZ))},trim(surowce->indx_mat),.F.})
 #ifdef A_ELZ
@@ -793,7 +810,7 @@ do case
        select cennik
        setpos(row()+2,col())
        dbseek(surowce->skladnik)
-       szukam({,,,,0,,'Cena za '+surowce->jmaG,{||dtoc(data)+I+str(cena)},{|k,s|cen(k,s)},surowce->skladnik+chr(0),surowce->skladnik+hb_UCHAR(0x0A0)})
+       szukam({1,,,,0,,'Cena za '+surowce->jmaG,{||dtoc(data)+I+str(cena)},{|k,s|cen(k,s)},surowce->skladnik+chr(0),surowce->skladnik+hb_UCHAR(0x0A0)})
        dbseek(surowce->skladnik,.f.)
        select surowce
        REFRESH LINE _srow1-1+_sm DIRECTION 0

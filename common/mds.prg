@@ -212,14 +212,16 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
   endif
 
   if _scol1=NIL.or._scol2=NIL
-     _stxt:=len(eval(_sprompt,0,_s,.t.))
+     _stxt:=min(maxcol()-1,len(eval(_sprompt,0,_s,.t.)))
      if _scol2=NIL .and. _scol1=NIL
-        _scol2:=min(maxcol(),max(_stxt,int(COL()+_stxt/2))+1)
-        _scol1:=max(1,_scol2-_stxt)
-     elseif _scol1=NIL
-        _scol1:=max(1,_scol2-_stxt)
-     else
+        _scol1:=min(maxcol()-_stxt,max(1,col()-Round(_stxt/2,0)))
         _scol2:=_scol1+_stxt
+     elseif _scol1=NIL
+        _scol1:=max(1,min(maxcol(),_scol2)-_stxt)
+        _scol2:=_scol1+_stxt
+     else
+        _scol2:=min(maxcol()-_stxt,max(1,_scol1))+_stxt
+        _scol1:=_scol2-_stxt
      endif
   endif
   _scol2:=min(maxcol(),int(_scol2))
@@ -303,7 +305,7 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
         bx:=cx:=dx:=0
         _skey:=INKey(_skey, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)
         if _skey>=K_MINMOUSE .and. _skey<=K_MAXMOUSE
-           if _skey=1002
+           if _skey=K_LBUTTONDOWN
               bx:=1
            else
               bx:=2
@@ -461,13 +463,12 @@ func mysz(_s,bx,cx,dx,myszflag)
 local ret,scrlok
          if dx=_srow1-1 .and. cx=_scol2 .and. bx=1
             MSHOW()
-            sysint(51,10,0,0,7168+15) //kursor myszy
             do while bx=1
                cx:=max(cx,_scoln+1)-_scol2
                dx:=min(max(dx,_srowb)-_srow1+1,_srowe-_srow2)
                if cx#0 .or. dx#0
                   MHIDE()
-                  //dispbegin()
+                  dispbegin()
                   scrlok:=savescreen(_srow1-1,_scol1-1,_srow2,_scol2)
                   RESTSCREEN(_srow1-1,_scol1-1,_srow2,_scol2,SUBSTR(_scr,1+(_srow1-1-_srowb)*(_scoln+2)*D_REST))
                   _srow1+=dx
@@ -480,7 +481,7 @@ local ret,scrlok
                      _scr:=savescreen(_srowb,_scol1-1,_srowe,_scol2)
                   endif
                   restscreen(_srow1-1,_scol1-1,_srow2,_scol2,scrlok)
-                  //dispend()
+                  dispend()
                   MSHOW()
                endif
                bx:=inkey(0,INKEY_MOVE + INKEY_LUP)
@@ -492,7 +493,6 @@ local ret,scrlok
                cx:=max(0,min(maxcol(),mcol()))
                dx:=max(0,min(MaxRow(),mrow()))
             enddo
-            sysint(51,10,0,-1,30464)
             MHIDE()
          elseif bx=2 .or. cx>=_scol2 .or. cx <_scol1 .or. dx < _srow1-1 .or. dx>_srow2
             if myszflag

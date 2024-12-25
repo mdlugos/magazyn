@@ -1,5 +1,4 @@
-field   grupa,posilek,dieta,opis,data,path,nazwa,cena
-
+field   grupa,posilek,dieta,opis,data,path,nazwa,cena,jedn,element
 MEMVAR  grupy,narzuty,diety,posilki,posgr,grstr,dietystr,posstr,firma_n,_snorm,level1,stary_rok,defa,cennik,dzisiaj,dietylong,_sbkgr,_sbnorm
 #ifdef A_XPRN
 memvar apcomp,p_pcl,landscape
@@ -36,7 +35,7 @@ defa:=getlines(defa,HB_OsPathListSeparator())
 if empty(defa)
    defa:={'.'}
 endif
-aeval(defa,{|x,i,y|y:=right(x,1),if(y==HB_OsDriveSeparator(),x+=HB_ps()+curdir(x),),defa[i]:=hb_PathNormalize(x)})
+aeval(defa,{|x,i,y|y:=right(x,1),if(y==HB_OsDriveSeparator(),x+=HB_ps()+curdir(x),),if(y==HB_ps(),,x+=HB_ps()),defa[i]:=hb_PathNormalize(x)})
 
 a:=HB_ps()+curdir()+HB_ps()
 
@@ -383,9 +382,9 @@ set default to (defa+if(stary_rok#NIL,stary_rok,"roboczy")+HB_ps())
          if ++i>Len(PROC_EN)
             aadd(PROC_EN,array(4))
          endif
-         PROC_EN[i,1]:=substr(field->jedn,2)
-         PROC_EN[i,2]:=if('uszcz'$lower(field->nazwa),9,4)
-         PROC_EN[i,3]:=field->element
+         PROC_EN[i,1]:=substr(jedn,2)
+         PROC_EN[i,2]:=if('uszcz'$lower(nazwa),9,4)
+         PROC_EN[i,3]:=element
          PROC_EN[i,4]:=0
          continue
       end do

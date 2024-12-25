@@ -662,7 +662,7 @@ static function danval(_f,getlist)
 
 field danie,posilek,DATA,nazwa,gramatura,jedn,dieta,opis
 
-LOCAL Z,s,pg,_s
+LOCAL Z,s,pg,_s,r
   if empty(dan)
      dania->(dbgoto(0))
      menu->(dbgoto(0))
@@ -693,11 +693,11 @@ LOCAL Z,s,pg,_s
 
     select dania
     set order to tag dan_kod
+    r:=min(maxcol()-17-A_DILTH,hb_fieldlen([nazwa]))
     select menu
     set relation to danie into dania
 
-    Z:=szukam({0,min(maxcol()-60,col()),MaxRow(),,,,;
-     hb_UTF8ToStr('Jadłospis'),{||pozycja+I+dania->(nazwa+I+dieta+I+gramatura+" "+jedn)},,keyp})
+    Z:=szukam({0,,,,,,hb_UTF8ToStr('Jadłospis'),{||pozycja+I+dania->(left(nazwa,r)+I+dieta+I+gramatura+" "+jedn)},,keyp})
 
   else
 #endif
@@ -709,10 +709,10 @@ LOCAL Z,s,pg,_s
 #endif
  select dania
  set order to tag dan_naz
-
-    _s:={0,min(maxcol()-60,col()),MaxRow(),,1,len(trim(dan))+1,;
-         'Danie',{||posilek+"/"+nazwa+if(""=opis,if(sklad->(dbseek(dania->danie)),I,"!"),"&")+dieta+I+gramatura+" "+jedn},;
-         {|k,s D_MYSZ|danszuk(k,s,.t. D_MYSZ)},trim(dseek(,'posilek,nazwa',pg,dan))}
+    r:=min(maxcol()-15-A_DILTH,hb_fieldlen([nazwa]))
+    _s:={0,,,,1,len(trim(dan))+1,;
+         ,{||posilek+I+left(nazwa,r)+if(""=opis,if(sklad->(dbseek(dania->danie)),I,"!"),"&")+dieta+I+gramatura+" "+jedn},;
+         {|k,s D_MYSZ|danszuk(k,s,.t.,r D_MYSZ)},trim(dseek(,'posilek,nazwa',pg,dan))}
 
     if !dbseek(_spocz) .and. ordnumber('dan_uni')>0
        set order to tag dan_uni
@@ -751,15 +751,16 @@ RETURN .F.
 #endif
 ********
 stat proc f9(g,_f,getlist,ip,gram)
-local r:=surowce->(recno())
+local r:=surowce->(recno()),lr
    oldrec:=recno()
    set relation to skladnik into surowce
    if startrec#0
       go if(poprec=0,startrec,poprec)
    endif
-   if szukam({2,min(col(),maxcol()-60),MaxRow(),,1,9,;
+   lr :=min(maxcol()-29-A_DILTH,surowce->(hb_fieldlen([nazwa])))
+   if szukam({2,col(),,,1,9,;
      "Zapotrzebowania",;
-     {||tran(dtos(data)+posilek,"@R XXXX.XX.XX|X")+I+surowce->nazwa+I+str(ilosc)+" "+surowce->jmaG+I+dieta},;
+     {||tran(dtos(data)+posilek,"@R XXXX.XX.XX|X")+I+left(surowce->nazwa,lr)+I+str(ilosc)+" "+surowce->jmaG+I+dieta},;
      {|k,_s|(_sret:=k=13).or.rele(k,_s,.f.)},keyp})
     set relation to
     poprec:=recno()
@@ -947,7 +948,7 @@ local _stxt
 static x
 field index,stan,wartosc,zamk_mies1,zamk_mies2,zamkn_roku,;
 Wart_mies1,wart_mies2,wart_roku,zapas_min,zapas_max,data_popr,nazwa,jm,;
-jm_opcja,przel,lamus,UWAGI,nr_mag,data_zmian,waznosc,data_przy,cena_przy,info,kod
+jm_opcja,przel,lamus,UWAGI,nr_mag,data_zmian,waznosc,data_przy,cena_przy,info,kod,baza  
 do case
   case _skey=0
     if select("INDX_MAT")=0

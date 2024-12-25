@@ -54,7 +54,7 @@ select dania
 if deep
    inkey()
    if !eof()
-    FORM_EDIT({20,61+A_DILTH,4,1,999,;
+    FORM_EDIT({,-(41+A_DILTH),4,1,999,;
 {|f|RDOK1(f)},;
 {|f|rdok2(f,{})},;
 {||setcursor(0)},;
@@ -64,7 +64,7 @@ if deep
     endif
 else
     lock
-    FORM_EDIT({20,61+A_DILTH,4,1,999,;
+    FORM_EDIT({,-(41+A_DILTH),4,1,999,;
 {|f|RDOK1(f)},;
 {|f,g|rdok2(f,g)},;
 {|f,g|rdok3(f,g)},;
@@ -100,15 +100,15 @@ RETURN r
 stat PROC RDOK1(_f)
   SET CURSOR OFF
   SET COLOR TO (_SBKGR)
-  @ 0,_fco1,3,_fco2 BOX UNICODE '╔═╗║║ ║║ '
-  @ 4,_fco1,6,_fco2 BOX UNICODE '╠═╣║╝═╚║ '
-  @ 4,_fco1+3 say 'F9'
-  @ 0,_fco1+1 SAY "DANIE - NAZWA - SKŁADNIKI" UNICODE
-  @ 2,_fco1+10 say "Gramatura:"
-  @ 2,_fco1+31 say "Dieta:"
-  @ 4,_fco1+6 say 'Składnik' UNICODE
-  @ 4,_fco1+26 say 'Ilość' UNICODE
-  @ 4,_fco2-6 say 'Dieta'
+  @ _frow-4,_fco1,_frow-1,_fco2 BOX UNICODE '╔═╗║║ ║║ '
+  @ _frow,_fco1,_frow+_fskip+1,_fco2 BOX UNICODE '╠═╣║╝═╚║ '
+  @ _frow,_fco1+3 say 'F9'
+  @ _frow-4,_fco1+1 SAY "DANIE - NAZWA - SKŁADNIKI" UNICODE
+  @ _frow-2,_fco1+10 say "Gramatura:"
+  @ _frow-2,_fco1+31 say "Dieta:"
+  @ _frow,_fco1+6 say 'Składnik' UNICODE
+  @ _frow,_fco1+26 say 'Ilość' UNICODE
+  @ _frow,_fco2-6 say 'Dieta'
 RETURN
 ***********
 stat proc rdok2(_f,getlist)
@@ -127,16 +127,16 @@ stat proc rdok2(_f,getlist)
   apg:={}
   aeval(posilki,{|x,y|if(left(x,1)$posgr,aadd(apg,x),)})
 #endif
-  @  1,_fco1+1 get pg valid aczojs(posIlki)
+  @  _frow-3,_fco1+1 get pg valid aczojs(posIlki)
 #ifdef posIlki
   #undef posIlki
 #endif
-  @  1,_fco1+3 get NA picture "@KS"+lTrim(sTr(_fco2-_fco1-4))
-  @  2,_fco1+2 get now picture "@K" valid {||nowy:=if(now=" ",!nowy,nowy),now:=if(nowy,"NOWY   ","POPRAWA"),.t.}
-  @  2,_fco1+21 get gra picture "@K" valid {||gra:=padl(trim(gra),4),.t.}
-  @  2,_fco1+26 get jed picture "@K"
-  @  2,_fco1+38 get die picture "@KS"+HB_MACRO2STRING(A_DILTH) VALID {|g|dival(g)}
-  @  3,_fco1+2  get op picture "@KS"+lTrim(sTr(_fco2-_fco1-3)) send cargo:=.t.
+  @  _frow-3,_fco1+3 get NA picture "@KS"+lTrim(sTr(_fco2-_fco1-4))
+  @  _frow-2,_fco1+2 get now picture "@K" valid {||nowy:=if(now=" ",!nowy,nowy),now:=if(nowy,"NOWY   ","POPRAWA"),.t.}
+  @  _frow-2,_fco1+21 get gra picture "@K" valid {||gra:=padl(trim(gra),4),.t.}
+  @  _frow-2,_fco1+26 get jed picture "@K"
+  @  _frow-2,_fco1+38 get die picture "@KS"+HB_MACRO2STRING(A_DILTH) VALID {|g|dival(g)}
+  @  _frow-1,_fco1+2  get op picture "@KS"+lTrim(sTr(_fco2-_fco1-3)) send cargo:=.t.
   __setproc(procname(0))
 return
 ************
@@ -159,12 +159,12 @@ stat proc rdok3(_f)
       nowy:=.f.
       set order to tag dan_naz
       if dbseek(dseek(,'posilek,nazwa',pg,na)).and.gra+jed+die=gramatura+jedn+dieta .OR. empty(NA)
-        @ 5,_fco1,6,_fco2 BOX UNICODE '║ ║║╝─╚║ ' color _sbkgr
-        RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow)*D_REST+1))
+        @ _frow+_fskip,_fco1,_frow+_fskip*2,_fco2 BOX UNICODE '║ ║║╝─╚║ ' color _sbkgr
+        RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow-_fscr0)*D_REST+1))
         _fpopkey:=.f.
         return
       endif
-      @ 5,_fco1,6,_fco2 bOX UNICODE '║ ║║╝═╚║ ' color _sbkgr
+      @ _frow+_fskip,_fco1,_frow+_fskip*2,_fco2 bOX UNICODE '║ ║║╝═╚║ ' color _sbkgr
       _fpopkey:=.t.
       SET ORDER TO tag dan_kod
 #ifdef A_LPNUM
@@ -275,7 +275,7 @@ stat proc RDOK4(_f,getlist,deep)
 RETURN
 ********
 stat proc f9(g,_f,getlist)
-local r:=surowce->(recno()),s:=dania->(recno())
+local rs:=surowce->(recno()),s:=dania->(recno()),r:=min(surowce->(hb_FieldLen([nazwa])),maxcol()-15)
    oldrec:=recno()
 
    if startrec=0
@@ -294,7 +294,7 @@ local r:=surowce->(recno()),s:=dania->(recno())
          set order to tag dan_kod
          go s
          select surowce
-         go r
+         go rs
          select sklad
          go oldrec
          return
@@ -303,8 +303,8 @@ local r:=surowce->(recno()),s:=dania->(recno())
 
    set relation to skladnik into surowce
    go if(poprec=0,startrec,poprec)
-    if szukam({2,min(col(),maxcol()-60),MaxRow(),,0,0,curprompt,;
-     {||surowce->nazwa+I+str(ilosc)+" "+surowce->jedN},;
+    if szukam({2,col(),,,0,0,curprompt,;
+     {||Left(surowce->nazwa,r)+I+str(ilosc)+" "+surowce->jedN},;
      {|k,_s D_MYSZ|(_sret:=k=13).or.sur(k,_s,.f. D_MYSZ)},keyp})
     set relation to
     poprec:=recno()
@@ -321,7 +321,7 @@ local r:=surowce->(recno()),s:=dania->(recno())
     updated(g:changed:=.t.)
    else
     set relation to
-    surowce->(dbgoto(r))
+    surowce->(dbgoto(rs))
     poprec:=0
    endif
    go oldrec

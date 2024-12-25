@@ -242,7 +242,7 @@ DO CASE
          if m=1
          setmode(25,80)
          elseif m=2
-         sysint(16,36)
+         setmode(30,80)
          elseif m=3
          setmode(43,80)
          elseif m=4
@@ -265,9 +265,6 @@ DO CASE
       endif
 //#endif
       init screen
-#ifdef A_MYSZ
-      sysint(51,0)
-#endif
        else
           alarm(hb_UTF8ToStr("NIE DOSTĘPNE NA MONITORZE TYPU HERCULES"))
        endif

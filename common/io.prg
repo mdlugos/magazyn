@@ -1193,9 +1193,9 @@ endif
          MSHOW()
          b:=0
          do while (key:=inkey(0, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN + HB_INKEY_GTEVENT ),key>=K_MINMOUSE .and. key<=K_MAXMOUSE )
-             if key=1002
+             if key=K_LBUTTONDOWN
                 b:=1
-             elseif key=1004 .or. key=HB_K_CLOSE
+             elseif key=K_RBUTTONDOWN .or. key=HB_K_CLOSE
                 b:=2
              Else
                 loop
@@ -1331,12 +1331,12 @@ do while .t.
 
       b:=0
       key:=inkey(0,INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)
-      if key=1002
+      if key=K_LBUTTONDOWN
          b:=1
          key:=14
          y:=mrow()
          x:=mcol()
-      elseif key=1004
+      elseif key=K_RBUTTONDOWN
          b:=2
          key:=14
       endif
