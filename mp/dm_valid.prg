@@ -1864,23 +1864,23 @@ endif
 #endif
       endif
 #ifdef A_ANKER
-    @ _fk+1, 3 SAY ean13(nim)
+    @ _fk+1, _fco1+3 SAY ean13(nim)
 #endif
       
-    @ _fk,5 SAY (lam)->nazwA
+    @ _fk,_fco1+5 SAY (lam)->nazwA
 #ifdef A_JMO
     if miar_opcja
-       @ _fk+1,48 say (lam)->jm_opcja
+       @ _fk+1,_fco1+48 say (lam)->jm_opcja
        if !_fnowy .and. oldp#(lam)->przel .and. il#0 .and. il%oldp=0 .and. 1=alarm("ZMIANA KWANTU Z"+str(oldp,4)+" NA"+str((lam)->przel,4)+hb_UTF8ToStr(";CZY ZMIENIĆ OGÓLNĄ ILOŚĆ SZTUK"),{"TAK","NIE"})
           il:=int(il/oldp)*(lam)->przel
        elseif il#0
           aeval(getlist,{|g|if(g:name='il',g:display(),)})
        endif
     else
-       @ _fk+1,48 say (lam)->jm
+       @ _fk+1,_fco1+48 say (lam)->jm
     endif
 #else
-    @ _fk+1,48 say (lam)->jm
+    @ _fk+1,_fco1+48 say (lam)->jm
 #endif
 #ifdef A_JMTOT
 #ifdef A_JMALTTOT
@@ -2125,7 +2125,7 @@ if D_DIETANEG (pv#(lam)->proc_vat .or. cz#(lam)->D_ALTCEN) .AND.(_fnowy .or. il=
 #endif
 #ifdef A_JMO
 if !_fnowy
-    @ _fk+1,48 say (lam)->(if(miar_opcja,jm_opcja,jm))
+    @ _fk+1,_fco1+48 say (lam)->(if(miar_opcja,jm_opcja,jm))
     if miar_opcja .and. oldp#(lam)->przel .and. il#0 .and. il%oldp=0 .and. 1=alarm("ZMIANA KWANTU Z"+str(oldp,4)+" NA"+str((lam)->przel,4)+hb_UTF8ToStr(";CZY ZMIENIĆ OGÓLNĄ ILOŚĆ SZTUK"),{"TAK","NIE"})
        il:=int(il/oldp)*(lam)->przel
     elseif il#0
@@ -2521,7 +2521,7 @@ local j:=0
 return j
 #endif
 *****************************************************************************
-FUNCTION gfirma(_skey,_s,getlist)
+FUNCTION gfirma(_skey,_s,getlist,_f)
 local re,txt,h,x
 memvar d_o,kh,tp,nazwis
 field numer_kol,nazwa,p_r,longname,tp_dni,uwagi,nazwisko,cennik IN FIRMY
@@ -2614,7 +2614,7 @@ DO CASE
                if szukam({1,14,MaxRow(),,15,_slth-1,'DOKUMENTY',{||smb_dow+nr_dowodu+I+DTOV(data)+I+dost_odb},,txt})
                   if /*dok_zew="V" .and.*/ dok_p_r="F"
                     n_f:=nr_faktury
-                    @ 3,2 say "    NIP      " color _sbkgr
+                    @ _fscr0+3,_fco1+2 say "    NIP      " color _sbkgr
                   endif
 #endif
                   d_o:=DOST_ODB
@@ -2651,7 +2651,7 @@ DO CASE
                re:=recno()
                if dbseek(_spocz)
                   if _spocz=numer_kol
-                     return gfirma(13,_s,getlist)
+                     return gfirma(13,_s,getlist,_f)
                   endif      
                else
 #ifdef A_KHFILLZERO
@@ -2683,7 +2683,7 @@ DO CASE
                if dbSEEK(_spocz)
                   if _spocz=UpP(trim(nazwa))
 #endif
-                     return gfirma(13,_s,getlist)
+                     return gfirma(13,_s,getlist,_f)
                   endif      
                else
                   if dok_kon="?"
@@ -2708,7 +2708,7 @@ DO CASE
                   if indexord()>2 .and. dbSEEK(_spocz)
                      _sbeg:=A_NRLTH+3+hb_fieldlen([nazwa])
                      if _spocz=UpP(trim(longname))
-                        return gfirma(13,_s,getlist)
+                        return gfirma(13,_s,getlist,_f)
                      endif
                   else
                      _spocz:=''
@@ -2736,7 +2736,7 @@ DO CASE
    CASE _skey=13
       _sret=.T.
       IF len(_s)>=19 .and. !empty(_scr)
-         //RESTSCREEN(_srow1-_sm,_scol1-1,_srow2,_scol2,SUBSTR(_scr,1+(_srow1-_sm-_srowb)*(_scoln+2)*2))
+         //RESTSCREEN(_srow1-_sm,_scol1-1,_srow2,_scol2,hb_BSubStr(_scr,1+(_srow1-_sm-_srowb)*(_scoln+2)*2))
          RESTSCREEN(_srowb,_scol1-1,_srowe,_scol2,_scr)
          _scr:=''
       endif

@@ -155,7 +155,7 @@ for i:=1 to l
    if empty(x) .or. x=';' 
       loop
    elseif x='&:'
-      x:=SubStr(x,3)
+      x:=hb_BSubStr(x,3)
    elseif '&:'$x
       x:=Trim(left(x,at('&:',x)-1))
    endif

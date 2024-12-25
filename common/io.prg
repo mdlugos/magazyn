@@ -193,7 +193,7 @@ local s,a,b,c
                a:=trim(path)
                if !empty(a)
                 if a="&:"
-                  a:=trim(&(SubStr(a,3)))
+                  a:=trim(&(hb_BSubStr(a,3)))
                 endif
                 a:=expand(a)
                 if right(a,1)<>HB_ps()
@@ -277,7 +277,7 @@ local s,a,b,c
                a:=trim(path)
                if !empty(a)
                 if a="&:"
-                  a:=trim(&(SubStr(a,3)))
+                  a:=trim(&(hb_BSubStr(a,3)))
                 endif
                 a:=expand(a)
                 if right(a,1)<>HB_ps()

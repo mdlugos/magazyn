@@ -29,7 +29,7 @@ static na,il,di,dan,chg
 *********************
 func zap_in(deep)
 
-LOCAL stat,r,vars:={poprec,oldrec,keyp,startrec,aZap,apos,adat,aflag,na,il,di,dan,chg},d,e,f,g
+LOCAL stat,p,r,vars:={poprec,oldrec,keyp,startrec,aZap,apos,adat,aflag,na,il,di,dan,chg},d,e,f,g
 if keyp#NIL
    deep=.t.
 endif
@@ -48,18 +48,26 @@ begin sequence
 #endif
   select dania
       SET ORDER TO tag dan_kod
+      r:=hb_fieldlen([nazwa])
   select sklad
       SET ORDER TO tag skl_dan
   select menu
       SET ORDER TO tag menu_rel
    select surowce
       set order to tag sur_kod
+      r+=hb_fieldlen([nazwa])
    select zapot
       set order to tag zap_rel
    SELECT RELEWY
   dbseek(dseek(,'data,posilek,dieta',keyp[1],keyp[2],''),.f.)
   keyp:=dtos(keyp[1])+keyp[2]
   select zapot
+ #ifdef A_LPNUM      
+  if dbseek(keyp,,.t.)
+    p:=-val(pozycja)
+  endif
+ #endif
+ 
  if dbseek(keyp)
     kibord(chr(3))
  endif
@@ -70,7 +78,7 @@ begin sequence
   inkey()
   aZap:={{},{},{}};apos:=1
     if !eof()
-    FORM_EDIT({0,79,3,1,999,;
+    FORM_EDIT({p,-r-42-A_DILTH,3,1,999,;
 {|f|zDOK1(f)},;
 {|f|zdok2(f,{})},;
 {|f|setcursor(0)},;
@@ -80,7 +88,7 @@ begin sequence
     endif
 else
     lock
-    FORM_EDIT({0,79,3,1,999,;
+    FORM_EDIT({p,-r-42-A_DILTH,3,1,999,;
 {|f|zDOK1(f)},;
 {|f,g|zdok2(f,g)},;
 {|f,g|zdok3(f,g,@poprec,@keyp,@startrec)},;
@@ -135,15 +143,15 @@ static procedure zdok1(_f)
 
    set cursor off
    SET COLOR TO (_sbkgr)
-  @ 0,_fco1,3,_fco2 BOX UNICODE '╔═╗║║ ║║ '
-  @ 0,_fco1+1 SAY "ZAPOTRZEBOWANIE NA PRODUKTY"
-  @ 1,_fco1+2 say "Ilość" UNICODE
-  @ 1,_fco1+9 say "Cena"
-  @ 1,_fco1+20 say "Data"
-  @ 1,_fco1+25 say "Pos."
-  @ 1,_fco1+41 say "Jadłospis" UNICODE
-  @ 3,_fco1,5,_fco2 BOX UNICODE '╠═╣║╝═╚║ '
-  @ 3,_fco1+31 say 'Surowiec═════════Dieta════Ilość════════Gram═Ilp' UNICODE
+  @ _fscr0+0,_fco1,_fscr0+3,_fco2 BOX UNICODE '╔═╗║║ ║║ '
+  @ _fscr0+0,_fco1+1 SAY "ZAPOTRZEBOWANIE NA PRODUKTY"
+  @ _fscr0+1,_fco1+2 say "Ilość" UNICODE
+  @ _fscr0+1,_fco1+9 say "Cena"
+  @ _fscr0+1,_fco1+20 say "Data"
+  @ _fscr0+1,_fco1+25 say "Pos."
+  @ _fscr0+1,_fco1+41 say "Jadłospis" UNICODE
+  @ _fscr0+3,_fco1,_fscr0+5,_fco2 BOX UNICODE '╠═╣║╝═╚║ '
+  @ _fscr0+3,_fco2-48 say 'Surowiec═════════Dieta════Ilość════════Gram═Ilp' UNICODE
 return
 ***********
 static proc zdok2(_f,getlist)
@@ -156,12 +164,12 @@ static proc zdok2(_f,getlist)
      da:=data
      kon:=posilek
   endif
-  @ 2,_fco1+29 say posilki[max(1,ascan(posilki,kon))] COLOR _sbkgr
-  @ 2,_fco1+1 say ile_pos picture D_ILPIC color _sbkgr
-  @ 2,_fco1+7 say strpic(WARTOSC/ile_pos,7,A_ZAOKR,"@E ",.t.) color _sbkgr
-  @ 2,_fco1+41 say if(menu->(dbseek(dtos(da)+KON,.f.)),"jest","brak") color _sbkgr
-  @ 2,_fco1+18 get da  picture "@D" valid {||setpos(2,_fco1+41),devout(if(menu->(dbseek(dtos(da)+KON,.f.)),"jest","brak"),_sbkgr),.t.}
-  @ 2,_fco1+29 get kon valid {|y|y:=aczojs(posilki),devout(posilki[max(1,ascan(posilki,kon))],_sbkgr),setpos(2,_fco1+41),devout(if(menu->(dbseek(dtos(da)+KON,.f.)),"jest","brak"),_sbkgr),y}
+  @ _fscr0+2,_fco1+29 say posilki[max(1,ascan(posilki,kon))] COLOR _sbkgr
+  @ _fscr0+2,_fco1+1 say ile_pos picture D_ILPIC color _sbkgr
+  @ _fscr0+2,_fco1+7 say strpic(WARTOSC/ile_pos,7,A_ZAOKR,"@E ",.t.) color _sbkgr
+  @ _fscr0+2,_fco1+41 say if(menu->(dbseek(dtos(da)+KON,.f.)),"jest","brak") color _sbkgr
+  @ _fscr0+2,_fco1+18 get da  picture "@D" valid {||setpos(_fscr0+2,_fco1+41),devout(if(menu->(dbseek(dtos(da)+KON,.f.)),"jest","brak"),_sbkgr),.t.}
+  @ _fscr0+2,_fco1+29 get kon valid {|y|y:=aczojs(posilki),devout(posilki[max(1,ascan(posilki,kon))],_sbkgr),setpos(_fscr0+2,_fco1+41),devout(if(menu->(dbseek(dtos(da)+KON,.f.)),"jest","brak"),_sbkgr),y}
   __setproc(procname(0))
 return
 *************
@@ -435,7 +443,7 @@ static proc zdok3(_f,getlist,poprec,keyp,startrec)
 //static proc zdok3(_f)
   local i,j,k,l,rec,mes,a,b,c,d,e,f:={},g,h
   dok3(_f,getlist,@poprec,@keyp,@startrec)
-  @ 2,_fco1+7 SAY strpic(WARTOSC/ile_pos,7,A_ZAOKR,"@E ",.t.) color _sbkgr
+  @ _fscr0+2,_fco1+7 SAY strpic(WARTOSC/ile_pos,7,A_ZAOKR,"@E ",.t.) color _sbkgr
   if adat#dtos(relewy->data)+relewy->posilek
      adat:=dtos(relewy->data)+relewy->posilek
      azap:=mk_azap(adat)
@@ -444,13 +452,13 @@ static proc zdok3(_f,getlist,poprec,keyp,startrec)
      aflag:=.f.
   endif
   if len(azap[1])>0
-     @ 3,_fco1+15 say 'F8' color _sbkgr
+     @ _fscr0+3,_fco1+15 say 'F8' color _sbkgr
      if zapot->(dtos(data)+posilek)=dtos(data)+posilek
         apos:=len(azap[1])+1
         aflag:=.f.
      else
         poprec:=0
-        @ 5,_fco1+2 say "══════════════podpowiedź z jadłospisu pod F8" UNICODE color _sbkgr
+        @ _fscr0+5,_fco1+2 say "══════════════podpowiedź z jadłospisu pod F8" UNICODE color _sbkgr
 #ifdef A_DEMO
         aflag:=.f.
 #else
@@ -458,7 +466,7 @@ static proc zdok3(_f,getlist,poprec,keyp,startrec)
 #endif
      endif
   else
-     @ 3,_fco1+15 box '══' unicode color _sbkgr
+     @ _fscr0+3,_fco1+15 box '══' unicode color _sbkgr
      aflag:=.f.
   endif
 
@@ -554,10 +562,12 @@ static proc zDOK4(_f,getlist,deep)
   gram:=il*surowce->przel/ip
   showwar(_f)
   setpos(_fk,_fco1+5)
+  h:=surowce->(hb_fieldlen([nazwa]))
 #ifdef A_ZAP_DAN
-  GETL dan PICTURE "@KS"+str(_fco1+20-A_DILTH,2) VALID danval(_f,getlist)
+  g:=dania->(hb_fieldlen([nazwa]))
+  GETL dan PICTURE "@KS"+hb_ntoc(g*(_fco2-_fco1-42-A_DILTH)/(g+h),0) VALID danval(_f,getlist)
 #endif
-  GETL na PICTURE "@KS"+str(_fco1+44-A_DILTH-col(),2) VALID {|k,r,p|if(k:changed.and.fpstart=0,fpstart:=1 D_G,),p:=setkey(-8,NIL),k:=setkey(-7,NIL),r:=surval(_f,getlist,@na,@poprec,oldrec,startrec,aflag,@apos),setkey(-7,k),setkey(-8,p),if(r,(setpos(_fk,_fco2-16),dispout(surowce->jmaG,_sbkgr),if(ip*gram=0,,il:=ip*gram/surowce->przel),getlist[3 D_G]:display()),),r}
+  GETL na PICTURE "@KS"+hb_ntoc(h*(_fco2-_fco1-42-A_DILTH)/(g+h),0) VALID {|k,r,p|if(k:changed.and.fpstart=0,fpstart:=1 D_G,),p:=setkey(-8,NIL),k:=setkey(-7,NIL),r:=surval(_f,getlist,@na,@poprec,oldrec,startrec,aflag,@apos),setkey(-7,k),setkey(-8,p),if(r,(setpos(_fk,_fco2-16),dispout(surowce->jmaG,_sbkgr),if(ip*gram=0,,il:=ip*gram/surowce->przel),getlist[3 D_G]:display()),),r}
   @ _fk,_fco2-26-A_DILTH GET di picture "@KS"+HB_MACRO2STRING(A_DILTH) valid {|g,r|r:=!g:changed .or. dival(g),if(g:changed .and. r,(ip:=ipcalc(di,dania->danie),setpos(_fk,_fco2 -5 ),dispout(tran(ip,D_ILPIC),_sbkgr),if(gram=0,(gram:=il*surowce->przel/ip,getlist[4 D_G]:display()),(il:=ip*gram/surowce->przel,getlist[3 D_G]:display()))),),showwar(_f),r}
   @ _fk,_fco2-25 GET il PICTURE '@K ####.###' VALID {|k|if(k:changed.and.fpstart=0,fpstart:=3 D_G,),gram:=il*surowce->przel/ip,getlist[4 D_G]:display(),showwar(_f)}
   @ _fk,_fco2-11 get gram PICTURE "###.##" VALID {|k|!k:changed.or.(il:=ip*gram/surowce->przel,getlist[3 D_G]:display(),showwar(_f))}
@@ -648,7 +658,7 @@ local f,r
          SET ORDER TO TAG (f)
          GOTO r
    endif
-   @ _fk,_fco1+44-A_DILTH say i+il-if(_fnowy,0,ilosc) picture "@Z ####.###" color _sbkgr
+   @ _fk,_fco2-35-A_DILTH say i+il-if(_fnowy,0,ilosc) picture "@Z ####.###" color _sbkgr
 
 return .t.
 ***************************

@@ -289,7 +289,7 @@ FUNCTION DefError(e)
              if !empty(indeks->path)
                 a:=trim(indeks->path)
                 IF a="&:"
-                   a:=trim(&(SubStr(a,3)))
+                   a:=trim(&(hb_BSubStr(a,3)))
                 ENDIF
                 a:=expand(a)
                 if right(a,1)<>HB_ps()
@@ -372,7 +372,7 @@ FUNCTION DefError(e)
              if !empty(indeks->path)
                 c:=trim(indeks->path)
                 if c="&:"
-                   c:=&(SubStr(c,3))
+                   c:=&(hb_BSubStr(c,3))
                 endif
                 c:=expand(c)
                 if right(c,1)<>HB_ps()
@@ -420,12 +420,12 @@ FUNCTION DefError(e)
              return .f.
           endif
    #else
-       locate while trim(BAZA)==b FOR {||d:=trim(nazwa), (i:=Lower(expand(d)))==Lower(SubStr(e:filename,-len(i)-4,len(i)))}
+       locate while trim(BAZA)==b FOR {||d:=trim(nazwa), (i:=Lower(expand(d)))==Lower(hb_BSubStr(e:filename,-len(i)-4,len(i)))}
        if found()
              if !empty(path)
                 a:=trim(path)
                 if a="&:"
-                   a:=&(SubStr(a,3))
+                   a:=&(hb_BSubStr(a,3))
                 endif
                 t:=expand(a)
                 if right(t,1)<>HB_ps()
@@ -651,7 +651,7 @@ FUNCTION DefError(e)
               x:=trim(path)
               if !empty(x)
                 if x="&:"
-                   x:=trim(&(SubStr(x,3)))
+                   x:=trim(&(hb_BSubStr(x,3)))
                 endif
                 x:=expand(x)
                 if right(x,1)<>HB_ps()

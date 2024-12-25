@@ -18,7 +18,7 @@ MEMVAR CHANGED,diety,posilki,grupy,mies_rob
 ************************
 func sur_in(deep,n)
 
-local stat,r,vars:={poprec,oldrec,keyp,startrec,curprompt,nowy,na,in,jem,prz,jed,gra,il,ce,da,keyf9,kw,op}
+local stat,p,r,vars:={poprec,oldrec,keyp,startrec,curprompt,nowy,na,in,jem,prz,jed,gra,il,ce,da,keyf9,kw,op}
 poprec:=startrec:=oldrec:=0
 if keyp#NIL
    deep=.t.
@@ -40,7 +40,7 @@ begin sequence
   select elementy
       SET ORDER TO tag ele_kod
   
-  r:=min(maxcol(),hb_FieldLen([nazwa])+22)
+  r:=hb_FieldLen([nazwa])+22
 
   select SUROWCE
       SET ORDER TO tag sur_kod
@@ -49,13 +49,15 @@ begin sequence
   curprompt:=trim(nazwa)+" "+jmaG
 
   r:=min(r,hb_FieldLen([nazwa])+min(7,hb_FieldLen([indx_maT]))+13)
-  if col()+r>maxcol()
-     setpos(row(),maxcol()-r)
-  endif
   
   select zawar
   SET ORDER TO tag zaw_skl
-
+ #ifdef A_LPNUM      
+  if dbseek(keyp,,.t.)
+    p:=-val(pozycja)
+  endif
+ #endif
+ 
  if dbseek(keyp)
     kibord(chr(3))
  endif
@@ -65,7 +67,7 @@ begin sequence
 if deep
    inkey()
    if !eof()
-    FORM_EDIT({col(),col()+r,5,1,999,;
+    FORM_EDIT({p,-r,5,1,999,;
 {|f|sDOK1(f)},;
 {|f|sdok2(f,{},deep)},;
 {||setcursor(0)},;
@@ -75,7 +77,7 @@ if deep
     endif
 else
     lock
-    FORM_EDIT({col(),col()+r,5,1,999,;
+    FORM_EDIT({p,-r,5,1,999,;
 {|f|sDOK1(f)},;
 {|f,g|sdok2(f,g,deep)},;
 {|f|sdok3(f)},;
@@ -115,23 +117,23 @@ RETURN r
 stat pROC sDOK1(_f)
 SET CURSOR OFF
 SET COLOR TO (_sbkgr)
-  @ 0,_fco1,4,_fco2 BOX UNICODE '╔═╗║║ ║║ '
-  @ 5,_fco1,7,_fco2 BOX UNICODE '╠═╣║╝═╚║ '
-  @ 5,_fco1+3 say 'F9'
-  @ 0,_fco1+1 say "ZAWARTOŚĆ ELEMENTÓW" UNICODE
-  @ 1,_fco1+9 say "składnik" UNICODE
-  @ 1,_fco2-13 SAY 'kod magazynu'
+  @ _fscr0,_fco1,_fscr0+4,_fco2 BOX UNICODE '╔═╗║║ ║║ '
+  @ _fscr0+5,_fco1,_fscr0+7,_fco2 BOX UNICODE '╠═╣║╝═╚║ '
+  @ _fscr0+5,_fco1+3 say 'F9'
+  @ _fscr0+0,_fco1+1 say "ZAWARTOŚĆ ELEMENTÓW" UNICODE
+  @ _fscr0+1,_fco1+9 say "składnik" UNICODE
+  @ _fscr0+1,_fco2-13 SAY 'kod magazynu'
 #ifdef A_KODY
-  @  3,_fco1+2  say A_KODY+':'
+  @  _fscr0+3,_fco1+2  say A_KODY+':'
 #else
 #ifdef A_ELZ
-  @ 3,_fco1+5 say 'cena            ważna od' UNICODE
+  @ _fscr0+3,_fco1+5 say 'cena            ważna od' UNICODE
 #endif
 #endif
 #ifdef A_ODPADKI
-  @ 4,_fco1+2 say left('1      =          , potrzeba        na 100 g części jadalnej',_fco2-_fco1-2) UNICODE
+  @ _fscr0+4,_fco1+2 say left('1      =          , potrzeba        na 100 g części jadalnej',_fco2-_fco1-2) UNICODE
 #else
-  @ 4,_fco1+2 say '1      =          , zawartość w     :' UNICODE
+  @ _fscr0+4,_fco1+2 say '1      =          , zawartość w     :' UNICODE
 #endif
 
 RETURN
@@ -156,15 +158,15 @@ stat proc sdok2(_f,getlist,deep)
      op:=opis
   endif
 #endif
-  @  5,_fco1+3 BOX if(empty(deep),'F9','══') UNICODE COLOR (_sbkgr)
-  @  2,_fco1+2  get now picture "@K" valid {||nowy:=if(now=" ",!nowy,nowy),now:=if(nowy,"NOWY   ","POPRAWA"),.t.}
+  @  _fscr0+5,_fco1+3 BOX if(empty(deep),'F9','══') UNICODE COLOR (_sbkgr)
+  @  _fscr0+2,_fco1+2  get now picture "@K" valid {||nowy:=if(now=" ",!nowy,nowy),now:=if(nowy,"NOWY   ","POPRAWA"),.t.}
   i:=min(7,hb_fieldlen('indx_maT'))
-  @  2,_fco1+10 get NA picture "@KS"+hb_ntoc(_fco2-_fco1-i-12)
-  @  2,_fco2-i-1 get in picture "@!KS"+hb_ntoc(i)
-  @  4,_fco1+4  get jem picture "@K"
-  @  4,_fco1+11 get prz picture "@K 9999" valid prz#0 .or.alarm(hb_UTF8ToStr("MUSI BYĆ RÓŻNY OD ZERA"),,3,3)=NIL
-  @  4,_fco1+16 get jed picture "@K"
-  @  4,_fco1+31 get gra PICTURE "@K 9999.9"
+  @  _fscr0+2,_fco1+10 get NA picture "@KS"+hb_ntoc(_fco2-_fco1-i-12)
+  @  _fscr0+2,_fco2-i-1 get in picture "@!KS"+hb_ntoc(i)
+  @  _fscr0+4,_fco1+4  get jem picture "@K"
+  @  _fscr0+4,_fco1+11 get prz picture "@K 9999" valid prz#0 .or.alarm(hb_UTF8ToStr("MUSI BYĆ RÓŻNY OD ZERA"),,3,3)=NIL
+  @  _fscr0+4,_fco1+16 get jed picture "@K"
+  @  _fscr0+4,_fco1+31 get gra PICTURE "@K 9999.9"
 #ifdef A_ODPADKI
   select zawar
   i:=recno()
@@ -172,11 +174,11 @@ stat proc sdok2(_f,getlist,deep)
   if dbseek(A_ODPADKI + keyp,.f.) .and. elementy->(dbseek(A_ODPADKI,.f.))
     od:=zawar->ilosc
     if elementy->jedn='g'
-      atail(getlist):postblock:={|g|if(g:CHANGED,hb_DispOutAt(4,_fco1+41,pad(hb_ntoc(gra-od,0),4),_sbnorm),),.t.}
-      @  4,_fco1+41 SAY pad(hb_ntoc(gra-od,0),4) COLOR _sbnorm
+      atail(getlist):postblock:={|g|if(g:CHANGED,hb_DispOutAt(_fscr0+4,_fco1+41,pad(hb_ntoc(gra-od,0),4),_sbnorm),),.t.}
+      @  _fscr0+4,_fco1+41 SAY pad(hb_ntoc(gra-od,0),4) COLOR _sbnorm
     elseif elementy->jedn='%'
-      @  4,_fco1+41 SAY pad(hb_ntoc(gra*(100-od)/100,0),4) COLOR _sbnorm
-      atail(getlist):postblock:={|g|if(g:CHANGED,hb_DispOutAt(4,_fco1+41,pad(hb_ntoc(gra*(100-od)/100,0),4),_sbnorm),),.t.}
+      @  _fscr0+4,_fco1+41 SAY pad(hb_ntoc(gra*(100-od)/100,0),4) COLOR _sbnorm
+      atail(getlist):postblock:={|g|if(g:CHANGED,hb_DispOutAt(_fscr0+4,_fco1+41,pad(hb_ntoc(gra*(100-od)/100,0),4),_sbnorm),),.t.}
     endif
   endif
   SET ORDER TO tag zaw_skl
@@ -184,7 +186,7 @@ stat proc sdok2(_f,getlist,deep)
   select surowce
 #endif
 #ifdef A_KODY
-  @  3,_fco1+len(A_KODY)+4  get kw WHEN .f. COLOR _sbnorm
+  @  _fscr0+3,_fco1+len(A_KODY)+4  get kw WHEN .f. COLOR _sbnorm
   if !nowy .and. fieldpos('OPIS')<>0
     getl op PICTURE "@S"+lTrim(sTr(_fco2-col()-1)) WHEN .f. COLOR _sbnorm
   endif
@@ -193,8 +195,8 @@ stat proc sdok2(_f,getlist,deep)
   cennik->(dbseek(keyp,.f.))
   ce:=cennik->cena
   da:=cennik->data
-  @  3,_fco1+10 get ce picture "@KE #####.##" valid {||if(!Empty(ce).and.empty(da),da:=DatE(),),getlist[5]:display(),.t.}
-  @  3,_fco1+30 get da
+  @  _fscr0+3,_fco1+10 get ce picture "@KE #####.##" valid {||if(!Empty(ce).and.empty(da),da:=DatE(),),getlist[5]:display(),.t.}
+  @  _fscr0+3,_fco1+30 get da
 #endif
 #endif
 if empty(deep)
@@ -286,15 +288,15 @@ stat proc sdok3(_f)
       set order to tag sur_naZ
       if dbseek(UpP(na)) .and. alarm(hb_UTF8ToStr("TAKA NAZWA JUŻ ISTNIEJE;CZY DOPISAĆ MIMO WSZYSTKO"),{"TAK","NIE"})=2 .OR. empty(NA)
 #ifdef __PLATFORM__DOS        
-        @ 6,_fco1,7,_fco2 BOX UNICODE '║ ║║╝─╚║ ' color _sbkgr
+        @ _fscr0+6,_fco1,_fscr0+7,_fco2 BOX UNICODE '║ ║║╝─╚║ ' color _sbkgr
 #else
-        @ 6,_fco1,7,_fco2 BOX UNICODE '║ ║║╜─╙║ ' color _sbkgr
+        @ _fscr0+6,_fco1,_fscr0+7,_fco2 BOX UNICODE '║ ║║╜─╙║ ' color _sbkgr
 #endif        
-        RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow-_fscr0)*D_REST+1))
+        RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,hb_BSubStr(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow-_fscr0)*D_REST+1))
         _fpopkey:=.f.
         return
       endif
-      @ 6,_fco1,7,_fco2 BOX UNICODE '║ ║║╝═╚║ ' color _sbkgr
+      @ _fscr0+6,_fco1,_fscr0+7,_fco2 BOX UNICODE '║ ║║╝═╚║ ' color _sbkgr
       _fpopkey:=.t.
       SET ORDER TO tag sur_kod
 #ifdef A_LPNUM
@@ -452,8 +454,8 @@ stat proc f9(g,_f,getlist)
 #endif
             varput(getlist,'gra',surowce->gram)
             updated(.t.)
-            @ 6,_fco1,7,_fco2 BOX '║ ║║╝─╚║ ' color _sbkgr
-            RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow-_fscr0)*D_REST+1))
+            @ _fscr0+6,_fco1,_fscr0+7,_fco2 BOX '║ ║║╝─╚║ ' color _sbkgr
+            RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,hb_BSubStr(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow-_fscr0)*D_REST+1))
             surowce->(dbgoto(s))
             dbseek(surowce->skladnik)
 #ifdef A_LAN
@@ -534,14 +536,14 @@ local totrec
         if 1=alarm(hb_UTF8ToStr('Czy zmienić wydajność części jadalnej?'),{'Tak','Nie'})
           gra:=surowce->gram:=gra+il-ilosc
         endif
-        @  4,_fco1+31 SAY gra PICTURE "@K 9999.9" COLOR _sbnorm
-        @  4,_fco1+41 SAY pad(hb_ntoc(gra-IL,0),4) COLOR _sbnorm
+        @  _fscr0+4,_fco1+31 SAY gra PICTURE "@K 9999.9" COLOR _sbnorm
+        @  _fscr0+4,_fco1+41 SAY pad(hb_ntoc(gra-IL,0),4) COLOR _sbnorm
       elseif elementy->jedn='%'
         if 1=alarm(hb_UTF8ToStr('Czy przeliczyć wydajność na 100 g części jadalnej?'),{'Tak','Nie'})
           gra:=surowce->gram:=round(10000/(100-IL),1)
         endif
-        @  4,_fco1+31 SAY gra PICTURE "@K 9999.9" COLOR _sbnorm
-        @  4,_fco1+41 SAY pad(hb_ntoc(gra*(100-IL)/100,0),4) COLOR _sbnorm
+        @  _fscr0+4,_fco1+31 SAY gra PICTURE "@K 9999.9" COLOR _sbnorm
+        @  _fscr0+4,_fco1+41 SAY pad(hb_ntoc(gra*(100-IL)/100,0),4) COLOR _sbnorm
       endif
 #endif        
 

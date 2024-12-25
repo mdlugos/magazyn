@@ -405,12 +405,19 @@ endif
 //    nk:=A_MKNK(1)
   ENDIF
   private _SRAMKA:="G+/B"
+  a:=NIL
+  IF PRZEGL .or. !NOWYDM
+     a:=-max(D_LPVALFIELD(pozycja),4)
+     if a=0
+        a:=NIL
+     endif
+  ENDIF
   IF PRZEGL
     select main
     set order to TAG MAIN_NRK
     SEEK DM->(KEY_DOK+NR_DOWODU)
     select dm
-    _f:=asize({0,79,0,2,dok_lpm,;
+    _f:=asize({a,-79,0,2,dok_lpm,;
          {|_f|DOK10(_f),dok11(_f)},;
          {||NIL},{||NIL},;
          {|_f|DBSELECTAREA("MAIN"),ORDSETFOCUS("MAIN_NRK"),DBSEEK(DM->(KEY_DOK+NR_DOWODU+D_LPPUT(_fi)),.f.)},;
@@ -424,7 +431,7 @@ private HLINK
     private chgpos
 #endif
     _s:=array(_sLEN)
-    _f:=asize({0,79,0,2,dok_lpm,;
+    _f:=asize({a,-79,0,2,dok_lpm,;
          {|_f|DOK1(_f),dok10(_f)},;
          {|_f,g|dok2(_f,g)},;
          {|_f,g|dok3(_f,g)},;
@@ -497,8 +504,7 @@ procedure dok1(_f)
   #define D_WAR
 #endif
   local x,i,p,s
-  @ 0,0
-  @ 0,0 say trim(magazyny[mag_poz])+" "+adres_mag[mag_poz]
+  @ _fscr0,_fco1 SAY left(trim(magazyny[mag_poz])+" "+adres_mag[mag_poz],_fco2-_fco1-12)
   IF NOWYDM
     IF KEY_DOK<>KEY_PAR
       seek KEY_PAR LAST
@@ -812,29 +818,29 @@ PROCEDURE DOK10(_f)
   endif
 
   set color to (_sbkgr)
-  @ 1,0,6,79 BOX UNICODE '╔═╗║║ ║║ '
+  @ _fscr0+1,_fco1,_fscr0+6,_fco2 BOX UNICODE '╔═╗║║ ║║ '
   if dok_kh
-    @ 1,2 SAY if(pm=-1,"Odbiorca:","Dostawca:")
-    @ 1,12 SAY trim(dok_naz)
+    @ _fscr0+1,_fco1+2 SAY if(pm=-1,"Odbiorca:","Dostawca:")
+    @ _fscr0+1,_fco1+12 SAY left(dok_naz,_fco2-_fco1-14)
   else
-    @ 1,2 SAY trim(dok_naz)
-    @ 2,2 SAY if(dok="K",hb_UTF8ToStr("   Powód:"),if(pm=-1,"Odbiorca:","Dostawca:"))
+    @ _fscr0+1,_fco1+2 SAY left(dok_naz,_fco2-_fco1-4)
+    @ _fscr0+2,_fco1+2 SAY if(dok="K",hb_UTF8ToStr("   Powód:"),if(pm=-1,"Odbiorca:","Dostawca:"))
   endif
-_frow:=2
+  _frow:=_fscr0+2
 
 #ifdef A_FA
   if dok_p_r="F"
 #ifdef __PLATFORM__DOS
-    @ 5,0,11,79 BOX UNICODE '║─║║║ ║║ '
+    @ _fscr0+5,_fco1,_fscr0+11,_fco2 BOX UNICODE '║─║║║ ║║ '
 #else   
-    @ 5,0,11,79 BOX UNICODE '╟─╢║║ ║║ '
+    @ _fscr0+5,_fco1,_fscr0+11,_fco2 BOX UNICODE '╟─╢║║ ║║ '
 #endif    
-    _frow:=7
+    _frow:=_fscr0+7
  #ifdef A_FK
    if dok_fk
-   @ _frow,2 say "Zapłacono:" UNICODE
-   @ _frow,26 say "dnia:"
-   @ _frow,43 say "pozostało:" UNICODE
+   @ _frow,_fco1+2 say "Zapłacono:" UNICODE
+   @ _frow,_fco1+26 say "dnia:"
+   @ _frow,_fco2+36 say "pozostało:" UNICODE
    ++_frow
    endif
  #endif
@@ -842,7 +848,7 @@ _frow:=2
     //if right(dok,1)="K"
     //_frow:=7
     //else
-    setpos(_frow,1)
+    setpos(_frow,_fco1+1)
   #ifdef A_NAZWISKO
     sayl "Nazwisko:"
     setpos(row(),col()+min(20,hb_fieldlen('nazwisko'))+1)
@@ -858,7 +864,7 @@ _frow:=2
     ++_frow
  #endif
 #ifdef A_KSEF
-    setpos(_frow,2)
+    setpos(_frow,_fco1+2)
      ?? 'Nr KSeF:                                     eF:'
     ++_frow
 #endif
@@ -878,19 +884,19 @@ _frow:=2
  #endif
     if dok_zew$"UV"
  #ifdef A_CENVAT
-       @ 3,2 say D_ODDO+" "+WANAZ+" w tym          " D_KPR UNICODE
+       @ _fscr0+3,_fco1+2 say D_ODDO+" "+WANAZ+" w tym          " D_KPR UNICODE
   #define WBR(w,v) w
  #else
-       @ 3,2 say D_ODDO+" "+WANAZ+"                " D_KPR UNICODE
+       @ _fscr0+3,_fco1+2 say D_ODDO+" "+WANAZ+"                " D_KPR UNICODE
   #define WBR(w,v) (w+v)
  #endif
  #define ZAG(w,v) ROUND(WBR(w,v)-zap-zac,A_ZAOKR)
        if SubStr(dok,2)="K"
-          @ 3,2 say "Dokument poprawiany z dnia:"
+          @ _fscr0+3,_fco1+2 say "Dokument poprawiany z dnia:"
        endif
-       @ 3,50 say "VAT"
+       @ _fscr0+3,_fco2-29 say "VAT"
     else
-       @ 3,2 say D_ODDO+"    "+WANAZ+"             "  D_KPR UNICODE
+       @ _fscr0+3,_fco1+2 say D_ODDO+"    "+WANAZ+"             "  D_KPR UNICODE
     endif
  #ifdef A_KPR
     if ""=dok_kpr
@@ -901,19 +907,19 @@ _frow:=2
  #endif
  #undef D_ODDO
  #undef D_KPR
-    @ 5,7 say "gotówką───────przelewem─────────kartą───────Nr karty───Termin płatności" UNICODE
-    @ _frow+1,0,_frow+4,79 BOX UNICODE if(pozycja>D_LP1.and.!nowydm,'╠═╣║╜─╙║ ','╠═╣║╝═╚║ ')
-    @ _frow+1,2 say 'Lp══════Materiał═══════════════════════Ilość════════Cena zbytu══'+WANAZ UNICODE
+    @ _fscr0+5,_fco1+7 say "gotówką───────przelewem─────────kartą───────Nr karty───Termin płatności" UNICODE
+    @ _frow+1,_fco1,_frow+4,_fco2 BOX UNICODE if(pozycja>D_LP1.and.!nowydm,'╠═╣║╜─╙║ ','╠═╣║╝═╚║ ')
+    @ _frow+1,_fco1+2 say 'Lp══════Materiał═══════════════════════Ilość════════Cena zbytu══'+WANAZ UNICODE
     return
     *******
   endif
  #ifdef A_FK
    if dok_fk
    ++_frow
-   @ _frow,2 say "Termin:"
-   @ _frow,20 say "Zapłacono:" UNICODE
-   @ _frow,43 say "dnia:"
-   @ _frow,59 say "pozost:"
+   @ _frow,_fco1+2 say "Termin:"
+   @ _frow,_fco2-59 say "Zapłacono:" UNICODE
+   @ _frow,_fco2-36 say "dnia:"
+   @ _frow,_fco2-20 say "pozost:"
    endif
  #endif
 #endif A_FA
@@ -921,12 +927,12 @@ _frow:=2
      if dok_p_r='P'
 #ifdef A_KSEF
     ++_frow
-    setpos(_frow,2)
+    setpos(_frow,_fco1+2)
      ?? 'Nr KSeF:                                     eF:'
 #endif
      endif
     _frow+=2
-    setpos(_frow-1,2)
+    setpos(_frow-1,_fco1+2)
     do case
     case dok="K";?? "Dok. poprawiany   z dnia   "
     case pm=-1      ;?? hb_UTF8ToStr("Dok wysyłki   z dnia   ")
@@ -953,12 +959,12 @@ _frow:=2
 endif
 #ifdef A_OLZA
     if dok_zew="W" .and. ""#dok_kon
-       @ _frow-1,49 say "Konto"
-       @ _frow-1,55 say "Stanowisko"
+       @ _frow-1,_fco2-30 say "Konto"
+       @ _frow-1,_fco2-24 say "Stanowisko"
     endif
 #endif
 
-    setpos(_frow-1,54)
+    setpos(_frow-1,_fco2-25)
 #ifdef A_KPR
     if ""=dok_kpr
 #endif
@@ -978,26 +984,25 @@ endif
     endif
 #endif
 #ifdef __PLATFORM__DOS
-  @ _frow+1,0,_frow+4,79 BOX UNICODE if(pozycja>D_LP1.and.!nowydm,'╠═╣║╝─╚║ ','╠═╣║╝═╚║ ')
+  @ _frow+1,_fco1,_frow+4,_fco2 BOX UNICODE if(pozycja>D_LP1.and.!nowydm,'╠═╣║╝─╚║ ','╠═╣║╝═╚║ ')
 #else
-  @ _frow+1,0,_frow+4,79 BOX UNICODE if(pozycja>D_LP1.and.!nowydm,'╠═╣║╜─╙║ ','╠═╣║╝═╚║ ')
+  @ _frow+1,_fco1,_frow+4,_fco2 BOX UNICODE if(pozycja>D_LP1.and.!nowydm,'╠═╣║╜─╙║ ','╠═╣║╝═╚║ ')
 #endif  
-  @ _frow+1,2 say   'Lp══Kod materiału══════════════════════Ilość════════Cena════════'+WANAZ UNICODE
+  @ _frow+1,_fco1+2 say   'Lp══Kod materiału══════════════════════Ilość════════Cena════════'+WANAZ UNICODE
 #ifdef A_SB
-  @ _frow+1,10 SAY if(dok_p_r="S",'Stan bież.',if(""=dok_kon,'','══'+if(dok_zew="W","Zlecenie","Rodzaj"))) UNICODE
+  @ _frow+1,_fco1+10 SAY if(dok_p_r="S",'Stan bież.',if(""=dok_kon,'','══'+if(dok_zew="W","Zlecenie","Rodzaj"))) UNICODE
   if dok$dok_di
-  @ _frow+1,36 SAY 'Stan bież.' UNICODE
-  @ _frow+1,26 SAY 'Ilość' UNICODE
+  @ _frow+1,_fco1+36 SAY 'Stan bież.' UNICODE
+  @ _frow+1,_fco1+26 SAY 'Ilość' UNICODE
   endif
 #else
-  @ _frow+1,25 SAY if(dok_p_r="S",'Stan bież.',if(""=dok_kon,'',if(dok_zew="W","Zlecenie","Rodzaj"))) UNICODE
+  @ _frow+1,_fco1+25 SAY if(dok_p_r="S",'Stan bież.',if(""=dok_kon,'',if(dok_zew="W","Zlecenie","Rodzaj"))) UNICODE
 #endif
 return
 ********************
 procedure dok11(_f)
   set color to (_snorm)
-  @ 0,0
-  @ 0,0 say trim(magazyny[mag_poz])
+  @ _fscr0,_fco1 say trim(magazyny[mag_poz])
     if canopen
        devout(hb_UTF8ToStr(" ZAMKNIĘTY"),"W+")
 #ifdef A_KONTROLA
@@ -1029,12 +1034,12 @@ procedure dok11(_f)
       endif
 #undef D_KHPREF
     if dok_kh
-       @ 2,11-A_NRLTH SAY kh
+       @ _fscr0+2,_fco1+11-A_NRLTH SAY kh
     endif
 #ifdef A_OLZA
-    @ 2,12 say left(d_o,if(_frow<4,if(dok_zew="W" .and. ""#dok_kon,35,40),66))
+    @ _fscr0+2,_fco1+12 say left(d_o,_fco2-_fco1-if(_frow<4+_fscr0,if(dok_zew="W" .and. ""#dok_kon,34,39),13))
 #else
-    @ 2,12 say left(d_o,if(_frow<4,40,66))
+    @ _fscr0+2,_fco1+12 say left(d_o,_fco2-_fco1-if(_frow<4+_fscr0,39,13))
 #endif
 #ifdef wtoT
 #ifndef A_GRAM
@@ -1046,31 +1051,31 @@ procedure dok11(_f)
   _flp:=D_LPVALFIELD(POZYCJA)
 #ifdef A_FA
   if dok_p_r="F"
-    @ 4,2 SAY nr_faktury picture "@S13"
-    @ 4,16 SAY data_dost
+    @ _fscr0+4,_fco1+2 SAY nr_faktury picture "@S13"
+    @ _fscr0+4,_fco1+16 SAY data_dost
 #ifdef A_KPR
     if ""=dok_kpr
 #endif
-    @  4,61 say da:=data
+    @  _fscr0+4,_fco2-18 say da:=data
 #ifdef A_KPR
     else
-    @  4,55 say da:=data
-    @  4,66 say nr_kpr
+    @  _fscr0+4,_fco2-24 say da:=data
+    @  _fscr0+4,_fco2-13 say nr_kpr
     endif
 #endif
     getVAT()
-    @ 4,73 say nk PICTURE "XXXXX"
-    @ 6,19 say zap:=przelewem picture WAPIC
-    @ 6,35 say zac:=czekiem picture WAPIC
-    @ 6,4  say ZAG(wartosc,wart_vat) picture WAPIC
-    @ 6,51 say nr_czeku
-    @ 6,65 say termin_p
-    setpos(7,1)
+    @ _fscr0+4,_fco2-6 say nk PICTURE "XXXXX"
+    @ _fscr0+6,_fco1+19 say zap:=przelewem picture WAPIC
+    @ _fscr0+6,_fco1+35 say zac:=czekiem picture WAPIC
+    @ _fscr0+6,_fco1+4  say ZAG(wartosc,wart_vat) picture WAPIC
+    @ _fscr0+6,_fco2-28 say nr_czeku
+    @ _fscr0+6,_fco2-14 say termin_p
+    setpos(_fscr0+7,_fco1+1)
 #ifdef A_FK
     if dok_fk
-    @ row(),13 say zaplac:=zaplacono picture WAPIC
-    @ row(),32 say data_zap
-    setpos(8,1)
+    @ row(),_fco1+13 say zaplac:=zaplacono picture WAPIC
+    @ row(),_fco1+32 say data_zap
+    setpos(_fscr0+8,_fco1+1)
     endif
 #endif
 #ifdef A_FAT
@@ -1079,52 +1084,52 @@ procedure dok11(_f)
 #endif
     @ row(),9+col() say nr_spec picture "@S18K"
     @ row(),12+col() say transport picture "@KS"+lTrim(sTr(_fco2-col()-3))
-    setpos(row()+1,1)
+    setpos(row()+1,_fco1+1)
 #endif
 #ifdef A_KSEF
-    @ _frow-1,11 SAY nr_ksef
-    @ _frow-1,50 BOX hb_utf8Left(binfieldget('KSEF',.t.),28) UNICODE
+    @ _frow-1,_fco1+11 SAY nr_ksef
+    @ _frow-1,_fco1+50 BOX hb_utf8Left(binfieldget('KSEF',.t.),_fco2-_fco1-51) UNICODE
 #endif
-    @ _frow,2 say pad(uwagi,76)
+    @ _frow,_fco1+2 say pad(uwagi,_fco2-_fco1-3)
     return
 #ifdef A_DATAVAT
   elseif dok_zew$"UV" .and. pm=1
-    @ _frow,50 say data_vat
+    @ _frow,_fco2-29 say data_vat
 #endif
   endif
 #endif
 #ifdef A_OLZA
     if dok_zew="W" .and. ""#dok_kon
-       @ 2,48 say konto_kosz
-       @ 2,54 say stano_kosz
+       @ _fscr0+2,_fco2-31 say konto_kosz
+       @ _fscr0+2,_fco2-25 say stano_kosz
     endif
 #endif
   if dok_zew#"W" .or. dok="K"
-    @ _frow,2 SAY nr_faktury picture "@S13"
+    @ _frow,_fco1+2 SAY nr_faktury picture "@S13"
     sayl data_dost
   ENDIF
 #ifdef A_FK
     if dok_fk
-    @ 3,9 say termin_p
-    @ 3,30 say zaplac:=zaplacono picture WAPIC
-    @ 3,48 say data_zap
+    @ _fscr0+3,_fco1+9 say termin_p
+    @ _fscr0+3,_fco2-49 say zaplac:=zaplacono picture WAPIC
+    @ _fscr0+3,_fco2-31 say data_zap
     endif
 #endif
 #ifdef A_KPR
     if ""=dok_kpr
 #endif
-    @  _frow,61 say da:=data
+    @  _frow,_fco2-18 say da:=data
 #ifdef A_KPR
     else
-    @  _frow,55 say da:=data
-    @  _frow,66 say nr_kpr
+    @  _frow,_fco2-24 say da:=data
+    @  _frow,_fco2-13 say nr_kpr
     endif
 #endif
 #ifdef A_KSEF
-    @ _frow-2,11 SAY nr_ksef
-    @ _frow-2,50 BOX hb_utf8Left(binfieldget('KSEF',.t.),28) UNICODE
+    @ _frow-2,_fco1+11 SAY nr_ksef
+    @ _frow-2,_fco1+50 BOX hb_utf8Left(binfieldget('KSEF',.t.),_fco2-_fco1-51) UNICODE
 #endif
-    @  _frow,73 say nk  PICTURE "XXXXX"
+    @  _frow,_fco2-6 say nk  PICTURE "XXXXX"
 
 return
 **********************************************
@@ -1134,16 +1139,16 @@ procedure dok2(_f,getlist)
     __setproc(procname(0))
     select dm
     if dok_kh
-       @ 2,11-A_NRLTH GET kh WHEN .f.
+       @ _fscr0+2,_fco1+11-A_NRLTH GET kh WHEN .f.
     endif
 #ifdef A_OLZA
-    get:=getnew(2,12,{|x|if(pcount()=0,d_o,d_o:=x)},"d_o",if(_frow=2,if(dok_zew="W" .and. ""#dok_kon,"@KS35","@KS40"),"@KS66"))
+    get:=getnew(_fscr0+2,_fco1+12,{|x|if(pcount()=0,d_o,d_o:=x)},"d_o",if(_frow=2+_fscr0,if(dok_zew="W" .and. ""#dok_kon,"@KS35","@KS40"),"@KS66"))
 #else
-    get:=getnew(2,12,{|x|if(pcount()=0,d_o,d_o:=x)},"d_o",if(_frow=2,"@KS40","@KS66"))
+    get:=getnew(_fscr0+2,_fco1+12,{|x|if(pcount()=0,d_o,d_o:=x)},"d_o",if(_frow=2+_fscr0,"@KS40","@KS66"))
 #endif
     get:display()
     if dok_kh
-       get:postblock:={|g|szukam({1,14,MaxRow(),,1,0,'FIRMY',,{|_skey,_s|gfirma(_skey,_s,getlist)},TRIM(d_o)})}
+       get:postblock:={|g|szukam({1,14,MaxRow(),,1,0,'FIRMY',,{|_skey,_s|gfirma(_skey,_s,getlist,_f)},TRIM(d_o)})}
     elseif dok_zew="W" .and. dok="M"
        get:postblock:={||!empty(SubStr(d_o,3)).or.aczojs(magazyny),.t.}
 #ifdef A_MULTIDI
@@ -1157,7 +1162,7 @@ procedure dok2(_f,getlist)
 #ifdef A_FA
   if dok_p_r="F"
 #ifdef A_CENSPEC
-      get:postblock:={|g|szukam({1,14,MaxRow(),,1,0,'FIRMY',,{|_skey,_s|gfirma(_skey,_s,getlist)},TRIM(d_o)})}
+      get:postblock:={|g|szukam({1,,,,1,0,'FIRMY',,{|_skey,_s|gfirma(_skey,_s,getlist,_f)},TRIM(d_o)})}
 #endif
 #ifdef A_MM
 #define D_MM
@@ -1166,15 +1171,15 @@ procedure dok2(_f,getlist)
 #endif
 
     if SubStr(dok,2)="K"
-      @ 4,2 GET n_f PICTURE "@K!S13" valid {|x|x:=recno(),empty(n_f).and.szukam({1,1,MaxRow(),,1,0,'DOKUMENTY',{||smb_dow+nr_dowodu+I+dtoc(data)+I+dost_odb},{|_skey,_s|(_sret:=_skey=13).or._skey=27.or._skey=0.and.(if(val(d_o)=0,,_sfor:={||dost_odb=hb_bleft(d_o,A_NRLTH)}),dbseek(D_MM '',,.t.),dbskip(),.f.)},D_MM ''}).and.(dd:=data,n_f:=pad(KEY_DOK+nr_dowodu,hb_fieldlen('nr_faktury')),updated(.t.),.t.),dbgoto(x),.t.}
-      @ 4,16 GET dd
+      @ _fscr0+4,_fco1+2 GET n_f PICTURE "@K!S13" valid {|x|x:=recno(),empty(n_f).and.szukam({1,,,,1,0,'DOKUMENTY',{||smb_dow+nr_dowodu+I+dtoc(data)+I+dost_odb},{|_skey,_s|(_sret:=_skey=13).or._skey=27.or._skey=0.and.(if(val(d_o)=0,,_sfor:={||dost_odb=hb_bleft(d_o,A_NRLTH)}),dbseek(D_MM '',,.t.),dbskip(),.f.)},D_MM ''}).and.(dd:=data,n_f:=pad(KEY_DOK+nr_dowodu,hb_fieldlen('nr_faktury')),updated(.t.),.t.),dbgoto(x),.t.}
+      @ _fscr0+4,_fco1+16 GET dd
 //#ifndef A_NVAT
       iv:=ascan(avat,{|y|y[2]#0})
-      get:=getnew(3,39,{|x|if(pcount()=0,if(iv=0,0,val(avat[iv,1])),(txt:=str(x,2),iv:=ascan(avat,{|y|y[1]=txt})))},"iv","@Z ##")
+      get:=getnew(_fscr0+3,_fco2-40,{|x|if(pcount()=0,if(iv=0,0,val(avat[iv,1])),(txt:=str(x,2),iv:=ascan(avat,{|y|y[1]=txt})))},"iv","@Z ##")
       get:display()
       aadd(getlist,get)
-      @ 4,38 SAY '%' COLOR (_sunsel)
-      get:=getnew(4,39,{|x|if(pcount()=0,if(iv=0,vat(),avat[iv,2]/100),avat[iv,2]:=round(x*100,0))},"vat","@KE #######.##")
+      @ _fscr0+4,_fco2-41 SAY '%' COLOR (_sunsel)
+      get:=getnew(_fscr0+4,_fco2-40,{|x|if(pcount()=0,if(iv=0,vat(),avat[iv,2]/100),avat[iv,2]:=round(x*100,0))},"vat","@KE #######.##")
       get:preblock:={||iv#0}
       get:postblock:={|g|!g:changed.or.showfakh(_f,dm->wartosc,vat())}
       get:display()
@@ -1184,20 +1189,20 @@ procedure dok2(_f,getlist)
 #ifndef A_GOCZ
 #ifdef A_ODDO
       if dok$DOK_ZB
-         get:=getnew(4,4,{|x|if(x=NIL,ctod(n_f),n_f:=dtoc(x))},"n_f")
+         get:=getnew(_fscr0+4,_fco1+4,{|x|if(x=NIL,ctod(n_f),n_f:=dtoc(x))},"n_f")
          get:display()
          aadd(getlist,get)
       else
 #endif
 #endif
-         @ 4,2 GET n_f PICTURE "@KS13"
+         @ _fscr0+4,_fco1+2 GET n_f PICTURE "@KS13"
 #ifndef A_GOCZ
 #ifdef A_ODDO
       endif
 #endif
 #endif
       //@ 4,16 GET dd VALID {|g|if(dataval(dd).and.g:original=da.and.da#dd ,(da:=dd,x:=g,aeval(getlist,{|g|if(g:name=='da',(g:display(),eval(g:postblock,x)),)})),),.t.}
-      @ 4,16 GET dd VALID {|g|if(dataval(dd),(if(g:original=da.and.da#dd ,(da:=dd,x:=g,aeval(getlist,{|g|if(g:name=='da',(g:display(),eval(g:postblock,x)),)})  ),)),),.t.}
+      @ _fscr0+4,_fco1+16 GET dd VALID {|g|if(dataval(dd),(if(g:original=da.and.da#dd ,(da:=dd,x:=g,aeval(getlist,{|g|if(g:name=='da',(g:display(),eval(g:postblock,x)),)})  ),)),),.t.}
     endif
 #ifdef A_NVAT
       if chgpos .and. SubStr(dok,2)#"K"
@@ -1241,12 +1246,12 @@ procedure dok2(_f,getlist)
           putVAT()
           txt:=NIL
           chgpos:=.f.
-          @ 4,26 say dm->wartosc PICTURE WAPIC COLOR _Sbkgr
-          @ 4,39 say dm->wart_vat PICTURE "@E #######.##" COLOR _Sbkgr
-          @ 6,4 say ZAG(dm->wartosc,dm->wart_vat) PICTURE WAPIC COLOR _Sbkgr
+          @ _fscr0+4,_fco1+26 say dm->wartosc PICTURE WAPIC COLOR _Sbkgr
+          @ _fscr0+4,_fco2-40 say dm->wart_vat PICTURE "@E #######.##" COLOR _Sbkgr
+          @ _fscr0+6,_fco1+4 say ZAG(dm->wartosc,dm->wart_vat) PICTURE WAPIC COLOR _Sbkgr
 #ifdef A_FK
           if dok_fk
-             @ _frow-1,54 say WBR(dm->wartosc,dm->wart_vat)-zaplac PICTURE WAPIC COLOR _Sbkgr
+             @ _frow-1,_fco2-25 say WBR(dm->wartosc,dm->wart_vat)-zaplac PICTURE WAPIC COLOR _Sbkgr
           endif
 #endif
       endif
@@ -1254,58 +1259,58 @@ procedure dok2(_f,getlist)
 #ifdef A_KPR
     if ""=dok_kpr
 #endif
-    @ 4,61 GET da VALID {|g,x|if((x:=dataval(da)).and.g:changed.and.tp=g:original+if(zap=0,0,dok_tpd),(tp:=da+if(zap=0,0,dok_tpd),getlist[ascan(getlist,{|x|x:name="tp"})]:display(),.t.),x)}
+    @ _fscr0+4,_fco2-18 GET da VALID {|g,x|if((x:=dataval(da)).and.g:changed.and.tp=g:original+if(zap=0,0,dok_tpd),(tp:=da+if(zap=0,0,dok_tpd),getlist[ascan(getlist,{|x|x:name="tp"})]:display(),.t.),x)}
 #ifdef A_KPR
     else
-    @ 4,55 GET da VALID {|g,x|if((x:=dataval(da)).and.g:changed.and.tp=g:original+if(zap=0,0,dok_tpd),(tp:=da+if(zap=0,0,dok_tpd),getlist[ascan(getlist,{|x|x:name="tp"})]:display(),.t.),x)}
-    @ 4,66 get npr picture "@K #####" valid {|g|!g:changed .or. if(nowydm,npr=DatY->last_kpr+1,npr=val(nr_kpr)) .or. NIL#alarm(hb_UTF8ToStr("Czy numer kolejny książki nie powinien być:")+if(nowydm,str(DatY->last_kpr+1,5),nr_kpr))}
+    @ _fscr0+4,_fco2-24 GET da VALID {|g,x|if((x:=dataval(da)).and.g:changed.and.tp=g:original+if(zap=0,0,dok_tpd),(tp:=da+if(zap=0,0,dok_tpd),getlist[ascan(getlist,{|x|x:name="tp"})]:display(),.t.),x)}
+    @ _fscr0+4,_fco2-13 get npr picture "@K #####" valid {|g|!g:changed .or. if(nowydm,npr=DatY->last_kpr+1,npr=val(nr_kpr)) .or. NIL#alarm(hb_UTF8ToStr("Czy numer kolejny książki nie powinien być:")+if(nowydm,str(DatY->last_kpr+1,5),nr_kpr))}
     endif
 #endif
-    @ 4,73 GET nk PICTURE "@!K XXXXX" VALID {|g|!g:changed.or.nk(_f,g)}
-    get:=getnew(6,19,{|x|if(pcount()=0,zap,zap:=ROUND(x,A_ZAOKR))},"zap",WAPIC)
-    get:postblock:={|g|setpos(6,4),devout(strpic(ZAG(dm->wartosc,dm->wart_vat),12,A_ZAOKR,"@E "),_sbkgr),;
+    @ _fscr0+4,_fco2-6 GET nk PICTURE "@!K XXXXX" VALID {|g|!g:changed.or.nk(_f,g)}
+    get:=getnew(_fscr0+6,_fco1+19,{|x|if(pcount()=0,zap,zap:=ROUND(x,A_ZAOKR))},"zap",WAPIC)
+    get:postblock:={|g|setpos(_fscr0+6,_fco1+4),devout(strpic(ZAG(dm->wartosc,dm->wart_vat),12,A_ZAOKR,"@E "),_sbkgr),;
     if(if(g:original=0,zap#0,zap=0).and.tp=da+if(zap#0,0,dok_tpd),(tp:=da+if(zap=0,0,dok_tpd),getlist[ascan(getlist,{|x|x:name="tp"})]:display()),),.t.}
     get:reader:={|g|setkey(61,{|p,g|g:=getactive(),p:=setkey(61,NIL),zap:=WBR(dm->wartosc,dm->wart_vat)-zac,g:changed:=.t.,setkey(61,p)}),getreader(g),setkey(61,NIL)}
     get:display()
     aadd(getlist,get)
-    get:=getnew(6,35,{|x|if(pcount()=0,zac,zac:=ROUND(x,A_ZAOKR))},"zac",WAPIC)
-    get:postblock:={||setpos(6,4),devout(strpic(ZAG(dm->wartosc,dm->wart_vat),12,A_ZAOKR,"@E "),_sbkgr),.t.}
+    get:=getnew(_fscr0+6,_fco1+35,{|x|if(pcount()=0,zac,zac:=ROUND(x,A_ZAOKR))},"zac",WAPIC)
+    get:postblock:={||setpos(_fscr0+6,_fco1+4),devout(strpic(ZAG(dm->wartosc,dm->wart_vat),12,A_ZAOKR,"@E "),_sbkgr),.t.}
     get:reader:={|g|setkey(61,{|p,g|g:=getactive(),p:=setkey(61,NIL),zac:=WBR(dm->wartosc,dm->wart_vat)-zap,g:changed:=.t.,setkey(61,p)}),getreader(g),setkey(61,NIL)}
     get:display()
     aadd(getlist,get)
-    @ 6,51 get nrc PICTURE "@KS13"
-    @ 6,65 get tp  valid tp>=da .OR. (TP:=DA,.t.)
-    setpos(7,1)
+    @ _fscr0+6,_fco2-28 get nrc PICTURE "@KS13"
+    @ _fscr0+6,_fco2-14 get tp  valid tp>=da .OR. (TP:=DA,.t.)
+    setpos(_fscr0+7,_fco1+1)
 #ifdef A_FK
    if dok_fk
-   @ row(),13 get zaplac picture WAPIC valid {|g|setpos(g:row(),54),devout(tran(WBR(dm->wartoSC,dm->wart_vat)-zaplac,WAPIC),_sbkgr),if(empty(dazapl).and.g:changed,(dazapl:=tp,getlist[ascan(getlist,{|x|x:name="dazapl"})]:display()),),.t.}
-   @ row(),32 get dazapl
+   @ row(),_fco1+13 get zaplac picture WAPIC valid {|g|setpos(g:row(),_fco2-25),devout(tran(WBR(dm->wartoSC,dm->wart_vat)-zaplac,WAPIC),_sbkgr),if(empty(dazapl).and.g:changed,(dazapl:=tp,getlist[ascan(getlist,{|x|x:name="dazapl"})]:display()),),.t.}
+   @ row(),_fco1+32 get dazapl
     setpos(row()+1,1)
    endif
 #endif
 #ifdef A_FAT
-    if _frow>7
-    setpos(7,1)
+    if _frow>7+_fscr0
+    setpos(_fscr0+7,_fco1+1)
 #ifdef A_NAZWISKO
     @ row(),11+col() get nazwis picture "@S20K"
 #endif
     @ row(),9+col() get sp picture "@S18K"
-    @ row(),12+col() get st picture "@KS"+lTrim(sTr(_fco2-col()-3))
+    @ row(),12+col() get st picture "@KS"+lTrim(sTr(_fco2-col()-2))
       atail(getlist):cargo:=.t.
     endif
 #endif
 #ifdef A_KSEF
-    @ _frow-1,11 GET n_ksef SEND block:={||n_ksef}   //tylko odczyt
-    @ _frow-1,50 GET xml_ksef PICTURE "@KS28" SEND block:={|x|if(x=NIL.or.!empty(x).or.ksef_getfa(n_ksef,,@x)=NIL.and.alarm(hb_UTF8ToStr('Błąd:')+HB_EOL()+x)<>NIL,xml_ksef,xml_ksef:=x)}
+    @ _frow-1,_fco1+11 GET n_ksef SEND block:={||n_ksef}   //tylko odczyt
+    @ _frow-1,_fco1+50 GET xml_ksef PICTURE "@KS"+hb_ntoc(_fco2-_fco1-51) SEND block:={|x|if(x=NIL.or.!empty(x).or.ksef_getfa(n_ksef,,@x)=NIL.and.alarm(hb_UTF8ToStr('Błąd:')+HB_EOL()+x)<>NIL,xml_ksef,xml_ksef:=x)}
 #endif
-    @ _frow,2 GET uw picture "@KS76" send cargo:=.t.
+    @ _frow,_fco1+2 GET uw picture "@KS76" send cargo:=.t.
     return
   else
 #ifdef A_FK
    if dok_fk
-   @ 3,9 get tp valid {|g,r|r:=dataval(tp).and.g:changed,if(r.and.tp<dd,(dd:=tp,x:=g,aeval(getlist,{|g|if(g:name=='dd',(g:display(),eval(g:postblock,x)),)})),),if(r.and.(empty(dazapl).or.dazapl=g:original),(dazapl:=tp,getlist[ascan(getlist,{|x|x:name="dazapl"})]:display()),),.t.}
-   @ 3,30 get zaplac picture WAPIC valid {|g|setpos(3,66),devout(tran(wartosc+wart_vat-zaplac,WAPIC),_sbkgr),if(empty(dazapl).and.g:changed,(dazapl:=tp,getlist[ascan(getlist,{|x|x:name="dazapl"})]:display()),),.t.}
-   @ 3,48 get dazapl
+   @ _fscr0+3,_fco1+9 get tp valid {|g,r|r:=dataval(tp).and.g:changed,if(r.and.tp<dd,(dd:=tp,x:=g,aeval(getlist,{|g|if(g:name=='dd',(g:display(),eval(g:postblock,x)),)})),),if(r.and.(empty(dazapl).or.dazapl=g:original),(dazapl:=tp,getlist[ascan(getlist,{|x|x:name="dazapl"})]:display()),),.t.}
+   @ _fscr0+3,_fco2-49 get zaplac picture WAPIC valid {|g|setpos(3,66),devout(tran(wartosc+wart_vat-zaplac,WAPIC),_sbkgr),if(empty(dazapl).and.g:changed,(dazapl:=tp,getlist[ascan(getlist,{|x|x:name="dazapl"})]:display()),),.t.}
+   @ _fscr0+3,_fco2-31 get dazapl
    endif
 #endif
 #endif
@@ -1313,17 +1318,17 @@ procedure dok2(_f,getlist)
 #ifdef A_ODDO
 #ifndef A_GOCZ
       if dok$DOK_ZB
-         get:=getnew(_frow,4,{|x|if(x=NIL,ctod(n_f),n_f:=dtoc(x))},"n_f")
+         get:=getnew(_frow,_fco1+4,{|x|if(x=NIL,ctod(n_f),n_f:=dtoc(x))},"n_f")
          get:display()
          aadd(getlist,get)
       else
 #endif
 #endif
 #ifdef A_KSEF
-      @ _frow-2,11 get n_ksef picture "@K" VALID ksef_valid() // WHEN NOWYDM .or. pozycja=D_LP0
-      @ _frow-2,50 GET xml_ksef PICTURE "@S28" SEND block:={||xml_ksef}
+      @ _frow-2,_fco1+11 get n_ksef picture "@K" VALID ksef_valid() // WHEN NOWYDM .or. pozycja=D_LP0
+      @ _frow-2,_fco1+50 GET xml_ksef PICTURE "@S"+hb_ntoc(_fco2-_fco1-51) SEND block:={||xml_ksef}
 #endif
-      @ _frow,2 GET n_f PICTURE "@KS13"
+      @ _frow,_fco1+2 GET n_f PICTURE "@KS13"
 #ifndef A_GOCZ
 #ifdef A_ODDO
       endif
@@ -1338,23 +1343,23 @@ procedure dok2(_f,getlist)
       if dok_zew$"UV"
 #ifdef A_FA
       iv:=ascan(avat,{|y|y[2]#0})
-      get:=getnew(_frow-1,39,{|x|if(pcount()=0,if(iv=0,0,val(avat[iv,1])),(txt:=str(x,2),iv:=ascan(avat,{|y|y[1]=txt})))},"iv","@Z ##")
+      get:=getnew(_frow-1,_fco2-40,{|x|if(pcount()=0,if(iv=0,0,val(avat[iv,1])),(txt:=str(x,2),iv:=ascan(avat,{|y|y[1]=txt})))},"iv","@Z ##")
       get:postblock:={|g|!g:changed.or.(aeval(getlist,{|g|if(g:name=='vat',g:display(),)}),.t.)}
       get:display()
       aadd(getlist,get)
       dispout('%',_sunsel)
-      get:=getnew(_frow,39,{|x|if(pcount()=0,if(iv=0,vat(),avat[iv,2]/100),avat[iv,2]:=ROUND(x*100,0))},"vat","@KE #######.##")
+      get:=getnew(_frow,_fco2-40,{|x|if(pcount()=0,if(iv=0,vat(),avat[iv,2]/100),avat[iv,2]:=ROUND(x*100,0))},"vat","@KE #######.##")
       get:preblock:={||iv#0}
       get:postblock:={|g|!g:changed.or.showvath(_f,dm->wartosc,vat())}
       get:display()
       aadd(getlist,get)
 #ifdef A_DATAVAT
     //if dok_zew$'UV' .and. pm=1
-       @ 4,50 GET dv
+       @ _fscr0+4,_fco2-29 GET dv
     //endif
 #endif
 #else
-         get:=getnew(_frow,45,{|x|if(pcount()=0,vat,vat:=ROUND(x,A_ZAOKR))},"vat",WAPIC)
+         get:=getnew(_frow,_fco2-34,{|x|if(pcount()=0,vat,vat:=ROUND(x,A_ZAOKR))},"vat",WAPIC)
          get:display()
          aadd(getlist,get)
 #endif
@@ -1368,8 +1373,8 @@ endif
 #endif
 #ifdef A_OLZA
     if dok_zew="W" .and. ""#dok_kon
-       @  _frow,48 get kk PICTURE "@!K" valid gkon() .or. aczojs(kont)
-       @  _frow,54 get sk PICTURE "@!K" valid {|A,B,POZ|gsta(getlist) .or. aczojs(stano,,@poz).and.(d_o#" ".or. (d_o:=padr(substr(stano[poz],7),len(d_o)),aeval(getlist,{|g|if(g:name=='d_o',g:display(),)}),.t.))}
+       @  _frow,_fco2-31 get kk PICTURE "@!K" valid gkon() .or. aczojs(kont)
+       @  _frow,_fco2-25 get sk PICTURE "@!K" valid {|A,B,POZ|gsta(getlist) .or. aczojs(stano,,@poz).and.(d_o#" ".or. (d_o:=padr(substr(stano[poz],7),len(d_o)),aeval(getlist,{|g|if(g:name=='d_o',g:display(),)}),.t.))}
     else
        kk:=sk:=""
     endif
@@ -1377,15 +1382,15 @@ endif
 #ifdef A_KPR
     if ""=dok_kpr
 #endif
-    @ _frow,61 GET da VALID dataval(da)
+    @ _frow,_fco2-18 GET da VALID dataval(da)
 #ifdef A_KPR
     else
-    @ _frow,55 GET da VALID dataval(da)
-    @ _frow,66 get npr picture "@K #####"
+    @ _frow,_fco2-24 GET da VALID dataval(da)
+    @ _frow,_fco2-13 get npr picture "@K #####"
     // valid {|g|!g:changed .or. if(nowydm,npr=DatY->last_kpr+1,npr=val(nr_kpr)) .or. NIL#alarm("Czy numer kolejny książki nie powinien być:"+if(nowydm,str(DatY->last_kpr+1,5),nr_kpr))}
     endif
 #endif
-    @  _frow,73 GET nk  PICTURE "@!K XXXXX" VALID {|g|!g:changed.or.nk(_f,g)}
+    @  _frow,_fco2-6 GET nk  PICTURE "@!K XXXXX" VALID {|g|!g:changed.or.nk(_f,g)}
 return
 **********************************************
 procedure dok3(_f,getlist)
@@ -1680,7 +1685,7 @@ memvar exp_od,exp_do
     a:=a['Faktura','Fa','FaWiersz']
     darr:=getlines(hb_jsonencode(a,.t.),.t.)
        if (dpos:=min(_flp+1,len(darr)))=1
-          @ _frow+4,1 say 'Pozycje z KSeF pod [F8]' color _sbkgr
+          @ _frow+4,_fco1+1 say 'Pozycje z KSeF pod [F8]' color _sbkgr
        endif
        dflag:=dm->(pozycja=D_LP0) .and. dpos>0
   endif
@@ -1784,7 +1789,7 @@ begin sequence
        set order to tag MAIN_NRK
 #endif
        if (dpos:=min(_flp+1,len(darr)))=1
-           @ _frow+4,1 say 'Zbiorówka za ten okres pod [F8]' UNICODE color _sbkgr
+           @ _frow+4,_fco1+1 say 'Zbiorówka za ten okres pod [F8]' UNICODE color _sbkgr
        endif
        dflag:=dm->(pozycja=D_LP0) .and. dpos>0
 recover
@@ -1860,7 +1865,7 @@ begin sequence
               darr[i]:=surowce->indx_mat+" "+left(j,c-1)+" "+left(surowce->nazwa,40)+HB_UCHAR(0x00A0)+SubStr(j,-8)+" "+surowce->jmag
           next
           if (dpos:=min(_flp+1,len(darr)))=1
-             @ _frow+2,5 say 'Zapotrzebowanie na ten dzień pod [F8]' UNICODE color _sbkgr
+             @ _frow+2,_fco1+5 say 'Zapotrzebowanie na ten dzień pod [F8]' UNICODE color _sbkgr
           endif
           dflag:=dm->(pozycja=D_LP0) .and. dpos>0
        endif
@@ -1979,7 +1984,7 @@ begin sequence
 #endif
           enddo
           if (dpos:=min(_flp+1,len(darr)))=1
-             @ _frow+2,5 say 'Zapotrzebowanie na ten dzień pod [F8]' UNICODE color _sbkgr
+             @ _frow+2,_fco1+5 say 'Zapotrzebowanie na ten dzień pod [F8]' UNICODE color _sbkgr
           endif
           dflag:=dm->(pozycja=D_LP0) .and. dpos>0
        endif
@@ -1995,9 +2000,9 @@ end sequence
 #endif //dieta
 #ifdef D_DIETA_OR_ODDO
     if !empty(darr)
-       @ _frow+1,20 say 'F8' color _sbkgr
+       @ _frow+1,_fco1+20 say 'F8' color _sbkgr
     else
-       @ _frow+1,20 say '══' UNICODE color _sbkgr
+       @ _frow+1,_fco1+20 say '══' UNICODE color _sbkgr
     endif
 #endif //dieta
 return
@@ -2175,7 +2180,7 @@ local txt,j,x,s:=0,si:='',gzl,y,z,a
         //_fpos:=2
 #endif
         txt:=KEY_DOK+nr_dowodu
-        @ _fk,5 SAY "*** "+tran(index,"@R "+ INDEXPIC )+" "+str(parr[2])+" "+str(parr[3])+" ***"
+        @ _fk,_fco1+5 SAY "*** "+tran(index,"@R "+ INDEXPIC )+" "+str(parr[2])+" "+str(parr[3])+" ***"
         skip
         ppos:=if(KEY_DOK+nr_dowodu=txt,recno(),0)
         goto j
@@ -2208,7 +2213,7 @@ local txt,j,x,s:=0,si:='',gzl,y,z,a
              chg_cen:=.t.
            endif
 #endif
-           @ _fk,5 SAY SubStr(nim,9,46)
+           @ _fk,_fco1+5 SAY SubStr(nim,9,46)
 //#undef A_ODDO //po co to ?
 #else //kasa
 //#undef D_DIETA_OR_ODDO
@@ -2218,8 +2223,8 @@ if dok_p_r="F"
 else
            wz:=WPZ(pm*il*cz)
 endif
-           @ _fk,5 SAY SubStr(nim,hb_fieldlen('index')+35,46)
-           @ _fk+1,48 SAY SubStr(nim,hb_fieldlen('index')+13,4)
+           @ _fk,_fco1+5 SAY SubStr(nim,hb_fieldlen('index')+35,46)
+           @ _fk+1,_fco1+48 SAY SubStr(nim,hb_fieldlen('index')+13,4)
            select STANY
            set order to 2
            dbseek(mag_biez+left(nim,hb_fieldlen('index')),.f.)
@@ -2230,7 +2235,7 @@ endif
 #endif
            lam:=i_lam(da)
            pv:=(lam)->proc_vat
-           @ _fk+1,48 say (lam)->jm
+           @ _fk+1,_fco1+48 say (lam)->jm
            select main
            NIM:=padr(INDX_MAT->INDEX,46)
 #endif //kasa
@@ -2240,11 +2245,11 @@ endif
          if dok$dok_di
            il:=-val(SubStr(nim,rat(HB_UCHAR(0x00A0),nim)+1))
            nz:=SubStr(nim,hb_fieldlen('index')+2,hb_fieldlen('nr_zlec'))
-           @ _fk+1,48 say right(nim,4)
+           @ _fk+1,_fco1+48 say right(nim,4)
            txt:=SubStr(nim,hb_fieldlen('INDEX')+2+hb_fieldlen('nr_zlec')+1)
            j:=rat(HB_UCHAR(0x00A0),txt)
            txt:=left(nim,hb_fieldlen('INDEX')+2)+trim(nz)+' '+TRIM(left(txt,j-1))+' '+SubStr(txt,j+1)
-           @ _fk+2,1 SAY "ZAPOTRZEBOWANIE: "+txt+space(60-len(txt)) color _sbkgr
+           @ _fk+2,_fco1+1 SAY "ZAPOTRZEBOWANIE: "+txt+space(60-len(txt)) color _sbkgr
            nim:=pad(left(nim,hb_fieldlen('index')),46)
            select STANY
            set order to 2
@@ -2290,7 +2295,7 @@ endif
 #endif
 #ifdef A_FA
         if dok_zew$"UV"
-           @ _fk,50 say "%" COLOR _sbkgr
+           @ _fk,_fco1+50 say "%" COLOR _sbkgr
            pv:=proc_VAT
         else
            pv:=(lam)->proc_vat
@@ -2307,11 +2312,11 @@ endif
         wa:=wartosc
 #endif
 #ifdef A_JMO
-        @ _fk+1,48 say (lam)->(if(miar_opcja,jm_opcja,jm))
+        @ _fk+1,_fco1+48 say (lam)->(if(miar_opcja,jm_opcja,jm))
 #else
-        @ _fk+1,48 say (lam)->jm
+        @ _fk+1,_fco1+48 say (lam)->jm
 #endif
-        @ _fk,5 SAY (lam)->nazwA
+        @ _fk,_fco1+5 SAY (lam)->nazwA
 #ifdef A_IZ
         if dok_ew#"Z"
 #endif
@@ -2368,14 +2373,14 @@ endif
 
       endif
 #ifdef A_MM
-        @ _fk+1, NIMBEG-3 GET mag_biez PICTURE "@K XX";
+        @ _fk+1, _fco1+NIMBEG-3 GET mag_biez PICTURE "@K XX";
          VALID {|g,x,y|aczojs(magazyny).and.(g:original=mag_biez .or. (nim:=space(46),.t.)).and.(g:ExitState=GE_DOWN .or. g:ExitState=GE_ENTER .or. pomval(g,_f,y,_s))}
 #endif
 #ifdef A_ANKER
-        @ _fk+1, NIMBEG SAY ean13(nim)
+        @ _fk+1, _fco1+NIMBEG SAY ean13(nim)
 #endif
 
-        txt:=getnew(_fk+1,NIMBEG,{|x|if(pcount()=0,nim,nim:=x)},"nim","@!KRS"+NIMLTH+strtran( INDEXPIC ,"#","X")+repl("X",46-hb_fieldlen('index')))
+        txt:=getnew(_fk+1,_fco1+NIMBEG,{|x|if(pcount()=0,nim,nim:=x)},"nim","@!KRS"+NIMLTH+strtran( INDEXPIC ,"#","X")+repl("X",46-hb_fieldlen('index')))
         txt:display()
       if _fkey=0
 #ifdef A_F9
@@ -2429,10 +2434,10 @@ endif
            endif
 #ifdef A_JMO
            if miar_opcja
-             txt:=getnew(_fk+1,24,{|x|s:=stanprzeD(_fnowy,si,s),si:=STANY->(nr_mag+index),if(pcount()=0,(x:=s+il,if(x=0,0,int(x/(lam)->przel)+(x%(lam)->przel)/1000)),(x:=int(x)*(lam)->przel+(x%1*1000),il:=ROUND(x-s,ILDEC)))},"il","@K #####r.###")
+             txt:=getnew(_fk+1,_fco1+24,{|x|s:=stanprzeD(_fnowy,si,s),si:=STANY->(nr_mag+index),if(pcount()=0,(x:=s+il,if(x=0,0,int(x/(lam)->przel)+(x%(lam)->przel)/1000)),(x:=int(x)*(lam)->przel+(x%1*1000),il:=ROUND(x-s,ILDEC)))},"il","@K #####r.###")
            else
 #endif
-             txt:=getnew(_fk+1,24,{|x|s:=stanprzeD(_fnowy,si,s),si:=STANY->(nr_mag+index),if(pcount()=0,S+il,il:=ROUND(x-S,ILDEC))},"il","@K "+ILPIC)
+             txt:=getnew(_fk+1,_fco1+24,{|x|s:=stanprzeD(_fnowy,si,s),si:=STANY->(nr_mag+index),if(pcount()=0,S+il,il:=ROUND(x-S,ILDEC))},"il","@K "+ILPIC)
 #ifdef A_JMO
            endif
 #endif
@@ -2450,7 +2455,7 @@ endif
         case ""=dok_kon
         case dok_kon="&:"
         case dok_kon="*"
-          j:=getnew(_fk+1,NZBEG,{|x|if(x=NIL,nz,nz:=x)},"nz",NZPIC)
+          j:=getnew(_fk+1,_fco1+NZBEG,{|x|if(x=NIL,nz,nz:=x)},"nz",NZPIC)
           j:postblock:=if(dok_zew#"W",;
 {||if(empty(nz),aczojs(zaMowienie[MAG_POZ]),nz:=UpP(nz)),.t.},;
 {||if(empty(nz),NZVAL,nz:=UpP(nz)),.t.})
@@ -2493,7 +2498,7 @@ endif
 #endif
 #endif
         otherwise
-            j:=getnew(_fk+1,NZBEG,{|x|if(x=NIL,nz,nz:=x)},"nz",NZPIC)
+            j:=getnew(_fk+1,_fco1+NZBEG,{|x|if(x=NIL,nz,nz:=x)},"nz",NZPIC)
             j:postblock:={||NZVAL}
       endcase
       if dok_p_r#"S"
@@ -2501,7 +2506,7 @@ endif
                aadd(getlist,j)
                j:display()
             else
-               @ _fk+1,NZBEG say nz PICTURE NZPIC color _sbkgr
+               @ _fk+1,_fco1+NZBEG say nz PICTURE NZPIC color _sbkgr
             endif
        endif
 #ifdef A_FA
@@ -2509,10 +2514,10 @@ endif
 #endif
 #ifdef A_JMO
       if miar_opcja
-        txt:=getnew(_fk+1,36,{|x|if(pcount()=0,if(il=0,0,int(pm*il/(lam)->przel)+(pm*il%(lam)->przel)/1000),il:=ROUND(pm*(int(x)*(lam)->przel+(x%1*1000)),ILDEC))},"il","@K #####r.###")
+        txt:=getnew(_fk+1,_fco1+36,{|x|if(pcount()=0,if(il=0,0,int(pm*il/(lam)->przel)+(pm*il%(lam)->przel)/1000),il:=ROUND(pm*(int(x)*(lam)->przel+(x%1*1000)),ILDEC))},"il","@K #####r.###")
       else
 #endif
-        txt:=getnew(_fk+1,36,{|x|if(pcount()=0,pm*il,il:=pm*x)},"il","@K "+ILPIC)
+        txt:=getnew(_fk+1,_fco1+36,{|x|if(pcount()=0,pm*il,il:=pm*x)},"il","@K "+ILPIC)
 #ifdef A_JMO
       endif
 #endif
@@ -2533,10 +2538,10 @@ endif
          endif
 #ifdef A_JMO
            if miar_opcja
-             j:=getnew(_fk+1,36,{|x|s:=stanprzeD(_fnowy,si,s),si:=STANY->(nr_mag+index),if(pcount()=0,(x:=s+il,if(x=0,0,int(x/(lam)->przel)+(x%(lam)->przel)/1000)),(x:=int(x)*(lam)->przel+(x%1*1000),il:=ROUND(x-s,ILDEC)))},"il","@K #####r.###")
+             j:=getnew(_fk+1,_fco1+36,{|x|s:=stanprzeD(_fnowy,si,s),si:=STANY->(nr_mag+index),if(pcount()=0,(x:=s+il,if(x=0,0,int(x/(lam)->przel)+(x%(lam)->przel)/1000)),(x:=int(x)*(lam)->przel+(x%1*1000),il:=ROUND(x-s,ILDEC)))},"il","@K #####r.###")
            else
 #endif
-             j:=getnew(_fk+1,36,{|x|s:=stanprzeD(_fnowy,si,s),si:=STANY->(nr_mag+index),if(pcount()=0,S+il,il:=ROUND(x-S,ILDEC))},"il","@K "+ILPIC)
+             j:=getnew(_fk+1,_fco1+36,{|x|s:=stanprzeD(_fnowy,si,s),si:=STANY->(nr_mag+index),if(pcount()=0,S+il,il:=ROUND(x-S,ILDEC))},"il","@K "+ILPIC)
 #ifdef A_JMO
            endif
 #endif
@@ -2544,7 +2549,7 @@ endif
          j:preblock:={||.f.}
 #endif
          txt:postblock:={|g|!g:changed.or.(getlist[gil+1]:display(),groz(g,_f,getlist))}
-         txt:col:=24
+         txt:col:=_fco1+24
          j:display()
 
          j:postblock:={|g|!g:changed.or.(getlist[gil]:display(),groz(g,_f,getlist))}
@@ -2575,13 +2580,13 @@ endif
 #endif
 #ifndef A_NOPV
          if dok_zew$"UV"
-         @ _fk,49 get pv picture "@K XX" valid {||pv:=lower(pv),if(pv<="9",pv:=str(val(pv),2),),(ascan(stawki,pv)#0 .or. alarm(hb_UTF8ToStr('NIEWŁAŚCIWY PROCENT VAT!'),,3,3)=NIL) .and. showvat(_f)}
+         @ _fk,_fco1+49 get pv picture "@K XX" valid {||pv:=lower(pv),if(pv<="9",pv:=str(val(pv),2),),(ascan(stawki,pv)#0 .or. alarm(hb_UTF8ToStr('NIEWŁAŚCIWY PROCENT VAT!'),,3,3)=NIL) .and. showvat(_f)}
          endif
 #endif
-         j:=getnew(_fk,53,{|x|if(pcount()=0,cz,cz:=x)},"cz",WAPIC)
+         j:=getnew(_fk,_fco1+53,{|x|if(pcount()=0,cz,cz:=x)},"cz",WAPIC)
          j:display()
          aadd(getlist,j)
-         txt:=getnew(_fk,66,{|x|if(pcount()=0,wz,wz:=x)},"wz",WAPIC)
+         txt:=getnew(_fk,_fco1+66,{|x|if(pcount()=0,wz,wz:=x)},"wz",WAPIC)
          txt:display()
          aadd(getlist,txt)
 #ifdef A_IZ
@@ -2625,12 +2630,12 @@ endif
         if /*dok_df .and.*/ dok_zew$"UV"
 
   colorselect(3)
-           x:=getnew(_fk+1,53,{|x,v|v:=val(pv),if(pcount()=0,,(x:=Round(x*il,A_ZAOKR),wz:=x-ROUND(x*v/(100+v),A_ZAOKR))),ROUND((wz+VATPZ(wz,v))/il,A_ZAOKR)},"wz",WAPIC)
+           x:=getnew(_fk+1,_fco1+53,{|x,v|v:=val(pv),if(pcount()=0,,(x:=Round(x*il,A_ZAOKR),wz:=x-ROUND(x*v/(100+v),A_ZAOKR))),ROUND((wz+VATPZ(wz,v))/il,A_ZAOKR)},"wz",WAPIC)
            x:postblock:=txt:postblock
            x:display()
            aadd(getlist,x)
 
-           y:=getnew(_fk+1,66,{|x,v|v:=val(pv),if(pcount()=0,,wz:=x-ROUND(x*v/(100+v),A_ZAOKR)),wz+VATPZ(wz,v)},"wz",WAPIC)
+           y:=getnew(_fk+1,_fco1+66,{|x,v|v:=val(pv),if(pcount()=0,,wz:=x-ROUND(x*v/(100+v),A_ZAOKR)),wz+VATPZ(wz,v)},"wz",WAPIC)
            y:postblock:=txt:postblock
            y:display()
            aadd(getlist,y)
@@ -2845,11 +2850,11 @@ begin sequence
               recall
            endif
            lam:=i_lam(dm->data)
-           @ _fk,5 SAY (lam)->nazwA
+           @ _fk,_fco1+5 SAY (lam)->nazwA
 #ifdef A_JMO
-           @ _fk+1,48 say (lam)->(if(miar_opcja,jm_opcja,jm))
+           @ _fk+1,_fco1+48 say (lam)->(if(miar_opcja,jm_opcja,jm))
 #else
-           @ _fk+1,48 say (lam)->jm
+           @ _fk+1,_fco1+48 say (lam)->jm
 #endif
            if pass
               unlock in indx_mat
@@ -2974,7 +2979,7 @@ return
 #ifdef D_DIETA_OR_ODDO
 static proc azapchoice(g,_f,getlist)
   local pos:=dpos,txt,p,x
-       setpos(row(),45)
+       setpos(row(),_fco1+45)
 
 #ifdef A_KSEF
 /*
@@ -2997,7 +3002,7 @@ static proc azapchoice(g,_f,getlist)
           nim:=darr[dpos]
 #ifdef A_ODDO
           if dok$dok_zb
-          @ _fk,5 SAY SubStr(nim,hb_fieldlen('index')+35,46) color _sbkgr
+          @ _fk,_fco1+5 SAY SubStr(nim,hb_fieldlen('index')+35,46) color _sbkgr
           il:=pm*val(SubStr(nim,hb_fieldlen('index')+2))
           cz:=val(SubStr(nim,hb_fieldlen('index')+21))
           NIM:=left(nim,hb_fieldlen('index'))
@@ -3018,7 +3023,7 @@ if dok_p_r="F"
 else
           wz:=WPZ(pm*il*cz)
 endif
-          @ _fk+1,48 say (lam)->jm
+          @ _fk+1,_fco1+48 say (lam)->jm
           NIM:=padr(INDX_MAT->INDEX,46)
           aeval(getlist,{|x|x:display()})
           showwar(_f,getlist,gil)
@@ -3028,7 +3033,7 @@ endif
        if dok$dok_di
           dpush:=.t.
 #ifdef A_KASA
-          @ _fk,5 SAY SubStr(nim,hb_fieldlen('index')+2,46)
+          @ _fk,_fco1+5 SAY SubStr(nim,hb_fieldlen('index')+2,46)
 #else
           il:=-val(SubStr(nim,rat(HB_UCHAR(0x00A0),nim)+1))
           nz:=SubStr(nim,hb_fieldlen('index')+2,main->(hb_fieldlen('nr_zlec')))
@@ -3036,9 +3041,9 @@ endif
           p:=rat(HB_UCHAR(0x00A0),txt)
           txt:=left(nim,hb_fieldlen('INDEX')+2)+trim(nz)+' '+trim(left(txt,p-1))+SubStr(txt,p)
           if _fi>=_flp
-             @ _fk+2,1 SAY "ZAPOTRZEBOWANIE: "+txt+space(60-len(txt)) color _sbkgr
+             @ _fk+2,_fco1+1 SAY "ZAPOTRZEBOWANIE: "+txt+space(60-len(txt)) color _sbkgr
           else
-             @ _fk,7 SAY "ZAPOTRZEB: "+txt+space(60-len(txt)) color _sbkgr
+             @ _fk,_fco1+7 SAY "ZAPOTRZEB: "+txt+space(60-len(txt)) color _sbkgr
           endif
 #endif
        endif
@@ -3063,11 +3068,11 @@ local txt,j,x,s
       indx_mat->(dbseek(main->(index),.f.))
 #endif
       lam:=i_lam(dm->data)
-      @ _fk,5 SAY (lam)->nazwA
+      @ _fk,_fco1+5 SAY (lam)->nazwA
 #ifdef A_JMO
-      @ _fk+1,48 say (lam)->(if(miar_opcja,jm_opcja,jm))
+      @ _fk+1,_fco1+48 say (lam)->(if(miar_opcja,jm_opcja,jm))
 #else
-      @ _fk+1,48 say (lam)->jm
+      @ _fk+1,_fco1+48 say (lam)->jm
 #endif
 #ifdef A_IZ
       il:=if(dok_ew="E",ilosc,ilosc_f)
@@ -3080,7 +3085,7 @@ local txt,j,x,s
 #endif
 #ifdef A_FA
       if dok_zew$"UV"
-         @ _fk,50 say "%" COLOR _sbkgr
+         @ _fk,_fco1+50 say "%" COLOR _sbkgr
          pv:=proc_vat
       else
          pv:=(lam)->proc_vat
@@ -3131,13 +3136,13 @@ local txt,j,x,s
 #endif
       endif
 #ifdef A_MM
-      @ _fk+1, NIMBEG-3 SAY nr_mag COLOR _sunsel
+      @ _fk+1, _fco1+NIMBEG-3 SAY nr_mag COLOR _sunsel
 #endif
 #ifdef A_ANKER
-      @ _fk+1, NIMBEG SAY ean13(INDEX)
+      @ _fk+1, _fco1+NIMBEG SAY ean13(INDEX)
 #endif
       
-      @ _fk+1, NIMBEG SAY INDEX PICTURE "@R "+ INDEXPIC COLOR _sunsel
+      @ _fk+1, _fco1+NIMBEG SAY INDEX PICTURE "@R "+ INDEXPIC COLOR _sunsel
 
 
       do case
@@ -3146,33 +3151,33 @@ local txt,j,x,s
 #ifdef A_JMO
 #define restouT(x,p) if(x%p=0,str(x/p,6),stuff(str(int(x/p)+x%p/1000,10,3),7,1,"r"))
       if miar_opcja
-        @ _fk+1,24 say restouT(s+il,(lam)->przel) COLOR _sunsel
+        @ _fk+1,_fco1+24 say restouT(s+il,(lam)->przel) COLOR _sunsel
       else
 #endif
-        @ _fk+1,24 say s+il PICTURE ILPIC COLOR _sunsel
+        @ _fk+1,_fco1+24 say s+il PICTURE ILPIC COLOR _sunsel
 #ifdef A_JMO
       endif
 #endif
         case dok_kon="*"
-          @ _fk+1,NZBEG SAY nr_zlec picture NZPIC color _sunsel
+          @ _fk+1,_fco1+NZBEG SAY nr_zlec picture NZPIC color _sunsel
         case ""#dok_kon
           if dok_zew#"W"
-            @ _fk+1,NZBEG SAY nr_zlec picture NZPIC color _sunsel
+            @ _fk+1,_fco1+NZBEG SAY nr_zlec picture NZPIC color _sunsel
           else
-            @ _fk+1,NZBEG SAY nr_zlec picture NZPIC color _sunsel
+            @ _fk+1,_fco1+NZBEG SAY nr_zlec picture NZPIC color _sunsel
           endif
       endcase
 
 #ifdef A_JMO
       if miar_opcja
-        @ _fk+1,36 say restouT(pm*il,(lam)->przel) COLOR _sunsel
+        @ _fk+1,_fco1+36 say restouT(pm*il,(lam)->przel) COLOR _sunsel
       else
 #undef restouT
 #endif
 #ifdef A_SB
-        @ _fk+1,24 say pm*il PICTURE ILPIC COLOR _sunsel
+        @ _fk+1,_fco1+24 say pm*il PICTURE ILPIC COLOR _sunsel
 #else
-        @ _fk+1,36 say pm*il PICTURE ILPIC COLOR _sunsel
+        @ _fk+1,_fco1+36 say pm*il PICTURE ILPIC COLOR _sunsel
 #endif
 #ifdef A_JMO
       endif
@@ -3250,7 +3255,7 @@ local rcrd,j,a,b,c,d,comdm,ames:={},x,y,z,cx,px
 #endif
         if dok_kon="&:"
            nz:=&(trim(SubStr(dok_kon,3)))
-           @ _fk+1,NZBEG say nz PICTURE NZPIC color _sbkgr
+           @ _fk+1,_fco1+NZBEG say nz PICTURE NZPIC color _sbkgr
         endif
         nz:=nr_zlec:=UpP(nz)
 #ifdef A_KPR
@@ -3718,7 +3723,7 @@ return
 *******************************
 procedure dok6(_f)
   select DM
-  IF dok_kop<0 .or. dok_kop>0 .and. TAK(hb_UTF8ToStr('CZY DRUKOWAĆ (DANE SĄ POPRAWNE ?)'),ROW(),25,.T.,.F.)
+  IF dok_kop<0 .or. dok_kop>0 .and. TAK(hb_UTF8ToStr('CZY DRUKOWAĆ (DANE SĄ POPRAWNE ?)'),ROW(),_fco1+25,.T.,.F.)
     wydruk_dok(abs(dok_kop))
 //#ifdef A_OBR
   else //if dok_kop<=0 .and. TAK(hb_UTF8ToStr('CZY DANE SĄ POPRAWNE'),ROW(),25,.T.,.F.)
@@ -3746,7 +3751,7 @@ if _flp>D_LPVAL(dm->pozycja) .or. if(_flp=0, dm->pozycja >D_LP0,_fi#D_LPVALFIELD
    select dm
    _fj:=0
    _fl:=_fi:=1
-   RESTSCREEN(_frow+2,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(2+_frow-_fscr0)+1))
+   RESTSCREEN(_frow+2,_fco1,MaxRow(),_fco2,hb_BSubStr(_fscr,D_REST*(_fco2-_fco1+1)*(2+_frow-_fscr0)+1))
    @ _frow+2,_fco1,_frow+4,_fco2 BOX UNICODE if(pozycja>D_LP1,'║ ║║╜─╙║ ','║ ║║╝═╚║ ') color _SBKGR
    _fpopkey:=.f.
    dok11(_f)
@@ -3830,8 +3835,7 @@ endif
          UNLOCK
          changed:=.t.
        endif
-       @ 0,0
-       @ 0,0 say "ZATWIERDZONY !"
+       @ _fscr0,_fco1 say "ZATWIERDZONY !  "
         tone(164.8,1)
         tone(164.8,1)
        kibord(chr(27))
@@ -3855,8 +3859,7 @@ endif
        kto_pisal:=HB_UCHAR(0x00A0)+kto_pisal
        changed:=.t.
        UNLOCK
-       @ 0,0
-       @ 0,0 say "OTWARTY !"
+       @ _fscr0,_fco1 say "OTWARTY !   "
         tone(164.8,1)
         tone(164.8,1)
 #ifdef A_DF
@@ -3912,8 +3915,8 @@ return
 procedure add_get(_f,getlist)
   local get
   if ascan(getlist,{|x|x:name="ce"})=0
-  @ _fk+1,53 get ce picture WAPIC  valid  {|g|!g:changed.or.gcen(_f,getlist)}
-  get:=getnew(_fk+1,66,{|x|if(pcount()=0,ROUND(pm*wa,A_ZAOKR),wa:=pm*ROUND(x,A_ZAOKR))},"wa",WAPIC)
+  @ _fk+1,_fco1+53 get ce picture WAPIC  valid  {|g|!g:changed.or.gcen(_f,getlist)}
+  get:=getnew(_fk+1,_fco1+66,{|x|if(pcount()=0,ROUND(pm*wa,A_ZAOKR),wa:=pm*ROUND(x,A_ZAOKR))},"wa",WAPIC)
   get:postblock:={|g|!g:changed.or.gwar(_f,getlist)}
   get:display()
   aadd(getlist,get)
@@ -3923,9 +3926,9 @@ return
 ***************
 function showwar(_f,getlist,gil)
 local j,clr:=_sbkgr
-   @ _fk,52 CLEAR TO _fk+1,_fco2-2
+   @ _fk,_fco1+52 CLEAR TO _fk+1,_fco2-2
 #ifdef A_GRAM
-   @ (_fl-_fj+1)*_fskip+_frow,1 SAY str(gtot+if(lam=NIL,0,pm*if(_fnowy,il,il-main->ilosc)*(lam)->gram/1000),8,2)+" kg" color _sbkgr
+   @ (_fl-_fj+1)*_fskip+_frow,_fco1+1 SAY str(gtot+if(lam=NIL,0,pm*if(_fnowy,il,il-main->ilosc)*(lam)->gram/1000),8,2)+" kg" color _sbkgr
 #endif
 #ifdef A_JMTOT
 #ifdef A_GOCZ
@@ -3934,9 +3937,9 @@ if !empty(getlist) .and. dok$dok_di
 endif
 #else
 #ifdef A_GRAM
-   setpos(row(),15)
+   setpos(row(),_fco1+15)
 #else
-   setpos((_fl-_fj+1)*_fskip+_frow,1)
+   setpos((_fl-_fj+1)*_fskip+_frow,_fco1+1)
 #endif
 for j=1 to len(itot)
    if itot[j,2]=0
@@ -3961,9 +3964,9 @@ next
          endif
 #ifdef cenA_zaK
 #ifdef A_WA
-         @ (_fl-_fj+1)*_fskip+_frow,66 say pm*(wtoT+wa-if(_fnowy,0,main->wartosc)) PICTURE WAPIC COLOR _Sbkgr
+         @ (_fl-_fj+1)*_fskip+_frow,_fco1+66 say pm*(wtoT+wa-if(_fnowy,0,main->wartosc)) PICTURE WAPIC COLOR _Sbkgr
 #else
-         @ (_fl-_fj+1)*_fskip+_frow,66 say pm*(wtoT+if(lam=NIL,0,(il-if(_fnowy,0,main->ilosc))*(lam)->cenA)) PICTURE WAPIC COLOR _Sbkgr
+         @ (_fl-_fj+1)*_fskip+_frow,_fco1+66 say pm*(wtoT+if(lam=NIL,0,(il-if(_fnowy,0,main->ilosc))*(lam)->cenA)) PICTURE WAPIC COLOR _Sbkgr
 #endif
          return .t.
 #endif
@@ -3976,14 +3979,14 @@ next
 #endif
 #ifdef A_WA
 if !empty(getlist)
-@ _fk+1,52 BOX if(chg_cen,"■","√") UNICODE color _sbkgr
+@ _fk+1,_fco1+52 BOX if(chg_cen,"■","√") UNICODE color _sbkgr
 endif
 if dok_war="+".or.(!empty(getlist).and.ascan(getlist,{|x|x:name="wa"})#0)
    clr:=_sunsel
 elseif dok_war="-"
    return .t.
 endif
-@ (_fl-_fj+1)*_fskip+_frow,66 say pm*(wtoT+wa-if(_fnowy,0,main->wartosc)) PICTURE WAPIC COLOR _Sbkgr
+@ (_fl-_fj+1)*_fskip+_frow,_fco1+66 say pm*(wtoT+wa-if(_fnowy,0,main->wartosc)) PICTURE WAPIC COLOR _Sbkgr
 #ifdef A_AUTOMAR
 #ifdef cenA_zaK
 if dok_ew#'E' .and. dok_p_r#'F'
@@ -3995,19 +3998,19 @@ if dok_ew#'E' .and. dok_p_r='P' .and. dok_war#'+' .and. clr#_sunsel .and. wa=wz
 endif
 #endif
  if dok_ew='E' .and. dok_p_r='P'
-   @ _fk,53 say str(eval(MEMVAR->liczM,ce,(if(lam=NIL,select("INDX_MAT"),lam))->cena,val(pv)),4,1)+'%'
+   @ _fk,_fco1+53 say str(eval(MEMVAR->liczM,ce,(if(lam=NIL,select("INDX_MAT"),lam))->cena,val(pv)),4,1)+'%'
    sayL str((if(lam=NIL,select("INDX_MAT"),lam))->cena)
  endif
 #endif
-@ _fk+1,53 say ce picture WAPIC COLOR clr
-@ _fk+1,66 say pm*wa PICTURE WAPIC COLOR clr
+@ _fk+1,_fco1+53 say ce picture WAPIC COLOR clr
+@ _fk+1,_fco1+66 say pm*wa PICTURE WAPIC COLOR clr
 #else
 if dok_w1#"-"
 if lam#NIL
-@ _fk+1,53 say (lam)->cenA picture WAPIC COLOR _sbkgr
-@ _fk+1,66 say pm*il*(lam)->cenA PICTURE WAPIC COLOR _sbkgr
+@ _fk+1,_fco1+53 say (lam)->cenA picture WAPIC COLOR _sbkgr
+@ _fk+1,_fco1+66 say pm*il*(lam)->cenA PICTURE WAPIC COLOR _sbkgr
 endif
-@ (_fl-_fj+1)*_fskip+_frow,66 say pm*(wtoT+if(lam=NIL,0,(lam)->cenA*(il-if(_fnowy,0,main->ilosc)))) PICTURE WAPIC COLOR _Sbkgr
+@ (_fl-_fj+1)*_fskip+_frow,_fco1+66 say pm*(wtoT+if(lam=NIL,0,(lam)->cenA*(il-if(_fnowy,0,main->ilosc)))) PICTURE WAPIC COLOR _Sbkgr
 endif
 #endif
 return .t.
@@ -4017,10 +4020,10 @@ func add_faget(_f,getlist)
    local get,x
 #ifndef A_NOPV
    if dok_zew$"UV"
-      @ _fk,49 get pv picture "@K XX" valid {||pv:=lower(pv),if(pv<="9",pv:=str(val(pv),2),),(ascan(stawkizby,pv)#0 .or. alarm(hb_UTF8ToStr('NIEWŁAŚCIWY PROCENT VAT!'),,3,3)=NIL) .and. (wz:=W(pm*il,cz,val(pv),dok_df),showfak(_f,_sunsel))}
+      @ _fk,_fco1+49 get pv picture "@K XX" valid {||pv:=lower(pv),if(pv<="9",pv:=str(val(pv),2),),(ascan(stawkizby,pv)#0 .or. alarm(hb_UTF8ToStr('NIEWŁAŚCIWY PROCENT VAT!'),,3,3)=NIL) .and. (wz:=W(pm*il,cz,val(pv),dok_df),showfak(_f,_sunsel))}
    endif
 #endif
-    get:=getnew(_fk,53,{|x|if(pcount()=0,cz,cz:=x)},"cz",WAPIC)
+    get:=getnew(_fk,_fco1+53,{|x|if(pcount()=0,cz,cz:=x)},"cz",WAPIC)
 #ifdef A_KOB
     get:postblock:={|g|if(""=dok_war.and.ce=0,(chg_cen:=.t.,ce:=cz,wa:=pm*(wz:=W(pm*il,cz,val(pv),dok_df)),showwar(_f,getlist,gil)),!g:changed.or.(wz:=W(pm*il,cz,val(pv),dok_df),showfak(_f,_sunsel)))}
 #else
@@ -4083,26 +4086,26 @@ func showfak(_f,clr)
    endif
       wt:=round(wt,A_ZAOKR)
    endif
-   @ _fk,53 say cz picture WAPIC COLOR clr
-   @ _fk,66 say wz PICTURE WAPIC COLOR _sbkgr
+   @ _fk,_fco1+53 say cz picture WAPIC COLOR clr
+   @ _fk,_fco1+66 say wz PICTURE WAPIC COLOR _sbkgr
    if dok_zew$"UV"
-      @ _fk,49 say pv COLOR clr
+      @ _fk,_fco1+49 say pv COLOR clr
    endif
    showfakh(_f,wt,vt)
 return .t.
 *****************
 func showfakh(_f,wt,vt)
-IF _frow<7
-   @ _frow,14 say ZAG(wt,vt) PICTURE WAPIC COLOR _Sbkgr
+IF _frow<7+_fscr0
+   @ _frow,_fco1+14 say ZAG(wt,vt) PICTURE WAPIC COLOR _Sbkgr
 ELSE
-   @ 4,26 say wt PICTURE WAPIC COLOR _Sbkgr
-   @ 6,4 say ZAG(wt,vt) PICTURE WAPIC COLOR _Sbkgr
+   @ _fscr0+4,_fco1+26 say wt PICTURE WAPIC COLOR _Sbkgr
+   @ _fscr0+6,_fco1+4 say ZAG(wt,vt) PICTURE WAPIC COLOR _Sbkgr
    if dok_zew$"UV"
-      @ 4,39 say vt PICTURE "@E #######.##" COLOR _Sbkgr
+      @ _fscr0+4,_fco2-40 say vt PICTURE "@E #######.##" COLOR _Sbkgr
    endif
 #ifdef A_FK
    if dok_fk
-      @ _frow-1,54 say WBR(wt,vt)-zaplac PICTURE WAPIC COLOR _Sbkgr
+      @ _frow-1,_fco2+24 say WBR(wt,vt)-zaplac PICTURE WAPIC COLOR _Sbkgr
    endif
 #endif
 ENDIF
@@ -4129,22 +4132,22 @@ func showvat(_f)
    endif
       wt:=round(wt,A_ZAOKR)
    endif
-   @ _fk,53 say cz picture WAPIC COLOR _sunsel
-   @ _fk,52 BOX if(wz=WPZ(pm*il*cz),"√","■") UNICODE color _sbkgr
-   @ _fk,66 say wz picture WAPIC COLOR _sunsel
+   @ _fk,_fco1+53 say cz picture WAPIC COLOR _sunsel
+   @ _fk,_fco1+52 BOX if(wz=WPZ(pm*il*cz),"√","■") UNICODE color _sbkgr
+   @ _fk,_fco1+66 say wz picture WAPIC COLOR _sunsel
 #ifdef A_AUTOMAR
 //#ifdef cenA_zaK
  if dok_war#'+' .and. dok_p_r='P'
-   @ _fk+1,53 say str(eval(MEMVAR->liczM,cz,(if(lam=NIL,select("INDX_MAT"),lam))->cena,val(pv)),4,1)+'%'
+   @ _fk+1,_fco1+53 say str(eval(MEMVAR->liczM,cz,(if(lam=NIL,select("INDX_MAT"),lam))->cena,val(pv)),4,1)+'%'
    sayL str((if(lam=NIL,select("INDX_MAT"),lam))->cena)
  endif
 //#endif
 #endif
    if dok_zew$"UV"
 #ifdef A_NOPV
-      @ _fk,49 say pv COLOR _sbkgr
+      @ _fk,_fco1+49 say pv COLOR _sbkgr
 #else
-      @ _fk,49 say pv COLOR _sunsel
+      @ _fk,_fco1+49 say pv COLOR _sunsel
 #endif
    endif
 #ifndef A_WEBRUT
@@ -4154,10 +4157,10 @@ func showvat(_f)
    if dok_war#'-' .and. dok_p_r='P'  .and. dok_zew$"UV" .and. dok_ew='Z'
 #endif
       //if dok_df
-        @ _fk+1,53 say ROUND((wz+VATPZ(wz,val(pv)))/il,A_ZAOKR) picture WAPIC COLOR _Sbnorm
-        @ _fk+1,66 say wz+VATPZ(wz,val(pv)) picture WAPIC COLOR _Sbnorm
+        @ _fk+1,_fco1+53 say ROUND((wz+VATPZ(wz,val(pv)))/il,A_ZAOKR) picture WAPIC COLOR _Sbnorm
+        @ _fk+1,_fco1+66 say wz+VATPZ(wz,val(pv)) picture WAPIC COLOR _Sbnorm
       //endif
-      @ (_fl-_fj+1)*_fskip+_frow,66 say wt PICTURE WAPIC COLOR _Sbkgr
+      @ (_fl-_fj+1)*_fskip+_frow,_fco1+66 say wt PICTURE WAPIC COLOR _Sbkgr
    endif
 #endif
    showvath(_f,wt,vt)
@@ -4165,27 +4168,27 @@ return .t.
 *************
 func showvath(_f,wt,vt)
 #ifdef A_PZBRUT
-   @ _frow,26 say wt PICTURE WAPIC COLOR _Sbkgr
+   @ _frow,_fco1+26 say wt PICTURE WAPIC COLOR _Sbkgr
 #else
-   @ _frow,26 say wt+vt PICTURE WAPIC COLOR _Sbkgr
+   @ _frow,_fco1+26 say wt+vt PICTURE WAPIC COLOR _Sbkgr
 #ifndef A_DATAVAT
    if dok_p_r="P" .and. dok_ew#"Z"
-     @ _frow,48 say wtoT-wt PICTURE STRTRAN(WAPIC,"E","EZ") COLOR _Sbkgr
+     @ _frow,_fco2-31 say wtoT-wt PICTURE STRTRAN(WAPIC,"E","EZ") COLOR _Sbkgr
    endif
 #endif
 #endif
 #ifdef A_WEBRUT
    if dok_p_r="P"
-     @ _frow,48 say wt PICTURE STRTRAN(WAPIC,"E","EZ") COLOR _Sbkgr
+     @ _frow,_fco2-31 say wt PICTURE STRTRAN(WAPIC,"E","EZ") COLOR _Sbkgr
    endif
 #endif
 #ifdef A_FK
   if dok_fk
-     @ 3,66 say wt+vt-zaplac PICTURE WAPIC COLOR _Sbkgr
+     @ _fscr0+3,_fco2-13 say wt+vt-zaplac PICTURE WAPIC COLOR _Sbkgr
   endif
 #endif
   if dok_zew$"UV"
-     @ _frow,39 say vt PICTURE "@E #######.##" COLOR _sunsel
+     @ _frow,_fco2-40 say vt PICTURE "@E #######.##" COLOR _sunsel
   endif
 return .t.
 ***********

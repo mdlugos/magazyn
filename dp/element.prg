@@ -353,7 +353,7 @@ proc mal(atot,ilo,ign)
 return
 **************************
 func ele_in(deep,n)
-local stat,r,vars:={keyp,ig,nowy,na,jed,za_mi,za_ma}
+local stat,r,p,vars:={keyp,ig,nowy,na,jed,za_mi,za_ma}
 if keyp#NIL
    deep=.t.
 endif
@@ -373,23 +373,24 @@ begin sequence
 #ifdef A_NORMY
   select normy
       SET ORDER TO tag nor_ele
-
- if dbseek(keyp)
-    kibord(chr(3))
- endif
+#ifdef A_LPNUM      
+      if dbseek(keyp,,.t.)
+        p:=-val(pozycja)
+      endif
+#endif
+      if dbseek(keyp)
+        kibord(chr(3))
+      endif
 
   select elementy
 #endif
 
-r:=min(maxcol(),max(hb_fieldlen('nazwa'),A_DILTH+17)+10)
-if col()+r>maxcol()
-  setpos(row(),maxcol()-r)
-endif
+r:=max(hb_fieldlen('nazwa'),A_DILTH+17)+10
 
 if deep
    inkey()
    if !eof()
-    FORM_EDIT({col(),col()+r,3,1,999,;
+    FORM_EDIT({p,-r,3,1,999,;
 {|f|eDOK1(f)},;
 {|f|edok2(f,{})},;
 {||setcursor(0)},;
@@ -399,7 +400,7 @@ if deep
     endif
 else
     lock
-    FORM_EDIT({col(),col()+r,3,1,999,;
+    FORM_EDIT({p,-r,3,1,999,;
 {|f|eDOK1(f)},;
 {|f,g|edok2(f,g)},;
 {|f|edok3(f)},;
@@ -428,14 +429,14 @@ RETURN r
 stat pROC eDOK1(_f)
   SET CURSOR OFF
   SET COLOR TO (_SBKGR)
-  @ 0,_fco1,3,_fco2 BOX UNICODE '╔═╗║╝═╚║ '
-  @ 1,_fco1+12 say "element"
+  @ _fscr0+0,_fco1,_fscr0+3,_fco2 BOX UNICODE '╔═╗║╝═╚║ '
+  @ _fscr0+1,_fco1+12 say "element"
 #ifdef PROC_EN
-  @ 1,_fco2-8 say "ignoruj"
+  @ _fscr0+1,_fco2-8 say "ignoruj"
 #endif
 #ifdef A_NORMY
-  @ 3,_fco1,5,_fco2 BOX UNICODE '╠═╣║╝═╚║ '
-  @ 0,_fco1+1 say "NORMY ELEMENTÓW POKARMOWYCH" UNICODE 
+  @ _fscr0+3,_fco1,_fscr0+5,_fco2 BOX UNICODE '╠═╣║╝═╚║ '
+  @ _fscr0+0,_fco1+1 say "NORMY ELEMENTÓW POKARMOWYCH" UNICODE 
 #endif
 
 RETURN
@@ -450,16 +451,16 @@ stat proc edok2(_f,getlist)
   jed:=jedN
   ig:=ELEMENTY->ignoruj
   now:=if(nowy,"NOWY   ","POPRAWA")
-  @ 1,_fco1+2 get now picture "@K" valid {||nowy:=if(now=" ",!nowy,nowy),now:=if(nowy,"NOWY   ","POPRAWA"),.t.}
-  @ 2,_fco1+2 get NA picture "@KS"+lTrim(sTr(_fco2-_fco1-9))
+  @ _fscr0+1,_fco1+2 get now picture "@K" valid {||nowy:=if(now=" ",!nowy,nowy),now:=if(nowy,"NOWY   ","POPRAWA"),.t.}
+  @ _fscr0+2,_fco1+2 get NA picture "@KS"+lTrim(sTr(_fco2-_fco1-9))
   getl jed picture "@K"
 #ifdef PROC_EN
   getl ig picture "@Y"
 #endif
 #ifdef A_NORMY
-  @ 3,_fco1+5 say "dieta" color _sbkgr
-  @ 3,_fco1+10+A_DILTH say "min" color _sbkgr
-  @ 3,_fco1+20+A_DILTH say "max" color _sbkgr
+  @ _fscr0+3,_fco1+5 say "dieta" color _sbkgr
+  @ _fscr0+3,_fco1+10+A_DILTH say "min" color _sbkgr
+  @ _fscr0+3,_fco1+20+A_DILTH say "max" color _sbkgr
 #endif
   __setproc(procname(0))
 return
@@ -479,12 +480,12 @@ stat proc edok3(_f)
       nowy:=.f.
       set order to tag ele_naZ
       if dbseek(UpP(na)) .and. alarm(hb_UTF8ToStr("TAKA NAZWA JUŻ ISTNIEJE;CZY DOPISAĆ MIMO WSZYSTKO"),{"TAK","NIE"})=2 .OR. empty(NA)
-        @ 4,_fco1,5,_fco2 BOX UNICODE '║ ║║╝─╚║ ' color _sbkgr
-        RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow-_fscr0)*D_REST+1))
+        @ _fscr0+4,_fco1,_fscr0+5,_fco2 BOX UNICODE '║ ║║╝─╚║ ' color _sbkgr
+        RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,hb_BSubStr(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow-_fscr0)*D_REST+1))
         _fpopkey:=.f.
         return
       endif
-      @ 4,_fco1,5,_fco2 BOX UNICODE '║ ║║╝═╚║ ' color _sbkgr
+      @ _fscr0+4,_fco1,_fscr0+5,_fco2 BOX UNICODE '║ ║║╝═╚║ ' color _sbkgr
       _fpopkey:=.t.
       SET ORDER TO tag ele_kod
 #ifdef A_LPNUM

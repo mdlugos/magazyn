@@ -2,8 +2,8 @@
 #-lhbuddall
 #-debug -inc -rebuild
 #-gtxwc
-#-gttrm
--gui ../../harbour/contrib/gtqtc/gtqtc.hbc
+-std -gttrm
+#-gui ../../harbour/contrib/gtqtc/gtqtc.hbc
 hbcups.hbc
 #-lhbhpdf hbhpdf.hbc
 #rddads.hbc

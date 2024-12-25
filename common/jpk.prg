@@ -88,7 +88,7 @@ static func token(bin)
 if type('memvar->ksef_token')='C'
    return memvar->ksef_token
 endif
-return SubStr(bin,HB_HEXTONUM(SubStr(bin,1,2))+1,HB_HEXTONUM(SubStr(bin,3,2)))
+return hb_BSubStr(bin,HB_HEXTONUM(hb_BSubStr(bin,1,2))+1,HB_HEXTONUM(hb_BSubStr(bin,3,2)))
 
 func ksef_initsession()
 local ans,s,i,j,nip:=trim(strtran(memvar->firma_NIP,'-'))
@@ -277,7 +277,7 @@ static func uwagi2odb(uwagi)
      local a:={},s,i:=0,l
      uwagi:=alltrim(uwagi)
      if lower(uwagi)='odbiorca' 
-          uwagi:=ltrim(substr(uwagi,10))
+          uwagi:=ltrim(hb_BSubStr(uwagi,10))
           uwagi:=strtran(uwagi,';',HB_EOL())
           l:=mlcount(uwagi,254,,.f.)     
           for i:=1 to l

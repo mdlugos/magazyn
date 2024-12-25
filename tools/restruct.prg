@@ -165,7 +165,7 @@ proc append_field(x,i)
          c:=HB_CDPSELECT(DBI_CODEPAGE)
          f:=str(hb_BCode(hb_FieldGet(x[1]))-48,x[3])
          HB_CDPSELECT(c)
-      elseif !'B'$subs(c,2) .and. c<>'C' //QMWP
+      elseif !'B'$hb_BSubStr(c,2) .and. c<>'C' //QMWP
          f:=trim(f)
       endif
    endif

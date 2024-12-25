@@ -404,7 +404,7 @@ if valtype(g)='O'
    endif
 */
 endif
-r:=szukam({1,14,MaxRow(),,1,0,'FIRMY',{||numer_kol+if(""=uwagi,I,"*")+nazwa},{|_skey,_s|if(_skey=13,_s[12]:=.t.,gfirma(_skey,_s,getlist))},""})
+r:=szukam({1,14,MaxRow(),,1,0,'FIRMY',{||numer_kol+if(""=uwagi,I,"*")+nazwa},{|_skey,_s|if(_skey=13,_s[12]:=.t.,gfirma(_skey,_s,getlist,{}))},""})
       if r.and.valtype(g)='O'
          a:=MAIN->(len(EvAlDb(IndexKey(3)))-10-hb_fieldlen('index'))
       if len(t)>=main->(hb_fieldlen('nr_zlec'))

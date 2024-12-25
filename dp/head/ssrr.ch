@@ -28,7 +28,7 @@
 #define A_15CPI
 #define A_DRUKCOMP
 #define isPrinter() .t.
-#define DTOV(dat) tranr(subs(dtos(dat),5),"##.##")
+#define DTOV(dat) tranr(hb_BSubStr(dtos(dat),5),"##.##")
 #define DatE() MEMVAR->dzisiaj
 #define A_SET_DAT GERMAN
 #define STANY     INDX_MAT

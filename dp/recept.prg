@@ -16,7 +16,7 @@ field posilek,danie,ilosc,gramatura,jedn,skladnik,nazwa,indx_mat,przel,dieta,gra
 *****************
 func rec_in(deep,n)
 
-local stat,r,vars:={poprec,oldrec,keyp,startrec,curprompt,nowy,pg,na,gra,jed,die,op,il,di}
+local stat,p,r,vars:={poprec,oldrec,keyp,startrec,curprompt,nowy,pg,na,gra,jed,die,op,il,di}
 if keyp#NIL
    deep=.t.
 endif
@@ -44,7 +44,12 @@ begin sequence
 
   select sklad
     SET ORDER TO tag skl_dan
-
+#ifdef A_LPNUM      
+    if dbseek(keyp,,.t.)
+      p:=-val(pozycja)
+    endif
+#endif
+   
  if dbseek(keyp)
     kibord(chr(3))
  endif
@@ -54,7 +59,7 @@ select dania
 if deep
    inkey()
    if !eof()
-    FORM_EDIT({,-(41+A_DILTH),4,1,999,;
+    FORM_EDIT({p,-(41+A_DILTH),4,1,999,;
 {|f|RDOK1(f)},;
 {|f|rdok2(f,{})},;
 {||setcursor(0)},;
@@ -64,7 +69,7 @@ if deep
     endif
 else
     lock
-    FORM_EDIT({,-(41+A_DILTH),4,1,999,;
+    FORM_EDIT({p,-(41+A_DILTH),4,1,999,;
 {|f|RDOK1(f)},;
 {|f,g|rdok2(f,g)},;
 {|f,g|rdok3(f,g)},;
@@ -160,7 +165,7 @@ stat proc rdok3(_f)
       set order to tag dan_naz
       if dbseek(dseek(,'posilek,nazwa',pg,na)).and.gra+jed+die=gramatura+jedn+dieta .OR. empty(NA)
         @ _frow+_fskip,_fco1,_frow+_fskip*2,_fco2 BOX UNICODE '║ ║║╝─╚║ ' color _sbkgr
-        RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow-_fscr0)*D_REST+1))
+        RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,hb_BSubStr(_fscr,(_fco2-_fco1+1)*(1+2*_fskip+_frow-_fscr0)*D_REST+1))
         _fpopkey:=.f.
         return
       endif

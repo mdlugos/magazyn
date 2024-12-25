@@ -221,7 +221,7 @@ RETURN .F.
 *********************
 func dok_in(deep)
 //static poprec,oldrec,keyp,startrec
-local stat,r,vars:={poprec,oldrec,keyp,startrec,kos,il,di,gr},_f
+local stat,p,r,vars:={poprec,oldrec,keyp,startrec,kos,il,di,gr},_f
 
 if keyp#NIL
    deep=.t.
@@ -246,6 +246,12 @@ begin sequence
   keyp:=dtos(keyp[1])+keyp[2]
 
   select main
+#ifdef A_LPNUM      
+ if dbseek(keyp,,.t.)
+   p:=-val(pozycja)
+ endif
+#endif
+
   if dbseek(keyp)
      kibord(chr(3))
   endif
@@ -253,9 +259,9 @@ begin sequence
   if deep
   inkey()
   if !eof()
-    FORM_EDIT(_f:={0,59,3,1,999,;
+    FORM_EDIT(_f:={p,-59,3,1,999,;
 {|f|DOK1(f)},;
-{||dok2({})},;
+{|f|dok2(f,{})},;
 {||NIL},;
 {||DBSELECTAREA("MAIN"),ordsetfocus("main_rel")},;
 {|f|dok4(f,{},deep)},;
@@ -263,9 +269,9 @@ begin sequence
   endif
 else
     lock
-    FORM_EDIT(_f:={0,63,3,1,999,;
+    FORM_EDIT(_f:={p,-63,3,1,999,;
 {|f|DOK1(f)},;
-{|f,g|dok2(g)},;
+{|f,g|dok2(f,g)},;
 {|f,g|dok3(f,g,@poprec,@keyp,@startrec)},;
 {||DBSELECTAREA("MAIN"),ordsetfocus("main_rel")},;
 {|f,g|dok4(f,g,deep)},;
@@ -305,21 +311,21 @@ static procedure dok1(_f)
 
  set cursor off
  SET COLOR TO (_sbkgr)
-  hb_scroll(0,_fco1,0,_fco2)
-  @ 0,_fco1,3,_fco2 BOX UNICODE '╔═╗║║ ║║ '
-  @ 0,_fco1+1 say "SPIS OSÓB KORZYSTAJĄCYCH Z POSIŁKU" UNICODE
-  @ 1,2 say "Ilość" UNICODE
- @ 1,10 say "Cena"
-  @ 1,20 say "Data"
-  @ 1,26 say "Pos."
-  @ 1,42 say "Jadłospis" UNICODE
-  @ 1,52 say "Zapotrzebow"
-  @ 3,0,5,_fco2 BOX UNICODE '╠═╣║╝═╚║ '
-  @ 3,2 say '════Kto════════════════════════════Ilość═══di═gr═wartość' UNICODE
+  hb_scroll(_fscr0+0,_fco1,_fscr0+0,_fco2)
+  @ _fscr0+0,_fco1,_fscr0+3,_fco2 BOX UNICODE '╔═╗║║ ║║ '
+  @ _fscr0+0,_fco1+1 say "SPIS OSÓB KORZYSTAJĄCYCH Z POSIŁKU" UNICODE
+  @ _fscr0+1,_fco1+2 say "Ilość" UNICODE
+  @ _fscr0+1,_fco1+10 say "Cena"
+  @ _fscr0+1,_fco1+20 say "Data"
+  @ _fscr0+1,_fco1+26 say "Pos."
+  @ _fscr0+1,_fco1+42 say "Jadłospis" UNICODE
+  @ _fscr0+1,_fco1+52 say "Zapotrzebow"
+  @ _fscr0+3,_fco1,_fscr0+5,_fco2 BOX UNICODE '╠═╣║╝═╚║ '
+  @ _fscr0+3,_fco1+2 say '════Kto════════════════════════════Ilość═══di═gr═wartość' UNICODE
 
 return
 ***********
-static proc dok2(getlist)
+static proc dok2(_f,getlist)
   local da,kon
   select relewy
   if eof()
@@ -329,11 +335,11 @@ static proc dok2(getlist)
      da:=data
      kon:=posilek
   endif
-  @ 2,30 say posilki[max(1,ascan(posilki,kon))] COLOR _sbkgr
-  @ 2,43 say if(menu->(dbseek(dtos(da)+KON,.f.)),"jest","brak") color _sbkgr
-  @ 2,55 say if(zapot->(dbseek(dtos(da)+KON,.f.)),"jest","brak") color _sbkgr
-  @ 2,18 get da picture "@D" valid {||setpos(2,43),devout(if(menu->(dbseek(dtos(da)+KON,.f.)),"jest","brak"),_sbkgr),setpos(2,55),devout(if(zapot->(dbseek(dtos(da)+KON,.f.)),"jest","brak"),_sbkgr),.t.}
-  @ 2,30 get kon valid {|x,y|x:=NIL,y:=aczojs(posilki,,@x),devout(posilki[x],_sbkgr),setpos(2,43),devout(if(menu->(dbseek(dtos(da)+KON,.f.)),"jest","brak"),_sbkgr),setpos(2,55),devout(if(zapot->(dbseek(dtos(da)+KON,.f.)),"jest","brak"),_sbkgr),y}
+  @ _fscr0+2,_fco1+30 say posilki[max(1,ascan(posilki,kon))] COLOR _sbkgr
+  @ _fscr0+2,_fco1+43 say if(menu->(dbseek(dtos(da)+KON,.f.)),"jest","brak") color _sbkgr
+  @ _fscr0+2,_fco1+55 say if(zapot->(dbseek(dtos(da)+KON,.f.)),"jest","brak") color _sbkgr
+  @ _fscr0+2,_fco1+18 get da picture "@D" valid {||setpos(_fscr0+2,_fco1+43),devout(if(menu->(dbseek(dtos(da)+KON,.f.)),"jest","brak"),_sbkgr),setpos(_fscr0+2,_fco1+55),devout(if(zapot->(dbseek(dtos(da)+KON,.f.)),"jest","brak"),_sbkgr),.t.}
+  @ _fscr0+2,_fco1+30 get kon valid {|x,y|x:=NIL,y:=aczojs(posilki,,@x),devout(posilki[x],_sbkgr),setpos(_fscr0+2,_fco1+43),devout(if(menu->(dbseek(dtos(da)+KON,.f.)),"jest","brak"),_sbkgr),setpos(_fscr0+2,_fco1+55),devout(if(zapot->(dbseek(dtos(da)+KON,.f.)),"jest","brak"),_sbkgr),y}
   __setproc(procname(0))
 return
 **********
@@ -347,10 +353,10 @@ proc dok3(_f,getlist,poprec,keyp,startrec)
       eval(_fmainpre,_f)
       if dbseek(keyp)
          startrec:=recno()
-         @ 3,_fco1+3 say 'F9' color _sbkgr
+         @ _fscr0+3,_fco1+3 say 'F9' color _sbkgr
       else
          startrec:=0
-         @ 3,_fco1+3 BOX '══' UNICODE color _sbkgr
+         @ _fscr0+3,_fco1+3 BOX '══' UNICODE color _sbkgr
       endif
       select relewy
       changed:=.t.
@@ -362,8 +368,8 @@ proc dok3(_f,getlist,poprec,keyp,startrec)
          lock
          eval(_fmainpre,_f)
          if dbseek(dtos(da)+kon,.f.)
-            @ 4,_fco1,5,_fco2 BOX UNICODE '║ ║║╝─╚║ ' color _sbkgr
-            RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,(_fco2-_fco1+1)*2*(1+2*_fskip+_frow-_fscr0)+1))
+            @ _fscr0+4,_fco1,_fscr0+5,_fco2 BOX UNICODE '║ ║║╝─╚║ ' color _sbkgr
+            RESTSCREEN(1+2*_fskip+_frow,_fco1,MaxRow(),_fco2,hb_BSubStr(_fscr,(_fco2-_fco1+1)*2*(1+2*_fskip+_frow-_fscr0)+1))
             _fpopkey:=.f.
             poprec:=0
             select relewy
@@ -384,9 +390,9 @@ proc dok3(_f,getlist,poprec,keyp,startrec)
 #else
       poprec:=startrec
 #endif
-      @ 4,_fco1,5,_fco2 BOX UNICODE '║ ║║╝═╚║ ' color _sbkgr
+      @ _fscr0+4,_fco1,_fscr0+5,_fco2 BOX UNICODE '║ ║║╝═╚║ ' color _sbkgr
       if startrec#0
-         @ 5,_fco1+2 say hb_UTF8ToStr("podpowiedź z posiłku ")+tranR(keyp,"####.##.##/X")+" pod F9" color _sbkgr
+         @ _fscr0+5,_fco1+2 say hb_UTF8ToStr("podpowiedź z posiłku ")+tranR(keyp,"####.##.##/X")+" pod F9" color _sbkgr
       endif
   elseif _flp=0 .and. ile_pos=0 .and. !main->(dbseek(keyp)).and.!zapot->(dbseek(keyp)).and.!menu->(dbseek(keyp))
       delete while keyp=dtos(data)+posilek for D_LAN
@@ -436,10 +442,10 @@ static fpstart:=0
     di:=gr:=" "
     _fpos:=1
   endif
-  @ _fk,6 GET kos PICTURE "@RK XXX;XXXXXXXXXXXXXXXXXXXXXXXXXXX" VALID {|k,r|if(k:changed.and.fpstart=0,fpstart:=1,),k:=setkey(-8,NIL),r:=kosval(_f,getlist).and.showwar(_f,il,di),setkey(-8,k),r}
-  @ _fk,38 GET il PICTURE D_ILPIC valid {|k|if(k:changed.and.fpstart=0,fpstart:=2,),showwar(_f,il,di)}
-  @ _fk,45 GET di valid aczojs(diety).and.showwar(_f,il,di)
-  @ _fk,47 get gr valid aczojs(grupy)
+  @ _fk,_fco1+6 GET kos PICTURE "@RK XXX;XXXXXXXXXXXXXXXXXXXXXXXXXXX" VALID {|k,r|if(k:changed.and.fpstart=0,fpstart:=1,),k:=setkey(-8,NIL),r:=kosval(_f,getlist).and.showwar(_f,il,di),setkey(-8,k),r}
+  @ _fk,_fco1+38 GET il PICTURE D_ILPIC valid {|k|if(k:changed.and.fpstart=0,fpstart:=2,),showwar(_f,il,di)}
+  @ _fk,_fco1+45 GET di valid aczojs(diety).and.showwar(_f,il,di)
+  @ _fk,_fco1+47 get gr valid aczojs(grupy)
   __setproc(procname(0))
   getlist[1]:reader:=getlist[2]:reader:=getlist[3]:reader:=getlist[4]:reader:={|g|setkey(-8,{|p,g|g:=getactive(),p:=setkey(-8,NIL),f9(g,_f,getlist),setkey(-8,p)}),getreader(g),setkey(-8,NIL)}
   fpstart:=0
@@ -704,14 +710,14 @@ local rec,w,i,da,kon
    //i:=ile_pos
    select MAIN
    //i+=il-if(_fnowy .or. MAIN->dieta<>di,0,MAIN->ile_pos)
-   @ _fk,50  say strpic(round(il*D_CENA,A_ZAOKR),10,A_ZAOKR,"@E ",.t.) color _sbkgr
+   @ _fk,_fco1+50  say strpic(round(il*D_CENA,A_ZAOKR),10,A_ZAOKR,"@E ",.t.) color _sbkgr
 #ifdef A_DODATKI
-   @ _fk,49 say trim(main->opis) COLOR _sbkgr
+   @ _fk,_fco1+49 say trim(main->opis) COLOR _sbkgr
 #endif
    RELEWY->(dbgoto( rec ))
 //endif
-@ 2,9   say strpic(D_CENA,5,A_ZAOKR,"@E ",.t.) color _sbkgr
-@ 2,2   say relewy->ile_pos+if(_fnowy,il,il-ile_pos) picture D_ILPIC color _sbkgr
+@ _fscr0+2,_fco1+9   say strpic(D_CENA,5,A_ZAOKR,"@E ",.t.) color _sbkgr
+@ _fscr0+2,_fco1+2   say relewy->ile_pos+if(_fnowy,il,il-ile_pos) picture D_ILPIC color _sbkgr
 return .t.
 ***************************
 static FUNCTION kosval(_f,getlist)

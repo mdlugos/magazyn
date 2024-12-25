@@ -3,6 +3,7 @@
 #include "inkey.ch"
 
 #define D_REST 4
+//iif(hb_gtInfo( HB_GTI_COMPATBUFFER ),2,4)
 
 #ifdef A_MYSZ
 static proc drag_mysz(_f,job)
@@ -41,17 +42,17 @@ local scrlok,delta:={1,0,0}
         MHIDE()
         if _frow+(_fl-_fj+1)*_fskip>maxrow()
          _fl:=Int((maxrow()-_frow)/_fskip)+_fj-1
-         RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow-_fscr0)+1))
+         RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,MaxRow(),_fco2,hb_BSubStr(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow-_fscr0)+1))
          @ _fskip*(_fl-_fj+1)+_frow,_fco1 BOX '╙'+replicate('─',_fco2-_fco1-1)+'╜' UNICODE COLOR _sbkgr
         endif
 return
 #endif
 
 PROCEDURE FORM_EDIT(_f)
-local stat,rmpos,getlist,job,scrlok
+local stat,rmpos,getlist,job
 *parameters _fco1,_fco2,_frow,_fskip,_flpmax,_fdmpre,_fdmget,_fdmpost,_fmainpre,_fmainget,_fmainpost,_flastexit
 
-asize(_f,_fLEN)
+asize(_f,max(len(_f),_fLEN))
 
 DEFAULT _flp TO _flpmax
 _fi:=1
@@ -60,12 +61,22 @@ _fl:=1
 _fpos:=1
 _fposg:=1
 _fpopkey:=.f.
+// -_fco1 - ile pozycji ma sie mieścić na ekranie
+if _fscr0=NIL .and. _fco1<>NIL .and. _fco1<0
+   job:=(_fskip*(_fco1-1))-_frow
+   _fscr0:=min(max(0,row()+int(job/2)),max(0,MaxRow()+job))
+   _frow+=_fscr0
+   _fco1:=NIL
+else
+   DEFAULT _fscr0 TO 0
+endif
 if _fco2<0
    DEFAULT _fco1 TO col()
-   _fco1:=min(_fco1,maxcol()+_fco2)
-   _fco2:=_fco1-_fco2
+   _fco1:=min(_fco1,max(0,maxcol()+_fco2))
+   _fco2:=min(_fco1-_fco2,maxcol())
+else
+   DEFAULT _fco1 TO 0
 endif
-DEFAULT _fscr0 TO 0
 _fscr:=savescreen(_fscr0,_fco1,MaxRow(),_fco2)
 //_fnowy:=.f.
 
@@ -102,9 +113,9 @@ rmpos:=_fposg
 
 #ifdef A_MYSZ
 if job#NIL
-   scrlok:=ascan(getlist,{|g|g:row=job[3] .and. g:col<=job[2] .and. g:col+len(tran(g:varGet(),g:picture))-1>=job[2]})
-   if scrlok#0
-     rmpos:=scrlok
+   job:=ascan(getlist,{|g|g:row=job[3] .and. g:col<=job[2] .and. g:col+len(tran(g:varGet(),g:picture))-1>=job[2]})
+   if job#0
+     rmpos:=job
    endif
 endif
 #endif
@@ -351,14 +362,14 @@ READmodal(getlist,@rmpos)
 #endif
             DO CASE
 
-              CASE _fnowy
+              CASE _fnowy //przenumeruj po delete
                  --_flp
                  if _flp>0 .and. _fi<=_flp
                     skip
                     if _fi<_fl
                        hb_scroll(_fk,_fco1,_frow+_fskip*(_fl-_fj+1),_fco2,_fskip)
                        --_fl
-                       RESTSCREEN(1+_fskip*(_fl-_fj+1)+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(1+_fskip*(_fl-_fj+1)+_frow-_fscr0)+1))
+                       RESTSCREEN(1+_fskip*(_fl-_fj+1)+_frow,_fco1,MaxRow(),_fco2,hb_BSubStr(_fscr,D_REST*(_fco2-_fco1+1)*(1+_fskip*(_fl-_fj+1)+_frow-_fscr0)+1))
                        *********
                        _fkey:=_fi
                        do while _fk<=_frow+_fskip*(_fl-_fj)
@@ -378,7 +389,7 @@ READmodal(getlist,@rmpos)
                       --_fj
                       stat:=.t.
                    else
-                      RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,MaxRow(),_fco2,SUBSTR(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow-_fscr0)+1))
+                      RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,MaxRow(),_fco2,hb_BSubStr(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow-_fscr0)+1))
                       @ _fskip*(_fl-_fj+1)+_frow,_fco1 BOX '╚'+replicate('═',_fco2-_fco1-1)+'╝' UNICODE
                    endif
                 else
@@ -431,10 +442,17 @@ READmodal(getlist,@rmpos)
             skip
             ++_fi
           if _frow+_fskip*(_fi-_fj+1)>MaxRow()
-            stat:=.t.
-            ++_fj
             ++_fl
-            hb_scroll(_frow+_fskip, _fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2, _fskip)
+            if _fscr0>=_fskip
+               _fscr0-=_fskip
+               _frow-=_fskip
+               _fscr:=savescreen(_fscr0,_fco1,_fscr0+_fskip-1,_fco2)+_fscr
+               hb_scroll(_fscr0,_fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2, _fskip)
+            else
+               stat:=.t.
+               ++_fj
+               hb_scroll(_frow+_fskip, _fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2, _fskip)
+            endif
             if _fskip<2
               @ _frow+_fskip*(_fi-_fj), _fco1 BOX '║' UNICODE
               @ _frow+_fskip*(_fi-_fj), _fco2 BOX '║' UNICODE

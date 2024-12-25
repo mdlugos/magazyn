@@ -865,15 +865,15 @@ return(MEMOLINE( cString, nLineLength, nLineNumber, nTabSize, lWrap ))
 static func precomp(ret,bfor,bwhile)
 
    if ret='&:'
-      ret:=&(trim(SubStr(ret,3)))
+      ret:=&(trim(hb_BSubStr(ret,3)))
       if valtype(ret)="B"
          ret:=eval(ret)
       endif
    ELSEIF ret="FOR:"
-      bfor:=&(trim(SubStr(ret,5)))
+      bfor:=&(trim(hb_BSubStr(ret,5)))
       ret:=""
    elseif ret="WHILE:"
-      bwhile:=&(trim(SubStr(ret,7)))
+      bwhile:=&(trim(hb_BSubStr(ret,7)))
       ret:=""
    endif
 
@@ -1013,8 +1013,8 @@ FUNCTION __FrmLoad( cFrmFile )
         IF nFileError = F_OK
 
            // Is this a .FRM type file (2 at start and end of file)
-          IF BIN2W(SUBSTR(cFileBuff, 1, 2)) = 2 .AND.;
-              BIN2W(SUBSTR(cFileBuff, SIZE_FILE_BUFF - 1, 2)) = 2
+          IF BIN2W(hb_BSubStr(cFileBuff, 1, 2)) = 2 .AND.;
+              BIN2W(hb_BSubStr(cFileBuff, SIZE_FILE_BUFF - 1, 2)) = 2
 
               nFileError = F_OK
            ELSE
@@ -1036,37 +1036,37 @@ ENDIF
 IF nFileError = F_OK
 
    // Fill processing buffers
-   cLengthsBuff = SUBSTR(cFileBuff, LENGTHS_OFFSET, SIZE_LENGTHS_BUFF)
-   cOffsetsBuff = SUBSTR(cFileBuff, OFFSETS_OFFSET, SIZE_OFFSETS_BUFF)
-   cExprBuff    = SUBSTR(cFileBuff, EXPR_OFFSET, SIZE_EXPR_BUFF)
-   cFieldsBuff  = SUBSTR(cFileBuff, FIELDS_OFFSET, SIZE_FIELDS_BUFF)
-   cParamsBuff  = SUBSTR(cFileBuff, PARAMS_OFFSET, SIZE_PARAMS_BUFF)
+   cLengthsBuff = hb_BSubStr(cFileBuff, LENGTHS_OFFSET, SIZE_LENGTHS_BUFF)
+   cOffsetsBuff = hb_BSubStr(cFileBuff, OFFSETS_OFFSET, SIZE_OFFSETS_BUFF)
+   cExprBuff    = hb_BSubStr(cFileBuff, EXPR_OFFSET, SIZE_EXPR_BUFF)
+   cFieldsBuff  = hb_BSubStr(cFileBuff, FIELDS_OFFSET, SIZE_FIELDS_BUFF)
+   cParamsBuff  = hb_BSubStr(cFileBuff, PARAMS_OFFSET, SIZE_PARAMS_BUFF)
 
 
    // Process report attributes
    // Report width
-   aReport[ RP_WIDTH ]   := BIN2W(SUBSTR(cParamsBuff, PAGE_WIDTH_OFFSET, 2))
+   aReport[ RP_WIDTH ]   := BIN2W(hb_BSubStr(cParamsBuff, PAGE_WIDTH_OFFSET, 2))
 
    // Lines per page
-   aReport[ RP_LINES ]   := BIN2W(SUBSTR(cParamsBuff, LNS_PER_PAGE_OFFSET, 2))
+   aReport[ RP_LINES ]   := BIN2W(hb_BSubStr(cParamsBuff, LNS_PER_PAGE_OFFSET, 2))
 
    // Page offset (left margin)
-   aReport[ RP_LMARGIN ] := BIN2W(SUBSTR(cParamsBuff, LEFT_MRGN_OFFSET, 2))
+   aReport[ RP_LMARGIN ] := BIN2W(hb_BSubStr(cParamsBuff, LEFT_MRGN_OFFSET, 2))
 
    // Page right margin (not used)
-   aReport[ RP_RMARGIN ] := BIN2W(SUBSTR(cParamsBuff, RIGHT_MGRN_OFFSET, 2))
+   aReport[ RP_RMARGIN ] := BIN2W(hb_BSubStr(cParamsBuff, RIGHT_MGRN_OFFSET, 2))
 
-   nColCount  = BIN2W(SUBSTR(cParamsBuff, COL_COUNT_OFFSET, 2))
+   nColCount  = BIN2W(hb_BSubStr(cParamsBuff, COL_COUNT_OFFSET, 2))
 
    // Line spacing
    // Spacing is 1, 2, or 3
-   aReport[ RP_SPACING ] := IF(SUBSTR(cParamsBuff, DBL_SPACE_OFFSET, 1) $ "Yy", 2, 1)
+   aReport[ RP_SPACING ] := IF(hb_BSubStr(cParamsBuff, DBL_SPACE_OFFSET, 1) $ "Yy", 2, 1)
 
    // Summary report flag
-   aReport[ RP_SUMMARY ] := IF(SUBSTR(cParamsBuff, SUMMARY_RPT_OFFSET, 1) $ "Yy", .T., .F.)
+   aReport[ RP_SUMMARY ] := IF(hb_BSubStr(cParamsBuff, SUMMARY_RPT_OFFSET, 1) $ "Yy", .T., .F.)
 
    // Process report eject and plain attributes option byte
-   cOptionByte = ASC(SUBSTR(cParamsBuff, OPTION_OFFSET, 1))
+   cOptionByte = hb_BCode(hb_BSubStr(cParamsBuff, OPTION_OFFSET, 1))
 
    IF INT(cOptionByte / 4) = 1
       aReport[ RP_PLAIN ] := .T.          // Plain page
@@ -1084,7 +1084,7 @@ IF nFileError = F_OK
    ENDIF
 
    // Page heading, report title
-   nPointer = BIN2W(SUBSTR(cParamsBuff, PAGE_HDR_OFFSET, 2))
+   nPointer = BIN2W(hb_BSubStr(cParamsBuff, PAGE_HDR_OFFSET, 2))
 
   aReport[ RP_HEADER ] := ;
     ListAsArray(GetExpr( nPointer ),";",aReport[ RP_WIDTH ] - aReport[ RP_RMARGIN ] )
@@ -1092,7 +1092,7 @@ IF nFileError = F_OK
 
    // Process Groups
    // Group
-   nPointer = BIN2W(SUBSTR(cParamsBuff, GRP_EXPR_OFFSET, 2))
+   nPointer = BIN2W(hb_BSubStr(cParamsBuff, GRP_EXPR_OFFSET, 2))
 
    IF !EMPTY(cGroupExp := GetExpr( nPointer ))
 
@@ -1108,16 +1108,16 @@ IF nFileError = F_OK
       ENDIF
 
       // Group header
-      nPointer = BIN2W(SUBSTR(cParamsBuff, GRP_HDR_OFFSET, 2))
+      nPointer = BIN2W(hb_BSubStr(cParamsBuff, GRP_HDR_OFFSET, 2))
       aReport[ RP_GROUPS ][1][ RG_HEADER ] := GetExpr( nPointer )
 
       // Page eject after group
-      aReport[ RP_GROUPS ][1][ RG_AEJECT ] := IF(SUBSTR(cParamsBuff, PE_OFFSET, 1) $ "Yy", .T., .F.)
+      aReport[ RP_GROUPS ][1][ RG_AEJECT ] := IF(hb_BSubStr(cParamsBuff, PE_OFFSET, 1) $ "Yy", .T., .F.)
       
    ENDIF
 
    // Subgroup
-   nPointer = BIN2W(SUBSTR(cParamsBuff, SUB_EXPR_OFFSET, 2))
+   nPointer = BIN2W(hb_BSubStr(cParamsBuff, SUB_EXPR_OFFSET, 2))
 
    IF !EMPTY(cSubGroupExp := GetExpr( nPointer ))
 
@@ -1133,7 +1133,7 @@ IF nFileError = F_OK
       ENDIF
 
       // Subgroup header
-      nPointer = BIN2W(SUBSTR(cParamsBuff, SUB_HDR_OFFSET, 2))
+      nPointer = BIN2W(hb_BSubStr(cParamsBuff, SUB_HDR_OFFSET, 2))
       aReport[ RP_GROUPS ][2][ RG_HEADER ] := GetExpr( nPointer )
 
       // Page eject after subgroup
@@ -1185,8 +1185,8 @@ STATIC FUNCTION GetExpr( nPointer )
          nOffsetOffset = (nPointer * 2) - 1
       ENDIF
 
-      nExprOffset = BIN2W(SUBSTR(cOffsetsBuff, nOffsetOffset, 2))
-      nExprLength = BIN2W(SUBSTR(cLengthsBuff, nOffsetOffset, 2))
+      nExprOffset = BIN2W(hb_BSubStr(cOffsetsBuff, nOffsetOffset, 2))
+      nExprLength = BIN2W(hb_BSubStr(cLengthsBuff, nOffsetOffset, 2))
 
       // EXPR_OFFSET points to a NULL, so add one (+1) to get the string
       // and subtract one (-1) from EXPR_LENGTH for correct length
@@ -1195,11 +1195,11 @@ STATIC FUNCTION GetExpr( nPointer )
       nExprLength--
 
       // Extract string
-      cString = SUBSTR(cExprBuff, nExprOffset, nExprLength)
+      cString = hb_BSubStr(cExprBuff, nExprOffset, nExprLength)
 
       // dBASE does this so we must do it too
       // Character following character pointed to by pointer is NULL
-      IF Asc(SUBSTR(cString, 1, 1))=0 .AND. LEN(SUBSTR(cString,1,1)) = 1
+      IF hb_BCode(hb_BSubStr(cString, 1, 1))=0 .AND. hb_BLen(hb_BSubStr(cString,1,1)) = 1
          cString = ""
       ENDIF
    ENDIF
@@ -1223,25 +1223,25 @@ STATIC FUNCTION GetColumn( cFieldsBuffer, nOffset )
    LOCAL nPointer := 0, nNumber := 0, aColumn[ RC_COUNT ], cType
 
    // Column width
-   aColumn[ RC_WIDTH ] := BIN2W(SUBSTR(cFieldsBuffer, nOffset + FIELD_WIDTH_OFFSET, 2))
+   aColumn[ RC_WIDTH ] := BIN2W(hb_BSubStr(cFieldsBuffer, nOffset + FIELD_WIDTH_OFFSET, 2))
 
    // Total column?
-   aColumn[ RC_TOTAL ] := IF(SUBSTR(cFieldsBuffer, nOffset + FIELD_TOTALS_OFFSET, 1) $ "Yy", .T., .F.)
+   aColumn[ RC_TOTAL ] := IF(hb_BSubStr(cFieldsBuffer, nOffset + FIELD_TOTALS_OFFSET, 1) $ "Yy", .T., .F.)
    
    // Decimals width
-   aColumn[ RC_DECIMALS ] := BIN2W(SUBSTR(cFieldsBuffer, nOffset + FIELD_DECIMALS_OFFSET, 2))
+   aColumn[ RC_DECIMALS ] := BIN2W(hb_BSubStr(cFieldsBuffer, nOffset + FIELD_DECIMALS_OFFSET, 2))
 
    // Offset (relative to FIELDS_OFFSET), 'point' to
    // expression area via array OFFSETS[]
    
    // Content expression
-   nPointer = BIN2W(SUBSTR(cFieldsBuffer, nOffset +;
+   nPointer = BIN2W(hb_BSubStr(cFieldsBuffer, nOffset +;
                FIELD_CONTENT_EXPR_OFFSET, 2))
    aColumn[ RC_TEXT ] := GetExpr( nPointer )
    aColumn[ RC_EXP ] := &( "{ || " + GetExpr( nPointer ) + "}" )
    
    // Header expression
-   nPointer = BIN2W(SUBSTR(cFieldsBuffer, nOffset +;
+   nPointer = BIN2W(hb_BSubStr(cFieldsBuffer, nOffset +;
                FIELD_HEADER_EXPR_OFFSET, 2))
 
    aColumn[ RC_HEADER ] := ListAsArray(GetExpr( nPointer ), ";")
@@ -1342,21 +1342,21 @@ local txt
   ENDIF
 
   if nWidth == NIL
-    nWidth := Len(cList)
+    nWidth := hb_bLen(cList)
   end
 
-  DO WHILE ( Len(cList) <> 0 )
+  DO WHILE ( hb_bLen(cList) <> 0 )
 
-    nPos := AT(cDelimiter, cList)
+    nPos := hb_BAt(cDelimiter, cList)
 
     if ( nPos == 0 )
-      nPos := Len(cList)
+      nPos := hb_BLen(cList)
     end
 
     if ( nPos - 1 > nWidth )
       nPos := nWidth
 
-      while ( nPos > 0 .and. substr(cList, nPos, 1) <> " " )
+      while ( nPos > 0 .and. hb_BSubStr(cList, nPos, 1) <> " " )
         nPos --
       end
 
@@ -1365,17 +1365,17 @@ local txt
       end
     end
 
-    if ( SUBSTR( cList, nPos, 1 ) == cDelimiter )
-      txt:= SUBSTR(cList, 1, nPos - 1)
+    if ( hb_BSubStr( cList, nPos, 1 ) == cDelimiter )
+      txt:= hb_BSubStr(cList, 1, nPos - 1)
     else
-      txt:= SUBSTR(cList, 1, nPos )
+      txt:= hb_BSubStr(cList, 1, nPos )
     end
 
     if !empty(txt)
        aadd(aList,txt)
     endif
 
-    cList := SUBSTR(cList, nPos + 1)
+    cList := hb_BSubStr(cList, nPos + 1)
 
   ENDDO
 

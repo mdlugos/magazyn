@@ -458,6 +458,8 @@ return .f.
 *OBSŁUGA MYSZY
 ************************************
 #define D_REST 4
+//iif(hb_gtInfo( HB_GTI_COMPATBUFFER ),2,4)
+
 #ifdef A_MYSZ
 func mysz(_s,bx,cx,dx,myszflag)
 local ret,scrlok
@@ -470,7 +472,7 @@ local ret,scrlok
                   MHIDE()
                   dispbegin()
                   scrlok:=savescreen(_srow1-1,_scol1-1,_srow2,_scol2)
-                  RESTSCREEN(_srow1-1,_scol1-1,_srow2,_scol2,SUBSTR(_scr,1+(_srow1-1-_srowb)*(_scoln+2)*D_REST))
+                  RESTSCREEN(_srow1-1,_scol1-1,_srow2,_scol2,hb_BSubStr(_scr,1+(_srow1-1-_srowb)*(_scoln+2)*D_REST))
                   _srow1+=dx
                   _srow2+=dx
                   _scol1+=cx
@@ -691,7 +693,7 @@ RETURN .F.
 FUNCTION _stop(_s)
     local _stxt,_skey
     IF ! _sbf
-      RESTSCREEN(_srow1,_scol1-1,_srow2,_scol2,SUBSTR(_scr,1+(_srow1-_srowb)*(_scoln+2)*D_REST))
+      RESTSCREEN(_srow1,_scol1-1,_srow2,_scol2,hb_BSubStr(_scr,1+(_srow1-_srowb)*(_scoln+2)*D_REST))
       @ _srow1-1,_scol1-1 BOX TOPD UNICODE COLOR _SRAMKA
       @ _srow1-1,_scol1+_snagkol SAY RNTO2(_snagl) COLOR _SRAMKA
       _sbf=.T.
@@ -734,7 +736,7 @@ RETURN .f.
 FUNCTION _sbot(_s)
     local _skey,_stxt
     IF ! _sef
-      RESTSCREEN(_srow1-1,_scol1-1,_srow2-1,_scol2,SUBSTR(_scr,1+(_srow1-1-_srowb)*(_scoln+2)*D_REST))
+      RESTSCREEN(_srow1-1,_scol1-1,_srow2-1,_scol2,hb_BSubStr(_scr,1+(_srow1-1-_srowb)*(_scoln+2)*D_REST))
       @ _srow2,_scol1-1 BOX BOTD UNICODE COLOR _SRAMKA
       @ _srow2,_scol1+_snagkol SAY RSTO2(_snagl) COLOR _SRAMKA
       _sef=.T.
@@ -838,7 +840,7 @@ FUNCTION _sznak(_s,_skey)
           hb_scroll(_srow1,_scol1-1,_srow2,_scol2,l-_sm)
           _srow1+=_sm
           _srow2:=_srow1+_si
-          RESTSCREEN(_srow2+1,_scol1-1,_srowe,_scol2,SUBSTR(_scr,1+(_srow2+1-_srowb)*(_scoln+2)*D_REST))
+          RESTSCREEN(_srow2+1,_scol1-1,_srowe,_scol2,hb_BSubStr(_scr,1+(_srow2+1-_srowb)*(_scoln+2)*D_REST))
           RESTSCREEN(_srowb,_scol1-1,_srow1-1,_scol2,_scr)
           @ _srow1-1,_scol1-1 BOX TOPD UNICODE COLOR _SRAMKA
           @ _srow1-1,_scol1+_snagkol SAY RNTO2(_snagl) COLOR _SRAMKA
@@ -849,7 +851,7 @@ FUNCTION _sznak(_s,_skey)
           _si-=l+min(_sm-l,_si-_sm)
           _srow2:=_srow1+_si
           RESTSCREEN(_srowb,_scol1-1,_srow1-1,_scol2,_scr)
-          RESTSCREEN(_srow2,_scol1-1,_srowe,_scol2,SUBSTR(_scr,1+(_srow2-_srowb)*(_scoln+2)*D_REST))
+          RESTSCREEN(_srow2,_scol1-1,_srowe,_scol2,hb_BSubStr(_scr,1+(_srow2-_srowb)*(_scoln+2)*D_REST))
           IF _sbf
              @ _srow1-1,_scol1-1 BOX TOPD UNICODE COLOR _SRAMKA
              @ _srow1-1,_scol1+_snagkol SAY RNTO2(_snagl) COLOR _SRAMKA
@@ -867,7 +869,7 @@ FUNCTION _sznak(_s,_skey)
         _sm:=1
         CUT(_s)
       else
-        RESTSCREEN(_srow1-1,_scol1-1,_srow2,_scol2,SUBSTR(_scr,1+(_srow1-1-_srowb)*(_scoln+2)*D_REST))
+        RESTSCREEN(_srow1-1,_scol1-1,_srow2,_scol2,hb_BSubStr(_scr,1+(_srow1-1-_srowb)*(_scoln+2)*D_REST))
         //_sbf:=.t.
         //_sef:=.f.
         _srow1+=_sm-1
@@ -987,7 +989,7 @@ FUNCTION _slewo(_s,_skey)
     //_sef=.F.
     //_sbf=.F.
     l=len(eval(_spform,_spocz,_slth))+_sbeg-1
-    restscreen(_sm+_srow1-1,_scol1+l,_sm+_srow1-1,_scol2-1,hiattr(SUBSTR(_sprpt,l*D_REST+1)))
+    restscreen(_sm+_srow1-1,_scol1+l,_sm+_srow1-1,_scol2-1,hiattr(hb_BSubStr(_sprpt,l*D_REST+1)))
     setpos(_sm+_srow1-1,_scol1+l)
     if nextkey()#_skey .or. _slth=0 .OR. _si=0
       _sexpgd(0,_s,.f.,.f.)
@@ -1265,7 +1267,7 @@ local i
 
 _srow1:=_srow1+_sm-1
 if x=NIL
-  RESTSCREEN(_srow1-_sm,_scol1-1,_srow2,_scol2,SUBSTR(_scr,1+(_srow1-_sm-_srowb)*(_scoln+2)*D_REST))
+  RESTSCREEN(_srow1-_sm,_scol1-1,_srow2,_scol2,hb_BSubStr(_scr,1+(_srow1-_sm-_srowb)*(_scoln+2)*D_REST))
   if _srow1=_srowb+1
      ++_srow1
   endif
@@ -1276,10 +1278,10 @@ else
     adel(_srec,1)
   next
   if _sm > 1
-    RESTSCREEN(_srow1-_sm,_scol1-1,_srow1-2,_scol2,SUBSTR(_scr,1+(_srow1-_sm-_srowb)*(_scoln+2)*D_REST))
+    RESTSCREEN(_srow1-_sm,_scol1-1,_srow1-2,_scol2,hb_BSubStr(_scr,1+(_srow1-_sm-_srowb)*(_scoln+2)*D_REST))
   endif
   if _srow1+x < _srow2
-    RESTSCREEN(_srow1+x+1,_scol1-1,_srow2,_scol2,SUBSTR(_scr,1+(_srow1+x+1-_srowb)*(_scoln+2)*D_REST))
+    RESTSCREEN(_srow1+x+1,_scol1-1,_srow2,_scol2,hb_BSubStr(_scr,1+(_srow1+x+1-_srowb)*(_scoln+2)*D_REST))
   endif
   _srow2:=_srow1+x
   _si:=x
@@ -1368,7 +1370,7 @@ end sequence
     if _si>l .AND. ZMIANA .and. nextkey()#key
       _si:=l
       _srow2=_srow1+_si
-      RESTSCREEN(_srow2+1,_scol1-1,_srowe,_scol2,SUBSTR(_scr,1+(_srow2+1-_srowb)*(_scoln+2)*D_REST))
+      RESTSCREEN(_srow2+1,_scol1-1,_srowe,_scol2,hb_BSubStr(_scr,1+(_srow2+1-_srowb)*(_scoln+2)*D_REST))
       IF _sef
         @ _srow2,_scol1-1 BOX BOTD UNICODE COLOR _SRAMKA
         @ _srow2,_scol1+_snagkol SAY RSTO2(_snagl) COLOR _SRAMKA

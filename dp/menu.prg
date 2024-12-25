@@ -20,7 +20,7 @@ field danie,posilek,DATA,nazwa,gramatura,jedn,dieta,ilosc,ile_pos,d_wartosc,opis
 func jad_in(deep)
 
 
-LOCAL F3,stat,r,vars:={poprec,oldrec,keyp,startrec,dan,die}
+LOCAL F3,stat,p,r,vars:={poprec,oldrec,keyp,startrec,dan,die}
 if keyp#NIL
    deep=.t.
 endif
@@ -36,10 +36,7 @@ begin sequence
   select dania
       SET ORDER TO tag dan_kod
 
-      r:=min(maxcol(),hb_fieldlen('nazwa')+A_DILTH+23)
-      if col()+r>maxcol()
-        setpos(row(),maxcol()-r)
-      endif
+      r:=hb_fieldlen('nazwa')+A_DILTH+23
       
 
   SELECT RELEWY
@@ -47,6 +44,11 @@ begin sequence
   keyp:=dtos(keyp[1])+keyp[2]
 
  select menu
+#ifdef A_LPNUM      
+ if dbseek(keyp,,.t.)
+   p:=-val(pozycja)
+ endif
+#endif
 
  if dbseek(keyp)
     kibord(chr(3))
@@ -58,7 +60,7 @@ begin sequence
   inkey()
     if !eof()
     F3:=setkey(-2,NIL)
-    FORM_EDIT({col(),col()+r,3,1,999,;
+    FORM_EDIT({p,-r,3,1,999,;
 {|f|MDOK1(f)},;
 {|f|mdok2(f,{})},;
 {||setcursor(0)},;
@@ -70,7 +72,7 @@ begin sequence
 else
     lock
 
-    FORM_EDIT({col(),col()+r,3,1,999,;
+    FORM_EDIT({p,-r,3,1,999,;
 {|f|MDOK1(f)},;
 {|f,g|mdok2(f,g)},;
 {|f,g|dok3(f,g,@poprec,@keyp,@startrec),showh(f,relewy->data,relewy->posilek)},;
@@ -97,25 +99,25 @@ static PROCEDURE MDOK1(_f)
 
  SET CURSOR OFF
  SET COLOR TO (_SBKGR)
-  hb_scroll(0,_fco1,0,_fco2)
-  @ 0,_fco1,3,_fco2 BOX UNICODE '╔═╗║║ ║║ '
-  @ 0,_fco1+1 SAY "JADŁOSPIS" UNICODE
-  @ 1,_fco1+1 say "Ilość" UNICODE
-  @ 1,_fco1+11 say "Cena" 
-  @ 1,_fco1+22 say "Data"
-  @ 1,_fco1+31 say "Posiłek" UNICODE
-  @ 1,_fco2-16 say "Zapotrzebowanie"
-  @ 3,_fco1,5,_fco2 BOX UNICODE '╠═╣║╝═╚║ '
-  @ 3,_fco1+6 SAY 'Danie'+padl('Gramatura═Dieta',_fco2-_fco1-12-A_DILTH,'═')
-  @ 3,_fco2-4 SAY 'Ilp'
+  hb_scroll(_fscr0+0,_fco1,_fscr0+0,_fco2)
+  @ _fscr0+0,_fco1,_fscr0+3,_fco2 BOX UNICODE '╔═╗║║ ║║ '
+  @ _fscr0+0,_fco1+1 SAY "JADŁOSPIS" UNICODE
+  @ _fscr0+1,_fco1+1 say "Ilość" UNICODE
+  @ _fscr0+1,_fco1+11 say "Cena" 
+  @ _fscr0+1,_fco1+22 say "Data"
+  @ _fscr0+1,_fco1+31 say "Posiłek" UNICODE
+  @ _fscr0+1,_fco2-16 say "Zapotrzebowanie"
+  @ _fscr0+3,_fco1,_fscr0+5,_fco2 BOX UNICODE '╠═╣║╝═╚║ '
+  @ _fscr0+3,_fco1+6 SAY 'Danie'+padl('Gramatura═Dieta',_fco2-_fco1-12-A_DILTH,'═')
+  @ _fscr0+3,_fco2-4 SAY 'Ilp'
 
 return
 ********
 static proc showh(_f,da,kon)
-  @ 2,_fco1+1 say ile_pos picture D_ILPIC color _sbkgr
-  @ 2,_fco1+8 say strpic(WARTOSC/ile_pos,7,A_ZAOKR,"@E ",.t.) color _sbkgr
-  @ 2,_fco1+33 say SubStr(posilki[max(1,ascan(posilki,kon))],3,11) COLOR _sbkgr
-  @ 2,_fco2-5 say if(zapot->(dbseek(dtos(da)+kon,.f.)),"jest","brak") color _sbkgr
+  @ _fscr0+2,_fco1+1 say ile_pos picture D_ILPIC color _sbkgr
+  @ _fscr0+2,_fco1+8 say strpic(WARTOSC/ile_pos,7,A_ZAOKR,"@E ",.t.) color _sbkgr
+  @ _fscr0+2,_fco1+33 say SubStr(posilki[max(1,ascan(posilki,kon))],3,11) COLOR _sbkgr
+  @ _fscr0+2,_fco2-5 say if(zapot->(dbseek(dtos(da)+kon,.f.)),"jest","brak") color _sbkgr
 
 #ifdef A_WAGI
   pg:=SubStr(PosGr,at(kon,PosStr),1)
@@ -135,8 +137,8 @@ static proc mdok2(_f,getlist)
      kon:=posilek
   endif
   showh(_f,da,kon)
-  @ 2,_fco1+18 get da valid {||showh(_f,da,kon),.t.}
-  @ 2,_fco1+30 get kon valid {|y|y:=aczojs(posilki),showh(_f,da,kon),y}
+  @ _fscr0+2,_fco1+18 get da valid {||showh(_f,da,kon),.t.}
+  @ _fscr0+2,_fco1+30 get kon valid {|y|y:=aczojs(posilki),showh(_f,da,kon),y}
   __setproc(procname(0))
 
 return

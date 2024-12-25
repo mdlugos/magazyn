@@ -224,7 +224,7 @@ ELSEIF valtype(_s)='A' .and. ReadkeY()#K_ESC .AND.! _sfilt==txt
          --_sm
       endif
 #define D_REST 4
-      RESTSCREEN(_srow2,_scol1-1,_srow2,_scol2,SUBSTR(_scr,1+(_srow2-_srowb)*(_scoln+2)*D_REST))
+      RESTSCREEN(_srow2,_scol1-1,_srow2,_scol2,hb_BSubStr(_scr,1+(_srow2-_srowb)*(_scoln+2)*D_REST))
       --_srow2
       _sprpt:=savescreen(_sm+_srow1-1,_scol1,_sm+_srow1-1,_scol2-1)
   endif
