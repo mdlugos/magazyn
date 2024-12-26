@@ -207,6 +207,10 @@ local a,l,i,y:=""
  if (HB_ps()$x)
     if file(x)
        y:=x
+#ifdef __PLATFORM__UNIX
+    elseif file(lower(x))
+       y:=lower(x)
+#endif       
     else
        x:=SubStr(x,rat(HB_ps(),x)+1)
     endif
@@ -218,6 +222,10 @@ local a,l,i,y:=""
       y:=a[i]+x
       if file(y)
         exit
+#ifdef __PLATFORM__UNIX
+      elseif file(y:=a[i]+lower(x))
+        exit
+#endif       
       endif
       y:=""
    next

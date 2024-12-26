@@ -10,9 +10,11 @@ static proc drag_mysz(_f,job)
 local scrlok,delta:={1,0,0}
 
         MSHOW()
-        scrlok:=savescreen(_fscr0,_fco1,_frow+(_fl-_fj+1)*_fskip,_fco2)
         do while delta[1]=1
            if delta[2]#0 .or. delta[3]#0
+              if scrlok=NIL 
+                scrlok:=savescreen(_fscr0,_fco1,_frow+(_fl-_fj+1)*_fskip,_fco2)
+              endif 
               dispbegin()
               RESTSCREEN(_fscr0,_fco1,MaxRow(),_fco2,_fscr)
               _fscr0+=delta[3]
@@ -153,7 +155,6 @@ READmodal(getlist,@rmpos)
 
 
     eval(_fmainpre,_f)
-
     stat:=(_fi=1 .and. _fl=1)
 #ifdef A_MYSZ
     if _fkey=GE_MOUSE //.and. job[3]<=_frow+(_fl-_fj+1)*_fskip
@@ -163,25 +164,38 @@ READmodal(getlist,@rmpos)
         drag_mysz(_f,job)
     endif
 #endif
-
     if nextkey()=0 .and. !stat .and. !_fpopkey .and. _flp>1
        stat:={_fi,recno()}
-       _fj:=max(0,max(_fl,_fi)-int((MaxRow()-_frow)/_fskip)+1)
+       _fl:=max(_fl,_fi)
+       _fj:=max(0,_fl-int((MaxRow()-_frow)/_fskip)+1)
+       if _fi-1<_fj .and. _fscr0>0
+         SET COLOR TO (_sbkgr)
+         job:=min(_fscr0,_fskip*(1+_fj-_fi))
+         _fscr0-=job
+         _frow-=job
+         _fj:=max(0,_fl-int((MaxRow()-_frow)/_fskip)+1)
+         _fscr:=savescreen(_fscr0,_fco1,_fscr0+job-1,_fco2)+_fscr
+         hb_scroll(_fscr0,_fco1, _frow+_fskip*(_fi-_fj+1)+job, _fco2, job)
+       endif
        skip _fj+1-_fi
        _fl:=_fi:=_fj+1
-       _fpos:=_fkey:=0
-       while _fi<=_flp .and. _frow+_fskip*(_fi-_fj+1)<=MaxRow()
-#ifdef __PLATFORM__DOS
-         @ _fskip*(_fi-_fj)+_frow,_fco1,_fskip*(_fi-_fj+1)+_frow,_fco2 BOX UNICODE IF( _flp<=_fi,'║ ║║╝═╚║ ','║ ║║╝─╚║ ') COLOR _sbkgr
-#else
-         @ _fskip*(_fi-_fj)+_frow,_fco1,_fskip*(_fi-_fj+1)+_frow,_fco2 BOX UNICODE IF( _flp<=_fi,'║ ║║╝═╚║ ','║ ║║╜─╙║ ') COLOR _sbkgr
-#endif         
+       _fpos:=0
+       while _fi<=_flp .and. _frow+_fskip*(_fi-_fj+1)<=MaxRow()+_fscr0
          _fl:=_fi
+         SET COLOR TO (_sbkgr)
+         if _frow+_fskip*(_fi-_fj+1)>MaxRow()
+            job:=_frow+_fskip*(_fi-_fj+1)-MaxRow()
+            _fscr0-=job
+            _frow-=job
+            _fscr:=savescreen(_fscr0,_fco1,_fscr0+job-1,_fco2)+_fscr
+            hb_scroll(_fscr0,_fco1, _frow+_fskip*(_fi-_fj)+job-1, _fco2, job)
+         endif
+         @ _fskip*(_fi-_fj)+_frow,_fco1,_fskip*(_fi-_fj+1)+_frow,_fco2 BOX UNICODE if(_flp>_fl,'║ ║║╜─╙║ ','║ ║║╝═╚║ ')
          _fk:=_frow+_fskip*(_fi-_fj)
          job:=right(lTrim(sTr(_fi)),4)
-         @ _fk,_fco1+max(0,4-len(job)) say job+'.' color _sbkgr
-         getlist:={}
+         @ _fk,_fco1+max(0,4-len(job)) say job+'.'
          SET COLOR TO (_SNORM)
+         getlist:={}
          _fkey:=nextkey()
          eval(_fmainget,_f,getlist)
          if _fpopkey .or. _fkey<>0
@@ -231,6 +245,21 @@ READmodal(getlist,@rmpos)
          endif
          _fpopkey:=.t.
       elseif !_fpopkey .and. _fi<_flp
+         if _frow+_fskip*(_fi-_fj+1)>MaxRow() .and. _frow+_fskip*(_fi-_fj+1)<=MaxRow()+_fscr0
+            SET COLOR TO (_sbkgr)
+            job:=MaxRow()-_frow+_fskip*(_fi-_fj+1)
+            _fscr0-=job
+            _frow-=job
+            _fscr:=savescreen(_fscr0,_fco1,_fscr0+job-1,_fco2)+_fscr
+            hb_scroll(_fscr0,_fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2, job)
+            if _fskip<2
+               @ _frow+_fskip*(_fi-_fj), _fco1 BOX '║' UNICODE
+               @ _frow+_fskip*(_fi-_fj), _fco2 BOX '║' UNICODE
+             else
+               @  _frow+_fskip*(_fi-_fj), _fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2 BOX UNICODE '║ ║║║ ║║'
+             endif
+             SET COLOR TO (_SNORM)
+         endif
          _fkey:=K_PGDN  // refr
       else
          stat:=.t.
@@ -412,23 +441,32 @@ READmodal(getlist,@rmpos)
                     _fi:=1
                     exit
                    ELSEif _fi-_fj=0
-                    stat:=.t.
                     --_fj
-                    if _fskip*(_fl-_fj+1)+_frow>MaxRow()
+                    if _fskip*(_fl-_fj+1)+_frow>MaxRow()+_fscr0
                          --_fl
                         if _fl=_flp-1
                           @ _fskip*(_fl-_fj+1)+_frow,_fco1 BOX '╙'+replicate('─',_fco2-_fco1-1)+'╜' UNICODE
                         endif
-                    else
-                        @ (_fl-_fj)*_fskip+_frow,_fco1,(_fl-_fj+1)*_fskip+_frow,_fco2 BOX UNICODE '║ ║║╝═╚║'
+                        hb_scroll(_fskip+_frow,_fco1,_frow+_fskip*(_fl-_fj+1)-1,_fco2,-_fskip)
+                     else
+                        stat:=min(_fskip,_fscr0)
+                        if stat>0
+                           _fscr0-=stat
+                           _frow-=stat
+                           _fscr:=savescreen(_fscr0,_fco1,_fscr0+stat-1,_fco2)+_fscr
+                           hb_scroll(_fscr0,_fco1, _fskip+_frow+stat-1, _fco2, stat)
+                        endif
+                        if stat<_fskip
+                           hb_scroll(_fskip+_frow+stat,_fco1, _frow+_fskip*(_fl-_fj+1), _fco2, stat-_fskip)
+                        endif
                     endif
-                    hb_scroll(_fskip+_frow,_fco1,_frow+_fskip*(_fl-_fj+1)-1,_fco2,-_fskip)
                     if _fskip<2
                       @  _fskip+_frow,_fco1 BOX "║" UNICODE
                       @  _fskip+_frow,_fco2 BOX "║" UNICODE
                     else
                       @  _fskip+_frow,_fco1,2*_fskip+_frow-1,_fco2 BOX UNICODE '║ ║║║ ║║'
                     endif
+                    stat:=.t.
                  ENDIF
                  Skip -1
 
@@ -443,22 +481,28 @@ READmodal(getlist,@rmpos)
             ++_fi
           if _frow+_fskip*(_fi-_fj+1)>MaxRow()
             ++_fl
-            if _fscr0>=_fskip
-               _fscr0-=_fskip
-               _frow-=_fskip
-               _fscr:=savescreen(_fscr0,_fco1,_fscr0+_fskip-1,_fco2)+_fscr
-               hb_scroll(_fscr0,_fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2, _fskip)
+            if _frow+_fskip*(_fi-_fj+1)<=MaxRow()+_fscr0
+               stat:=_frow+_fskip*(_fi-_fj+1)-MaxRow()
+               _fscr0-=stat
+               _frow-=stat
+               _fscr:=savescreen(_fscr0,_fco1,_fscr0+stat-1,_fco2)+_fscr
+               hb_scroll(_fscr0,_fco1, _frow+_fskip*(_fi-_fj)+stat-1, _fco2, stat)
+               if stat<_fskip
+                  hb_scroll(_frow+_fskip*(_fi-_fj)+stat,_fco1, Maxrow(), _fco2, stat-_fskip)
+               endif
             else
-               stat:=.t.
                ++_fj
                hb_scroll(_frow+_fskip, _fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2, _fskip)
             endif
-            if _fskip<2
-              @ _frow+_fskip*(_fi-_fj), _fco1 BOX '║' UNICODE
-              @ _frow+_fskip*(_fi-_fj), _fco2 BOX '║' UNICODE
-            else
-              @  _frow+_fskip*(_fi-_fj), _fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2 BOX UNICODE '║ ║║║ ║║'
+            if _fl=_fi
+               if _fskip<2
+               @ _frow+_fskip*(_fi-_fj), _fco1 BOX '║' UNICODE
+               @ _frow+_fskip*(_fi-_fj), _fco2 BOX '║' UNICODE
+               else
+               @  _frow+_fskip*(_fi-_fj), _fco1, _frow+_fskip*(_fi-_fj+1)-1, _fco2 BOX UNICODE '║ ║║║ ║║'
+               endif
             endif
+            stat:=.t.
           endif
           if _fi>_fl
             stat:=.t.

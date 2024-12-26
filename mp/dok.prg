@@ -407,17 +407,34 @@ endif
   private _SRAMKA:="G+/B"
   a:=NIL
   IF PRZEGL .or. !NOWYDM
-     a:=-max(D_LPVALFIELD(pozycja),4)
+     a:=-D_LPVALFIELD(pozycja)
      if a=0
         a:=NIL
-     endif
-  ENDIF
+     else
+      a:=-1
+      if dok_zew#"W"
+         a--
+         #ifdef A_KSEF
+         a--
+         #endif
+         #ifdef A_FK
+         a--
+         #endif
+      endif
+      if dok_p_r='F'
+         a--
+         #ifdef A_FAT
+         a--
+         #endif
+      endif
+   endif
+ENDIF
   IF PRZEGL
     select main
     set order to TAG MAIN_NRK
     SEEK DM->(KEY_DOK+NR_DOWODU)
     select dm
-    _f:=asize({a,-79,0,2,dok_lpm,;
+    _f:=asize({a,-79,2,2,dok_lpm,;
          {|_f|DOK10(_f),dok11(_f)},;
          {||NIL},{||NIL},;
          {|_f|DBSELECTAREA("MAIN"),ORDSETFOCUS("MAIN_NRK"),DBSEEK(DM->(KEY_DOK+NR_DOWODU+D_LPPUT(_fi)),.f.)},;
@@ -431,7 +448,7 @@ private HLINK
     private chgpos
 #endif
     _s:=array(_sLEN)
-    _f:=asize({a,-79,0,2,dok_lpm,;
+    _f:=asize({a,-79,2,2,dok_lpm,;
          {|_f|DOK1(_f),dok10(_f)},;
          {|_f,g|dok2(_f,g)},;
          {|_f,g|dok3(_f,g)},;
@@ -504,7 +521,8 @@ procedure dok1(_f)
   #define D_WAR
 #endif
   local x,i,p,s
-  @ _fscr0,_fco1 SAY left(trim(magazyny[mag_poz])+" "+adres_mag[mag_poz],_fco2-_fco1-12)
+  @ _fscr0,_fco1 SAY pad(trim(magazyny[mag_poz])+" "+adres_mag[mag_poz],_fco2-_fco1+1)
+  DevPos(_fscr0,_fco2-13)
   IF NOWYDM
     IF KEY_DOK<>KEY_PAR
       seek KEY_PAR LAST
@@ -1002,7 +1020,8 @@ return
 ********************
 procedure dok11(_f)
   set color to (_snorm)
-  @ _fscr0,_fco1 say trim(magazyny[mag_poz])
+  @ _fscr0,_fco1 say pad(magazyny[mag_poz],_fco2-_fco1+1)
+  DevPos(_fscr0,_fco2 - 40)
     if canopen
        devout(hb_UTF8ToStr(" ZAMKNIĘTY"),"W+")
 #ifdef A_KONTROLA
@@ -1090,7 +1109,7 @@ procedure dok11(_f)
     @ _frow-1,_fco1+11 SAY nr_ksef
     @ _frow-1,_fco1+50 BOX hb_utf8Left(binfieldget('KSEF',.t.),_fco2-_fco1-51) UNICODE
 #endif
-    @ _frow,_fco1+2 say pad(uwagi,_fco2-_fco1-3)
+    @ _frow,_fco1+2 say pad(uwagi,_fco2-_fco1-2)
     return
 #ifdef A_DATAVAT
   elseif dok_zew$"UV" .and. pm=1

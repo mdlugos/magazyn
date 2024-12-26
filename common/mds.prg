@@ -462,41 +462,44 @@ return .f.
 
 #ifdef A_MYSZ
 func mysz(_s,bx,cx,dx,myszflag)
-local ret,scrlok
-         if dx=_srow1-1 .and. cx=_scol2 .and. bx=1
+local ret,scrlok,delta:={1,0,0}
+         if dx>=_srow1 .and. dx<_srow2 .and. cx>=_scol1 .and. cx<_scol2 .and. bx=1
             MSHOW()
-            do while bx=1
-               cx:=max(cx,_scoln+1)-_scol2
-               dx:=min(max(dx,_srowb)-_srow1+1,_srowe-_srow2)
-               if cx#0 .or. dx#0
-                  MHIDE()
-                  dispbegin()
+            do while delta[1]=1
+              if delta[2]#0 .or. delta[3]#0
+                if scrlok=NIL 
                   scrlok:=savescreen(_srow1-1,_scol1-1,_srow2,_scol2)
-                  RESTSCREEN(_srow1-1,_scol1-1,_srow2,_scol2,hb_BSubStr(_scr,1+(_srow1-1-_srowb)*(_scoln+2)*D_REST))
-                  _srow1+=dx
-                  _srow2+=dx
-                  _scol1+=cx
-                  _scol2+=cx
-                  //_snagkol+=cx
-                  setpos(row()+dx,col()+cx)
-                  if cx#0
-                     _scr:=savescreen(_srowb,_scol1-1,_srowe,_scol2)
-                  endif
-                  restscreen(_srow1-1,_scol1-1,_srow2,_scol2,scrlok)
-                  dispend()
-                  MSHOW()
-               endif
-               bx:=inkey(0,INKEY_MOVE + INKEY_LUP)
-               if bx=1003
-                  bx:=0
-               else
-                  bx:=1
-               endif
-               cx:=max(0,min(maxcol(),mcol()))
-               dx:=max(0,min(MaxRow(),mrow()))
-            enddo
+                endif 
+                dispbegin()
+                RESTSCREEN(max(_srowb,_srow1-1),_scol1-1,_srow2,_scol2,hb_BSubStr(_scr,1+max(0,_srow1-_srowb-1)*(_scoln+2)*D_REST))
+                _srow1+=delta[3]
+                _srow2+=delta[3]
+                _scol1+=delta[2]
+                _scol2+=delta[2]
+                setpos(row()+delta[3],col()+delta[2])
+                if delta[2]#0
+                  _scr:=savescreen(_srowb,_scol1-1,_srowe,_scol2)
+                endif
+                restscreen(max(_srowb,_srow1-1),_scol1-1,min(_srow2,_srowe),_scol2,hb_BSubStr(scrlok,1+max(0,_srowb-_srow1+1)*(_scoln+2)*D_REST))
+                dispend()
+             endif
+             delta[1]:=inkey(0,INKEY_MOVE + INKEY_LUP)
+             if delta[1]=1003
+                delta[1]:=0
+             else
+                delta[1]:=1
+             endif
+             delta[2]:=max(0,min(maxcol(),mcol()))-cx
+             delta[3]:=max(0,min(MaxRow(),mrow()))-dx
+             if delta[2]+_scol1<1 .or. delta[2]+_scol2>maxcol() .or. delta[3]+dx<=_srowb .or. delta[3]+dx>=_srowe
+                exit
+             endif
+             cx+=delta[2]
+             dx+=delta[3]
+          enddo
+        endif 
             MHIDE()
-         elseif bx=2 .or. cx>=_scol2 .or. cx <_scol1 .or. dx < _srow1-1 .or. dx>_srow2
+         if bx=2 .or. cx>=_scol2 .or. cx <_scol1 .or. dx < _srow1-1 .or. dx>_srow2
             if myszflag
                return evakey(27,_s)
             endif
@@ -519,14 +522,21 @@ local ret,scrlok
             endif
          else
             if dx#_sm+_srow1-1
-               _sm:=dx-_srow1+1
+              _sm:=dx-_srow1+1
               if _sbeg>0
                    HIGHLIGHT LINE dx
               else
                    SAVE LINE dx
                    ALTERNATE LINE dx BUFFER _sprpt ATTRIB 119
               endif
-            endif
+              if scrlok<>NIL
+                if _srow1<_srowb .or. _srow2>_srowe
+                   go _srec[_sm]
+                   REFRESH(1,_s)
+                endif
+                return .f.
+              endif  
+             endif
             return evakey(13,_s)
          endif
 
@@ -743,20 +753,20 @@ FUNCTION _sbot(_s)
       _sbf=.F.
       _srow1=_srow2
       _si=0
-      IF _skon#NIL
-        SEEK _skon
+      IF valtype(_skon)='C'
+        SEEK _skon LAST
        ELSE
         IF valtype(_spocz)$"MC" .and.ordnumber()#0
           IF ''=_spocz
-            GO 0
+            GO BOTTOM
           ELSE
-            dbSEEK(_spocz,,.t.)// !DbOrderInfo(DBOI_ISDESC))
+            SEEK _spocz LAST
           ENDIF
          ELSE
-          GO 0
+          GO BOTTOM
         ENDIF
       ENDIF
-      IF _skip(-1,0,_s)
+      //IF _skip(0,0,_s)
         expg(_s)
         if _sbeg>0
            HIGHLIGHT LINE _srow1
@@ -767,7 +777,7 @@ FUNCTION _sbot(_s)
         DO WHILE _srown>_si .AND. _skip(-1,0,_s)
           expg(_s)
         ENDDO
-      ENDIF
+      //ENDIF
       IF   _sbf
         @ _srow1-1,_scol1-1 BOX TOPD UNICODE COLOR _SRAMKA
         @ _srow1-1,_scol1+_snagkol SAY RNTO2(_snagl) COLOR _SRAMKA
