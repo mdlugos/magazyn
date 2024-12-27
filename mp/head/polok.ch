@@ -1,21 +1,29 @@
+//#define PC852 'PLWIN'
+#define PC852 "PL852"
+
+#ifndef __PLATFORM__DOS
+  #define A_UNICODE 'UTF8EX'
+//#define A_KSEF
+//#define A_REGON
+//#define A_TPD
+
+  #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
+#endif
+
 #ifdef __PLATFORM__WINDOWS
   #define PLWIN
   #define A_WIN_PRN eval(memvar->do_getoprn)
   #define A_ZEBRA
   #define A_EXT hb_hextonum, hb_numtohex, curdir
 #endif
-//#define A_UNICODE 'UTF8EX'
-//#define A_KSEF
-//#define A_REGON
-//#define A_TPD
-#define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
+
+#include "lan.ch"
+
 #define A_BACKUP MEMVAR->backup
 #define A_VIEWCZAK
 //#define A_VIEWVAT
 #define A_WL
 #define UpP(x) UPPER(x)
-#define PC852 "PL852M"
-#include "lan.ch"
 #define A_DDBF
 //#define A_NOREFRESH
 #define A_JMALTTOT(il,nz,lam,x) ((il)*(lam)->przel)

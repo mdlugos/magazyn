@@ -281,13 +281,20 @@ endif
     set order to TAG INDX_NUM
     set relation to
     set filter to
-    set cursor off
-  scr= savescreen(9,1,22,78)
+  //DevPos(8,40)  //temporary fix window to @ 9,1,22,78
+  scr:=window(12,74,'BG+/B,I,,RG+/BG,W+/B') //savescreen(9,1,22,78)
+  #define wr scr[1]-9
+  #define wc scr[2]-1
+  #command @ <row>, <col> SAW <sayxpr> [<Clauses,...>] => @ wr + <row>, wc + <col> SAY <sayxpr> [<Clauses>]
+  #command @ <row>, <col> GEW <sayxpr> [<Clauses,...>] => @ wr + <row>, wc + <col> GET <sayxpr> [<Clauses>]
+  #define DevpoS( x, y ) DevPos( wr + x, wc + y )
+  
+  set cursor off
   stos:={}
-  @ 9,1,22,78 BOX UNICODE '╔═╗║╝═╚║' color 'RG+/BG'
-  @ 9,3 SAY 'Wpisywanie nowej, poprawianie lub kasowanie starej Karty Materiału' UNICODE color 'RG+/BG'
-  SET COLOR TO BG+/B
-  hb_scroll(10,2,21,77,0)
+  //@ 9,1,22,78 BOX UNICODE '╔═╗║╝═╚║' color 'RG+/BG'
+  @ 9,3 SAW 'Wpisywanie nowej, poprawianie lub kasowanie starej Karty Materiału' UNICODE color 'RG+/BG'
+  //SET COLOR TO BG+/B
+  hb_scroll(scr[1]+1,scr[2]+1,scr[3]-1,scr[4]-1,0)
 
 #ifdef A_JMO
   #define smiaR(x,d) if(miar_opcja,tran(int(x/(lam:=i_lam(d))->przel),"#### ###")+if(x%(lam)->przel=0,"","r"+tran(abs(x)%(lam)->przel,"@B ###")),x)
@@ -309,7 +316,7 @@ endif
     LOCATE REST FOR nr_mag#txt .and. stan#0 .or. index#indx_mat->index
 #endif
     if INDEX=indx_mat->index
-    @ 16,3 say "INNE MAGAZYNY: "
+    @ 16,3 SAW "INNE MAGAZYNY: "
     do while index=indx_mat->index
        devout(nr_mag+": "+alltrim(smiaR(stan,data_zmian))+" ")
        CONTINUE
@@ -321,9 +328,9 @@ endif
   nm:=mag_biez
 #endif
 #ifdef A_GRAM
- setpos(22,2)
+ DevpoS(22,2)
 #else
- setpos(21,2)
+ DevpoS(21,2)
 #endif
 //#ifndef A_GRAM
       SAYL "Ostatnia dostawa dnia "+dtoc(data_przy)
@@ -343,62 +350,62 @@ endif
  #endif
 //#endif
 
-      @ 17,2   say nr_mag+" Data:"
-      @ 18,2   say "Stan:"
-      @ 19,2   say WANAZ+":" UNICODE
-      @ 20,2   SAY "Cena:"
-      @ 17,12  SAY data_zmian
-      @ 18,11  SAY smiaR(stan,data_zmian)
+      @ 17,2   SAW nr_mag+" Data:"
+      @ 18,2   SAW "Stan:"
+      @ 19,2   SAW WANAZ+":" UNICODE
+      @ 20,2   SAW "Cena:"
+      @ 17,12  SAW data_zmian
+      @ 18,11  SAW smiaR(stan,data_zmian)
 #ifdef A_WA
-      @ 19,11  SAY wartosc      PICTURE WAPIC
-      @ 20,11  SAY wartosc/stan PICTURE WAPIC
+      @ 19,11  SAW wartosc      PICTURE WAPIC
+      @ 20,11  SAW wartosc/stan PICTURE WAPIC
 #else
-      @ 19,11  SAY stan*(i_lam(data_zmian))->cenA PICTURE WAPIC
-      @ 20,11  SAY (i_lam(data_zmian))->cenA PICTURE WAPIC
+      @ 19,11  SAW stan*(i_lam(data_zmian))->cenA PICTURE WAPIC
+      @ 20,11  SAW (i_lam(data_zmian))->cenA PICTURE WAPIC
 #endif
 #ifdef A_GRAM
-      @ 21,2   SAY "Waga:"
-      @ 21,11  SAY stan*(i_lam(data_zmian))->gram/1000 PICTURE "##### ###.##"
+      @ 21,2   SAW "Waga:"
+      @ 21,11  SAW stan*(i_lam(data_zmian))->gram/1000 PICTURE "##### ###.##"
 #endif
 if DatY->d_z_mies1>DatY->d_z_mies2
-      @ 17,30  SAY DatY->d_z_mies1
-      @ 18,29  SAY smiaR(zamk_mies1,DatY->d_z_mies1)
+      @ 17,30  SAW DatY->d_z_mies1
+      @ 18,29  SAW smiaR(zamk_mies1,DatY->d_z_mies1)
 #ifdef A_WA
-      @ 19,29  SAY wart_mies1 PICTURE WAPIC
-      @ 20,29  SAY wart_mies1/zamk_mies1 PICTURE WAPIC
+      @ 19,29  SAW wart_mies1 PICTURE WAPIC
+      @ 20,29  SAW wart_mies1/zamk_mies1 PICTURE WAPIC
 #else
-      @ 19,29  SAY zamk_mies1*(i_lam(DatY->d_z_mies1))->cenA PICTURE WAPIC
-      @ 20,29  SAY (i_lam(DatY->d_z_mies1))->cenA PICTURE WAPIC
+      @ 19,29  SAW zamk_mies1*(i_lam(DatY->d_z_mies1))->cenA PICTURE WAPIC
+      @ 20,29  SAW (i_lam(DatY->d_z_mies1))->cenA PICTURE WAPIC
 #endif
 #ifdef A_GRAM
-      @ 21,29  SAY zamk_mies1*(i_lam(DatY->d_z_mies1))->gram/1000 PICTURE "##### ###.##"
+      @ 21,29  SAW zamk_mies1*(i_lam(DatY->d_z_mies1))->gram/1000 PICTURE "##### ###.##"
 #endif
 endif
 if DatY->d_z_mies2>DatY->d_z_rok
-      @ 17,48  SAY DatY->d_z_mies2
-      @ 18,47  SAY smiaR(zamk_mies2,DatY->d_z_mies2)
+      @ 17,48  SAW DatY->d_z_mies2
+      @ 18,47  SAW smiaR(zamk_mies2,DatY->d_z_mies2)
 #ifdef A_WA
-      @ 19,47  SAY wart_mies2 PICTURE WAPIC
-      @ 20,47  SAY wart_mies2/zamk_mies2 PICTURE WAPIC
+      @ 19,47  SAW wart_mies2 PICTURE WAPIC
+      @ 20,47  SAW wart_mies2/zamk_mies2 PICTURE WAPIC
 #else
-      @ 19,47  SAY zamk_mies2*(i_lam(DatY->d_z_mies2))->cenA PICTURE WAPIC
-      @ 20,47  SAY (i_lam(DatY->d_z_mies2))->cenA PICTURE WAPIC
+      @ 19,47  SAW zamk_mies2*(i_lam(DatY->d_z_mies2))->cenA PICTURE WAPIC
+      @ 20,47  SAW (i_lam(DatY->d_z_mies2))->cenA PICTURE WAPIC
 #endif
 #ifdef A_GRAM
-      @ 21,47  SAY zamk_mies2*(i_lam(DatY->d_z_mies2))->gram/1000 PICTURE "##### ###.##"
+      @ 21,47  SAW zamk_mies2*(i_lam(DatY->d_z_mies2))->gram/1000 PICTURE "##### ###.##"
 #endif
 endif
-      @ 17,66  SAY DatY->d_z_rok
-      @ 18,65  SAY smiaR(zamkn_roku,DatY->d_z_rok)
+      @ 17,66  SAW DatY->d_z_rok
+      @ 18,65  SAW smiaR(zamkn_roku,DatY->d_z_rok)
 #ifdef A_WA
-      @ 19,65  SAY wart_roku PICTURE WAPIC
-      @ 20,65  SAY wart_roku/zamkn_roku PICTURE WAPIC
+      @ 19,65  SAW wart_roku PICTURE WAPIC
+      @ 20,65  SAW wart_roku/zamkn_roku PICTURE WAPIC
 #else
-      @ 19,65  SAY zamkn_roku*(i_lam(DatY->d_z_rok))->cenA PICTURE WAPIC
-      @ 20,65  SAY (i_lam(DatY->d_z_rok))->cenA PICTURE WAPIC
+      @ 19,65  SAW zamkn_roku*(i_lam(DatY->d_z_rok))->cenA PICTURE WAPIC
+      @ 20,65  SAW (i_lam(DatY->d_z_rok))->cenA PICTURE WAPIC
 #endif
 #ifdef A_GRAM
-      @ 21,65  SAY zamkn_roku*(i_lam(DatY->d_z_rok))->gram/1000 PICTURE "##### ###.##"
+      @ 21,65  SAW zamkn_roku*(i_lam(DatY->d_z_rok))->gram/1000 PICTURE "##### ###.##"
 #endif
 
 #undef smiaR
@@ -423,7 +430,7 @@ endif
     endif
   next
 
-  DevPos(9,78-len(ni) ); DevOut(ni,"RG+/BG" )
+  DevPos(scr[1],scr[4]-len(ni) ); DevOut(ni,"RG+/BG" )
 #ifdef A_SZYM
   if !empty(beg)
 #ifdef STANY
@@ -495,24 +502,24 @@ endif
     endif
 #endif
     if lamus#0
-      @ 10,3 say "*"
+      @ 10,3 SAW "*"
     else
-      @ 10,3 say " "
+      @ 10,3 SAW " "
     endif
     IF empty(stos)
-      @ 10,5 say "        "
+      @ 10,5 SAW "        "
     else
-      @ 10,5 SAY "Lamus:"+str(LEN(STOS),2)
+      @ 10,5 SAW "Lamus:"+str(LEN(STOS),2)
     endif
-    @ 10,61 SAY "Symbol"
-    @ 11,3  say dp
-    @ 11,14 GET pom picture "@K"
+    @ 10,61 SAW "Symbol"
+    @ 11,3  SAW dp
+    @ 11,14 GEW pom picture "@K"
 #ifdef A_KAMIX
     s:=sww
-    @ 10,61 SAY "      "
-    @ 10,38 SAY 'Kod:' GET ni PICTURE '@!' valid {||ni:=UpP(ni),.t.}
+    @ 10,61 SAW "      "
+    @ 10,38 SAW 'Kod:' GEW ni PICTURE '@!' valid {||ni:=UpP(ni),.t.}
     SAYL A_SWWKTM get s picture "@K"
-    @ 11,61 SAY 'gram/'+trim(jm)+':' GET gr PICTURE "@EK ### ###"
+    @ 11,61 SAW 'gram/'+trim(jm)+':' GET gr PICTURE "@EK ### ###"
 #else
 #ifdef A_ANKER
 #ifndef A_WA
@@ -528,10 +535,10 @@ endif
 #else
 /*
 #ifdef A_7
-    @ 11,61 GET ni PICTURE '@!R' valid {||ni:=UpP(ni),.t.}
+    @ 11,61 GEW ni PICTURE '@!R' valid {||ni:=UpP(ni),.t.}
 #else
 */
-    @ 11,61 GET ni PICTURE '@!R '+ INDEXPIC valid {||ni:=UpP(ni),.t.}
+    @ 11,61 GEW ni PICTURE '@!R '+ INDEXPIC valid {||ni:=UpP(ni),.t.}
 //#endif
 #endif
 
@@ -540,16 +547,16 @@ endif
  #ifndef A_SWWKTM
   #ifdef A_PKWiU
     getl s picture "@RK ##.##.##-##.##"
-    @ 10,68 SAY "PKWiU"
+    @ scr[1]+1,scr[4]-10 SAY "PKWiU"
   #else
     getl s picture "@K"
-    @ 10,68 SAY A_SWW
+    @ scr[1]+1,scr[4]-10 SAY A_SWW
   #endif
 #endif
 #endif
 #ifdef A_SHARP
     getlist[1]:postblock:={|x,n|varput(getlist,'kna',left(n,16),.t.),.t.}
-    @ 12,3 SAY 'Kasa:' GET kna
+    @ 12,3 SAW 'Kasa:' GEW kna
     SAYL 'Gr:' GET kgr PICTURE "@K" VALID {|e|e:=NIL,aczojs(grupy,@kgr,@e) .and. (varput(getlist,'pv',SubStr(grupy[e],17,2),.t.),.t.)}
     SAYL 'Ilość:' UNICODE GET kwa VALID aczojs({'3 - cena ustawiona otwarta  ',hb_UTF8ToStr('2 - cena ustawiona zamknięta'),'1 - cena zawsze wprowadzana','0 - zablokowane'})
     SAYL 'K:' Get ksh VALID aczojs({'0','1','2'})
@@ -557,7 +564,7 @@ endif
 #endif
 #ifndef A_ANKER
 #ifdef A_KODY
-    @ 12,3 SAY A_KODY+":" get kw picture "@K"
+    @ 12,3 SAW A_KODY+":" get kw picture "@K"
 #ifdef A_KODVAL
     atail(getlist):postblock:=A_KODVAL
 #else
@@ -568,9 +575,9 @@ endif
 #ifdef A_SWW
 #ifdef A_SWWKTM
   #ifdef A_PKWiU
-    @ 12,57 SAY "PKWiU:" get s picture "@RK ##.##.##-##.##"
+    @ 12,57 SAW "PKWiU:" get s picture "@RK ##.##.##-##.##"
   #else
-    @ 12,75-len(A_SWWKTM)-len(s) SAY A_SWWKTM+":"
+    @ scr[1]-9+12,scr[4]-3-len(A_SWWKTM)-len(s) SAY A_SWWKTM+":"
     getl s picture "@K"
   #endif
 #ifdef A_SWWVAL
@@ -583,12 +590,12 @@ endif
 
 #ifdef A_BIG
     ch:=cena_huty
-    @ 12,4  say "Cena huty:" get ch picture WAPIC
+    @ 12,4  SAW "Cena huty:" get ch picture WAPIC
 #endif
 #ifdef A_ALTCEN
-    setpos(12,2)
+    DevpoS(12,2)
 #else
-    setpos(13,2)
+    DevpoS(13,2)
 #endif
 #ifndef A_FA
 #ifndef A_WA
@@ -627,12 +634,12 @@ endif
     sayl "Cena zbytu:" get ce picture WAPIC
     sayl "Procent VAT:" get pv picture "@K XX" valid {|g|pv:=lower(pv),if(pv<="9",pv:=str(val(pv),2),),(ascan(stawkizby,pv)#0 .or. alarm(hb_UTF8ToStr('NIEWŁAŚCIWY PROCENT VAT!'),,3,3)=NIL).and.(!g:changed.or.(kibord(chr(5)+chr(24)),.t.))}
  #else
-#define D_BPOS (setpos(row(),53),devout(tran(WzVAT(1,ce,val(pv),.f.),WAPICT)),.t.)
+#define D_BPOS (DevPos(row(),scr[2]-1+53),devout(tran(WzVAT(1,ce,val(pv),.f.),WAPICT)),.t.)
     sayl "Cena zbytu:" get ce picture WAPIC valid D_BPOS
     sayl "Procent VAT:" get pv picture "@K XX" valid {|g|pv:=lower(pv),if(pv<="9",pv:=str(val(pv),2),),(ascan(stawkizby,pv)#0 .or. alarm(hb_UTF8ToStr('NIEWŁAŚCIWY PROCENT VAT!'),,3,3)=NIL).and.D_BPOS}
     sayl "Brutto:"
     #undef D_BPOS
-    @ row(),53 SAY tran(WzVAT(1,ce,val(pv),.f.),WAPICT)
+    @ row(),scr[2]-1+53 SAY tran(WzVAT(1,ce,val(pv),.f.),WAPICT)
  #endif
  #ifdef A_PROCMAR
     sayl "Marża:" UNICODE get pm picture "@K ###"
@@ -652,7 +659,7 @@ endif
     getlist[len(getlist)-2]:postblock:={|g,v|!g:changed .or. ni=index .and. (varput(getlist,'pm',eval(memvar->liczm,STANY->cenA_zaK,ce,val(pv)),.t.),.f.) .or. (x:=g,aeval(getlist,{|g,y|if(g:name='pm'.and.len(g:name)=3,eval(g:postblock,x,g:varget(),getlist,y),)}),.t.)}
     c1:=cena1;    c2:=cena2;    c3:=cena3
     pm1:=proc_mar1;    pm2:=proc_mar2;    pm3:=proc_mar3
-    @ 13,3 say "Cena1:" get pm1 picture "@K ###"
+    @ 13,3 SAW "Cena1:" get pm1 picture "@K ###"
     sayl "%"              get c1 picture WAPICT
     sayl "Cena2:"       get pm2 picture "@K ###"
     sayl "%"              get c2 picture WAPICT
@@ -721,7 +728,7 @@ endif
   #endif
  #else
     c1:=cena1;    c2:=cena2;    c3:=cena3
-    @ 13,3 say "Cena1:" get c1 picture WAPICT
+    @ 13,3 SAW "Cena1:" get c1 picture WAPICT
           sayl "Cena2:" get c2 picture WAPICT
           sayl "Cena3:" get c3 picture WAPICT
  #endif
@@ -735,7 +742,7 @@ endif
 
 #ifdef D_SKIPLINE
 #undef D_SKIPLINE
-    setpos(14,2)
+    DevpoS(14,2)
 #endif
 
 #ifdef A_JMALT
@@ -768,9 +775,9 @@ endif
     a:=select()
     sel('SUROWCE','SUR_KOD')
     SAYl 'Dieta:'
-    GETl id picture "@K! "+replicate("X",(hb_fieldlen('skladnik'))) VALID {|g|!g:changed .or. SUROWCE->(szukam({,,,,1,len(trim(id)),'Surowce z Diety',{||field->skladnik+I+nazwa+I+field->jmag+' ='+str(field->przel)+' '+field->jedn},{|_skey,_s D_MYSZ|surinfo(_skey,_s,@id,ni D_MYSZ)} ,UpP(Trim(id))}).and.(setpos(g:row,g:col+hb_fieldlen('skladnik')+1),dispout(left(nazwa,78-col())),.t.) )}
+    GETl id picture "@K! "+replicate("X",(hb_fieldlen('skladnik'))) VALID {|g|!g:changed .or. SUROWCE->(szukam({,,,,1,len(trim(id)),'Surowce z Diety',{||field->skladnik+I+nazwa+I+field->jmag+' ='+str(field->przel)+' '+field->jedn},{|_skey,_s D_MYSZ|surinfo(_skey,_s,@id,ni D_MYSZ)} ,UpP(Trim(id))}).and.(DevPos(g:row,g:col+hb_fieldlen('skladnik')+1),dispout(left(nazwa,scr[4]-col())),.t.) )}
     if dbseek(left(id,hb_fieldlen('skladnik')))
-       sayl left(nazwa,78-col())
+       sayl left(nazwa,scr[4]-col())
     endif
     select (a)
 #else
@@ -779,7 +786,7 @@ endif
 #else
     SAYl 'Info:'
 #endif
-    GETl id picture "@KS"+lTrim(sTr(78-col()))
+    GETl id picture "@KS"+lTrim(sTr(scr[4]-col()))
     if valtype(info)='M'
       atail(getlist):cargo:=.t.
     endif  
@@ -794,18 +801,18 @@ endif
 #ifndef A_FA
 #ifdef A_PV
     pv:=proc_VAT
-    @ 14,3 say "Procent VAT:" get pv picture "@K XX"
+    @ 14,3 SAW "Procent VAT:" get pv picture "@K XX"
 #endif
 #endif
 #ifdef A_TRWALOSC
     wa:=waznosc
-    @ 15,3  say "Ważność" UNICODE GET wa picture "@K ###"
-    @ 15,15 say "dni" GET uw picture "@KS58" send cargo:=.t.
+    @ 15,3  SAW "Ważność" UNICODE GET wa picture "@K ###"
+    @ 15,15 SAW "dni" GET uw picture "@KS58" send cargo:=.t.
 #else
-    @ 15,3 GET uw picture "@KS73" send cargo:=.t.
+    @ 15,3 GEW uw picture "@KS73" send cargo:=.t.
 #endif
 #ifdef A_ANKER
-    @ 16,3 SAY "Kod:" GET kw picture "@!" valid {||kw:=UpP(kw),.t.}
+    @ 16,3 SAW "Kod:" GET kw picture "@!" valid {||kw:=UpP(kw),.t.}
     SAYL "Stat.Towaru:" GET rt picture "@! NNN" ;
            SEND reader:={|g|setkey(asc("\"),{|p,g|g:=getactive(),p:=setkey(asc("\"),NIL),statedit(g,ni),setkey(asc("\"),p)}),getreader(g),setkey(asc("\"),NIL)}
     SAYL "Tandem:" GET td PICTURE '@K!' 
@@ -817,18 +824,18 @@ endif
 #endif
 #ifdef A_7
 #ifdef A_KAMIX
-    @ 16,43 SAY "Cena1 brutto za 1 "+trim(j_o)+': '+ltrim(tran(c1*p*(1+val(pv)*.01),WAPICT))+hb_UTF8ToStr(' zł')
+    @ 16,43 SAW "Cena1 brutto za 1 "+trim(j_o)+': '+ltrim(tran(c1*p*(1+val(pv)*.01),WAPICT))+hb_UTF8ToStr(' zł')
 #else
 #ifdef A_CENVAT
-    @ 16,43 SAY "Cena brutto za 1 "+trim(j_o)+': '+ltrim(tran(ce*p,WAPICT))+hb_UTF8ToStr(' zł')
+    @ 16,43 SAW "Cena brutto za 1 "+trim(j_o)+': '+ltrim(tran(ce*p,WAPICT))+hb_UTF8ToStr(' zł')
 #else
-    @ 16,43 SAY "Cena brutto za 1 "+trim(j_o)+': '+ltrim(tran(ce*p*(1+val(pv)*.01),WAPICT))+hb_UTF8ToStr(' zł')
+    @ 16,43 SAW "Cena brutto za 1 "+trim(j_o)+': '+ltrim(tran(ce*p*(1+val(pv)*.01),WAPICT))+hb_UTF8ToStr(' zł')
 #endif
 #endif
 #endif
 #ifdef A_LAN
   if !lock
-    setpos(23,30)
+    DevpoS(23,30)
     alarm(hb_UTF8ToStr("POPRAWIANIE NIEMOŻLIWE DO CZASU ZWOLNIENIA PRZEZ INNYCH UŻYTKOWNIKÓW SIECI"),,9999,3)
     break
   endif
@@ -857,7 +864,12 @@ endif
 
 #ifdef A_MYSZ
     i:=readkey()
-    if i=K_ESC .or. i=GE_MOUSE
+    if i=GE_MOUSE
+       if mousedrag(readkey(,),scr,getlist)
+          loop
+       endif
+       break
+    elseif i=K_ESC
 #else
     IF readkey()=K_ESC
 #endif
@@ -941,7 +953,7 @@ endif
   IF UW="BEZ UWAG"
     UW:=""
   ENDIF
-  setpos(12,40)
+  DevpoS(12,40)
 #ifdef A_KODY
 #ifndef A_DIETA
   IF kw#KoD
@@ -1092,7 +1104,7 @@ endif
 #endif
 #endif
                 tone(262,2)
-                setpos(20,40)
+                DevpoS(20,40)
                 new:=alarm(hb_UTF8ToStr("CO ROBIĆ ?;( [Esc] - rezygnacja )"),{hb_UTF8ToStr("Dopisać nową"),hb_UTF8ToStr("Poprawić starą")})
 
              ENDIF
@@ -1108,7 +1120,7 @@ endif
                aadd(mes,message('NAZWA NIE JEST UNIKALNA !'))
              ENDIF
              tone(262,2)
-             setpos(20,40)
+             DevpoS(20,40)
              new:=alarm(hb_UTF8ToStr("CO ROBIĆ ?;( [Esc] - rezygnacja )"),{hb_UTF8ToStr("Dopisać nową kartę materiału")})
           endif
           if new=0
@@ -1252,7 +1264,7 @@ endif
         dp:=max(DatY->d_z_mies1+1,DP)
         a:=max(da,dp)
         tone(262,2)
-        setpos(20,40)
+        DevpoS(20,40)
         aadd(mes,i:=message(hb_UTF8ToStr("Zmiana obowiązuje od:;stara data:;data zakupu:;nowa data:;Esc - rezygnacja z poprawy")))
         setcolor(_snorm)
         txt:={getnew(i[3]-4,i[4]-12,{||dp}):display(),;
@@ -1426,9 +1438,9 @@ endif
            message(mes[i])
        next
   endif
-  SET COLOR TO (_SNORM)
-  set cursor on
-  restscreen(9,1,22,78,scr)
+  window(scr)//restscreen(9,1,22,78,scr)
+  //SET COLOR TO (_SNORM)
+  //set cursor on
 
   pop_norec(stat)
 
@@ -1450,7 +1462,7 @@ endif
     endif
   ENDIF
 RETURN
-*****************
+****************
 FUNCTION LTAB(D,_s)
 field ilosc,data,smb_dow,nr_dowodu,pozycja,nr_zlec
 
@@ -1631,7 +1643,7 @@ field data
       ENDIF      
       _snagkol:=1
       _sbf:=.t.
-      setpos(row()+2,col())
+      DevPos(row()+2,col())
 #ifdef A_ANKER
       kibord(K_CTRL_PGDN)
 #endif

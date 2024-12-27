@@ -1153,6 +1153,49 @@ RETURN k<>K_ESC
 #endif
 *******************
 #ifdef A_MYSZ
+func mousedrag(w,scr,getlist)
+   local olds,scrb,dx:=0,dy:=0
+   if w[1]<>1 .or. w[3]<scr[1] .or. w[3]>scr[3] .or. w[2]<scr[2] .or. w[2]>scr[4]
+      return .f.
+   endif
+   scrb:=savescreen(scr[1],scr[2],scr[3],scr[4])
+   olds:=array(5)
+   acopy(scr,olds,1,5)
+   do while inkey(0,INKEY_MOVE + INKEY_LUP)<>1003
+      // kumulatywne przesunięcie w dx dy
+      dy:=w[3]-dy;w[3]:=mrow();dy:=w[3]-dy
+      dx:=w[2]-dx;w[2]:=mcol();dx:=w[2]-dx
+      if scr[1]+dy < 0 .or. scr[3]+dy > MaxRow() .or. scr[2]+dx < 0 .or. scr[4]+dx > MaxCol()
+         loop
+      endif
+      DispBegin()
+      RestScreen(scr[1],scr[2],scr[3],scr[4],scr[5])
+      scr[2]+=dx
+      scr[4]+=dx
+      scr[1]+=dy
+      scr[3]+=dy
+      dx:=dy:=0 //kumulatywne wyzerowane
+      w[1]:=-max(-w[1],max(abs(scr[1]-olds[1]),abs(scr[2]-olds[2])))
+      scr[5]:=SaveScreen(scr[1],scr[2],scr[3],scr[4])
+      RestScreen(scr[1],scr[2],scr[3],scr[4],scrb)
+      DispEnd()
+   enddo
+   if w[1]<0 
+      if w[1]<-1
+         if getlist<>NIL
+            aeval(getlist,{|g|g:row:=g:row+scr[1]-olds[1],g:col:=g:col+scr[2]-olds[2]})
+         endif
+         w[1]:=0
+      else // za mały ruch, cofam
+         RestScreen(scr[1],scr[2],scr[3],scr[4],scr[5])
+         acopy(olds,scr,1,4)
+         RestScreen(scr[1],scr[2],scr[3],scr[4],scrb)
+         w[1]:=1
+      endif
+   endif
+
+return .t.
+*******************
 proc __atprompt(row,col,pro,msg)
 
 aadd(apro,{int(row),int(col),pro,msg})

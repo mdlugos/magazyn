@@ -464,41 +464,30 @@ return .f.
 func mysz(_s,bx,cx,dx,myszflag)
 local ret,scrlok,delta:={1,0,0}
          if dx>=_srow1 .and. dx<_srow2 .and. cx>=_scol1 .and. cx<_scol2 .and. bx=1
-            MSHOW()
-            do while delta[1]=1
-              if delta[2]#0 .or. delta[3]#0
-                if scrlok=NIL 
-                  scrlok:=savescreen(_srow1-1,_scol1-1,_srow2,_scol2)
-                endif 
-                dispbegin()
-                RESTSCREEN(max(_srowb,_srow1-1),_scol1-1,_srow2,_scol2,hb_BSubStr(_scr,1+max(0,_srow1-_srowb-1)*(_scoln+2)*D_REST))
-                _srow1+=delta[3]
-                _srow2+=delta[3]
-                _scol1+=delta[2]
-                _scol2+=delta[2]
-                setpos(row()+delta[3],col()+delta[2])
-                if delta[2]#0
-                  _scr:=savescreen(_srowb,_scol1-1,_srowe,_scol2)
-                endif
-                restscreen(max(_srowb,_srow1-1),_scol1-1,min(_srow2,_srowe),_scol2,hb_BSubStr(scrlok,1+max(0,_srowb-_srow1+1)*(_scoln+2)*D_REST))
-                dispend()
-             endif
-             delta[1]:=inkey(0,INKEY_MOVE + INKEY_LUP)
-             if delta[1]=1003
-                delta[1]:=0
-             else
-                delta[1]:=1
-             endif
-             delta[2]:=max(0,min(maxcol(),mcol()))-cx
-             delta[3]:=max(0,min(MaxRow(),mrow()))-dx
-             if delta[2]+_scol1<1 .or. delta[2]+_scol2>maxcol() .or. delta[3]+dx<=_srowb .or. delta[3]+dx>=_srowe
-                exit
-             endif
-             cx+=delta[2]
-             dx+=delta[3]
-          enddo
-        endif 
-            MHIDE()
+            do while inkey(0,INKEY_MOVE + INKEY_LUP)<>1003
+              // kumulatywne przesunięcie w dx dy
+              delta[3]:=dx-delta[3];dx:=mrow();delta[3]:=dx-delta[3]
+              delta[2]:=cx-delta[2];cx:=mcol();delta[2]:=cx-delta[2]
+              if delta[2]+_scol1<1 .or. delta[2]+_scol2>maxcol() .or. delta[3]+dx<=_srowb .or. delta[3]+dx>=_srowe
+                loop
+              endif
+              if scrlok=NIL 
+                scrlok:=savescreen(_srow1-1,_scol1-1,_srow2,_scol2)
+              endif 
+              dispbegin()
+              RESTSCREEN(max(_srowb,_srow1-1),_scol1-1,_srow2,_scol2,hb_BSubStr(_scr,1+max(0,_srow1-_srowb-1)*(_scoln+2)*D_REST))
+              _srow1+=delta[3]
+              _srow2+=delta[3]
+              _scol1+=delta[2]
+              _scol2+=delta[2]
+              if delta[2]#0
+                _scr:=savescreen(_srowb,_scol1-1,_srowe,_scol2)
+              endif
+              afill(delta,0)
+              restscreen(max(_srowb,_srow1-1),_scol1-1,min(_srow2,_srowe),_scol2,hb_BSubStr(scrlok,1+max(0,_srowb-_srow1+1)*(_scoln+2)*D_REST))
+              dispend()
+            enddo
+         endif 
          if bx=2 .or. cx>=_scol2 .or. cx <_scol1 .or. dx < _srow1-1 .or. dx>_srow2
             if myszflag
                return evakey(27,_s)
@@ -529,15 +518,29 @@ local ret,scrlok,delta:={1,0,0}
                    SAVE LINE dx
                    ALTERNATE LINE dx BUFFER _sprpt ATTRIB 119
               endif
-              if scrlok<>NIL
-                if _srow1<_srowb .or. _srow2>_srowe
-                   go _srec[_sm]
-                   REFRESH(1,_s)
+            endif  
+            if scrlok<>NIL
+                if _srow1 - 1 <_srowb 
+                   //cut(_s)
+                   _sbf:=.f.
+                   @ _srowb,_scol1-1 BOX '┌'+REPLICATE('─',_scoln)+'┐' UNICODE COLOR _SRAMKA
+                   @ _srowb,_scol1+_snagkol SAY RNTO1(_snagl) COLOR _SRAMKA
+                   do while _srow1 - 1 <_srowb
+                      adel(_srec, _srowb - _srow1 + 1 )
+                      --_sm
+                      --_si
+                      ++_srow1
+                   enddo 
+                elseif _srow2>_srowe
+                    _sef:=.f.
+                    @ _srowe,_scol1-1 BOX '└'+REPLICATE('─',_scoln)+'┘' UNICODE COLOR _SRAMKA
+                    @ _srowe,_scol1+_snagkol SAY RSTO1(_snagl) COLOR _SRAMKA
+                    _si-=_srow2-_srowe
+                    _srow2:=_srowe
                 endif
                 return .f.
-              endif  
-             endif
-            return evakey(13,_s)
+          endif
+          return evakey(13,_s)
          endif
 
 return .f.
@@ -825,7 +828,7 @@ FUNCTION _sznak(_s,_skey)
     ENDIF
     if _scond
       @ _sm+_srow1-1,_scol1+_sbeg-1 SAY left(eval(_spform,_spocz,_slth),_scoln-_sbeg) color _sel
-      IF NEXTKEY()<32
+      IF !hb_keyChar(NEXTKEY())==''
         CUT(_s)
       ENDIF
     ELSEif dbSEEK(_spocz) .and._skip(0,,_s)
@@ -874,7 +877,7 @@ FUNCTION _sznak(_s,_skey)
           _sef:=.t.
         endif
         FOR l=l TO 1 STEP -1
-          ADEL(_srec,1)
+          ADEL(_srec,l)
         NEXT
         _sm:=1
         CUT(_s)
@@ -1284,8 +1287,8 @@ if x=NIL
   _srow2:=_srow1
   _si:=0
 else
-  for i=1 to _sm-1
-    adel(_srec,1)
+  for i:=_sm-1 to 1 step -1
+    adel(_srec,i)
   next
   if _sm > 1
     RESTSCREEN(_srow1-_sm,_scol1-1,_srow1-2,_scol2,hb_BSubStr(_scr,1+(_srow1-_sm-_srowb)*(_scoln+2)*D_REST))
@@ -1316,7 +1319,7 @@ function CUT(_s,zmiana,key)
     l:=_sm-1
     go _srec[_sm]
     crsr:=setcursor(0)
-    DO WHILE !z .and. D_MYSZE .and. l>0 .and. _skip(-1,0,_s)
+    DO WHILE !z .and. D_MYSZE .and. l>0 .and. l+_srow1-1>_srowb .and. _skip(-1,0,_s)
       z:=_srec[l]#(_srec[l]:=recno())
       scr1:=savescreen(l+_srow1-1,_scol1,l+_srow1-1,_scol2-1)
       @ _srow1+l-1,_scol1 say padr(eval(_sprompt,-1,_s),_scol2-COL())
@@ -1346,7 +1349,7 @@ function CUT(_s,zmiana,key)
     else
       _sbf:=obf
     endif
-    l=_sm
+    l:=_sm
 begin sequence
     go _srec[l]
     if !_skip(0,,_s)
@@ -1364,7 +1367,7 @@ begin sequence
        restscreen(_srow1+l-1,_scol1,_srow1+l-1,_scol2-1,hiattr(_sprpt))
     endif
     PROMPT LINE _sm+_srow1-1
-    DO WHILE !z .and. l<_si .and. D_MYSZE .and. _skip(1,0,_s)
+    DO WHILE !z .and. l<_si .and. D_MYSZE .and. l+_srow1-1<_srowe .and. _skip(1,0,_s)
        ++l
        z:=_srec[l]#(_srec[l]:=recno())
       scr1:=savescreen(l+_srow1-1,_scol1,l+_srow1-1,_scol2-1)
