@@ -247,27 +247,48 @@ ENDIF
 
       i = 1
       txt=IndexkeY(i)
-      scr_buf = SAVESCREEN(8, 1, 19, 78)
-      hb_scroll(8, 1, 19, 78, 0)
-      @ 9,3,18,76 BOX UNICODE "╒═╕│╛═╘│" COLOR "W+"
-      @ 11,5 say "Podaj  numer  klucza  indeksowego  (Esc - bez indeksowania)" UNICODE
-      do while .not. empty(txt)
-          @ 11+i,5 prompt str(i,1)+" - " + LEFT(txt, 66)
+      scr_buf = {8, 1, min( maxrow()-4,19 + max(0,ORDCOUNT() - 3) ) , 78, SAVESCREEN(8, 1, 19, 78)}
+      hb_scroll(scr_buf[1], scr_buf[2], scr_buf[3], scr_buf[4], 0)
+      //@ 9,3,18,76
+      @ scr_buf[1]+1, scr_buf[2]+2, scr_buf[3]-1, scr_buf[4]-2 BOX UNICODE "╒═╕│╛═╘│" COLOR "W+"
+      //@ 11,5
+      @ scr_buf[1]+3, scr_buf[2]+4 say "Podaj  numer  klucza  indeksowego  (Esc - bez indeksowania)" UNICODE
+
+      SET MESSAGE TO
+
+      do while .not. empty(txt) //.and. scr_buf[1]+3+i <= scr_buf[3]
+          //@ 11+i,5
+          @ scr_buf[1]+3+i, scr_buf[2]+4 prompt str(i,1)+" - " + LEFT(txt, 66)
        i = i+1
        txt=IndexkeY(i)
      enddo
      if i>1
        i := ordnumber()
-       menu to i
+       menu to i SCREEN scr_buf
        if i != 0
          SET ORDER TO i
          txt=IndexkeY(0)
          @ nTop + 1, nLeft + 2 say padr(hb_UTF8ToStr("Klejność wg: ")+txt,nright-nleft-43)
-         @ 16,5 say "Podaj poszukiwaną sekwencję znaków:" UNICODE
+         //@ 16,5
+         @ scr_buf[3]-3,scr_buf[2]+4 say "Podaj poszukiwaną sekwencję znaków:" UNICODE
 
          txt = ordKeyVal() //EvAlDb(txt)
-         @ 16,41 get txt picture "@KS34"
-         read
+         //@ 16,41
+         @ scr_buf[3]-3,scr_buf[2]+40 get txt picture "@KS34"
+         __SetProc(0)
+         do while .t.
+            ReadModal(GetList)
+            i:=ReadkeY()
+            IF i<>14
+               exit
+            ENDIF
+            i:=ReadKey(,)
+            if !mousedrag(i,scr_buf,getlist).or. i[1]=1
+              exit
+            endif
+         enddo
+         // READ
+         getlist:={}
 
          if TYPE("txt") = "C"
            txt = trim(txt)
@@ -283,11 +304,11 @@ ENDIF
        @ nTop + 1, nLeft + 2 say padr(hb_UTF8ToStr("Klejność naturalna."),nright-nleft-43)
        endif
     skip 0
-       RESTSCREEN(8, 1, 19, 78, scr_buf)
+       RESTSCREEN(scr_buf[1], scr_buf[2], scr_buf[3], scr_buf[4], scr_buf[5])
        freshorder(ob)
-  else
-     RESTSCREEN(8, 1, 19, 78, scr_buf)
-     endif
+     else
+        RESTSCREEN(scr_buf[1], scr_buf[2], scr_buf[3], scr_buf[4], scr_buf[5])
+    endif
 
     case (nkey == K_F5)
       ob:delcolumn(ob:colpos)

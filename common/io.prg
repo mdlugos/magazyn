@@ -510,12 +510,25 @@ function alarm(txt,parr,ps,pe,keep)
   for i:=1 to k-n
     @ w[1]+i,w[2]+2 say memoline(txt,m,i)
   next
-  if ink_flag
+if ink_flag
   tone(130,pe)
   if ps=0
      @ w[3]-1,w[2]+2 say padc(parr[1],m)
-  endif
-  ps:=INkey(ps)
+#ifdef A_MYSZ
+     do while (ps:=INKEY(0, INKEY_KEYBOARD + INKEY_LDOWN))=K_LBUTTONDOWN
+        i:={1,mcol(),mrow()}     
+        if mousedrag(i,w) .and. i[1]=1
+           ps:=K_ENTER
+           exit
+        endif 
+     enddo 
+   else  
+      ps:=INkey(ps)
+   endif
+#else
+   endif
+   ps:=INkey(ps)
+#endif     
 else
   i:=w[3]-n-1
   n:=max(0,int((m-l)/(len(parr)+1))) // odstep
@@ -725,7 +738,7 @@ RETURN(l)
 ****************************************************************************
 FUNCTION ACZOJS(ARRAY,var,_e,alog,tyt) // sciagawka w valid
 
-local _a,_b,_c,_d,_s,_get,_l,_COLOR,_cur,r,c,sl,sx,sp,i
+local _s,_get,_l,_COLOR,r,c,sl,sx,sp,i
 
 if empty(array)
    _e:=0
@@ -782,72 +795,45 @@ if valtype(_e)#'N'
    })
 */
     // szukam do pierwszej spacji lub gwiazdki omijam ?
-   _c:=_e=0 .or. _l+1<at(" ",array[_e]) // nie znalazlem
+   _s:=_e=0 .or. _l+1<at(" ",array[_e]) // nie znalazlem
 else
-   _c:=.t.
+   _s:=.t.
 endif
 
-IF _c
-   _cur:=setcursor(0)
+IF _s
+   * _s[1],_b,_c,_d - wspolzedne sciagawki
+   i:=0
+   aeval(array,{|x|i:=max(i,len(x))})
 
-   * _a,_b,_c,_d - wspolzedne sciagawki
+   //   12345 6     7     8           9
+   _s:=window(LEN(ARRAY),i,"W+/GR","W,I,GR+/GR,,X")
+    setcursor(0)
 
-   _a=ROW()+1    // sciaga pod polem
-   _b=COL()-1
-
-   IF _b<0
-      _b=0
-   ENDIF
-   _c:=0
-   aeval(array,{|x|_c:=max(_c,len(x))})
-   _d:=_b+_c+1            // ilosc kolumn
-   _c:=_a+LEN(ARRAY)+1    // ilosc wierszy
-
-   IF _d>maxcol() // poza ekran
-      _b=_b-_d+maxcol()
-      _d=maxcol()
-      IF _b<0
-         _b=0
-      ENDIF
-   ENDIF
-
-   IF _c>MaxRow() // poza ekran
-      _a=_a-_c+MaxRow()
-      _c=MaxRow()
-      IF _a<0
-         _a=0
-      ENDIF
-   ENDIF
-
-   _s=SAVESCREEN(_a,_b,_c,_d)
-   r:=row()
-   c:=col()
    IF LEN(ARRAY)<MaxRow()
-      @ _a,_b,_c,_d BOX UNICODE '╔═╗║╝═╚║' COLOR "GR+/GR"
+      @ _s[1],_s[2],_s[3],_s[4] BOX UNICODE '╔═╗║╝═╚║' COLOR "GR+/GR"
     ELSE
 #ifdef __PLATFORM__DOS
-      @ _a,_b,_c,_d BOX UNICODE '╔─╗║╝─╚║' COLOR "GR+/GR"
+      @ _s[1],_s[2],_s[3],_s[4] BOX UNICODE '╔─╗║╝─╚║' COLOR "GR+/GR"
 #else
-      @ _a,_b,_c,_d BOX UNICODE '╓─╖║╜─╙║' COLOR "GR+/GR"
+      @ _s[1],_s[2],_s[3],_s[4] BOX UNICODE '╓─╖║╜─╙║' COLOR "GR+/GR"
 #endif
    ENDIF
    if tyt#NIL
-      @ _a,_b+1 SAY left(tyt,_d-_b) COLOR "GR+/GR"
+      @ _s[1],_s[2]+1 SAY left(tyt,_s[4]-_s[2]) COLOR "GR+/GR"
    endif
    if _e=0
       tone(130,3)
    endif
 
-   * wybieraj
-   _COLOR:=SETCOLOR(if(iscolor(),"W+/GR","W,I,,,X"))
+   _e:=ACHOICE(_s[1]+1,_s[2]+1,_s[3]-1,_s[4]-1,ARRAY,alog,_s,_e)
 
-   _e:=ACHOICE(_a+1,_b+1,_c-1,_d-1,ARRAY,alog,,_e)
-   
-   SETCOLOR(_COLOR)
-
-   RESTSCREEN(_a,_b,_c,_d,_s)
-   setpos(r,c)
-   setcursor(_cur)
+/* window(_s)
+   RESTSCREEN(rown[1],rown[2],rown[3],rown[4],rown[5])
+   setpos(rown[6],rown[7])
+   SETCURSOR(rown[8])
+   SETCOLOR(rown[9])
+*/
+   window(_s)
 
    IF _e=0 
       RETURN .F.
@@ -863,14 +849,14 @@ IF _c
 ENDIF
    r:=.t.
    IF ARRAY[_e]#var
-      _a:=array[_e]
+      _s:=array[_e]
       if sp>0
-         _a:=stuff(_a,sp,1,SubStr(var,sp,1))
+         _s:=stuff(_s,sp,1,SubStr(var,sp,1))
       endif
       if sx=sl
-         var:=LEFT(_a,_l)
+         var:=LEFT(_s,_l)
       else
-         var:=stuff(var,1,sx,left(_a,sx))
+         var:=stuff(var,1,sx,left(_s,sx))
       endif
       if _get#NIL .and. !_get:buffer==var
          _get:buffer:=var
@@ -1154,13 +1140,13 @@ RETURN k<>K_ESC
 *******************
 #ifdef A_MYSZ
 func mousedrag(w,scr,getlist)
-   local olds,scrb,dx:=0,dy:=0
+   local olds,dx:=0,dy:=0
    if w[1]<>1 .or. w[3]<scr[1] .or. w[3]>scr[3] .or. w[2]<scr[2] .or. w[2]>scr[4]
       return .f.
+   elseif empty(scr[5])
+      return .t.
    endif
-   scrb:=savescreen(scr[1],scr[2],scr[3],scr[4])
-   olds:=array(5)
-   acopy(scr,olds,1,5)
+   olds:={scr[1],scr[2],scr[3],scr[4],savescreen(scr[1],scr[2],scr[3],scr[4])}
    do while inkey(0,INKEY_MOVE + INKEY_LUP)<>1003
       // kumulatywne przesunięcie w dx dy
       dy:=w[3]-dy;w[3]:=mrow();dy:=w[3]-dy
@@ -1177,19 +1163,21 @@ func mousedrag(w,scr,getlist)
       dx:=dy:=0 //kumulatywne wyzerowane
       w[1]:=-max(-w[1],max(abs(scr[1]-olds[1]),abs(scr[2]-olds[2])))
       scr[5]:=SaveScreen(scr[1],scr[2],scr[3],scr[4])
-      RestScreen(scr[1],scr[2],scr[3],scr[4],scrb)
+      RestScreen(scr[1],scr[2],scr[3],scr[4],olds[5])
       DispEnd()
    enddo
    if w[1]<0 
       if w[1]<-1
          if getlist<>NIL
-            aeval(getlist,{|g|g:row:=g:row+scr[1]-olds[1],g:col:=g:col+scr[2]-olds[2]})
+            aeval(getlist,{|g|if(g:row<olds[1] .or. g:row>olds[3] .or. g:col<olds[2] .or. g:col>olds[4],,(g:row:=g:row+scr[1]-olds[1],g:col:=g:col+scr[2]-olds[2]))})
          endif
          w[1]:=0
       else // za mały ruch, cofam
+         DispBegin()
          RestScreen(scr[1],scr[2],scr[3],scr[4],scr[5])
+         RestScreen(olds[1],olds[2],olds[3],olds[4],olds[5])
+         DispEnd()
          acopy(olds,scr,1,4)
-         RestScreen(scr[1],scr[2],scr[3],scr[4],scrb)
          w[1]:=1
       endif
    endif
@@ -1203,9 +1191,9 @@ aadd(apro,{int(row),int(col),pro,msg})
 
 return
 *******************
-func __menuto(mcb,varname)
+func __menuto(mcb,varname,_s)
 
-local p,b,_p,x:=0,y:=0,clr,sel,unsel,key,ckey,mesbuf,mesrow:=set(_SET_MESSAGE),mescent:=set(_SET_MCENTER),crsr,array,fpass:=.t.,bkey
+local p,b,_p,clr,sel,unsel,key,ckey,mesbuf,mesrow:=set(_SET_MESSAGE),mescent:=set(_SET_MCENTER),crsr,array,fpass:=.t.,bkey
 
 if empty(apro)
    return 0
@@ -1225,7 +1213,7 @@ endif
    unsel:=SubStr(clr,rat(",",clr)+1)
    do while .t.
 
-      if mesrow#NIL .and. array[p,4]#NIL
+      if !empty(mesrow) .and. array[p,4]#NIL
          mesbuf:=savescreen(mesrow,0,mesrow,maxcol())
          @ mesrow,if(SET(_SET_MCENTER)=.t.,(maxcol()-len(array[p,4]))*.5,0) say array[p,4] color clr
       endif
@@ -1233,22 +1221,29 @@ endif
       @ array[p,1],array[p,2] say array[p,3] color sel
 
       if key#K_ENTER
-         MSHOW()
-         b:=0
+         b:={1,,,,}
          do while (key:=inkey(0, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN + HB_INKEY_GTEVENT ),key>=K_MINMOUSE .and. key<=K_MAXMOUSE )
              if key=K_LBUTTONDOWN
-                b:=1
+               b[1]:=1
+               b[2]:=mcol()
+               b[3]:=mrow()
+               if mesbuf=NIL .and. _s<>NIL
+                  b[4]:=_s[1]
+                  b[5]:=_s[2]
+                  if mousedrag(b,_s) .and. b[1]<>1
+                     aeval(array,{|x|x[1]+=_s[1]-b[4],x[2]+=_s[2]-b[5]})
+                     loop
+                  endif
+                endif
              elseif key=K_RBUTTONDOWN .or. key=HB_K_CLOSE
-                b:=2
+                b[1]:=2
              Else
                 loop
              endif
-             x:=mcol()
-             y:=mrow()
              key:=0
              fpass:=.f.
-            _p:=ascan(array,{|pr|y=pr[1] .and. x>=pr[2] .and. x<pr[2]+len(pr[3])})
-            if b=2 .or. b=1 .and. _p=0
+            _p:=ascan(array,{|pr|b[3]=pr[1] .and. b[2]>=pr[2] .and. b[2]<pr[2]+len(pr[3])})
+            if b[1]=2 .or. b[1]=1 .and. _p=0
                if fpass
                   loop
                endif
@@ -1256,12 +1251,10 @@ endif
             endif
             exit
          enddo
-         MHIDE()
-
       endif
       if (bkey:=setkey(key))#NIL
          eval(mcb,p)
-         eval(bkey,procname(1),procline(1),varname,{b,x,y})
+         eval(bkey,procname(1),procline(1),varname,b)
          key:=0
          loop
       elseif key==K_ENTER
@@ -1290,7 +1283,7 @@ endif
          if _p#0
             p:=_p
          endif
-         if b=1
+         if b[1]=1
             key:=K_ENTER
          endif
       elseif (ckey:=upper(chr(key)),key:=ascan(array,{|pr|upper(ltrim(pr[3]))=ckey}))#0
@@ -1304,9 +1297,13 @@ endif
 
 return p
 ***************
-func ACHOICE(r1,c1,r2,c2,a1,a2,ub,p)
+static func ACHOICE(r1,c1,r2,c2,a1,a2,_s,p)
 
 local key,b,x,y,ckey,fpass:=.t.,o,c,ld:=1,bkey
+
+if valtype(_s)<>'A'
+   _s:={r1-1,c1-1,r2+1,c2+1,}
+endif
 
 c:=tbcolumnnew("",{||a1[p]})
 c:width:=c2-c1+1
@@ -1370,39 +1367,45 @@ do while .t.
 
       o:forcestable()
 
-      MSHOW()
-
-      b:=0
+      b:={0,0,0}
       key:=inkey(0,INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)
+      
       if key=K_LBUTTONDOWN
-         b:=1
+         b[1]:=1
          key:=14
-         y:=mrow()
-         x:=mcol()
+         b[3]:=mrow()
+         b[2]:=mcol()
       elseif key=K_RBUTTONDOWN
-         b:=2
+         b[1]:=2
          key:=14
       endif
       fpass:=.f.
-      MHIDE()
 
       do case
          case (bkey:=setkey(key))#NIL
-           eval(bkey,procname(1),procline(1),{b,x,y})
+           eval(bkey,procname(1),procline(1),b)
          case key==14
-           if b=2 .or. x<c1 .or. x>c2 .or. y>r2+1 .or. y<r1-1
+           if !mousedrag(b,_s)
               if !fpass
                 p:=0
                 exit
               endif
-           elseif y=r1-1
+           elseif b[1]=0
+              r1:=_s[1]+1;c1:=_s[2]+1;r2:=_s[3]-1;c2:=_s[4]-1
+              o:nTop    := r1
+              o:nLeft   := c1
+              o:nBottom := r2
+              o:nRight  := c2
+              //o:stabilize()
+
+           elseif b[3]=r1-1
               while o:rowpos>1
                 o:up()
                 o:stabilize()
               enddo
               o:up()
               ld:=-1
-           elseif y=r2+1
+           elseif b[3]=r2+1
               while o:rowpos<o:rowcount
                 o:down()
                 o:stabilize()
@@ -1410,7 +1413,7 @@ do while .t.
               o:down()
               ld:=1
            elseif valtype(a2)="L" .and. a2 .or. valtype(a2)="A" .and. a2[p]
-              p+=y-row()
+              p+=b[3]-row()
               exit
            endif
          case key==K_DOWN

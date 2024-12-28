@@ -36,6 +36,9 @@
 #command @ <row>, <col> PROMPT <prompt> UNICODE [MESSAGE <msg>] => ;
          __AtPrompt( <row>, <col>, hb_UTF8ToStr(<prompt>) [, hb_UTF8ToStr(<msg>) ])
 
+#command MENU TO <v> SCREEN <s> => ;
+  <v> := __MenuTo( {| _1 | iif( PCount() == 0, <v>, <v> := _1 ) }, #<v>, <s> )
+
 #define mkdir(x) makedir(x)
 
 #ifdef __PLATFORM__UNIX
