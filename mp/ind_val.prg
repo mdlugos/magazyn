@@ -939,7 +939,7 @@ endif
 #endif
 #endif
         alarm(hb_UTF8ToStr("TEGO MATERIAŁU NIE MOŻNA SKASOWAĆ;STAN NA MAGAZYNIE;")+MAGAZYNY[max(1,ascan(magazyny,NR_MAG))],,,3)
-      ELSEIF Tak(hb_UTF8ToStr('KASOWANIE TEGO MATERIAŁU'),22,15,.F.,.F.)
+      ELSEIF Tak(hb_UTF8ToStr('KASOWANIE TEGO MATERIAŁU'),scr[3],scr[2]+14,.F.,.F.)
         SELECT INDX_MAT
         Rf:=.t.
         DELETE

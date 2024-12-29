@@ -169,11 +169,12 @@ osk:=HB_SETKEYSAVE()
           set console on
     elseif k=K_CTRL_K
        m:=message("PODAJ  (R, W);ROZKAZ:;... ")
-       k:=upper(chr(INkey(0)))
+       WHILE (k:=inkey(0, INKEY_KEYBOARD + INKEY_LDOWN),k=K_LBUTTONDOWN .and. mousedrag({1,mcol(),mrow()},m));ENDDO
+       k:=upper(hb_keyChar(k))
        @ m[1]+1,m[2]+8 say "NAZWĘ: " UNICODE
        n:=pad(defa,64)
        @ m[1]+2,m[2]+2 get n picture "@KS14"
-       read
+       read SCREEN m 
        if empty(n)
        elseif k="R"
         if !file(n)

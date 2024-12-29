@@ -3006,7 +3006,7 @@ PROCEDURE FIRM_EDIT(n,_s)
               endif
               exit
          case empty(f)
-              if tak(hb_UTF8ToStr('WYKASOWAĆ FIRMĘ'),s[3],s[2]+5,.f.,.F.)
+              if tak(hb_UTF8ToStr('WYKASOWAĆ FIRMĘ'),s[3],s[2]+5,.f.,.F.,,s)
                  lock
                  delete
                  unlock
@@ -3029,7 +3029,7 @@ PROCEDURE FIRM_EDIT(n,_s)
               set order to ord
               do case
                  case found() .or. empty(n)
-                   if tak(hb_UTF8ToStr("CZY NADAĆ KOLEJNY NUMER"),s[3],s[2]+5,.F.,.F.)
+                   if tak(hb_UTF8ToStr("CZY NADAĆ KOLEJNY NUMER"),s[3],s[2]+5,.F.,.F.,,s)
                    begin sequence
                       go bottom
                       n:=FIELD->n1
@@ -3055,13 +3055,13 @@ PROCEDURE FIRM_EDIT(n,_s)
                       SELECT FIRMY
                       loop
                    endif
-              case tak('NOWA FIRMA',s[3],s[2]+5,.F.,.F.)
+              case tak('NOWA FIRMA',s[3],s[2]+5,.F.,.F.,,s)
                    SELECT FIRMY
                    APPEND BLANK
               otherwise
                    loop
               ENDcase
-         case !tak('POPRAWA',s[3],s[2]+5,.F.,.F.)
+         case !tak('POPRAWA',s[3],s[2]+5,.F.,.F.,,s)
               loop
          endcase
          if EOF()

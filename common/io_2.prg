@@ -1644,12 +1644,13 @@ function KCR_U(mode,l,c)
         return 32
      elseif k=K_CTRL_K
        m:=message("PODAJ  (R, W);ROZKAZ:;... ")
-       k:=upper(chr(inkey(0)))
+       WHILE (k:=inkey(0, INKEY_KEYBOARD + INKEY_LDOWN),k=K_LBUTTONDOWN .and. mousedrag({1,mcol(),mrow()},m));ENDDO
+       k:=upper(hb_keyChar(k))
        @ m[1]+1,m[2]+8 say "NAZWĘ: " UNICODE
        n:=pad(MEMVAR->defa,64)
        getlist:={}
        @ m[1]+2,m[2]+2 get n picture "@KS14"
-       read
+       read SCREEN m
        if empty(n)
        elseif k="R"
           oed:LoadFile(n)

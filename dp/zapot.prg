@@ -1147,7 +1147,7 @@ do case
 
   case _skey=22
      set cursor off
-     _stxt:=savescreen(9,1,22,78)
+     _stxt:={9,1,22,78,savescreen(9,1,22,78)}
      @ 9,1,22,78 BOX UNICODE '╔═╗║╝═╚║' color 'RG+/BG'
      @ 9,3 SAY 'Tylko do oglądania' UNICODE color 'RG+/BG'
      SET COLOR TO BG+/B
@@ -1208,8 +1208,8 @@ do case
     sayl waznosc color _sunsel
     @ 15,15 say "dni"
     sayl padr(if(""=uwagi,"bez uwag",uwagi),58) color _sunsel
-    inkey(0)
-    restscreen(9,1,22,78,_stxt)
+    WHILE (_skey:=inkey(0, INKEY_KEYBOARD + INKEY_LDOWN),_skey=K_LBUTTONDOWN .and. mousedrag({1,mcol(),mrow()},_stxt));ENDDO
+    restscreen(_stxt[1],_stxt[2],_stxt[3],_stxt[4],_stxt[5])
     set cursor on
 
    case _skey=-8

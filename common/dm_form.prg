@@ -9,7 +9,6 @@
 static proc drag_mysz(_f,job)
 local scrlok,delta:={1,0,0}
 
-        MSHOW()
         do while delta[1]=1
            if delta[2]#0 .or. delta[3]#0
               if scrlok=NIL 
@@ -41,7 +40,6 @@ local scrlok,delta:={1,0,0}
            job[2]+=delta[2]
            job[3]+=delta[3]
         enddo
-        MHIDE()
         if _frow+(_fl-_fj+1)*_fskip>maxrow()
          _fl:=Int((maxrow()-_frow)/_fskip)+_fj-1
          RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,MaxRow(),_fco2,hb_BSubStr(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow-_fscr0)+1))
@@ -471,7 +469,7 @@ READmodal(getlist,@rmpos)
                  Skip -1
 
               CASE _fi=_flp .AND. _fkey=K_ENTER .or. _fi=_flpmax
-            IF _flastexit#NIL .and. TAK('CZY KONIEC WPROWADZANIA',_fk+_fskip,_fco2-50,.F.,.F.)
+            IF _flastexit#NIL .and. TAK('CZY KONIEC WPROWADZANIA',_fk+_fskip,_fco2-50,.F.,.F.,,_fscr)
                EVAL(_flastexit,_f)
                break
             ENDIF

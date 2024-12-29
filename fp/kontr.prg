@@ -162,17 +162,18 @@ elseif key=K_INS .or. key=43
    do while .t.
 #ifdef A_LAN
    if !lock
-      inkey(0)
+      WHILE (inkey(0, INKEY_KEYBOARD + INKEY_LDOWN)=K_LBUTTONDOWN .and. mousedrag({1,mcol(),mrow()},win));ENDDO
       exit
    endif
 #endif
-    __setproc(procname(0))
-   readmodal(getlist,@i)
+    //__setproc(procname(0));   readmodal(getlist,@i)
+    READ SCREEN win POSITION @i SAVE 
+
    set order to "firm_num"
    if !updated() .or. ReadkeY()=K_ESC
       exit
    elseif af[1]=numer_kol .and. !empty(numer_kol)
-      if !tak(hb_UTF8ToStr("Czy poprawić starą kartę"),win[3],win[2]+1,.t.,.f.,setcolor())
+      if !tak(hb_UTF8ToStr("Czy poprawić starą kartę"),win[3],win[2]+1,.t.,.f.,setcolor(),win)
          loop
       endif
    elseif empty(af[2])
@@ -180,7 +181,7 @@ elseif key=K_INS .or. key=43
       locate for right(konto,A_NRLTH)==firmy->numer_kol
       select firmy
       if konta->(eof())
-         if tak(hb_UTF8ToStr("Czy kasować"),win[3],win[2]+1,.f.,.f.,setcolor())
+         if tak(hb_UTF8ToStr("Czy kasować"),win[3],win[2]+1,.f.,.f.,setcolor(),win)
             delete
             exit
          endif
@@ -189,7 +190,7 @@ elseif key=K_INS .or. key=43
       endif
       loop
    elseif empty(af[1])
-      if tak(hb_UTF8ToStr("Czy dopisać"),win[3],win[2]+1,.t.,.f.,setcolor())
+      if tak(hb_UTF8ToStr("Czy dopisać"),win[3],win[2]+1,.t.,.f.,setcolor(),win)
       go bottom
       af[1]:=strtran(str(val(fieldget(1))+1,A_NRLTH)," ","0")
       append blank
@@ -212,7 +213,7 @@ elseif key=K_INS .or. key=43
       loop
       endif
    elseif !dbseek(af[1])
-      if tak(hb_UTF8ToStr("Czy dopisać"),win[3],win[2]+1,.t.,.f.,setcolor())
+      if tak(hb_UTF8ToStr("Czy dopisać"),win[3],win[2]+1,.t.,.f.,setcolor(),win)
       append blank
       else
       goto _srec[_sm]

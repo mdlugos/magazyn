@@ -223,9 +223,5 @@ CLEAR screen
 @ 23,0 say padc(hb_UTF8ToStr(IF(DTOS(date())<A_DEMO,"NA OKRES WDROŻENIOWY","DLA CELÓW DEMONSTRACYJNYCH")),maxcol())
 #endif
 @ 18,0 say padc(hb_UTF8ToStr("PROSZĘ CHWILĘ POCZEKAĆ !"),maxcol()) color "*"+setcolor()
-#ifdef A_MYSZ
-#else
-MHIDE()
-#endif
 #endif
 return

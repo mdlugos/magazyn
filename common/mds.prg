@@ -301,7 +301,6 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
 #endif
 
 #ifdef A_MYSZ
-        MSHOW()
         bx:=cx:=dx:=0
         _skey:=INKey(_skey, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)
         if _skey>=K_MINMOUSE .and. _skey<=K_MAXMOUSE
@@ -330,7 +329,6 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
         elseif _skey= K_ALT_RIGHT
               _skey:=K_CTRL_RIGHT
         endif
-        MHIDE()
 #else
 #ifdef D_LAN
         _skey:=inkey(_skey)

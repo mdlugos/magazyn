@@ -75,7 +75,7 @@ MEMVAR  oprn,year2bckp,mag_biez,mag_poz,magazyny,adres_mag,mag_link,_sbkgr,_sbno
         dok_par,dokumenty,firma_n,DOK_ROZCH,dok_zewn,dok_zby,dok_fak,dok_ewid,dok_vat,;
         dok_zapl,r
 
-MEMVAR  stary_rok,operator,is_spec,jmiar,stanowis,zamowienie,level1,defa,_snorm
+MEMVAR  stary_rok,operator,is_spec,jmiar,stanowis,zamowienie,level1,defa,_snorm,menuscr
 memvar rodz_sprzed
 #ifdef A_OLZA
 memvar kont_kos,zaklady,czynnosc,dzialy,kont,kos,mater,stano,dzial
@@ -91,9 +91,9 @@ field nazwa,konto,symbol,opis_koszt,kod,opis,numer,haslo,haslo_spec,;
 PROCEDURE MAIN()
 parameters parametr,mag_biez,operator
 memvar bckp,parametr,mag_biez,operator
-local scr_menu,txt,mlog,a,mf:=.f.,i,menu
+local txt,mlog,a,mf:=.f.,i,menu
 
-public defa,oprn
+public defa,oprn,menuscr
    hb_gtInfo( HB_GTI_WINTITLE , "Magazyn" )
 
 if parametr='MAGDEF='
@@ -355,6 +355,11 @@ DO WHILE .T.
        endif
    USE
 
+   if valtype(menuscr)<>'A'
+      menuscr:={4,maxcol()/2-29,7,maxcol()/2+30,}
+   endif
+   
+   fixbox(menuscr)
 
    DO WHILE .T. // PETLA GLOWNA DLA DANEGO MAGAZYNU
       //a := hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
@@ -373,11 +378,13 @@ endif
       ? padc(firma_n,maxcol())
 
       ? padc(trim(magazyny[mag_poz])+" "+trim(adres_mag[mag_poz])+"; "+TRIM(operator),maxcol())
-if iscolor()
-      SET COLOR TO (_sbkgr)
-endif
-          @ 4,maxcol()/2-29,7,maxcol()/2+30 BOX UNICODE "╔═╗║╝═╚║ "
-          @ 4,maxcol()/2-4 SAY " M E N U " COLOR if(iscolor(),_sbkgr,"W+")
+      if iscolor()
+            SET COLOR TO (_sbkgr)
+      endif
+          //4,maxcol()/2-29,7,maxcol()/2+30,
+          menuscr[5]:=savescreen(menuscr[1],menuscr[2],menuscr[3],menuscr[4]) 
+          @ menuscr[1],menuscr[2],menuscr[3],menuscr[4] BOX UNICODE "╔═╗║╝═╚║ "
+          @ menuscr[1],(menuscr[2]+menuscr[4])*.5-4 SAY " M E N U " COLOR if(iscolor(),_sbkgr,"W+")
 
           @ MaxRow()-2,0,MaxRow(),maxcol() BOX UNICODE "╔═╗║╝═╚║ "
 
@@ -403,20 +410,21 @@ endif
      @ MaxRow()-1,72 say "      " COLOR if(iscolor(),"*"+_sbkgr,"W*+")
   ENDIF
 
-      SET MESSAGE TO 5 CENTER
+      SET MESSAGE TO menuscr[1]+1 CENTER
 
       SET COLOR TO (_sbnorm)
 
-      @ 6,maxcol()/2-27 PROMPT "Kartoteki"    UNICODE MESSAGE "Bieżące stany magazynu, kartoteki materiałów."
-      @ 6,maxcol()/2-17 PROMPT "Dok. obrotu"  UNICODE MESSAGE "Przeglądanie wprowadzonych wcześniej dokumentów."
-      @ 6,maxcol()/2-5  PROMPT "Rejestracja " UNICODE MESSAGE "Wprowadzanie dokumentów obrotu materiałowego."
-      @ 6,maxcol()/2+8  PROMPT "Zestawienia"  UNICODE MESSAGE 'Wydruki zestawień.'
-      @ 6,maxcol()/2+20 PROMPT "Pozostałe"    UNICODE MESSAGE 'Dodatkowe funkcje programu.'
+      @ menuscr[3]-1,(menuscr[2]+menuscr[4])*.5-28 PROMPT "Kartoteki"    UNICODE MESSAGE "Bieżące stany magazynu, kartoteki materiałów."
+      @ menuscr[3]-1,(menuscr[2]+menuscr[4])*.5-18 PROMPT "Dok. obrotu"  UNICODE MESSAGE "Przeglądanie wprowadzonych wcześniej dokumentów."
+      @ menuscr[3]-1,(menuscr[2]+menuscr[4])*.5-6  PROMPT "Rejestracja " UNICODE MESSAGE "Wprowadzanie dokumentów obrotu materiałowego."
+      @ menuscr[3]-1,(menuscr[2]+menuscr[4])*.5+7  PROMPT "Zestawienia"  UNICODE MESSAGE 'Wydruki zestawień.'
+      @ menuscr[3]-1,(menuscr[2]+menuscr[4])*.5+19 PROMPT "Pozostałe"    UNICODE MESSAGE 'Dodatkowe funkcje programu.'
 
     //dispend()
       //hb_gtInfo( HB_GTI_BOXCP, a)
       menu:=level1
-      MENU TO menu
+      MENU TO menu SCREEN menuscr
+      menuscr[5]:=NIL
 
       set color to (_snorm)
 
@@ -437,22 +445,21 @@ endif
 
       ENDIF
 
-  SETPOS(6,maxcol()/2)
+  SETPOS(menuscr[3]-1,menuscr[2]+menuscr[4]/2)
 
       level1:=menu
   begin sequence
       DO CASE
-
-         CASE level1 = 3
-              dminput()
-
          CASE level1 = 1
               katalog()
 
          CASE level1 = 2
               dmprzeg()
 
-         CASE level1 = 4
+         CASE level1 = 3
+               dminput()
+ 
+          CASE level1 = 4
               zestawienia()
 
          CASE level1 = 5

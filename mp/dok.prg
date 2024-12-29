@@ -159,7 +159,7 @@ local _menudm:="  "
 #endif
    private changed:=.f.
    DO WHILE .T.
-      setpos(6,maxcol()/2-10)
+      setpos(row(),col()-10)
       SETKEY(4,{||KIBORD(CHR(27)+CHR(24)+CHR(13))})
       SETKEY(19,{||KIBORD(CHR(27)+CHR(5))})
       if !aczojs(dokumenty[MAG_POZ],@_menudm,@m)

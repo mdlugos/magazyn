@@ -30,8 +30,8 @@ aeval(getlines(SET(_SET_DEFAULT)+HB_OsPathListSeparator()+set(_SET_PATH),HB_OsPa
            );
      })
 
-PLIK=LOWER(LEFT(ALIAS()+"        ",8))
-@ 21,50 SAY 'PODAJ NAZWĘ BAZY' UNICODE GET PLIK PICTURE "@K!" VALID ACZOJS(DIR)
+PLIK=pad(LOWER(ALIAS()),8)
+@ Row(),min(Col(),maxcol()-29) SAY 'PODAJ NAZWĘ BAZY' UNICODE GET PLIK PICTURE "@K!" VALID ACZOJS(DIR)
 READ
 IF ReadkeY()=K_ESC
    RETURN NIL
@@ -245,16 +245,17 @@ ENDIF
 
     CASE nkey == K_F3 .and. !empty(ordbagname(1))
 
-      i = 1
-      txt=IndexkeY(i)
-      scr_buf = {8, 1, min( maxrow()-4,19 + max(0,ORDCOUNT() - 3) ) , 78, SAVESCREEN(8, 1, 19, 78)}
+      i := 1
+      txt:=IndexkeY(i)
+      scr_buf := fixbox({8, 1, min( maxrow()-4,19 + max(0,ORDCOUNT() - 3) ) , 78, })
+      scr_buf[5]:=SAVESCREEN(scr_buf[1], scr_buf[2], scr_buf[3], scr_buf[4])
       hb_scroll(scr_buf[1], scr_buf[2], scr_buf[3], scr_buf[4], 0)
       //@ 9,3,18,76
       @ scr_buf[1]+1, scr_buf[2]+2, scr_buf[3]-1, scr_buf[4]-2 BOX UNICODE "╒═╕│╛═╘│" COLOR "W+"
       //@ 11,5
       @ scr_buf[1]+3, scr_buf[2]+4 say "Podaj  numer  klucza  indeksowego  (Esc - bez indeksowania)" UNICODE
 
-      SET MESSAGE TO
+      //SET MESSAGE TO
 
       do while .not. empty(txt) //.and. scr_buf[1]+3+i <= scr_buf[3]
           //@ 11+i,5
@@ -334,19 +335,20 @@ ENDIF
 
     case ( nKey == K_F9 )
 
-      scr_buf = SAVESCREEN(8, 1, 19, 78)
+      scr_buf := fixbox({8, 1, 19, 78, })
+      scr_buf[5]:=SAVESCREEN(scr_buf[1], scr_buf[2], scr_buf[3], scr_buf[4])
 
-      hb_scroll(8, 1, 19, 78, 0)
+      hb_scroll(scr_buf[1], scr_buf[2], scr_buf[3], scr_buf[4], 0)
       set color to W+
 #ifdef __PLATFORM__DOS      
-      @ 9,3,18,76 BOX UNICODE "┌═┐│┘═└│" COLOR "W+"
+      @ scr_buf[1]+1, scr_buf[2]+2, scr_buf[3]-1, scr_buf[4]-2 BOX UNICODE "┌═┐│┘═└│" COLOR "W+"
 #else
-      @ 9,3,18,76 BOX UNICODE "╒═╕│╛═╘│" COLOR "W+"
+      @ scr_buf[1]+1, scr_buf[2]+2, scr_buf[3]-1, scr_buf[4]-2 BOX UNICODE "╒═╕│╛═╘│" COLOR "W+"
 #endif      
       set color to W
-      @ 11,5 say "Podaj  wyrażenie filtra            (Esc - rezygnacja)" UNICODE
-      @ 13,5 say 'Dostępne relacje: =,#,$,<,>,<=,>= ' UNICODE
-      @ 14,5 say 'Dostępne operacje logicze: .i., .lub., .nie.' UNICODE
+      @ scr_buf[1]+3, scr_buf[2]+4 say "Podaj  wyrażenie filtra            (Esc - rezygnacja)" UNICODE
+      @ scr_buf[1]+5, scr_buf[2]+4 say 'Dostępne relacje: =,#,$,<,>,<=,>= ' UNICODE
+      @ scr_buf[1]+6, scr_buf[2]+4 say 'Dostępne operacje logicze: .i., .lub., .nie.' UNICODE
       txt=dbfilter()
 
     do while .t.
@@ -354,8 +356,23 @@ ENDIF
       txt=STRTRAN(txt,".AND.",".i.")
       txt=STRTRAN(txt,".OR.",".lub.")
       txt=STRTRAN(txt,"!",".nie.")+SPACE(160)
-      @ 16,5 get txt picture "@KS70"
-      READ
+      @ scr_buf[1]+8, scr_buf[2]+4 get txt picture "@KS70"
+
+      __SetProc(0)
+      do while .t.
+         ReadModal(GetList)
+         i:=ReadkeY()
+         IF i<>K_CTRL_N
+            exit
+         ENDIF
+         i:=ReadKey(,)
+         if !mousedrag(i,scr_buf,getlist).or. i[1]=1
+           exit
+         endif
+      enddo
+      // READ
+      getlist:={}
+   
       txt=STRTRAN(ALLTRIM(txt),".i.",".AND.")
       txt=STRTRAN(txt,".lub.",".OR.")
       txt=STRTRAN(txt,".nie.","!")
@@ -378,7 +395,7 @@ ENDIF
       exit
     enddo
 
-     RESTSCREEN(8, 1, 19, 78, scr_buf)
+     RESTSCREEN(scr_buf[1], scr_buf[2], scr_buf[3], scr_buf[4], scr_buf[5])
   IF NKEY#NIL
     IF ""=TXT
       SET FILTER TO

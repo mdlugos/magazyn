@@ -240,12 +240,12 @@ local win,getlist:={},nk,na,chg:=.f.,pos,snt,r,lock,wasl,spw,spm,skw,skm,a,kha,o
    do while .t.
 #ifdef A_LAN
    if !lock
-      inkey(0)
+      WHILE (inkey(0, INKEY_KEYBOARD + INKEY_LDOWN)=K_LBUTTONDOWN .and. mousedrag({1,mcol(),mrow()},win));ENDDO
       exit
    endif
 #endif
-   __setproc(0)
-   readmodal(getlist,@pos)
+   READ SCREEN win POSITION @pos SAVE 
+   //__setproc(0); readmodal(getlist,@pos)
    chg:=chg.or.updated()
    if !chg .or. ReadkeY()=K_ESC
       chg:=.f.
@@ -253,7 +253,7 @@ local win,getlist:={},nk,na,chg:=.f.,pos,snt,r,lock,wasl,spw,spm,skw,skm,a,kha,o
    elseif empty(nk)
       sel("main","main_kt")
       select konta
-      if (syntet .or. sald_rok_w=0.and.sald_rok_m=0 .and. !main->(dbseek(konta->konto))) .and. tak(hb_UTF8ToStr("Czy kasować"),win[3],win[2]+1,.f.,.f.,setcolor())
+      if (syntet .or. sald_rok_w=0.and.sald_rok_m=0 .and. !main->(dbseek(konta->konto))) .and. tak(hb_UTF8ToStr("Czy kasować"),win[3],win[2]+1,.f.,.f.,setcolor(),win)
          delete
          exit
       endif
@@ -272,7 +272,7 @@ local win,getlist:={},nk,na,chg:=.f.,pos,snt,r,lock,wasl,spw,spm,skw,skm,a,kha,o
             loop
          endif
       endif
-      if tak(hb_UTF8ToStr("Czy poprawiać stare konto"),win[3],win[2]+1,.t.,.f.,setcolor())
+      if tak(hb_UTF8ToStr("Czy poprawiać stare konto"),win[3],win[2]+1,.t.,.f.,setcolor(),win)
          nazwa:=na
          syntet:=snt
          khflag:=kha
@@ -289,7 +289,7 @@ local win,getlist:={},nk,na,chg:=.f.,pos,snt,r,lock,wasl,spw,spm,skw,skm,a,kha,o
          a:=message("Nazwa nie jest unikalna:"+konto)
       endif
       set order to "kont_num"
-      if tak(hb_UTF8ToStr("Czy dopisać nowe konto"),win[3],win[2]+1,.t.,.f.,setcolor())
+      if tak(hb_UTF8ToStr("Czy dopisać nowe konto"),win[3],win[2]+1,.t.,.f.,setcolor(),win)
          append blank
          konto:=nk
          nazwa:=na

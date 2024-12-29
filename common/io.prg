@@ -543,8 +543,8 @@ else
     @ i,l-1 prompt " "+parr[m]+" "
     l+=n+len(parr[m])
   next
-
-  MENU TO PS
+  //SET MESSAGE TO
+  MENU TO PS SCREEN w
   iF PS=0
      PS:=PE
   ENDIF
@@ -594,13 +594,38 @@ FUNCTION KIBORD(txt)
   HB_KEYINS(txt)
 RETURN(.t.)
 ***************************
-function window(rown,coln,color)
+function fixbox(s)
+
+   IF s[2]<0
+      s[4]-=s[2]
+      s[2]:=0
+   endif
+
+   IF s[4]>maxcol() // poza ekran
+      s[2]-=s[4]-maxcol()
+      s[4]:=maxcol()
+      IF s[2]<0
+         s[2]:=0
+      ENDIF
+   ENDIF
+
+   IF s[1]<0
+      s[3]-=s[1]
+      s[1]:=0
+   endif
+
+   IF s[3]>MaxRow() // poza ekran
+      s[1]-=s[3]-MaxRow()
+      s[3]:=MaxRow()
+      IF s[1]<0
+         s[1]:=0
+      ENDIF
+   ENDIF
+   
+return s
+*********************
+function getbox(rown,coln)
    local r1,c1,r2,c2,sc,rs,cs,cu,lc
-   //    1  2  3  4  5  6  7  8  9
-
-   sc:=valtype(rown)
-   if sc="N"
-
    r1=1+ROW()
    c1=MAX(0,int(col()-coln/2-2))
    
@@ -625,16 +650,28 @@ function window(rown,coln,color)
 
    rs := ROW()
    cs := COL()
-   cu := setcursOR(0)
+   cu := setcursOR()
    sc := SAVESCREEN(r1,c1,r2,c2)
+   lc := SETCOLOR()
+
+return {r1,c1,r2,c2,sc,rs,cs,cu,lc}
+***************************
+function window(rown,coln,color)
+   local r1,c1,r2,c2,sc,rs,cs,cu,lc
+   //    1  2  3  4  5  6  7  8  9
+
+   sc:=valtype(rown)
+   if sc="N"
+      sc:=getbox(rown,coln)
+      setcursOR(0)
    if color=NIL
       color:=if(iscolor(),"W+/GR,I,,GR+/GR,W+/B","I,W+,,I,W+")
    endif
-   lc := SETCOLOR(color)
+      SETCOLOR(color)
    colorselect(3)
-   @ r1,c1,r2,c2 BOX UNICODE '┌─┐│┘─└│ '
+   @ sc[1],sc[2],sc[3],sc[4] BOX UNICODE '┌─┐│┘─└│ '
    colorselect(0)
-   return({r1,c1,r2,c2,sc,rs,cs,cu,lc})
+   return(sc)
  elseif sc="A"
    RESTSCREEN(rown[1],rown[2],rown[3],rown[4],rown[5])
    setpos(rown[6],rown[7])
@@ -682,9 +719,9 @@ function message(txt)
  return i
 
 ***************************
-FUNCTION tak(_prompth,r,c,l,l1,col) // zadaje pytanie
+FUNCTION tak(_prompth,r,c,l,l1,col,win) // zadaje pytanie
 
-local    _x,_x1,_pm1,_scr,_c,_cur:=setcursor(0),k,b
+local    _x,_x1,_pm1,_scr,_c,_cur:=setcursor(0),k,b,winbak
 
 k:=hb_setkeyget(K_F10,@b)
 
@@ -712,12 +749,23 @@ _c:=setcolor(if(col=NIL,if(iscolor(),"W+/B,I,,,W+/B","W+,I,,,W+"),col))
 @ r,_x SAY _prompth+' (   /   ) ?'
 
 tone(262,2)
-
+if win<>NIL
+   winbak:={win[1],win[2]}
+endif
 DO WHILE .T.
   _pm1 = IF(l=NIL.or.l,1,2)
   @ r,_x1+2 PROMPT 'Tak'
   @ r,_x1+6 PROMPT 'Nie'
-  MENU TO _pm1
+  if win<>NIL
+    MENU TO _pm1 SCREEN win
+    if winbak[1]<>win[1] .or. winbak[2]<>win[2]
+       r+=win[1]-winbak[1]
+       _x+=win[2]-winbak[2]
+       _x1+=win[2]-winbak[2]
+    endif
+  else 
+    MENU TO _pm1
+  endif
   IF _pm1 != 0
     l:=_pm1=1
     exit
@@ -1184,12 +1232,12 @@ func mousedrag(w,scr,getlist)
 
 return .t.
 *******************
-proc __atprompt(row,col,pro,msg)
+func __atprompt(row,col,pro,msg)
 
 aadd(apro,{int(row),int(col),pro,msg})
 @ row,col say pro color SubStr(setcolor(),rat(",",setcolor())+1)
 
-return
+return apro
 *******************
 func __menuto(mcb,varname,_s)
 
@@ -1198,7 +1246,6 @@ local p,b,_p,clr,sel,unsel,key,ckey,mesbuf,mesrow:=set(_SET_MESSAGE),mescent:=se
 if empty(apro)
    return 0
 endif
-
    array:=aclone(apro)
    apro:={} //nesting
    p:=eval(mcb)
@@ -1211,30 +1258,61 @@ endif
    crsr:=setcursor()
    sel:=SubStr(clr,at(",",clr)+1)
    unsel:=SubStr(clr,rat(",",clr)+1)
+   if empty(mesrow) .or. mesrow<0 .or. mesrow>maxrow() .or. ascan(array,{|x|x[4]#NIL})=0 
+      mesrow:=NIL
+   elseif !empty(mescent)
+      mescent:=maxcol()*.5
+      if _s<>NIL .and. _s[1]<=mesrow .and. _s[3]>=mesrow
+         mescent:=(_s[2]+_s[4])*.5
+      endif
+   endif
+
    do while .t.
 
-      if !empty(mesrow) .and. array[p,4]#NIL
+      if mesrow#NIL .and. array[p,4]#NIL .and. mesrow>=0 .and. mesrow<=maxrow()
          mesbuf:=savescreen(mesrow,0,mesrow,maxcol())
-         @ mesrow,if(SET(_SET_MCENTER)=.t.,(maxcol()-len(array[p,4]))*.5,0) say array[p,4] color clr
+         @ mesrow,if(!empty(mescent),mescent - len(array[p,4])*.5,0) say array[p,4] color clr
+         //(maxcol()-len(array[p,4]))*.5,0) say array[p,4] color clr
       endif
 
       @ array[p,1],array[p,2] say array[p,3] color sel
 
       if key#K_ENTER
-         b:={1,,,,}
+         b:={1,0,0,,,,}
          do while (key:=inkey(0, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN + HB_INKEY_GTEVENT ),key>=K_MINMOUSE .and. key<=K_MAXMOUSE )
              if key=K_LBUTTONDOWN
                b[1]:=1
                b[2]:=mcol()
                b[3]:=mrow()
-               if mesbuf=NIL .and. _s<>NIL
+               if _s<>NIL
                   b[4]:=_s[1]
                   b[5]:=_s[2]
+                  b[6]:=_s[3]
+                  b[7]:=_s[4]
+                  if mesbuf#NIL .and. empty(mescent)
+                     restscreen(mesrow,0,mesrow,maxcol(),mesbuf)
+                     //mesbuf:=NIL
+                  endif
                   if mousedrag(b,_s) .and. b[1]<>1
                      aeval(array,{|x|x[1]+=_s[1]-b[4],x[2]+=_s[2]-b[5]})
+                     if mesrow<>NIL .and. mesrow>=b[4] .and. mesrow<=b[6]
+                        mesrow+=_s[1]-b[4]
+                        if !empty(mescent)
+                           mescent+=_s[2]-b[5]
+                        endif
+                     endif
+                     if mesrow#NIL .and. array[p,4]#NIL
+                        mesbuf:=savescreen(mesrow,0,mesrow,maxcol())
+                        @ mesrow,if(!empty(mescent),mescent - len(array[p,4])*.5,0) say array[p,4] color clr
+                     endif
                      loop
+                  else
+                     if mesrow#NIL .and. array[p,4]#NIL
+                        //mesbuf:=savescreen(mesrow,0,mesrow,maxcol())
+                        @ mesrow,if(!empty(mescent),mescent - len(array[p,4])*.5,0) say array[p,4] color clr
+                     endif
                   endif
-                endif
+               endif
              elseif key=K_RBUTTONDOWN .or. key=HB_K_CLOSE
                 b[1]:=2
              Else

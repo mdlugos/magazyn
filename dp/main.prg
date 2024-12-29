@@ -96,7 +96,7 @@ set default to (defa+"roboczy"+HB_ps())
 #endif
 #endif
 
-i:={MaxRow(),maxcol(),}
+//i:={MaxRow(),maxcol(),}
 
    txt:="dieta.ini"
    do while inirest(@txt)
@@ -112,7 +112,7 @@ i:={MaxRow(),maxcol(),}
      (&txt,txt:=NIL)
    enddo
 
-
+/*
    if MaxRow()>i[2] .or. maxcol()>i[2]
      i[1]:=min(i[1],MaxRow())
      i[2]:=min(i[2],maxcol())
@@ -120,7 +120,7 @@ i:={MaxRow(),maxcol(),}
      clear screen
      restscreen(0,0,i[1],i[2],i[3])
    endif
-
+*/
    readinit()
    reuse()
 

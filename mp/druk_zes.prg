@@ -182,7 +182,7 @@ MEMVAR menuzest
 local a:={},r,f2,f3,f4,f5,f6,x
    if _menu=NIL
       _menu:=menuzest
-      setpos(6,maxcol()/2+1)
+      setpos(row(),col()+1)
       SETKEY(4,{||KIBORD(HB_BCHAR(27)+HB_BCHAR(24)+HB_BCHAR(13))})
       SETKEY(19,{||KIBORD(HB_BCHAR(27)+HB_BCHAR(5)+HB_BCHAR(13))})
 #ifndef A_NOMZ

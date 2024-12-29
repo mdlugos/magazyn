@@ -39,8 +39,9 @@ field nr_rys,nazwa,rodz_opak,gram,jm_opcja
 **********************************************
 PROCEDURE pomocnicze
 field index,haslo_spec
-memvar menupom
+memvar menupom,pomscr,menuscr
 local m,txt,i
+public pomscr
 
 #ifdef A_LAN
 #ifndef A_DDBF
@@ -53,40 +54,40 @@ DatY->(dbgoto(1))
 #else
 #define DatY MEMVAR
 #endif
-
-m=menupom
 SET COLOR TO GR+/GR
 
-@ 7,maxcol()/2+15,16,maxcol()/2+33 BOX UNICODE '╔═╗║╝═╚║'
-
-if !iscolor()
-   set color to W
+if valtype(pomscr)<>'A'
+   setpos(row(),col()+20)
+   pomscr:=getbox(8,15)
 endif
+fixbox(pomscr)
 
-@ 18,maxcol()/2-39,20,maxcol()/2+39 BOX UNICODE '╔═╗║╝═╚║ '
 
-if iscolor()
+@ pomscr[1],pomscr[2],pomscr[3],pomscr[4] BOX UNICODE '╔═╗║╝═╚║'
+
    SET COLOR TO W+/GR
-endif
+SET MESSAGE TO pomscr[3]+3 center
 
-SET MESSAGE TO 19 center
-
-@  8,maxcol()/2+16 PROMPT '1. Inwentaryzacja' UNICODE MESSAGE 'Drukowanie "Arkusza spisu z natury" dla określonych gałęzi kodu materiału.'
-@  9,maxcol()/2+16 PROMPT '2. Dzień pocz.   ' UNICODE MESSAGE 'Wybór dnia, od którego wyświetlane są ruchy.'
-@ 10,maxcol()/2+16 PROMPT '3. Zamknięcie.   ' UNICODE MESSAGE 'Zamknięcie miesiąca (lub roku), kontrola stanów na podst. ruchów.'
-@ 11,maxcol()/2+16 PROMPT '4. Otwarcie.     ' UNICODE MESSAGE 'Otwarcie pomyłkowo zamkniętego miesiąca lub dokumentu.'
-@ 12,maxcol()/2+16 PROMPT '5. Symbole i kody' UNICODE MESSAGE 'Przeglądanie i porawianie baz danych, opisów, symboli, kodów, haseł, itp.'
+@ pomscr[1]+1,pomscr[2]+1 PROMPT '1. Inwentaryzacja' UNICODE MESSAGE 'Drukowanie "Arkusza spisu z natury" dla określonych gałęzi kodu materiału.'
+@ pomscr[1]+2,pomscr[2]+1 PROMPT '2. Dzień pocz.   ' UNICODE MESSAGE 'Wybór dnia, od którego wyświetlane są ruchy.'
+@ pomscr[1]+3,pomscr[2]+1 PROMPT '3. Zamknięcie.   ' UNICODE MESSAGE 'Zamknięcie miesiąca (lub roku), kontrola stanów na podst. ruchów.'
+@ pomscr[1]+4,pomscr[2]+1 PROMPT '4. Otwarcie.     ' UNICODE MESSAGE 'Otwarcie pomyłkowo zamkniętego miesiąca lub dokumentu.'
+@ pomscr[1]+5,pomscr[2]+1 PROMPT '5. Symbole i kody' UNICODE MESSAGE 'Przeglądanie i porawianie baz danych, opisów, symboli, kodów, haseł, itp.'
 IF STARY_ROK#NIL
-@ 13,maxcol()/2+16 PROMPT '6. Zmiana roku.  ' UNICODE MESSAGE 'Wejście do poprzedniego roku lub powrót do bieżącego roku.'
+@ pomscr[1]+6,pomscr[2]+1 PROMPT '6. Zmiana roku.  ' UNICODE MESSAGE 'Wejście do poprzedniego roku lub powrót do bieżącego roku.'
  ELSE
-@ 13,maxcol()/2+16 PROMPT '6. Stary rok.    ' UNICODE message 'Wejście do zeszłego roku, zmiany przenoszone na bieżący rok po zamknięciu.'
+@ pomscr[1]+6,pomscr[2]+1 PROMPT '6. Stary rok.    ' UNICODE message 'Wejście do zeszłego roku, zmiany przenoszone na bieżący rok po zamknięciu.'
 ENDIF
-@ 14,maxcol()/2+16 PROMPT '7. Ilość linii.  ' UNICODE message 'Zmiana ilości linii widocznych na ekranie.'
-@ 15,maxcol()/2+16 PROMPT '8. Ratuj.        ' UNICODE message 'Reindeksacja baz - Odtwarzanie skorowidzy.'
+@ pomscr[1]+7,pomscr[2]+1 PROMPT '7. Ilość linii.  ' UNICODE message 'Zmiana ilości linii widocznych na ekranie.'
+@ pomscr[1]+8,pomscr[2]+1 PROMPT '8. Ratuj.        ' UNICODE message 'Reindeksacja baz - Odtwarzanie skorowidzy.'
       SETKEY(4,{||NIL})
       SETKEY(19,{||KIBORD(CHR(27)+CHR(5)+CHR(13))})
-    MENU TO MENUPOM
-  SETPOS(MENUPOM+7,maxcol()/2+16)
+
+m=menupom
+
+MENU TO MENUPOM SCREEN pomscr
+SETPOS(MENUPOM+pomscr[1],pomscr[2]+1)
+pomscr[5]:=NIL
 SET KEY 4 TO
 SET KEY 19 TO
 
@@ -99,7 +100,7 @@ m=menupom
 
  SET COLOR TO W
 
-@ 21,0 clear
+@ pomscr[3]+1,0 clear
 
 DO CASE
 
@@ -219,7 +220,6 @@ DO CASE
 
    case m=7
       if isega()
-      setpos(11,maxcol()/2+25)
       m:=1
 //#ifdef __PLATFORM__WINDOWS      
       if hb_gtInfo( HB_GTI_ISGRAPHIC )
@@ -276,23 +276,28 @@ RETURN
 *****************
 PROCEDURE DATA_GRAN
 
-local i:=3
+local i:=3,s
         lock in daty
         DO CASE
            CASE DatY->data_gran=DatY->d_z_mies1 ; i=1
            CASE DatY->data_gran=DatY->d_z_mies2 ; i=2
         ENDCASE
-        if iscolor()
-           SET COLOR TO BG+/B
-        endif
-        @ 20,maxcol()/2-20,23,maxcol()/2+20 BOX UNICODE '╔═╗║╝═╚║ '
-        @ 20,maxcol()/2-15 SAY "Wybierz jedną z podanych dat:" UNICODE
-        SET MESSAGE TO 22 CENTER
-        @ 21,maxcol()/2-18 PROMPT dtoc(DatY->d_z_mies1) UNICODE MESSAGE "        Tylko ostatnie ruchy.       "
-        @ 21,maxcol()/2-6 PROMPT dtoc(DatY->d_z_mies2) UNICODE MESSAGE "Ruchy w ostatnio zamykanym miesiącu."
-        @ 21,maxcol()/2+6 PROMPT dtoc(DatY->d_z_rok) UNICODE MESSAGE "           Wszystkie ruchy.         "
+        //if iscolor()
+        //   SET COLOR TO BG+/B
+        //endif
+        s:=window(2,38)
 
-        MENU TO i
+        // @ 20,maxcol()/2-20,23,maxcol()/2+20 BOX UNICODE '╔═╗║╝═╚║ '
+        @ s[1],s[2]+5 SAY "Wybierz jedną z podanych dat:" UNICODE
+        SET MESSAGE TO s[3]-1 CENTER
+        @ s[1]+1,s[2]+3 PROMPT dtoc(DatY->d_z_mies1) UNICODE MESSAGE "        Tylko ostatnie ruchy.       "
+        @ s[1]+1,s[2]+15 PROMPT dtoc(DatY->d_z_mies2) UNICODE MESSAGE "Ruchy w ostatnio zamykanym miesiącu."
+        @ s[1]+1,s[2]+27 PROMPT dtoc(DatY->d_z_rok) UNICODE MESSAGE "           Wszystkie ruchy.         "
+
+        MENU TO i SCREEN s
+
+        window(s)
+
         DO CASE
            CASE i=1
                 DatY->data_gran:=DatY->d_z_mies1

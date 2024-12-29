@@ -1108,11 +1108,11 @@ endif
 #ifdef A_DATA_KS
           A_DATA_KS
 #endif
-          if empty(d_d) .and. !main->(dbseek(rej+l_p)) .and. tak(hb_UTF8ToStr("Czy kasować"),win[3],win[2]+1,.f.,.f.,setcolor())
+          if empty(d_d) .and. !main->(dbseek(rej+l_p)) .and. tak(hb_UTF8ToStr("Czy kasować"),win[3],win[2]+1,.f.,.f.,setcolor(),win)
              delete
              chg:=.t.
           elseif ad[AD_KOPI]>0 .and. !empty(ad[AD_DPROC])
-             if tak(hb_UTF8ToStr("Czy Drukować"),win[3],win[2]+1,lappend,.f.,setcolor())
+             if tak(hb_UTF8ToStr("Czy Drukować"),win[3],win[2]+1,lappend,.f.,setcolor(),win)
                 commit
                 dokdruk(rej,l_p,ad[AD_KOPI])
              endif

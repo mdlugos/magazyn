@@ -61,6 +61,8 @@
 
 #command READ [POSITION <pos>] SAVE => __SetProc(0) ; ReadModal(GetList[,<pos>])
 #command READ [POSITION <pos>] => __SetProc(0) ; ReadModal(GetList[,<pos>]) ; GetList := {}
+#command READ SCREEN <sc> [POSITION <pos>] [<sav: SAVE>] => __SetProc(0) ; WHILE ( ReadModal(GetList[,<pos>]), readkey()=14 .and. mousedrag(readkey(,),<sc>,GetList));ENDDO;if !<.sav.> ;GetList := {};endif
+
 #command XSELECT <(db)> [<ex: EXCLUSIVE>] [<sh: SHARED>] [<ro:READONLY>] [ORDER] [TAG [TO] <(order)>] => sel(<(db)>,<(order)>,if(<.sh.> .or. <.ex.>, !<.ex.>, NIL),<.ro.>)
 #define XOR(x,y) if(x,!(y),y)
 #command SAYL <sayxpr> [<sayClauses,...>] => @ Row(), Col()+1 SAY <sayxpr> [<sayClauses>]

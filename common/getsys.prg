@@ -146,7 +146,6 @@ local NumFlag:=.f.,b,x,y,key,mfl,maxlth:=0
       do while ( get:exitState == GE_NOEXIT )
 #ifdef A_MYSZ
       b:=x:=y:=0
-      MSHOW()
       do while (key:=INKey(0, INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN ),key>=K_MINMOUSE .and. key<=K_MAXMOUSE)
          x:=mcol()
          y:=mrow()
@@ -161,14 +160,12 @@ local NumFlag:=.f.,b,x,y,key,mfl,maxlth:=0
                if !get:HasFocus
                   loop
                endif
-               MHIDE()
                while x>get:col+get:pos-1
                   get:right()
                enddo
                while x<get:col+get:pos-1
                   get:left()
                enddo
-               MSHOW()
                loop
             endif
             get:exitState := GE_MOUSE
@@ -177,7 +174,6 @@ local NumFlag:=.f.,b,x,y,key,mfl,maxlth:=0
          endif
          mfl=.f.
       enddo
-      MHIDE()
       if key = 0
         loop
       endif
@@ -765,7 +761,6 @@ local exitState, ret := .t. ,b
 #ifdef A_MYSZ
   case ( exitState == GE_MOUSE )
     if mysz[1]=2
-       MHIDE()
        ret := .f.
     else
     b:=ascan(getlist,{|g|g:row=mysz[3] .and. g:col<=mysz[2] .and. g:col+len(tran(g:varGet(),g:picture))-1>=mysz[2]})
@@ -1218,8 +1213,8 @@ static proc getchr(get,expandable)
    static bl:=''
    local k,m,n,sc,lc,TXT,getlist:={},prevlen,b:={0,0},bp:=2,ll,osk:={}
    //local bcp := hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
-   memvar r1,c1,r2,c2,defa,l,c,cl,cc,ch,ww
-   private r1,c1,r2,c2,l,c,cl,cc,ch:=.f.,ww:=.f.
+   memvar defa,l,c,cl,cc,ch,ww
+   private l,c,cl,cc,ch:=.f.,ww:=.f.
    ll:=1020
 
   m:=if(get:picture=NIL,40,max(40,val(SubStr(get:picture,1+at("S",get:picture)))))
@@ -1235,42 +1230,23 @@ static proc getchr(get,expandable)
   next
 
   k:=MAX(k,6)
-  r1:=get:row
-  c1:=get:col
-   
-  c2:=c1+1+m
-  r2:=r1+k+1
+  sc:=fixbox({get:row,get:col,get:row+k+1,get:col+1+m,})
 
-   IF c2>maxcol() // poza ekran
-      c1-=c2-maxcol()
-      c2:=maxcol()
-      if c1<0
-         c1:=0
-      endif
-   ENDIF
 
-   IF r2>MaxRow() // poza ekran
-      r1-=r2-MaxRow()
-      r2:=MaxRow()
-      IF r1<0
-         r1:=0
-      ENDIF
-   ENDIF
-
-    sc = SAVESCREEN(r1,c1,r2,c2)
+    sc[5] = SAVESCREEN(sc[1],sc[2],sc[3],sc[4])
     if iscolor()
-       @ r1,c1,r2,c2 BOX UNICODE '┌─┐│┘─└│ ' color "BG+/BG"
+       @ sc[1],sc[2],sc[3],sc[4] BOX UNICODE '┌─┐│┘─└│ ' color "BG+/BG"
        lc = SETCOLOR("W+/B")
     else
         lc = SETCOLOR("I")
-        @ r1,c1,r2,c2 BOX UNICODE '┌─┐│┘─└│ '
+        @ sc[1],sc[2],sc[3],sc[4] BOX UNICODE '┌─┐│┘─└│ '
     endif
         SET COLOR TO I
-        @ r1,c1+3  say 'WPIS WIELOWIERSZOWY'
-        @ r2,c1+3 say 'Esc'
-        @ r2,c1+7 BOX "^→" UNICODE 
-        @ r2,c1+10 BOX "^←" UNICODE 
-        @ r2,c1+13 SAY 'Hom'
+        @ sc[1],sc[2]+3  say 'WPIS WIELOWIERSZOWY'
+        @ sc[3],sc[2]+3 say 'Esc'
+        @ sc[3],sc[2]+7 BOX "^→" UNICODE 
+        @ sc[3],sc[2]+10 BOX "^←" UNICODE 
+        @ sc[3],sc[2]+13 SAY 'Hom'
         SAYl 'End'
         sayl 'PgU'
         sayl 'PgD'
@@ -1299,16 +1275,17 @@ osk:=HB_SETKEYSAVE()
 
   do while .t.
     //txt=MEMOEDIT(txt,r1+1,c1+1,r2-1,c2-1,.T.,"gufunc",c2-c1-3,8,l,c,cl,cc)
-    txt=MEMOEDIT(txt,r1+1,c1+1,r2-1,c2-1,.T.,"gufunc",ll,2,l,c,cl,cc)
+    txt=MEMOEDIT(txt,sc[1]+1,sc[2]+1,sc[3]-1,sc[4]-1,.T.,{|a,b,c|gufunc(a,b,c,sc)},ll,2,l,c,cl,cc)
     k:=lastkey()
     if k=K_CTRL_K
        m:=message("PODAJ  (B,M,K,E,R,W);ROZKAZ:;... ")
-       k:=upper(hb_keyChar(inkey(0)))
+       WHILE (k:=inkey(0, INKEY_KEYBOARD + INKEY_LDOWN),k=K_LBUTTONDOWN .and. mousedrag({1,mcol(),mrow()},m));ENDDO
+       k:=upper(hb_keyChar(k))
        if k$'RW'
          @ m[1]+1,m[2]+8 say "NAZWĘ: " UNICODE 
          n:=pad(defa,64)
          @ m[1]+2,m[2]+2 get n picture "@KS14"
-         read
+         read SCREEN m
          if empty(n)
          elseif k="R"
           if !file(n)
@@ -1372,7 +1349,7 @@ osk:=HB_SETKEYSAVE()
      loop
     elseif k=K_F2
         if ww:=!ww
-           ll:=c2-c1-3
+           ll:=sc[4]-sc[2]-3
         else
            txt:=strtran(txt,chr(141)+chr(10))
            ll:=1020
@@ -1396,15 +1373,15 @@ osk:=HB_SETKEYSAVE()
         fixbuff(get,k)
   endif
 
-    RESTSCREEN(r1,c1,r2,c2,sc)
+    RESTSCREEN(sc[1],sc[2],sc[3],sc[4],sc[5])
 
     SETCOLOR(lc)
     get:display()
 
 return
 *********
-FUNC gufunc(mode,line,column)
-  memvar r1,c1,r2,c2,l,c,cl,cc,ch,ww
+FUNC gufunc(mode,line,column,sc)
+  memvar l,c,cl,cc,ch,ww
   static spec:=.f.
   local key
   if (mode=1 .or. mode=2)
@@ -1421,8 +1398,8 @@ FUNC gufunc(mode,line,column)
         c:=column
         cl:=row()
         cc:=col()
-        cc-=c1+1
-        cl-=r1+1
+        cc-=sc[2]+1
+        cl-=sc[1]+1
         return K_CTRL_END
      endif
      ch:=mode=2
@@ -1436,7 +1413,7 @@ FUNC gufunc(mode,line,column)
      return 34
 
   elseif mode=0
-     @ r2,c2-8 SAY str(line,3)+","+str(column,3) COLOR "I"
+     @ sc[3],sc[4]-8 SAY str(line,3)+","+str(column,3) COLOR "I"
   endif
 
 RETURN(0)

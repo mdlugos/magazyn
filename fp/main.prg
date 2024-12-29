@@ -2,6 +2,7 @@
 #define DatY MEMVAR
 #endif
 #include "ar.ch"
+#include "hbgtinfo.ch"
 EXTERNAL __DBSDF,__DBDELIM,__COPYFILE
 EXTERNAL ACOPY
 EXTERNAL ASORT
