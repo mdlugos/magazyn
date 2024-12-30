@@ -82,7 +82,7 @@ begin sequence
 {|f|zDOK1(f)},;
 {|f|zdok2(f,{})},;
 {|f|setcursor(0)},;
-{||DBSELECTAREA("ZAPOT"),ordsetfocus("zap_rel")},;
+{|_f|DBSELECTAREA("ZAPOT"),ordsetfocus("zap_rel"),dbseek(keyp+str(_fi,hb_FieldLen([pozycja])))},;
 {|f|zdok4(f,{},deep)},;
 {|f|dok6(f,-4)}})
     endif
@@ -92,7 +92,7 @@ else
 {|f|zDOK1(f)},;
 {|f,g|zdok2(f,g)},;
 {|f,g|zdok3(f,g,@poprec,@keyp,@startrec)},;
-{||DBSELECTAREA("ZAPOT"),ordsetfocus("zap_rel")},;
+{|_f|DBSELECTAREA("ZAPOT"),ordsetfocus("zap_rel"),dbseek(keyp+str(_fi,hb_FieldLen([pozycja])))},;
 {|f,g|zdok4(f,g,deep)},;
 {|f|zdok5(f)}})
 /*

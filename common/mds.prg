@@ -466,7 +466,7 @@ local ret,scrlok,delta:={1,0,0}
               // kumulatywne przesunięcie w dx dy
               delta[3]:=dx-delta[3];dx:=mrow();delta[3]:=dx-delta[3]
               delta[2]:=cx-delta[2];cx:=mcol();delta[2]:=cx-delta[2]
-              if delta[2]+_scol1<1 .or. delta[2]+_scol2>maxcol() .or. delta[3]+dx<=_srowb .or. delta[3]+dx>=_srowe
+              if delta[2]+_scol1<1 .or. delta[2]+_scol2>maxcol() .or. dx<=_srowb .or. dx>=_srowe
                 loop
               endif
               if scrlok=NIL 

@@ -71,7 +71,7 @@ if deep
 {|f|sDOK1(f)},;
 {|f|sdok2(f,{},deep)},;
 {||setcursor(0)},;
-{||DBSELECTAREA("zawar"),ordsetfocus("zaw_skl")},;
+{|_f|DBSELECTAREA("zawar"),ordsetfocus("zaw_skl"),dbseek(keyp+str(_fi,hb_FieldLen([pozycja])))},;
 {|f|sdok4(f,{},deep)},;
 {|f|dok6(f)}})
     endif
@@ -81,7 +81,7 @@ else
 {|f|sDOK1(f)},;
 {|f,g|sdok2(f,g,deep)},;
 {|f|sdok3(f)},;
-{||DBSELECTAREA("zawar"),ordsetfocus("zaw_skl")},;
+{|_f|DBSELECTAREA("zawar"),ordsetfocus("zaw_skl"),dbseek(keyp+str(_fi,hb_FieldLen([pozycja])))},;
 {|f,g|sdok4(f,g,deep)},;
 {|f|sdok5(f)}})
 endif

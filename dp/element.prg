@@ -394,7 +394,7 @@ if deep
 {|f|eDOK1(f)},;
 {|f|edok2(f,{})},;
 {||setcursor(0)},;
-{||DBSELECTAREA("normy"),ordsetfocus("nor_ele")},;
+{|_f|DBSELECTAREA("normy"),ordsetfocus("nor_ele"),dbseek(keyp+str(_fi,hb_FieldLen([pozycja])))},;
 {|f|edok4(f,{},deep)},;
 {|f|dok6(f,0)}})
     endif
@@ -404,7 +404,7 @@ else
 {|f|eDOK1(f)},;
 {|f,g|edok2(f,g)},;
 {|f|edok3(f)},;
-{||DBSELECTAREA("normy"),ordsetfocus("nor_ele")},;
+{|_f|DBSELECTAREA("normy"),ordsetfocus("nor_ele"),dbseek(keyp+str(_fi,hb_FieldLen([pozycja])))},;
 {|f,g|edok4(f,g,deep)},;
 {|f|edok5(f)}})
 endif

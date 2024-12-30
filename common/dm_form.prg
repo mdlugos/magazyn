@@ -6,46 +6,29 @@
 //iif(hb_gtInfo( HB_GTI_COMPATBUFFER ),2,4)
 
 #ifdef A_MYSZ
-static proc drag_mysz(_f,job)
-local scrlok,delta:={1,0,0}
 
-        do while delta[1]=1
-           if delta[2]#0 .or. delta[3]#0
-              if scrlok=NIL 
-                scrlok:=savescreen(_fscr0,_fco1,_frow+(_fl-_fj+1)*_fskip,_fco2)
-              endif 
-              dispbegin()
-              RESTSCREEN(_fscr0,_fco1,MaxRow(),_fco2,_fscr)
-              _fscr0+=delta[3]
-              _frow+=delta[3]
-              _fco1+=delta[2]
-              _fco2+=delta[2]
-              setpos(row()+delta[3],col()+delta[2])
-              _fscr:=savescreen(_fscr0,_fco1,MaxRow(),_fco2)
-              restscreen(_fscr0,_fco1,_frow+(_fl-_fj+1)*_fskip,_fco2,scrlok)
-              dispend()
-           endif
-           delta[1]:=inkey(0,INKEY_MOVE + INKEY_LUP)
-           if delta[1]=1003
-              delta[1]:=0
-           else
-              delta[1]:=1
-           endif
-           delta[2]:=max(0,min(maxcol(),mcol()))-job[2]
-           delta[3]:=max(0,min(MaxRow(),mrow()))-job[3]
-           _fk:=_frow+_fskip*(_fi-_fj)
-           if delta[2]+_fco1<0 .or. delta[2]+_fco2>maxcol() .or. delta[3]+_fscr0<0 .or. delta[3]+_fk+_fskip>maxrow()
-              exit
-           endif
-           job[2]+=delta[2]
-           job[3]+=delta[3]
-        enddo
-        if _frow+(_fl-_fj+1)*_fskip>maxrow()
+
+stat func blo(_f,dy,y)
+local r,i,k,ret
+  r:=_frow+dy
+  i:=Int((y-r)/_fskip)+1
+  k:=_fskip*i+r
+  ret := dy+_fscr0<0 .or. k>maxrow()
+return ret 
+
+static proc drag_mysz(_f,w)
+   local dr:=_frow-_fscr0,mr:=_fskip*(_fl-_fj+1)+_frow
+   if mousedr(w,@_fscr0,@_fco1,@mr,@_fco2,@_fscr,{|dy|_frow:=_fscr0+dr,blo(_f,dy,w[3])})
+      _frow:=_fscr0+dr
+      if _frow+(_fl-_fj+1)*_fskip>maxrow()
          _fl:=Int((maxrow()-_frow)/_fskip)+_fj-1
-         RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,MaxRow(),_fco2,hb_BSubStr(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow-_fscr0)+1))
+         _fi:=min(_fi,_fl)
+         RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,mr,_fco2,hb_BSubStr(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow-_fscr0)+1))
          @ _fskip*(_fl-_fj+1)+_frow,_fco1 BOX '╙'+replicate('─',_fco2-_fco1-1)+'╜' UNICODE COLOR _sbkgr
-        endif
+      endif
+   endif   
 return
+
 #endif
 
 PROCEDURE FORM_EDIT(_f)
@@ -99,6 +82,7 @@ _fscr:=savescreen(_fscr0,_fco1,MaxRow(),_fco2)
          exit
        endif
        drag_mysz(_f,job)
+       _fi:=min(_fl,_fi)
     else
       job:=NIL
     endif
@@ -136,13 +120,13 @@ READmodal(getlist,@rmpos)
 
 #ifdef A_MYSZ
     if _fkey=GE_MOUSE
-           job:=readkey(,)
-           if job[1]=2 .or. job[2]<=_fco1 .or. job[2]>_fco2 .or. job[3]<=_fscr0 .or. job[3]>_frow+(_fl-_fj+1)*_fskip
-              exit
-           endif
-           if job[3]<=_frow+_fskip-1
-              loop
-           endif
+       job:=readkey(,)
+       if job[1]=2 .or. job[2]<=_fco1 .or. job[2]>_fco2 .or. job[3]<=_fscr0 .or. job[3]>_frow+(_fl-_fj+1)*_fskip
+           exit
+       endif
+       if job[3]<=_frow+_fskip-1
+          loop
+       endif
     endif
 #endif
     IF _fkey=K_PGUP
@@ -153,7 +137,8 @@ READmodal(getlist,@rmpos)
 
 
     eval(_fmainpre,_f)
-    stat:=(_fi=1 .and. _fl=1)
+    // editing - .t. ,scroll down - .f.
+    stat:=(_fi=1 .and. _fl=1) 
 #ifdef A_MYSZ
     if _fkey=GE_MOUSE //.and. job[3]<=_frow+(_fl-_fj+1)*_fskip
         _fkey:=max(min(_fl,int((job[3]-_frow)/_fskip)+_fj),1+_fj)

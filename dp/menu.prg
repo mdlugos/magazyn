@@ -64,7 +64,7 @@ begin sequence
 {|f|MDOK1(f)},;
 {|f|mdok2(f,{})},;
 {||setcursor(0)},;
-{||DBSELECTAREA("MENU"),ordsetfocus("menu_rel")},;
+{|_f|DBSELECTAREA("MENU"),ordsetfocus("menu_rel"),dbseek(keyp+str(_fi,hb_FieldLen([pozycja])))},;
 {|f|Mdok4(f,{},deep)},;
 {|f|dok6(f,-3)}})
     setkey(-2,F3)
@@ -76,7 +76,7 @@ else
 {|f|MDOK1(f)},;
 {|f,g|mdok2(f,g)},;
 {|f,g|dok3(f,g,@poprec,@keyp,@startrec),showh(f,relewy->data,relewy->posilek)},;
-{||DBSELECTAREA("MENU"),ordsetfocus("menu_rel")},;
+{|_f|DBSELECTAREA("MENU"),ordsetfocus("menu_rel"),dbseek(keyp+str(_fi,hb_FieldLen([pozycja])))},;
 {|f,g|Mdok4(f,g,deep)},;
 {|f|Mdok5(f)}})
 endif

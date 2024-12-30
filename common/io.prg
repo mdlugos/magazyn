@@ -1187,19 +1187,81 @@ RETURN k<>K_ESC
 #endif
 *******************
 #ifdef A_MYSZ
-func mousedrag(w,scr,getlist)
+func mousedr(w,r1,c1,r2,c2,scr,testbl)
    local olds,dx:=0,dy:=0
+   if w[1]<>1 .or. w[3]<r1 .or. w[3]>r2 .or. w[2]<c1 .or. w[2]>c2
+      return .f.
+   elseif empty(scr)
+      return .t.
+   endif
+   olds:={r1,c1,r2,c2,scr,savescreen(r1,c1,r2,c2)}
+   do while (inkey(0,INKEY_MOVE + INKEY_LDOWN + INKEY_LUP), MLeftDown())
+      // kumulatywne przesunięcie w dx dy
+      dy:=w[3]-dy;w[3]:=mrow();dy:=w[3]-dy
+      dx:=w[2]-dx;w[2]:=mcol();dx:=w[2]-dx
+      if c1+dx < 0 .or. c2+dx > MaxCol() .or. if( testbl <> NIL , eval(testbl, dy ) ,  r1+dy < 0 .or. r2+dy > MaxRow() )
+         loop
+      endif
+      DispBegin()
+      RestScreen(r1,c1,r2,c2,scr)
+      c1+=dx
+      c2+=dx
+      r1+=dy
+      r2+=dy
+      dx:=dy:=0 //kumulatywne wyzerowane
+      w[1]:=-max(-w[1],max(abs(r1-olds[1]),abs(c1-olds[2])))
+      scr:=SaveScreen(r1,c1,r2,c2)
+      RestScreen(r1,c1,r2,c2,olds[6])
+      DispEnd()
+   enddo
+   if w[1]<0 
+      if w[1]<-1
+         w[1]:=0
+      else // za mały ruch, cofam
+         DispBegin()
+         RestScreen(r1,c1,r2,c2,scr)
+         r1:=olds[1]
+         c1:=olds[2]
+         r2:=olds[3]
+         c2:=olds[4]
+         scr:=olds[5]
+         RestScreen(r1,c1,r2,c2,olds[6])
+         DispEnd()
+         w[1]:=1
+      endif
+   endif
+
+return .t.
+
+func mousedrag(w,scr,getlist)
+local ret,olds
+   olds:={scr[1],scr[2],scr[3],scr[4]}
+   if empty(w[1])
+      w[1]:=1
+      w[2]:=mcol()
+      w[3]:=mrow()
+   endif
+   ret := mousedr(w,@scr[1],@scr[2],@scr[3],@scr[4],@scr[5])
+   if ret .and. w[1]=0 .and. valtype(getlist)='A'
+      aeval(getlist,{|g|if(g:row<olds[1] .or. g:row>olds[3] .or. g:col<olds[2] .or. g:col>olds[4],,(g:row:=g:row+scr[1]-olds[1],g:col:=g:col+scr[2]-olds[2]))})
+   endif
+
+return ret 
+/*
+func mousedrag(w,scr,getlist)
+   local olds,dx:=0,dy:=0,j
    if w[1]<>1 .or. w[3]<scr[1] .or. w[3]>scr[3] .or. w[2]<scr[2] .or. w[2]>scr[4]
       return .f.
    elseif empty(scr[5])
       return .t.
    endif
+   j:=valtype(getlist)
    olds:={scr[1],scr[2],scr[3],scr[4],savescreen(scr[1],scr[2],scr[3],scr[4])}
    do while inkey(0,INKEY_MOVE + INKEY_LUP)<>1003
       // kumulatywne przesunięcie w dx dy
       dy:=w[3]-dy;w[3]:=mrow();dy:=w[3]-dy
       dx:=w[2]-dx;w[2]:=mcol();dx:=w[2]-dx
-      if scr[1]+dy < 0 .or. scr[3]+dy > MaxRow() .or. scr[2]+dx < 0 .or. scr[4]+dx > MaxCol()
+      if if( j='B' , eval(getlist, w[3] ) ,scr[2]+dx < 0 .or. scr[4]+dx > MaxCol() .or.  scr[1]+dy < 0 .or. scr[3]+dy > MaxRow() )
          loop
       endif
       DispBegin()
@@ -1216,10 +1278,13 @@ func mousedrag(w,scr,getlist)
    enddo
    if w[1]<0 
       if w[1]<-1
-         if getlist<>NIL
-            aeval(getlist,{|g|if(g:row<olds[1] .or. g:row>olds[3] .or. g:col<olds[2] .or. g:col>olds[4],,(g:row:=g:row+scr[1]-olds[1],g:col:=g:col+scr[2]-olds[2]))})
-         endif
          w[1]:=0
+         SWITCH valtype(getlist)
+         case 'A'
+            aeval(getlist,{|g|if(g:row<olds[1] .or. g:row>olds[3] .or. g:col<olds[2] .or. g:col>olds[4],,(g:row:=g:row+scr[1]-olds[1],g:col:=g:col+scr[2]-olds[2]))})
+            exit
+         case 'B'
+         ENDSWITCH
       else // za mały ruch, cofam
          DispBegin()
          RestScreen(scr[1],scr[2],scr[3],scr[4],scr[5])
@@ -1231,6 +1296,7 @@ func mousedrag(w,scr,getlist)
    endif
 
 return .t.
+*/
 *******************
 func __atprompt(row,col,pro,msg)
 
