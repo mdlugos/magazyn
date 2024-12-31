@@ -1187,6 +1187,8 @@ RETURN k<>K_ESC
 #endif
 *******************
 #ifdef A_MYSZ
+#define D_REST 4
+
 func mousedr(bx,cx,dx,r1,c1,r2,c2,scr,testbl)
    local olds,deltax:=0,deltay:=0
    if bx<>1 .or. dx<r1 .or. dx>r2 .or. cx<c1 .or. cx>c2
@@ -1203,15 +1205,15 @@ func mousedr(bx,cx,dx,r1,c1,r2,c2,scr,testbl)
          loop
       endif
       DispBegin()
-      RestScreen(r1,c1,r2,c2,scr)
+      RESTSCREEN(max(0,r1),c1,min(MaxRow(),r2),c2,scr)
       c1+=deltax
       c2+=deltax
       r1+=deltay
       r2+=deltay
       deltax:=deltay:=0 //kumulatywne wyzerowane
       bx:=-max(-bx,max(abs(r1-olds[1]),abs(c1-olds[2])))
-      scr:=SaveScreen(r1,c1,r2,c2)
-      RestScreen(r1,c1,r2,c2,olds[6])
+      scr:=SaveScreen(max(0,r1),c1,min(MaxRow(),r2),c2)
+      RestScreen(max(r1,0),c1,r2,c2,hb_BSubStr(olds[6],1+max(0,-r1)*(1+c2-c1)*D_REST))
       DispEnd()
    enddo
    if bx<0 
@@ -1219,7 +1221,7 @@ func mousedr(bx,cx,dx,r1,c1,r2,c2,scr,testbl)
          bx:=0
       else // za mały ruch, cofam
          DispBegin()
-         RestScreen(r1,c1,r2,c2,scr)
+         RESTSCREEN(max(0,r1),c1,min(MaxRow(),r2),c2,scr)
          r1:=olds[1]
          c1:=olds[2]
          r2:=olds[3]

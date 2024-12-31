@@ -180,7 +180,7 @@ private hlink:=NIL
       DEFAULT _spocz TO ''
       DEFAULT _srowb TO 1
       DEFAULT _scol1 TO 0
-      DEFAULT _srowe TO MaxRow()
+      DEFAULT _srowe TO MaxRow()-1
       DEFAULT _sbeg  TO 1
       DEFAULT _slth  TO 0
       //DEFAULT _snagl TO TOPLINE

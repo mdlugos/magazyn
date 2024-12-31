@@ -462,6 +462,7 @@ return .f.
 func mysz(_s,bx,cx,dx,myszflag)
   local ret:=.f.
   if dx>=_srow1 .and. dx<_srow2 .and. cx>=_scol1 .and. cx<_scol2 .and. bx=1
+    _scr:=hb_BSubStr(_scr,1+max(0,_srow1-_srowb-1)*(_scoln+2)*D_REST)
     --_srow1
     --_scol1
     ret := mousedr(@bx,@cx,@dx,@_srow1,@_scol1,@_srow2,@_scol2,@_scr,{||dx<=_srowb .or. dx>=_srowe})
@@ -500,16 +501,15 @@ func mysz(_s,bx,cx,dx,myszflag)
       endif
     endif  
     if ret
-      if _srowb<_srow1-1
-        _scr:=SAVESCREEN(_srowb,_scol1-1,_srow1-2,_scol2)+_scr
-      endif
-      if _srowe>_srow2
-        _scr+=SAVESCREEN(_srow2+1,_scol1-1,_srowe,_scol2)
-      endif
-    
       if bx=0 //był drag
-        if _srow1 - 1 <_srowb 
+        if _srowb<_srow1-1
+          _scr:=SAVESCREEN(_srowb,_scol1-1,_srow1-2,_scol2)+_scr
+        elseif _srowb>_srow1-1
           _sbf:=.f.
+          if _srowb>0
+            restscreen(max(_srow1 - 1,0),_scol1-1,_srowb-1,_scol2,_scr)
+            _scr:=hb_BSubStr(_scr,1+(_srowb-max(0,_srow1-1))*(_scoln+2)*D_REST)
+          endif
           @ _srowb,_scol1-1 BOX '┌'+REPLICATE('─',_scoln)+'┐' UNICODE COLOR _SRAMKA
           @ _srowb,_scol1+_snagkol SAY RNTO1(_snagl) COLOR _SRAMKA
           do while _srow1 - 1 <_srowb
@@ -518,8 +518,14 @@ func mysz(_s,bx,cx,dx,myszflag)
               --_si
               ++_srow1
           enddo 
-        elseif _srow2>_srowe
-            _sef:=.f.
+        endif
+        if _srowe>_srow2
+          _scr+=SAVESCREEN(_srow2+1,_scol1-1,_srowe,_scol2)
+        elseif _srowe<_srow2
+          _sef:=.f.
+          if _srowe<MaxRow()
+            restscreen(_srowe+1,_scol1-1,min(_srow2,MaxRow()),_scol2,hb_BSubStr(_scr,1+(1+_srowe-_srowb)*(_scoln+2)*D_REST))
+          endif
           @ _srowe,_scol1-1 BOX '└'+REPLICATE('─',_scoln)+'┘' UNICODE COLOR _SRAMKA
           @ _srowe,_scol1+_snagkol SAY RSTO1(_snagl) COLOR _SRAMKA
           _si-=_srow2-_srowe
@@ -532,92 +538,7 @@ func mysz(_s,bx,cx,dx,myszflag)
   endif
 
 return .f.
-/*
-func mysz(_s,bx,cx,dx,myszflag)
-local ret,scrlok,delta:={1,0,0}
-         if dx>=_srow1 .and. dx<_srow2 .and. cx>=_scol1 .and. cx<_scol2 .and. bx=1
-            do while inkey(0,INKEY_MOVE + INKEY_LUP)<>1003
-              // kumulatywne przesunięcie w dx dy
-              delta[3]:=dx-delta[3];dx:=mrow();delta[3]:=dx-delta[3]
-              delta[2]:=cx-delta[2];cx:=mcol();delta[2]:=cx-delta[2]
-              if delta[2]+_scol1<1 .or. delta[2]+_scol2>maxcol() .or. dx<=_srowb .or. dx>=_srowe
-                loop
-              endif
-              if scrlok=NIL 
-                scrlok:=savescreen(_srow1-1,_scol1-1,_srow2,_scol2)
-              endif 
-              dispbegin()
-              RESTSCREEN(max(_srowb,_srow1-1),_scol1-1,_srow2,_scol2,hb_BSubStr(_scr,1+max(0,_srow1-_srowb-1)*(_scoln+2)*D_REST))
-              _srow1+=delta[3]
-              _srow2+=delta[3]
-              _scol1+=delta[2]
-              _scol2+=delta[2]
-              if delta[2]#0
-                _scr:=savescreen(_srowb,_scol1-1,_srowe,_scol2)
-              endif
-              afill(delta,0)
-              restscreen(max(_srowb,_srow1-1),_scol1-1,min(_srow2,_srowe),_scol2,hb_BSubStr(scrlok,1+max(0,_srowb-_srow1+1)*(_scoln+2)*D_REST))
-              dispend()
-            enddo
-         endif 
-         if bx=2 .or. cx>=_scol2 .or. cx <_scol1 .or. dx < _srow1-1 .or. dx>_srow2
-            if myszflag
-               return evakey(27,_s)
-            endif
-         elseif _si=0
-         elseif dx=_srow1-1
-            if !_sbf
-            if _sm>1
-               _sm:=1
-               SAVE LINE _srow1+1
-            endif
-            return evakey(5,_s)
-            endif
-         elseif dx=_srow2
-            if !_sef
-            if _sm<_si
-               _sm:=_si
-               SAVE LINE _srow2-1
-            endif
-            return evakey(24,_s)
-            endif
-         else
-            if dx#_sm+_srow1-1
-              _sm:=dx-_srow1+1
-              if _sbeg>0
-                   HIGHLIGHT LINE dx
-              else
-                   SAVE LINE dx
-                   ALTERNATE LINE dx BUFFER _sprpt ATTRIB 119
-              endif
-            endif  
-            if scrlok<>NIL
-                if _srow1 - 1 <_srowb 
-                   //cut(_s)
-                   _sbf:=.f.
-                   @ _srowb,_scol1-1 BOX '┌'+REPLICATE('─',_scoln)+'┐' UNICODE COLOR _SRAMKA
-                   @ _srowb,_scol1+_snagkol SAY RNTO1(_snagl) COLOR _SRAMKA
-                   do while _srow1 - 1 <_srowb
-                      adel(_srec, _srowb - _srow1 + 1 )
-                      --_sm
-                      --_si
-                      ++_srow1
-                   enddo 
-                elseif _srow2>_srowe
-                    _sef:=.f.
-                    @ _srowe,_scol1-1 BOX '└'+REPLICATE('─',_scoln)+'┘' UNICODE COLOR _SRAMKA
-                    @ _srowe,_scol1+_snagkol SAY RSTO1(_snagl) COLOR _SRAMKA
-                    _si-=_srow2-_srowe
-                    _srow2:=_srowe
-                endif
-                return .f.
-          endif
-          return evakey(13,_s)
-         endif
-
-return .f.
-************/
-
+**************************
 func evakey(_skey,_s,bx,cx,dx,myszflag)
    local _stxt,job
 

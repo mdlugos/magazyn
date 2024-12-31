@@ -1452,7 +1452,7 @@ ames:={}
    asize(_s,max(len(_s),_sLEN))
    _srowb:=1
    _scol1:=0
-   _srowe:=MaxRow()
+   _srowe:=MaxRow()-1
    _sbeg:=1
    _slth:=0
    _swar:=NIL
