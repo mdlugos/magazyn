@@ -63,7 +63,7 @@ if deep
 {|f|RDOK1(f)},;
 {|f|rdok2(f,{})},;
 {||setcursor(0)},;
-{|_f|DBSELECTAREA("SKLAD"),ordsetfocus("skl_dan"),dbseek(keyp+str(_fi,hb_FieldLen([pozycja])))},;
+{|_f|DBSELECTAREA("SKLAD"),ordsetfocus("skl_dan")},;
 {|f|Rdok4(f,{},deep)},;
 {|f|dok6(f,-4)}})
     endif
@@ -73,7 +73,7 @@ else
 {|f|RDOK1(f)},;
 {|f,g|rdok2(f,g)},;
 {|f,g|rdok3(f,g)},;
-{|_f|DBSELECTAREA("SKLAD"),ordsetfocus("skl_dan"),dbseek(keyp+str(_fi,hb_FieldLen([pozycja])))},;
+{|_f|DBSELECTAREA("SKLAD"),ordsetfocus("skl_dan")},;
 {|f,g|Rdok4(f,g,deep)},;
 {|f|Rdok5(f)}})
 endif

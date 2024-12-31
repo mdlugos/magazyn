@@ -7,22 +7,16 @@
 
 #ifdef A_MYSZ
 
-
-stat func blo(_f,dy,y)
-local r,i,k,ret
-  r:=_frow+dy
-  i:=Int((y-r)/_fskip)+1
-  k:=_fskip*i+r
-  ret := dy+_fscr0<0 .or. k>maxrow()
-return ret 
-
 static proc drag_mysz(_f,w)
    local dr:=_frow-_fscr0,mr:=_fskip*(_fl-_fj+1)+_frow
-   if mousedr(w,@_fscr0,@_fco1,@mr,@_fco2,@_fscr,{|dy|_frow:=_fscr0+dr,blo(_f,dy,w[3])})
+   local blo:={|dy,r,i|r:=_fscr0+dr+dy, i:=Int((w[3]-r)/_fskip)+1, dy+_fscr0<0 .or. _fskip*i+r>maxrow()}
+   if mousedr(@w[1],@w[2],@w[3],@_fscr0,@_fco1,@mr,@_fco2,@_fscr,blo)
       _frow:=_fscr0+dr
-      if _frow+(_fl-_fj+1)*_fskip>maxrow()
+
+      if mr<MaxRow()
+         _fscr+=savescreen(mr+1,_fco1,MaxRow(),_fco2)
+      elseif _frow+(_fl-_fj+1)*_fskip>maxrow()
          _fl:=Int((maxrow()-_frow)/_fskip)+_fj-1
-         _fi:=min(_fi,_fl)
          RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,mr,_fco2,hb_BSubStr(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow-_fscr0)+1))
          @ _fskip*(_fl-_fj+1)+_frow,_fco1 BOX '╙'+replicate('─',_fco2-_fco1-1)+'╜' UNICODE COLOR _sbkgr
       endif
@@ -71,6 +65,8 @@ _fscr:=savescreen(_fscr0,_fco1,MaxRow(),_fco2)
 
   eval(_fdmpre,_f)
 
+  job:=NIL
+
   DO WHILE .T.
 
     SET COLOR TO (_snorm)
@@ -82,7 +78,6 @@ _fscr:=savescreen(_fscr0,_fco1,MaxRow(),_fco2)
          exit
        endif
        drag_mysz(_f,job)
-       _fi:=min(_fl,_fi)
     else
       job:=NIL
     endif
@@ -205,8 +200,13 @@ READmodal(getlist,@rmpos)
 
   SET COLOR TO (_SNORM)
 
+      if _fi>_fl
+         // obcięcie dołu po drag w nagłówku
+         skip _fl-_fi
+         _fi:=_fl
+      endif
+      
       _fk:=_frow+_fskip*(_fi-_fj)
-
 
       begin sequence
 

@@ -375,9 +375,10 @@ begin sequence
       SET ORDER TO tag nor_ele
 #ifdef A_LPNUM      
       if dbseek(keyp,,.t.)
-        p:=-val(pozycja)
+        p:=pozycja
       endif
 #endif
+
       if dbseek(keyp)
         kibord(chr(3))
       endif
@@ -390,21 +391,21 @@ r:=max(hb_fieldlen('nazwa'),A_DILTH+17)+10
 if deep
    inkey()
    if !eof()
-    FORM_EDIT({p,-r,3,1,999,;
+    FORM_EDIT({-val(p),-r,3,1,999,;
 {|f|eDOK1(f)},;
 {|f|edok2(f,{})},;
 {||setcursor(0)},;
-{|_f|DBSELECTAREA("normy"),ordsetfocus("nor_ele"),dbseek(keyp+str(_fi,hb_FieldLen([pozycja])))},;
+{|_f|DBSELECTAREA("normy"),ordsetfocus("nor_ele")},;
 {|f|edok4(f,{},deep)},;
 {|f|dok6(f,0)}})
     endif
 else
     lock
-    FORM_EDIT({p,-r,3,1,999,;
+    FORM_EDIT({-val(p),-r,3,1,999,;
 {|f|eDOK1(f)},;
 {|f,g|edok2(f,g)},;
 {|f|edok3(f)},;
-{|_f|DBSELECTAREA("normy"),ordsetfocus("nor_ele"),dbseek(keyp+str(_fi,hb_FieldLen([pozycja])))},;
+{|_f|DBSELECTAREA("normy"),ordsetfocus("nor_ele")},;
 {|f,g|edok4(f,g,deep)},;
 {|f|edok5(f)}})
 endif

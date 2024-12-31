@@ -263,7 +263,7 @@ begin sequence
 {|f|DOK1(f)},;
 {|f|dok2(f,{})},;
 {||NIL},;
-{|_f|DBSELECTAREA("MAIN"),ordsetfocus("main_rel"),dbseek(keyp+str(_fi,hb_FieldLen([pozycja])))},;
+{|_f|DBSELECTAREA("MAIN"),ordsetfocus("main_rel")},;
 {|f|dok4(f,{},deep)},;
 {|f|dok6(f,-2)}})
   endif
@@ -273,7 +273,7 @@ else
 {|f|DOK1(f)},;
 {|f,g|dok2(f,g)},;
 {|f,g|dok3(f,g,@poprec,@keyp,@startrec)},;
-{|_f|DBSELECTAREA("MAIN"),ordsetfocus("main_rel"),dbseek(keyp+str(_fi,hb_FieldLen([pozycja])))},;
+{|_f|DBSELECTAREA("MAIN"),ordsetfocus("main_rel")},;
 {|f,g|dok4(f,g,deep)},;
 {|f|dok5(f)}})
   if _flp=0.and.!main->(dbseek(keyp)).and.!zapot->(dbseek(keyp)).and.!menu->(dbseek(keyp))

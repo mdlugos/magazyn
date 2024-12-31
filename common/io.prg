@@ -1187,36 +1187,36 @@ RETURN k<>K_ESC
 #endif
 *******************
 #ifdef A_MYSZ
-func mousedr(w,r1,c1,r2,c2,scr,testbl)
-   local olds,dx:=0,dy:=0
-   if w[1]<>1 .or. w[3]<r1 .or. w[3]>r2 .or. w[2]<c1 .or. w[2]>c2
+func mousedr(bx,cx,dx,r1,c1,r2,c2,scr,testbl)
+   local olds,deltax:=0,deltay:=0
+   if bx<>1 .or. dx<r1 .or. dx>r2 .or. cx<c1 .or. cx>c2
       return .f.
    elseif empty(scr)
       return .t.
    endif
    olds:={r1,c1,r2,c2,scr,savescreen(r1,c1,r2,c2)}
    do while (inkey(0,INKEY_MOVE + INKEY_LDOWN + INKEY_LUP), MLeftDown())
-      // kumulatywne przesunięcie w dx dy
-      dy:=w[3]-dy;w[3]:=mrow();dy:=w[3]-dy
-      dx:=w[2]-dx;w[2]:=mcol();dx:=w[2]-dx
-      if c1+dx < 0 .or. c2+dx > MaxCol() .or. if( testbl <> NIL , eval(testbl, dy ) ,  r1+dy < 0 .or. r2+dy > MaxRow() )
+      // kumulatywne przesunięcie w deltax deltay
+      deltay:=dx-deltay;dx:=mrow();deltay:=dx-deltay
+      deltax:=cx-deltax;cx:=mcol();deltax:=cx-deltax
+      if c1+deltax < 0 .or. c2+deltax > MaxCol() .or. if( testbl <> NIL , eval(testbl, deltay ) ,  r1+deltay < 0 .or. r2+deltay > MaxRow() )
          loop
       endif
       DispBegin()
       RestScreen(r1,c1,r2,c2,scr)
-      c1+=dx
-      c2+=dx
-      r1+=dy
-      r2+=dy
-      dx:=dy:=0 //kumulatywne wyzerowane
-      w[1]:=-max(-w[1],max(abs(r1-olds[1]),abs(c1-olds[2])))
+      c1+=deltax
+      c2+=deltax
+      r1+=deltay
+      r2+=deltay
+      deltax:=deltay:=0 //kumulatywne wyzerowane
+      bx:=-max(-bx,max(abs(r1-olds[1]),abs(c1-olds[2])))
       scr:=SaveScreen(r1,c1,r2,c2)
       RestScreen(r1,c1,r2,c2,olds[6])
       DispEnd()
    enddo
-   if w[1]<0 
-      if w[1]<-1
-         w[1]:=0
+   if bx<0 
+      if bx<-1
+         bx:=0
       else // za mały ruch, cofam
          DispBegin()
          RestScreen(r1,c1,r2,c2,scr)
@@ -1227,12 +1227,12 @@ func mousedr(w,r1,c1,r2,c2,scr,testbl)
          scr:=olds[5]
          RestScreen(r1,c1,r2,c2,olds[6])
          DispEnd()
-         w[1]:=1
+         bx:=1
       endif
    endif
 
 return .t.
-
+*****************************
 func mousedrag(w,scr,getlist)
 local ret,olds
    olds:={scr[1],scr[2],scr[3],scr[4]}
@@ -1241,62 +1241,12 @@ local ret,olds
       w[2]:=mcol()
       w[3]:=mrow()
    endif
-   ret := mousedr(w,@scr[1],@scr[2],@scr[3],@scr[4],@scr[5])
+   ret := mousedr(@w[1],@w[2],@w[3],@scr[1],@scr[2],@scr[3],@scr[4],@scr[5])
    if ret .and. w[1]=0 .and. valtype(getlist)='A'
       aeval(getlist,{|g|if(g:row<olds[1] .or. g:row>olds[3] .or. g:col<olds[2] .or. g:col>olds[4],,(g:row:=g:row+scr[1]-olds[1],g:col:=g:col+scr[2]-olds[2]))})
    endif
 
 return ret 
-/*
-func mousedrag(w,scr,getlist)
-   local olds,dx:=0,dy:=0,j
-   if w[1]<>1 .or. w[3]<scr[1] .or. w[3]>scr[3] .or. w[2]<scr[2] .or. w[2]>scr[4]
-      return .f.
-   elseif empty(scr[5])
-      return .t.
-   endif
-   j:=valtype(getlist)
-   olds:={scr[1],scr[2],scr[3],scr[4],savescreen(scr[1],scr[2],scr[3],scr[4])}
-   do while inkey(0,INKEY_MOVE + INKEY_LUP)<>1003
-      // kumulatywne przesunięcie w dx dy
-      dy:=w[3]-dy;w[3]:=mrow();dy:=w[3]-dy
-      dx:=w[2]-dx;w[2]:=mcol();dx:=w[2]-dx
-      if if( j='B' , eval(getlist, w[3] ) ,scr[2]+dx < 0 .or. scr[4]+dx > MaxCol() .or.  scr[1]+dy < 0 .or. scr[3]+dy > MaxRow() )
-         loop
-      endif
-      DispBegin()
-      RestScreen(scr[1],scr[2],scr[3],scr[4],scr[5])
-      scr[2]+=dx
-      scr[4]+=dx
-      scr[1]+=dy
-      scr[3]+=dy
-      dx:=dy:=0 //kumulatywne wyzerowane
-      w[1]:=-max(-w[1],max(abs(scr[1]-olds[1]),abs(scr[2]-olds[2])))
-      scr[5]:=SaveScreen(scr[1],scr[2],scr[3],scr[4])
-      RestScreen(scr[1],scr[2],scr[3],scr[4],olds[5])
-      DispEnd()
-   enddo
-   if w[1]<0 
-      if w[1]<-1
-         w[1]:=0
-         SWITCH valtype(getlist)
-         case 'A'
-            aeval(getlist,{|g|if(g:row<olds[1] .or. g:row>olds[3] .or. g:col<olds[2] .or. g:col>olds[4],,(g:row:=g:row+scr[1]-olds[1],g:col:=g:col+scr[2]-olds[2]))})
-            exit
-         case 'B'
-         ENDSWITCH
-      else // za mały ruch, cofam
-         DispBegin()
-         RestScreen(scr[1],scr[2],scr[3],scr[4],scr[5])
-         RestScreen(olds[1],olds[2],olds[3],olds[4],olds[5])
-         DispEnd()
-         acopy(olds,scr,1,4)
-         w[1]:=1
-      endif
-   endif
-
-return .t.
-*/
 *******************
 func __atprompt(row,col,pro,msg)
 
