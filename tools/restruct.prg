@@ -1,4 +1,4 @@
-//hbmk2 restruct rddads.hbc ~/e/harbour/contrib/rddmisc/vfpcdx.prg  -gtnul
+//hbmk2 restruct rddads.hbc ../../harbour/contrib/rddmisc/vfpcdx.prg  -gtnul
 
 #require "rddads"
 #require "vfpcdx"
@@ -122,7 +122,7 @@ LOCAL h,f,b,c
 
       aeval(h,{|x,i,j| if(x[1]='D_' .and. x[2]='C' .and. x[3]=8, x[2]:='B', ),;
                      if(x[2]=='M', x[2]:='W', ),;
-                     if((x[1]=='POZYCJA' .or. x[1]=='LINK') .and. x[2]='C' .and. x[3]=1, (x[2]:='C', x[3]:=3) , ),;
+                     if((x[1]=='POZYCJA' .or. x[1]=='LINK') .and. x[2]='C' .and. x[3]=1, (x[2]:='C', x[3]:=3) , ),; //binary flag stripped
                      if(x[2]=='C:B', (x[2]:='Q:B', x[3]:=min(x[3],254) ) , ),;
                      i:=hb_FieldLen(x[1]),;
                      if(x[2]=='N'.and.i>0,(if((i:=hb_FieldDec(x[1]))>0,++i,i:=0),if((j:=x[4])>0,++j,),x[3]:=j+max(x[3]-j,hb_FieldLen(x[1])-i)),),;

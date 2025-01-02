@@ -375,7 +375,7 @@ begin sequence
       SET ORDER TO tag nor_ele
 #ifdef A_LPNUM      
       if dbseek(keyp,,.t.)
-        p:=pozycja
+        p:=-val(pozycja)
       endif
 #endif
 
@@ -391,7 +391,7 @@ r:=max(hb_fieldlen('nazwa'),A_DILTH+17)+10
 if deep
    inkey()
    if !eof()
-    FORM_EDIT({-val(p),-r,3,1,999,;
+    FORM_EDIT({p,-r,3,1,999,;
 {|f|eDOK1(f)},;
 {|f|edok2(f,{})},;
 {||setcursor(0)},;
@@ -401,7 +401,7 @@ if deep
     endif
 else
     lock
-    FORM_EDIT({-val(p),-r,3,1,999,;
+    FORM_EDIT({p,-r,3,1,999,;
 {|f|eDOK1(f)},;
 {|f,g|edok2(f,g)},;
 {|f|edok3(f)},;

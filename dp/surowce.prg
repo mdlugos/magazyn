@@ -490,7 +490,7 @@ stat proc f9(g,_f,getlist)
    endif
    set relation to element into elementy
    go if(poprec=0,startrec,poprec)
-   lr:=min(maxcol()-16,elemety->(hb_fieldlen([nazwa])))
+   lr:=min(maxcol()-16,elementy->(hb_fieldlen([nazwa])))
    if szukam({2,col(),,,0,0,curprompt,;
      {||left(elementy->nazwa,lr)+I+str(ilosc)+" "+elementy->jedn},;
      {|k,_s|(_sret:=k=13).or.ele(k,_s,.f.)},keyf9})

@@ -454,7 +454,7 @@ READmodal(getlist,@rmpos)
                  Skip -1
 
               CASE _fi=_flp .AND. _fkey=K_ENTER .or. _fi=_flpmax
-            IF _flastexit#NIL .and. TAK('CZY KONIEC WPROWADZANIA',_fk+_fskip,_fco2-50,.F.,.F.,,_fscr)
+            IF _flastexit#NIL .and. TAK('CZY KONIEC WPROWADZANIA',_fk+_fskip,_fco2-50,.F.,.F.,,{_fscr0,_fco1,_fk+_fskip,_fco2,_fscr})
                EVAL(_flastexit,_f)
                break
             ENDIF

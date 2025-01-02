@@ -28,6 +28,7 @@
 #define DTOV(dat) tranr(SubStr(dtos(dat),5),"##.##")
 #define A_SET_DAT GERMAN
 #define STANY   INDX_MAT
+#define A_BACKUP memvar->backup
 #ifdef A_UNICODE
     #define A_SUMK  -40457792895
     #define A_KOMU_N  'Powiatowy Dom Pomocy Społecznej "Feniks" w Skoczowie'
@@ -48,4 +49,4 @@
 #define A_MYSZ
 #define A_WADO eval(memvar->podpisy)
 #define A_NOZAP
-#define A_LPNUM 2
+#define A_LPNUM 3

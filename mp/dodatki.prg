@@ -1552,12 +1552,17 @@ dor:="          "
 return(dor)   
 ***************
 #ifndef hAslo_spec
-proc haslo_spec(p)
+proc haslo_spec(p,c1,c2)
 memvar operator,mag_biez
 field haslo_spec,magazyn,magazynier
     local m,txt
+if c2<>NIL
+      hb_Scroll(p,c1,p,c2,0)
+      @ p,c1 SAY "Podaj hasło:" UNICODE
+else
       @ p,0
       @ p,0 SAY "Podaj hasło:" UNICODE
+endif   
        txt:=""
     set cursor on
   do while 0<(m:=INkey(0)) .and. m#13

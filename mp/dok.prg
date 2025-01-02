@@ -3867,7 +3867,7 @@ endif
 #else
     case (_fkey=K_CTRL_RET .or. _fkey=K_ALT_RETURN ).and. canopen .and. iS_spec .and. alarm(hb_UTF8ToStr("CZY OTWORZYĆ DOKUMENT ")+dm->smb_dow+dm->nr_dowodu,{"Tak","Nie"})=1
        BEGIN SEQUENCE
-       hAslo_spec(0)
+       hAslo_spec(_fscr0,_fco1,_fco2)
        RECOVER
        select main
        LOOP
