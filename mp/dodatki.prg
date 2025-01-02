@@ -57,10 +57,10 @@ DatY->(dbgoto(1))
 SET COLOR TO GR+/GR
 
 if valtype(pomscr)<>'A'
-   setpos(row(),col()+20)
    pomscr:=getbox(8,15)
+else
+   fixbox(pomscr)
 endif
-fixbox(pomscr)
 
 
 @ pomscr[1],pomscr[2],pomscr[3],pomscr[4] BOX UNICODE '╔═╗║╝═╚║'
@@ -224,46 +224,52 @@ DO CASE
 //#ifdef __PLATFORM__WINDOWS      
       if hb_gtInfo( HB_GTI_ISGRAPHIC )
          aczojs({"98x32","80x25 (Norm)",hb_UTF8ToStr("Zmieniaj ilość linii"),hb_UTF8ToStr("Zmieniaj wielkość czcionki"),hb_UTF8ToStr("Pełny ekran (Alt+Enter)")},"",@m)
-         do case
-         case m=1
-         SetMode(32,98)
-         case m=2
-         SetMode(25,80)
-         case m=3
-         hb_gtInfo( HB_GTI_RESIZEMODE, HB_GTI_RESIZEMODE_ROWS )
-         case m=4
-         hb_gtInfo( HB_GTI_RESIZEMODE, HB_GTI_RESIZEMODE_FONT )
-         case m=5
-         hb_gtInfo( HB_GTI_ISFULLSCREEN, ! hb_gtInfo( HB_GTI_ISFULLSCREEN ) )
-         endcase
+         if m=0
+         else
+            MEMVAR->menuscr:=NIL
+            do case
+            case m=1
+            SetMode(32,98)
+            case m=2
+            SetMode(25,80)
+            case m=3
+            hb_gtInfo( HB_GTI_RESIZEMODE, HB_GTI_RESIZEMODE_ROWS )
+            case m=4
+            hb_gtInfo( HB_GTI_RESIZEMODE, HB_GTI_RESIZEMODE_FONT )
+            case m=5
+            hb_gtInfo( HB_GTI_ISFULLSCREEN, ! hb_gtInfo( HB_GTI_ISFULLSCREEN ) )
+            endcase
+         endif
       else
 //#endif
          aczojs({"80x25 (Norm)","80x30","80x43","80x50","80x60","132x25","132x30","132x43","132x50","132x60"},"",@m)
-         if m=1
-         setmode(25,80)
-         elseif m=2
-         setmode(30,80)
-         elseif m=3
-         setmode(43,80)
-         elseif m=4
-         setmode(50,80)
-         elseif m=5
-         setmode(60,80)
-         elseif m=6
-         setmode(25,132)
-         elseif m=7
-         setmode(30,132)
-         elseif m=8
-         setmode(43,132)
-         elseif m=9
-         setmode(50,132)
-         elseif m=10
-         setmode(60,132)
+         if m=0
+         else
+            MEMVAR->menuscr:=NIL
+            if m=1
+            setmode(25,80)
+            elseif m=2
+            setmode(30,80)
+            elseif m=3
+            setmode(43,80)
+            elseif m=4
+            setmode(50,80)
+            elseif m=5
+            setmode(60,80)
+            elseif m=6
+            setmode(25,132)
+            elseif m=7
+            setmode(30,132)
+            elseif m=8
+            setmode(43,132)
+            elseif m=9
+            setmode(50,132)
+            elseif m=10
+            setmode(60,132)
+            endif
+            setmode(,)
          endif
-         setmode(,)
-//#ifdef __PLATFORM__WINDOWS      
       endif
-//#endif
       init screen
        else
           alarm(hb_UTF8ToStr("NIE DOSTĘPNE NA MONITORZE TYPU HERCULES"))
@@ -1552,12 +1558,17 @@ dor:="          "
 return(dor)   
 ***************
 #ifndef hAslo_spec
-proc haslo_spec(p)
+proc haslo_spec(p,c1,c2)
 memvar operator,mag_biez
 field haslo_spec,magazyn,magazynier
     local m,txt
+if c2<>NIL
+      hb_Scroll(p,c1,p,c2,0)
+      @ p,c1 SAY "Podaj hasło:" UNICODE
+else
       @ p,0
       @ p,0 SAY "Podaj hasło:" UNICODE
+endif   
        txt:=""
     set cursor on
   do while 0<(m:=INkey(0)) .and. m#13

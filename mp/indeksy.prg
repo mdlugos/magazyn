@@ -149,7 +149,6 @@ private hlink:=NIL
  #define DatY MEMVAR
 #endif
       da:=max(DatY->d_z_mies1+1,DatE())
-      SETPOS(10,0)
 
 #ifdef A_MYSZ
    #define D_MYSZ ,bx,cx,dx,myszflag
@@ -179,7 +178,7 @@ private hlink:=NIL
       endif
       DEFAULT _spocz TO ''
       DEFAULT _srowb TO 1
-      DEFAULT _scol1 TO 0
+      //DEFAULT _scol1 TO 0
       DEFAULT _srowe TO MaxRow()-1
       DEFAULT _sbeg  TO 1
       DEFAULT _slth  TO 0
@@ -472,7 +471,7 @@ DO CASE
   CASE _skey=0
 #ifdef A_ZAZNACZ
       DEFAULT _sprompt TO {|d,s,z,x|x:=lpeoma(s),if(z=.t.,x,(devout(x,{_snorm,"GR+/N+","R+/N+","G+/N+","GB+/N+","BR+/N",12,13,14,15}[indx_mat->zaznacz+1]),''))}
-      DEFAULT _scol2 TO min(maxcol(),1+len(lpeoma(_s)))
+//      DEFAULT _scol2 TO min(maxcol(),1+len(lpeoma(_s)))
 #else
       DEFAULT _sprompt TO {|d,s|lpeoma(s)}
 #endif
@@ -651,7 +650,8 @@ DO CASE
          set index to INDX_naz,INDX_num
  #endif
          hlink:=NIL
-         @ 0,0 say magazyny[mag_poz]
+         //@ 0,0 say magazyny[mag_poz]
+         _snagl:=Stuff(_snagl,AT(hb_UTF8ToStr('┬'),_snagl)+8,len(trim(magazyny[mag_poz]),magazyny[mag_poz]))
         endif
 #endif
  #ifdef A_FILTERNAZ
@@ -1081,7 +1081,8 @@ DO CASE
  #else
          set index to INDX_naz,INDX_num
  #endif
-         @ 0,0 say magazyny[mag_poz]
+         //@ 0,0 say magazyny[mag_poz]
+         _snagl:=Stuff(_snagl,AT(hb_UTF8ToStr('┬'),_snagl)+8,len(trim(magazyny[mag_poz]),magazyny[mag_poz]))
          if dbseek(mag_biez+_skey[2],.f.) .and. stan#0 .and. cenA_zaK#_skey[3]
  #ifdef A_7
     _spform={|p,l|right(p,l)}
@@ -1408,7 +1409,8 @@ endif
        //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
        _spocz=nr_mag
        _slth=0
-       @ 0,0 say magazyny[ascan(magazyny,nr_mag)]
+       //@ 0,0 say magazyny[ascan(magazyny,nr_mag)]
+       _snagl:=Stuff(_snagl,AT(hb_UTF8ToStr('┬'),_snagl)+8,len(trim(magazyny[mag_poz]),magazyny[mag_poz]))
        refresh(,_s)
  #else
   #ifdef A_GRAM

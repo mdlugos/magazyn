@@ -1451,7 +1451,7 @@ ames:={}
    DEFAULT _s TO array(_sLEN)
    asize(_s,max(len(_s),_sLEN))
    _srowb:=1
-   _scol1:=0
+   //_scol1:=0
    _srowe:=MaxRow()-1
    _sbeg:=1
    _slth:=0
@@ -3244,29 +3244,42 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
       U = "BEZ UWAG"
     ENDIF
       u+=" "
-      s:=SAVESCREEN(9,_scol1-1, 20, _scol2)
+      setpos(8,(_scol2+_scol1)*.5)
+      s:=getbox(10,_scol2-_scol1-2)  //  SAVESCREEN(9,_scol1-1, 20, _scol2)
       set color to (_SRAMKA)
-      @  9,_scol1-1, 20, _scol2 BOX UNICODE '╔═╗║╝═╚║ '
-      @  9,_scol1+1 SAY 'Poprawianie dopisywanie kasowanie firmy'
-      @ 11,_scol1+1 SAY 'Nr'
+      @  s[1],s[2],s[3],s[4] BOX UNICODE '╔═╗║╝═╚║ '
+
+#define wr s[1]-9
+#undef _scol1
+#undef _scol2
+#undef _scoln
+#define _scol1 s[2]+1
+#define _scol2 s[4]
+#define _scoln s[4]-s[2]-1
+#command @ <row>, <col> SAW <sayxpr> [<Clauses,...>] => @ wr + <row>, <col> SAY <sayxpr> [<Clauses>]
+#command @ <row>, <col> GEW <sayxpr> [<Clauses,...>] => @ wr + <row>, <col> GET <sayxpr> [<Clauses>]
+#define DevpoS( x, y ) DevPos( wr + x, y )
+    
+      @  9,_scol1+1 SAW 'Poprawianie dopisywanie kasowanie firmy'
+      @ 11,_scol1+1 SAW 'Nr'
 #ifdef A_KHFILLZERO
-      @ 12,_scol1 GET n picture "@K" valid {|g|empty(n) .or.(n:=padl(alltrim(n),A_NRLTH,"0"),.t.)}
+      @ 12,_scol1 GEW n picture "@K" valid {|g|empty(n) .or.(n:=padl(alltrim(n),A_NRLTH,"0"),.t.)}
 #else
-      @ 12,_scol1 GET n picture "@K" valid {|g|empty(n) .or.(n:=str(val(n),A_NRLTH),.t.)}
+      @ 12,_scol1 GEW n picture "@K" valid {|g|empty(n) .or.(n:=str(val(n),A_NRLTH),.t.)}
 #endif
       GETl f picture "@KS"+lTrim(sTr(_scoln-A_NRLTH-1))
 #ifdef A_FFULL
       getlist[2]:postblock:={||if(empty(b),(b:=pad(f,len(b)),getlist[3]:display()),),.t.}
-      @ 11,_scol1+A_NRLTH+2 SAY 'Nazwa skrócona firmy:' UNICODE
-      @ 12,_scol2-20 SAY 'Nazwa pełna firmy:' UNICODE
-      @ 13,_scol1 GET b PICTURE '@KS'+lTrim(sTr(_scol2-col()))
-      @ 14,_scol1+1 SAY 'Adres:'
+      @ 11,_scol1+A_NRLTH+2 SAW 'Nazwa skrócona firmy:' UNICODE
+      @ 12,_scol2-20 SAW 'Nazwa pełna firmy:' UNICODE
+      @ 13,_scol1 GEW b PICTURE '@KS'+lTrim(sTr(_scol2-col()))
+      @ 14,_scol1+1 SAW 'Adres:'
       GETL a PICTURE '@KS'+lTrim(sTr(_scol2-col()))
-      setpos(15,_scol1)
+      DevpoS(15,_scol1)
 #else
-      @ 11,_scol1+A_NRLTH+2 SAY 'Nazwa firmy'
-      @ 14,_scol1+1 SAY 'Kod,Miasto' GET a PICTURE '@K !'+replicate("X",_scoln-12)
-      @ 16,_scol1+1 SAY 'ulica i nr' GET b PICTURE '@KS'+lTrim(sTr(_scoln-12))
+      @ 11,_scol1+A_NRLTH+2 SAW 'Nazwa firmy'
+      @ 14,_scol1+1 SAW 'Kod,Miasto' GET a PICTURE '@K !'+replicate("X",_scoln-12)
+      @ 16,_scol1+1 SAW 'ulica i nr' GET b PICTURE '@KS'+lTrim(sTr(_scoln-12))
 #endif
 #ifdef A_TPD
       SAYL "T.p. dni:" GET tp PICTURE "@K###"
@@ -3277,14 +3290,14 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
 #ifdef A_VAT
       SAYl 'NIP:' GET i picture "@K"
 #endif
-      setpos(row()+1,_scol1)
+      setpos(row()+1,s[2]+1)
 #ifdef A_NAZWISKO
       SAYL 'Nazwisko:' GET nzw picture "@K"
 #endif
 #ifdef A_REGON
       SAYl 'REGON:' GET r picture "@KS"+lTrim(sTr(_scol2-col()))
 #endif
-     setpos(row()+1,_scol1)
+     setpos(row()+1,s[2]+1)
      SAYL 'Uwagi'
 #ifdef A_KHKONTO
       SAYL "Konto:" GET k picture "@KS"+lTrim(sTr(_scol2-col()-8))
@@ -3293,9 +3306,9 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
 #ifdef A_WL
       if row()>=19
         atail(getlist):picture:= '@KS'+lTrim(sTr(_scoln-10))
-        setpos(row(),_scol2-10)
+        setpos(row(),s[4]-10)
       else
-        setpos(row()+1,_scol1)
+        setpos(row()+1,s[2]+1)
       endif
       DEFAULT h TO 'n/n'
       SAYL "BL" GET h PICTURE "@KS"+lTrim(sTr(_scol2-col())) VALID {||if(empty(h),(h:=getwl(i,),if(h='n/n',,kibord(chr(10))),.f.),.t.)}
@@ -3305,16 +3318,16 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
       READmodal(getlist,rp)
       do case
          case readkey()=27
-              RESTSCREEN(9,_scol1-1, 20, _scol2,s)
+              window(s)
               exit
          case empty(f)
               if eof()
                  loop
-              elseif tak(hb_UTF8ToStr('WYKASOWAĆ FIRMĘ'),20,_scol1+5,.f.,.F.)
+              elseif tak(hb_UTF8ToStr('WYKASOWAĆ FIRMĘ'),_s[3],s[1]+6,.f.,.F.,,s)
                  lock
                  delete
                  unlock
-                 RESTSCREEN(9,_scol1-1, 20, _scol2,s)
+                 window(s)
                  refresh(,_s)
                  exit
               else
@@ -3331,7 +3344,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
               endif
               do case
                  case empty(n) .or. found()
-                   if tak(hb_UTF8ToStr("CZY NADAĆ KOLEJNY NUMER"),20,_scol1+5,.F.,.F.)
+                   if tak(hb_UTF8ToStr("CZY NADAĆ KOLEJNY NUMER"),_s[3],s[1]+6,.F.,.F.,,s)
                       SET ORDER TO "FIRM_NUM"
                       GO BOTTOM
 #ifdef A_KHFILLZERO
@@ -3349,12 +3362,12 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
                       endif
                       loop
                    ENDIF
-                 case tak('NOWA FIRMA',20,_scol1+5,.F.,.F.)
+                 case tak('NOWA FIRMA',_s[3],s[1]+6,.F.,.F.)
                    APPEND BLANK
               otherwise
                    loop
               ENDcase
-         case !tak('POPRAWA',20,_scol1+5,.F.,.F.)
+         case !tak('POPRAWA',_s[3],s[1]+6,.F.,.F.,,s)
               loop
          endcase
 
@@ -3390,7 +3403,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
        unlock
        _slth:=0
        _spocz:=""
-       RESTSCREEN(9,_scol1-1, 20, _scol2,s)
+       window(s)
        if _si>0
           refresh(,_s)
        endif
@@ -3398,6 +3411,12 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
     enddo
     unlock
 RETURN
+#undef wr
+#undef _scol1
+#undef _scol2
+#undef _scoln
+#undef DevpoS
+
 #ifdef A_KSEF
 FUNCTION ksef_valid()
 local d:=len(trim(n_ksef)) ,s,ans,scr,sel,_s,token

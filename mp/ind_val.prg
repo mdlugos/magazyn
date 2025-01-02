@@ -282,7 +282,7 @@ endif
     set relation to
     set filter to
   //DevPos(8,40)  //temporary fix window to @ 9,1,22,78
-  scr:=window(12,74,'BG+/B,I,,RG+/BG,W+/B') //savescreen(9,1,22,78)
+  scr:=getbox(12,74) //savescreen(9,1,22,78)
   #define wr scr[1]-9
   #define wc scr[2]-1
   #command @ <row>, <col> SAW <sayxpr> [<Clauses,...>] => @ wr + <row>, wc + <col> SAY <sayxpr> [<Clauses>]
@@ -291,9 +291,9 @@ endif
   
   set cursor off
   stos:={}
-  //@ 9,1,22,78 BOX UNICODE '╔═╗║╝═╚║' color 'RG+/BG'
+  @ scr[1],scr[2],scr[3],scr[4] BOX UNICODE '╔═╗║╝═╚║' color 'RG+/BG'
   @ 9,3 SAW 'Wpisywanie nowej, poprawianie lub kasowanie starej Karty Materiału' UNICODE color 'RG+/BG'
-  //SET COLOR TO BG+/B
+  SET COLOR TO BG+/B
   hb_scroll(scr[1]+1,scr[2]+1,scr[3]-1,scr[4]-1,0)
 
 #ifdef A_JMO
@@ -857,7 +857,8 @@ endif
        select ind_lam
     endif
     go lam
-    READmodal(getlist,@pos)
+    //READ POSITION @pos SCREEN scr SAVE 
+    readmodal(getlist,@pos)
 #ifdef A_HBGET
     //pos:=__GetListLast():ReadStats( 14 ) //GetListPos()
 #endif
@@ -939,7 +940,7 @@ endif
 #endif
 #endif
         alarm(hb_UTF8ToStr("TEGO MATERIAŁU NIE MOŻNA SKASOWAĆ;STAN NA MAGAZYNIE;")+MAGAZYNY[max(1,ascan(magazyny,NR_MAG))],,,3)
-      ELSEIF Tak(hb_UTF8ToStr('KASOWANIE TEGO MATERIAŁU'),scr[3],scr[2]+14,.F.,.F.)
+      ELSEIF Tak(hb_UTF8ToStr('KASOWANIE TEGO MATERIAŁU'),scr[3],scr[2]+14,.F.,.F.,,scr)
         SELECT INDX_MAT
         Rf:=.t.
         DELETE
@@ -1462,6 +1463,10 @@ endif
     endif
   ENDIF
 RETURN
+#undef wr
+#undef wc
+#undef DevpoS
+
 ****************
 FUNCTION LTAB(D,_s)
 field ilosc,data,smb_dow,nr_dowodu,pozycja,nr_zlec

@@ -470,14 +470,12 @@ public doc_brut
       goto 1
 #endif
 
-      SETPOS(10,0)
-
 #ifdef A_MYSZ
    #define D_MYSZ ,bx,cx,dx,myszflag
 #else
    #define D_MYSZ
 #endif
-return  szukam({1,0,MaxRow(),,,,,,{|k,s D_MYSZ|przeg(k,s,@ent,@stat_ord D_MYSZ)},''})
+return  szukam({1,,,,,,,,{|k,s D_MYSZ|przeg(k,s,@ent,@stat_ord D_MYSZ)},''})
 
 ***********************
 static FUNCTION przeg(_skey,_s,ent,stat_ord D_MYSZ)

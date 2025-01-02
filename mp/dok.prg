@@ -1677,9 +1677,22 @@ memvar exp_od,exp_do
        if dok_zew="V" .and. empty(if(kh=firmy->numer_kol.and.!firmy->(eof()),firmy->ident,nr_faktury))
           alarm('BRAK NIPU !',,3,3)
           _fkey:=K_PGUP
-       elseif dok_kop<0 .or. TAK(hb_UTF8ToStr('CZY DRUKOWAĆ (DANE POPRAWNE)'),_frow+1,,.T.,.F.)
-          wydruk_dok(abs(dok_kop))
-       ENDIF
+       else
+         if dok_kop>=0
+            a:={_fscr0,_fco1,_fskip*(_fl-_fj+1)+_frow,_fco2,_fscr,}
+            a[6]:=TAK(hb_UTF8ToStr('CZY DRUKOWAĆ (DANE POPRAWNE)'),_frow+1,,.T.,.F.,,a)
+            if a[1]<>_fscr0 .or. _fco1<>a[2]
+               _frow+=a[1]-_fscr0
+               _fscr0:=a[1]
+               _fco1:=a[2]
+               _fco2:=a[4]
+               _fscr:=a[5]+savescreen(a[3]+1,a[2],maxrow(),a[4])
+            endif
+         endif 
+         if dok_kop<0 .or. a[6]
+            wydruk_dok(abs(dok_kop))
+         endif
+      ENDIF
     endif
     _flastexit:=NIL
     _fposg:=max(D_POSG,_fposg)
@@ -3741,8 +3754,22 @@ else
 return
 *******************************
 procedure dok6(_f)
+   local a
   select DM
-  IF dok_kop<0 .or. dok_kop>0 .and. TAK(hb_UTF8ToStr('CZY DRUKOWAĆ (DANE SĄ POPRAWNE ?)'),ROW(),_fco1+25,.T.,.F.)
+
+   if dok_kop>0
+      a:={_fscr0,_fco1,_fskip*(_fl-_fj+1)+_frow,_fco2,_fscr,}
+      a[6]:=TAK(hb_UTF8ToStr('CZY DRUKOWAĆ (DANE SĄ POPRAWNE ?)'),ROW(),_fco1+25,.T.,.F.,,a)
+      if a[1]<>_fscr0 .or. _fco1<>a[2]
+        _frow+=a[1]-_fscr0
+        _fscr0:=a[1]
+        _fco1:=a[2]
+        _fco2:=a[4]
+        _fscr:=a[5]+savescreen(a[3]+1,a[2],maxrow(),a[4])
+      endif
+   endif 
+
+  IF dok_kop<0 .or. dok_kop>0 .and. a[6]
     wydruk_dok(abs(dok_kop))
 //#ifdef A_OBR
   else //if dok_kop<=0 .and. TAK(hb_UTF8ToStr('CZY DANE SĄ POPRAWNE'),ROW(),25,.T.,.F.)
@@ -3867,7 +3894,7 @@ endif
 #else
     case (_fkey=K_CTRL_RET .or. _fkey=K_ALT_RETURN ).and. canopen .and. iS_spec .and. alarm(hb_UTF8ToStr("CZY OTWORZYĆ DOKUMENT ")+dm->smb_dow+dm->nr_dowodu,{"Tak","Nie"})=1
        BEGIN SEQUENCE
-       hAslo_spec(0)
+       hAslo_spec(_fscr0,_fco1,_fco2)
        RECOVER
        select main
        LOOP

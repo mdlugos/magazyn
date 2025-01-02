@@ -584,7 +584,7 @@ LOCAL r,ZNALAZ,recme,recr,recd,_s
     r:=min(maxcol()-15-A_DILTH,hb_fieldlen([nazwa]))
     _s:={0,,,,1,len(trim(dan))+1,;
          'Danie',{||posilek+"/"+left(nazwa,r)+if(""=opis,if(sklad->(dbseek(dania->danie)),I,"!"),"&")+left(dieta,A_DILTH)+I+gramatura+" "+jedn},;
-         {|k,s D_MYSZ|danszuk(k,s,.t. D_MYSZ)},trim(dseek(,'posilek,nazwa',pg,dan))}
+         {|k,s D_MYSZ|danszuk(k,s,.t.,r D_MYSZ)},trim(dseek(,'posilek,nazwa',pg,dan))}
     if ordnumber('dan_uni')>0 .and. UpP(nazwa)<>UpP(trim(dan))
        set order to tag dan_uni
        if dbseek(UpP(trim(dan)))
@@ -645,8 +645,6 @@ DEFAULT upden TO .t.
 return  szukam(_s)
 ******************
 FUNCTION danszuk(_skey,_s,upden,r D_MYSZ)
-local o
-//memvar changed
 
 DO CASE
   CASE _skey=0

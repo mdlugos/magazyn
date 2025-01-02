@@ -454,10 +454,21 @@ READmodal(getlist,@rmpos)
                  Skip -1
 
               CASE _fi=_flp .AND. _fkey=K_ENTER .or. _fi=_flpmax
-            IF _flastexit#NIL .and. TAK('CZY KONIEC WPROWADZANIA',_fk+_fskip,_fco2-50,.F.,.F.,,_fscr)
-               EVAL(_flastexit,_f)
-               break
-            ENDIF
+               IF _flastexit#NIL 
+                  job:={_fscr0,_fco1,_fskip*(_fl-_fj+1)+_frow,_fco2,_fscr,}
+                  job[6]:=TAK('CZY KONIEC WPROWADZANIA',_fk+_fskip,_fco2-50,.F.,.F.,,job)
+                  if _fscr0<>job[1] .or. _fco1<>job[2]
+                     _frow+=job[1]-_fscr0
+                     _fscr0:=job[1]
+                     _fco1:=job[2]
+                     _fco2:=job[4]
+                     _fscr:=job[5]+savescreen(job[3]+1,job[2],maxrow(),job[4])
+                  endif
+                  if job[6]
+                    EVAL(_flastexit,_f)
+                    break
+                  endif
+               ENDIF
 
               case _fkey=K_PGDN .or. _fkey=K_ENTER // PgDn
             skip

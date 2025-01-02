@@ -355,14 +355,14 @@ DO WHILE .T.
        endif
    USE
 
-   if valtype(menuscr)<>'A'
-      menuscr:={4,maxcol()/2-29,7,maxcol()/2+30,}
-   endif
    
-   fixbox(menuscr)
-
    DO WHILE .T. // PETLA GLOWNA DLA DANEGO MAGAZYNU
       //a := hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
+
+      if valtype(menuscr)<>'A'
+         menuscr:={4,maxcol()/2-29,7,maxcol()/2+30,}
+      endif
+      fixbox(menuscr)
 
   SET CURSOR OFF
 
@@ -445,7 +445,7 @@ endif
 
       ENDIF
 
-  SETPOS(menuscr[3]-1,menuscr[2]+menuscr[4]/2)
+   SETPOS(menuscr[3]-1,(menuscr[2]+menuscr[4])/2+ (menu-3)*11)
 
       level1:=menu
   begin sequence

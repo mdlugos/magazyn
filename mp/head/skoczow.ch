@@ -26,14 +26,14 @@
    #define A_AUTOR   "A.D. 1992-2024, Marek Długosz, Cieszyn, ul. Równa 16, tel. 0338522553"
    #define A_SUMK  -40457792895
    #define A_CDX VFPCDX
-   #define A_KSEF
+   //#define A_KSEF
    #define A_LPNUM 3
    #define A_DMDATA
    #define A_KHNAZ 31
    #define A_DOKFAK
    #define A_KHSEP
 #ifdef __PLATFORM__WINDOWS   
-   #define A_ZEBRA
+   //#define A_ZEBRA
 #endif   
    #define A_WL
    #define A_ZAZNACZ
