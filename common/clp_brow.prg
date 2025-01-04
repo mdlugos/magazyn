@@ -978,7 +978,7 @@ static i,b,lth
           elseif r#k-p
              exit
           endif
-          if lth<hb_blen(a)
+          if lth<len(a)
              ++lth
           endif
           ains(a,i)
