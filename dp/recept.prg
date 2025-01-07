@@ -33,8 +33,12 @@ begin sequence
   select surowce
       SET ORDER TO tag sur_kod
 
+    r:=hb_FieldLen([nazwa])+A_DILTH+20
+
   select dania
       SET ORDER TO tag dan_kod
+    
+    r:=max(39+A_DILTH,min(r,hb_FieldLen([nazwa])+4))
 
   dbseek(keyp,.f.)
 
@@ -59,7 +63,7 @@ select dania
 if deep
    inkey()
    if !eof()
-    FORM_EDIT({p,-(41+A_DILTH),4,1,999,;
+    FORM_EDIT({p,-r,4,1,999,;
 {|f|RDOK1(f)},;
 {|f|rdok2(f,{})},;
 {||setcursor(0)},;
@@ -69,7 +73,7 @@ if deep
     endif
 else
     lock
-    FORM_EDIT({p,-(41+A_DILTH),4,1,999,;
+    FORM_EDIT({p,-r,4,1,999,;
 {|f|RDOK1(f)},;
 {|f,g|rdok2(f,g)},;
 {|f,g|rdok3(f,g)},;
@@ -266,7 +270,7 @@ stat proc RDOK4(_f,getlist,deep)
     endif
     endif
 
-    @ _fk,_fco1+6 GET na PICTURE "@KS20" VALID {|k,r|if(k:changed.and.fpstart=0,fpstart:=1,),k:=setkey(-8,NIL),r:=surval(_f,getlist,@na,@poprec,oldrec,startrec,.f.) .and. showzaw(_f),setkey(-8,k),r}
+    @ _fk,_fco1+6 GET na PICTURE "@KS"+hb_ntoc(_fco2-_fco1-A_DILTH-21) VALID {|k,r|if(k:changed.and.fpstart=0,fpstart:=1,),k:=setkey(-8,NIL),r:=surval(_f,getlist,@na,@poprec,oldrec,startrec,.f.) .and. showzaw(_f),setkey(-8,k),r}
     GETL il picture "####.##" valid {|k|if(k:changed.and.fpstart=0,fpstart:=2,),showzaw(_f)}
     @ _fk,_fco2-A_DILTH-1 GET di PICTURE "@KS"+HB_MACRO2STRING(A_DILTH) valid {|g|if(g:changed.and.fpstart=0,fpstart:=3,),dival(g)}
      __setproc(procname(0))
@@ -310,7 +314,7 @@ local rs:=surowce->(recno()),s:=dania->(recno()),r:=min(surowce->(hb_FieldLen([n
    go if(poprec=0,startrec,poprec)
     if szukam({2,col(),,,0,0,curprompt,;
      {||Left(surowce->nazwa,r)+I+str(ilosc)+" "+surowce->jedN},;
-     {|k,_s D_MYSZ|(_sret:=k=13).or.sur(k,_s,.f. D_MYSZ)},keyp})
+     {|k,_s D_MYSZ|(_sret:=k=13).or.sur(k,_s,.f.,r D_MYSZ)},keyp})
     set relation to
     poprec:=recno()
     g:killfocus()
@@ -381,6 +385,6 @@ local totrec
 RETURN
 ***************
 stat func showzaw(_f)
-  @ _fk,_fco1+35 say surowce->jedN color _sbkgr
+  @ _fk,_fco2-A_DILTH-6 say surowce->jedN color _sbkgr
 return .t.
 *****************

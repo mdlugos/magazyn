@@ -142,7 +142,7 @@ do case
      set order to tag zaw_ele
      set relation to skladnik into surowce
      dbseek(elementy->element,.f.)
-       szukam({1,,,,0,0,trim(elementy->nazwa)+hb_UTF8ToStr(' ZAWARTOŚĆ [')+trim(elementy->jedn)+hb_UTF8ToStr('] W SKŁADNIKACH'),{||surowce->(left(nazwa,r)+I+str(zawar->ilosc)+"/"+str(gram)+" "+surowce->jedN)},{|_skey,_s D_MYSZ|_skey:=if(_skey=13,9,_skey),sur(_skey,_s,.f. D_MYSZ)},elementy->element})
+       szukam({1,,,,0,0,trim(elementy->nazwa)+hb_UTF8ToStr(' ZAWARTOŚĆ [')+trim(elementy->jedn)+hb_UTF8ToStr('] W SKŁADNIKACH'),{||surowce->(left(nazwa,r)+I+str(zawar->ilosc)+"/"+str(gram)+" "+surowce->jedN)},{|_skey,_s D_MYSZ|_skey:=if(_skey=13,9,_skey),sur(_skey,_s,.f.,r D_MYSZ)},elementy->element})
      pop_stat(_skey)
 
    case _skey=13

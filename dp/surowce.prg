@@ -604,14 +604,14 @@ set order to tag "zaw_skl"
 #ifdef A_ELZ
 select surowce
 set relation to skladnik into cennik
-return SZUKAM({0,,,,1,0,hb_UTF8ToStr("PRZEGLĄD SUROWCÓW CENA DATA"),{||Left(NAZWA,r)+if(zawar->(found()),I,"!")+jmaG+I+str(cennik->cena)+I+dtoc(cennik->data)},{|_skey,_s D_MYSZ|if(upden .and. _skey=13,_skey:=9,),sur(_skey,_s,upden D_MYSZ)},""})
+return SZUKAM({0,,,,1,0,hb_UTF8ToStr("PRZEGLĄD SUROWCÓW CENA DATA"),{||Left(NAZWA,r)+if(zawar->(found()),I,"!")+jmaG+I+str(cennik->cena)+I+dtoc(cennik->data)},{|_skey,_s D_MYSZ|if(upden .and. _skey=13,_skey:=9,),sur(_skey,_s,upden,r D_MYSZ)},""})
 #else
 select surowce
 set relation to skladnik into zawar
 #ifdef A_KODY
-return SZUKAM({0,,,,12,0,hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),{||KOD+"│"+Left(NAZWA,r)+if(zawar->(found()),I,"!")+jmaG},{|_skey,_s D_MYSZ|if(upden .and. _skey=13,_skey:=9,),sur(_skey,_s,upden D_MYSZ)},""})
+return SZUKAM({0,,,,hb_FieldLen([KOD])+2,0,hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),{||KOD+"│"+Left(NAZWA,r)+if(zawar->(found()),I,"!")+jmaG},{|_skey,_s D_MYSZ|if(upden .and. _skey=13,_skey:=9,),sur(_skey,_s,upden,r D_MYSZ)},""})
 #else
-return SZUKAM({0,,,,1,0,hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),{||Left(NAZWA,r)+if(zawar->(found()),I,"!")+jmaG},{|_skey,_s D_MYSZ|if(upden .and. _skey=13,_skey:=9,),sur(_skey,_s,upden D_MYSZ)},""})
+return SZUKAM({0,,,,1,0,hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),{||Left(NAZWA,r)+if(zawar->(found()),I,"!")+jmaG},{|_skey,_s D_MYSZ|if(upden .and. _skey=13,_skey:=9,),sur(_skey,_s,upden,r D_MYSZ)},""})
 #endif
 #endif
 *******************
@@ -643,7 +643,7 @@ su:=recno()
 SET ORDER TO tag sur_naZ
 set relation to skladnik into cennik
 r:=min(hb_FieldLen([nazwa]),maxcol()-r)
-znalaz:=SZUKAM({0,,,,1,len(trim(na)),hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),if(alias(sel)="ZAPOT",{||left(NAZWA,r)+I+jmaG+I+str(cennik->cena)+I+dtoc(cennik->data)},{||left(NAZWA,r)+"("+jmaG+hb_UTF8ToStr(")│")+surowce->jedN}),{|k,s D_MYSZ|sur(k,s,.t. D_MYSZ)},UpP(trim(na))})
+znalaz:=SZUKAM({0,,,,1,len(trim(na)),hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),if(alias(sel)="ZAPOT",{||left(NAZWA,r)+I+jmaG+I+str(cennik->cena)+I+dtoc(cennik->data)},{||left(NAZWA,r)+"("+jmaG+hb_UTF8ToStr(")│")+surowce->jedN}),{|k,s D_MYSZ|sur(k,s,.t.,r D_MYSZ)},UpP(trim(na))})
 #else
 select surowce
 su:=recno()
@@ -651,10 +651,10 @@ SET ORDER TO tag sur_naZ
 #ifdef A_KODY
 r+=hb_FieldLen([KOD])+1
 r:=min(hb_FieldLen([nazwa]),maxcol()-r)
-znalaz:=SZUKAM({0,,,,12,len(trim(na)),hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),if(alias(sel)="ZAPOT",{||KOD+I+left(NAZWA,r)+I+jmaG},{||KOD+I+left(NAZWA,r)+"("+jmaG+hb_UTF8ToStr(")│")+surowce->jedN}),{|k,s D_MYSZ|sur(k,s,.t. D_MYSZ)},UpP(trim(na))})
+znalaz:=SZUKAM({0,,,,hb_FieldLen([KOD])+2,len(trim(na)),hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),if(alias(sel)="ZAPOT",{||KOD+I+left(NAZWA,r)+I+jmaG},{||KOD+I+left(NAZWA,r)+"("+jmaG+hb_UTF8ToStr(")│")+surowce->jedN}),{|k,s D_MYSZ|sur(k,s,.t.,r D_MYSZ)},UpP(trim(na))})
 #else
 r:=min(hb_FieldLen([nazwa]),maxcol()-r)
-znalaz:=SZUKAM({0,,,,1,len(trim(na)),hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),if(alias(sel)="ZAPOT",{||left(NAZWA,r)+I+jmaG},{||left(NAZWA,r)+"("+jmaG+hb_UTF8ToStr(")│")+surowce->jedN}),{|k,s D_MYSZ|sur(k,s,.t. D_MYSZ)},UpP(trim(na))})
+znalaz:=SZUKAM({0,,,,1,len(trim(na)),hb_UTF8ToStr("PRZEGLĄD SUROWCÓW"),if(alias(sel)="ZAPOT",{||left(NAZWA,r)+I+jmaG},{||left(NAZWA,r)+"("+jmaG+hb_UTF8ToStr(")│")+surowce->jedN}),{|k,s D_MYSZ|sur(k,s,.t.,r D_MYSZ)},UpP(trim(na))})
 #endif
 #endif
   set order to tag sur_kod
@@ -689,13 +689,17 @@ aflag:=.f.
 surowce->(dbgoto(su))
 RETURN .F.
 **************************
-function sur(_skey,_s,upden D_MYSZ)
+function sur(_skey,_s,upden,r D_MYSZ)
 field index,nazwa,stan,jm,waznosc,data_przy
 static choice:=0
-local stat,r
+local stat
 do case
   CASE _SKEY=0 .and. alias()="SUROWCE"
     set order to tag sur_naz
+    #ifdef A_KODY
+    _snagkol:=hb_FieldLen([KOD])-Len(hb_UTF8ToStr(A_KODY))
+    _snagl:=hb_UTF8ToStr(A_KODY)+hb_UTF8ToStr("┬")+padc(_snagl,r,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬Jedn")
+    #endif
     //_swar:=EvAlDb('{|p|'+IndexkeY(0)+'=p'+'}')
     if ! ( (EvaldB(_swar,_spocz).or.dbseek(_spocz)).and._skip(0,,_s) )
       _spocz=LEFT(_spocz,len(_spocz)-_slth)
