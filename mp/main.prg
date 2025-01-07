@@ -360,7 +360,7 @@ DO WHILE .T.
       //a := hb_gtInfo( HB_GTI_BOXCP, 'UTF8EX')
 
       if valtype(menuscr)<>'A'
-         menuscr:={4,maxcol()/2-29,7,maxcol()/2+30,}
+         menuscr:={4,int((1+maxcol())*.5)-30,7,int((1+maxcol())*.5)+29,}
       endif
       fixbox(menuscr)
 
@@ -384,7 +384,7 @@ endif
           //4,maxcol()/2-29,7,maxcol()/2+30,
           menuscr[5]:=savescreen(menuscr[1],menuscr[2],menuscr[3],menuscr[4]) 
           @ menuscr[1],menuscr[2],menuscr[3],menuscr[4] BOX UNICODE "╔═╗║╝═╚║ "
-          @ menuscr[1],(menuscr[2]+menuscr[4])*.5-4 SAY " M E N U " COLOR if(iscolor(),_sbkgr,"W+")
+          @ menuscr[1],(1+menuscr[2]+menuscr[4])*.5-4 SAY " M E N U " COLOR if(iscolor(),_sbkgr,"W+")
 
           @ MaxRow()-2,0,MaxRow(),maxcol() BOX UNICODE "╔═╗║╝═╚║ "
 
@@ -414,11 +414,11 @@ endif
 
       SET COLOR TO (_sbnorm)
 
-      @ menuscr[3]-1,(menuscr[2]+menuscr[4])*.5-28 PROMPT "Kartoteki"    UNICODE MESSAGE "Bieżące stany magazynu, kartoteki materiałów."
-      @ menuscr[3]-1,(menuscr[2]+menuscr[4])*.5-18 PROMPT "Dok. obrotu"  UNICODE MESSAGE "Przeglądanie wprowadzonych wcześniej dokumentów."
-      @ menuscr[3]-1,(menuscr[2]+menuscr[4])*.5-6  PROMPT "Rejestracja " UNICODE MESSAGE "Wprowadzanie dokumentów obrotu materiałowego."
-      @ menuscr[3]-1,(menuscr[2]+menuscr[4])*.5+7  PROMPT "Zestawienia"  UNICODE MESSAGE 'Wydruki zestawień.'
-      @ menuscr[3]-1,(menuscr[2]+menuscr[4])*.5+19 PROMPT "Pozostałe"    UNICODE MESSAGE 'Dodatkowe funkcje programu.'
+      @ menuscr[3]-1,(1+menuscr[2]+menuscr[4])*.5-28 PROMPT "Kartoteki"    UNICODE MESSAGE "Bieżące stany magazynu, kartoteki materiałów."
+      @ menuscr[3]-1,(1+menuscr[2]+menuscr[4])*.5-18 PROMPT "Dok. obrotu"  UNICODE MESSAGE "Przeglądanie wprowadzonych wcześniej dokumentów."
+      @ menuscr[3]-1,(1+menuscr[2]+menuscr[4])*.5-6  PROMPT "Rejestracja " UNICODE MESSAGE "Wprowadzanie dokumentów obrotu materiałowego."
+      @ menuscr[3]-1,(1+menuscr[2]+menuscr[4])*.5+7  PROMPT "Zestawienia"  UNICODE MESSAGE 'Wydruki zestawień.'
+      @ menuscr[3]-1,(1+menuscr[2]+menuscr[4])*.5+19 PROMPT "Pozostałe"    UNICODE MESSAGE 'Dodatkowe funkcje programu.'
 
     //dispend()
       //hb_gtInfo( HB_GTI_BOXCP, a)
@@ -445,7 +445,7 @@ endif
 
       ENDIF
 
-   SETPOS(menuscr[3]-1,(menuscr[2]+menuscr[4])/2+ (menu-3)*11)
+   SETPOS(menuscr[3]-1,(1+menuscr[2]+menuscr[4])*.5+ (menu-3)*11)
 
       level1:=menu
   begin sequence

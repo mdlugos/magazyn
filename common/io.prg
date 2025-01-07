@@ -596,6 +596,11 @@ RETURN(.t.)
 ***************************
 function fixbox(s)
 
+   s[1]:=int(s[1])
+   s[2]:=int(s[2])
+   s[3]:=int(s[3])
+   s[4]:=int(s[4])
+
    IF s[2]<0
       s[4]-=s[2]
       s[2]:=0
@@ -1279,9 +1284,9 @@ endif
    if empty(mesrow) .or. mesrow<0 .or. mesrow>maxrow() .or. ascan(array,{|x|x[4]#NIL})=0 
       mesrow:=NIL
    elseif !empty(mescent)
-      mescent:=maxcol()*.5
+      mescent:=(1+maxcol())*.5
       if _s<>NIL .and. _s[1]<=mesrow .and. _s[3]>=mesrow
-         mescent:=(_s[2]+_s[4])*.5
+         mescent:=(1+_s[2]+_s[4])*.5
       endif
    endif
 
