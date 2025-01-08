@@ -144,8 +144,8 @@ field  data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,numer_kol,;
   memvar wtot
 #endif
 #ifdef A_DF
-#command REPLACE [DM->]WARTOSC WITH <x> => field2bin([d_wartosc],DM->wartosc:=<x>,1)
-#define wartosC (bin2d(binfieldget('d_wartosc')))
+#command REPLACE [DM->]WARTOSC WITH <x> => field2bin('d_wartosc',[DM->]wartosc:=<x>,1)
+#define wartosC (bin2d(binfieldget([d_wartosc])))
 #endif
 
 ****************************************************************************

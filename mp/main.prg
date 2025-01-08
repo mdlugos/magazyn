@@ -109,7 +109,14 @@ defa:=getlines(defa,HB_OsPathListSeparator())
 if empty(defa)
    defa:={'.'}
 endif
-aeval(defa,{|x,i,y|y:=right(x,1),if(y==HB_OsDriveSeparator(),x+=HB_ps()+curdir(x),),if(y==HB_ps(),,x+=HB_ps()),defa[i]:=hb_PathNormalize(x)})
+#ifdef __PLATFORM__UNIX
+aeval(defa,{|x,i|if(x=HB_ps(),,defa[i]:=HB_ps()+curdir()+HB_ps()+x)})
+#else
+aeval(defa,{|x,i,y|if(SubStr(x,2,1)==HB_OsDriveSeparator(),(y:=left(x,2),x:=SubStr(x,3)),;
+                y:=if(x=HB_ps()+HB_ps(),'',DiskName()+HB_OsDriveSeparator())),if(x=HB_ps(),'',y+=HB_ps()+curdir(y)+HB_ps()),defa[i]:=y+x})
+#endif
+
+aeval(defa,{|x,i,y|y:=Right(x,1),if(y==HB_ps(),,x+=HB_ps()),defa[i]:=hb_PathNormalize(x)})
 
 #ifdef A_NETIO
    public netio:=''
@@ -133,7 +140,6 @@ aeval(defa,{|x,i,y|y:=right(x,1),if(y==HB_OsDriveSeparator(),x+=HB_ps()+curdir(x
    a:=DiskName()+HB_OsDriveSeparator()+a
   endif
 #endif
-aeval(defa,{|x,j,i|defa[j]:=if(x='.'+HB_ps(),a+SubStr(x,3),if(x='..'+HB_ps().and.(i:=rat(HB_ps(),left(a,len(a)-1)))>0,left(a,i)+SubStr(x,4),x))})
 
 menu:=.f.
 aeval(defa,{|x,j,i|if(lower(a)=lower(x),(menu:=.t.,defa[j]:=if((i:=len(x))=0,a,left(a,i))),)})

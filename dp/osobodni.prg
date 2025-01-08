@@ -4,7 +4,7 @@
 Field kod_osoby,nazwisko,stanowisko,ile_pos,grupa,d_wartosc,wart_tot,posilek,data,dieta,kto_pisal,pozycja
 
 
-#command REPLACE wartosc WITH <x> => field2bin([d_wartosc],<x>)
+#command REPLACE wartosc WITH <x> => field2bin('d_wartosc',<x>)
 #define WARTOSC bin2d(field->d_wartosc)
 
 MEMVAR CHANGED,diety,posilki,posstr,grupy,mies_rob,choicee,choicef,choiced,choiceg,choicew

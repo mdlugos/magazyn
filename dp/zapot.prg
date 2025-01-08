@@ -16,7 +16,7 @@
   #define D_ILPIC "@KZ #####"
 #endif
 
-#command REPLACE wartosc WITH <x> => field2bin([d_wartosc],<x>)
+#command REPLACE wartosc WITH <x> => field2bin('d_wartosc',<x>)
 #define WARTOSC bin2d(field->d_wartosc)
 
 field data,posilek,nazwa,d_wartosc,ile_pos,skladnik,ilosc,danie,dieta,pozycja,jedn,gramatura,kod

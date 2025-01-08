@@ -49,7 +49,7 @@
 #define A_KOMU_A  'Cieszyn, ul. Srebrna 2'
 #define A_AUTOR   'A.D. 2002-2004, Marek Długosz, Cieszyn, ul. Równa 16, tel. 0-601842030'
 
-#define A_DF 10
+//#define A_DF 10
 #define A_DOKCOMP 11
 #define A_IZ
 #define A_CENVAT
