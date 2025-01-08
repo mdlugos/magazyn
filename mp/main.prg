@@ -107,13 +107,14 @@ endif
 
 defa:=getlines(defa,HB_OsPathListSeparator())
 if empty(defa)
-   defa:={'.'}
+   defa:={''}
 endif
 #ifdef __PLATFORM__UNIX
 aeval(defa,{|x,i|if(x=HB_ps(),,defa[i]:=HB_ps()+curdir()+HB_ps()+x)})
 #else
 aeval(defa,{|x,i,y|if(SubStr(x,2,1)==HB_OsDriveSeparator(),(y:=left(x,2),x:=SubStr(x,3)),;
-                y:=if(x=HB_ps()+HB_ps(),'',DiskName()+HB_OsDriveSeparator())),if(x=HB_ps(),'',y+=HB_ps()+curdir(y)+HB_ps()),defa[i]:=y+x})
+                y:=if(x=HB_ps()+HB_ps(),'',DiskName()+HB_OsDriveSeparator())),;
+                  if(x=HB_ps(),,y+=HB_ps()+curdir(y)+HB_ps()),defa[i]:=y+x})
 #endif
 
 aeval(defa,{|x,i,y|y:=Right(x,1),if(y==HB_ps(),,x+=HB_ps()),defa[i]:=hb_PathNormalize(x)})
@@ -157,20 +158,27 @@ SET PATH TO (a)
 defa:=atail(defa)
 
 #ifdef A_DIETA
-if parametr='DIETADEF='
-   a:=SubStr(parametr,10)
-   parametr:=mag_biez
-   mag_biez:=operator
-   operator:=''
-else
-   a:=getenv("DIETADEF")
-endif
-  if empty(a)
-    i:=rat(HB_ps(),left(defa,len(defa)-1))
-    a:=if(i=0,defa+'..'+HB_ps(),left(defa,i))+'dieta'+HB_ps()
-  endif
-  SET PATH TO (set(_SET_PATH)+HB_OsPathListSeparator()+a+'roboczy'+HB_ps()+HB_OsPathListSeparator()+a)
+   if parametr='DIETADEF='
+      txt:=SubStr(parametr,10)
+      parametr:=mag_biez
+      mag_biez:=operator
+      operator:=''
+   else
+      txt:=getenv("DIETADEF")
+   endif
+   if empty(txt) .and. 0<>(i:=rat('magazyn',lower(defa)))
+      txt:=Stuff(defa,i,7,'dieta')
+#ifdef __PLATFORM__UNIX
+      if SubStr(defa,i,1)=='M'; txt:=Stuff(txt,i,1,'D');endif
+      if SubStr(defa,i,1)=='A'; txt:=Stuff(txt,i,1,'I');endif
+      if SubStr(defa,i,1)=='G'; txt:=Stuff(txt,i,1,'E');endif
+      if SubStr(defa,i,1)=='A'; txt:=Stuff(txt,i,1,'T');endif
+      if SubStr(defa,i,1)=='Z'; txt:=Stuff(txt,i,1,'A');endif
+#endif      
+   endif
+   SET PATH TO (set(_SET_PATH)+HB_OsPathListSeparator()+txt+'roboczy'+HB_ps()+HB_OsPathListSeparator()+txt)
 #endif
+
 
 setpos(3,0)
 ? padc(hb_UTF8ToStr(" ██████ █     █  ██████ ███████ ███████ █       █"),maxcol())
@@ -434,7 +442,7 @@ endif
 
       set color to (_snorm)
 
-  @ 18,0 clear
+   @ 18,0 clear
 
       IF menu=0
          i:=mag_poz
