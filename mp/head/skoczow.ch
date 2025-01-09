@@ -6,6 +6,10 @@
 #command INIT PRINTER => qqout(eval(MEMVAR->p_init,wasbad))
 #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
 #define PLWIN
+#ifdef __PLATFORM__WINDOWS   
+   //#define A_ZEBRA
+   #define A_WIN_PRN .t.
+#endif   
 #define UpP(x) UPPER(x)
 #define A_ZLEC11
 #define A_GREX

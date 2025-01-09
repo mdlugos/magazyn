@@ -2,7 +2,10 @@
 #define PC852
 #include "lan.ch"
 #define A_STOPKA 'Program: System Magazyn, '+wersja()+', producent: Firma Usług Informatycznych Marek Długosz, 43-400 Cieszyn, ul. Równa 16'
-#define A_WIN_PRN .t.
+#ifdef __PLATFORM__WINDOWS   
+   //#define A_ZEBRA
+   #define A_WIN_PRN .t.
+#endif   
 #define DatE() memvar->dzisiaj
 #define A_15CPI
 #define A_BACKUP memvar->bejkap
@@ -49,7 +52,7 @@
 #define A_KOMU_A  'Cieszyn, ul. Srebrna 2'
 #define A_AUTOR   'A.D. 2002-2004, Marek Długosz, Cieszyn, ul. Równa 16, tel. 0-601842030'
 
-//#define A_DF 10
+#define A_DF 10
 #define A_DOKCOMP 11
 #define A_IZ
 #define A_CENVAT
@@ -60,14 +63,14 @@
 #define A_FA
 
 #define WDFGR(i,c,pv,df)     ROUND(round(1000*i,0)*ROUND(if(df,100,10000/(100+pv))*c,0),-3)/1000
+#define WzVATGR(i,c,pv,df)   WDFGR(i,c,pv,df)*if(df,1,(100+pv)/100)
+#define WbezVATGR(i,c,pv,df) WDFGR(i,c,pv,df)*if(df,100/(100+pv),1)
+#define ILEVATGR(i,c,pv,df)  WDFGR(i,c,pv,df)*pv/if(df,(100+pv),100)
+#define WbezVAT(i,c,pv,df)   (x:=WDFGR(i,c,pv,df),if(df,x-ROUND(x*pv/(100+pv),0),x)/100)
 
 #define ILEVAT(i,c,pv,df)    ROUND(ILEVATGR(i,c,pv,df),0)/100
 #define WzVAT(i,c,pv,df)     ROUND(WzVATGR(i,c,pv,df),0)/100
-#define WbezVAT(i,c,pv,df)   (x:=WDFGR(i,c,pv,df),if(df,x-ROUND(x*pv/(100+pv),0),x)/100)
 
-#define ILEVATGR(i,c,pv,df)  WDFGR(i,c,pv,df)*pv/if(df,(100+pv),100)
-#define WzVATGR(i,c,pv,df)   WDFGR(i,c,pv,df)*if(df,1,(100+pv)/100)
-#define WbezVATGR(i,c,pv,df) WDFGR(i,c,pv,df)*if(df,100/(100+pv),1)
 
 #define W(i,c,pv,df)         WzVAT(i,c,pv,df)
 #define WGR(i,c,pv,df)       WzVATGR(i,c,pv,df)

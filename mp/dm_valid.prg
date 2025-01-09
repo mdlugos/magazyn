@@ -84,9 +84,18 @@
 #define  dok_lpm dok_par[MAG_POZ,r,5]
 #define  dok_naz dokumenty[MAG_POZ,r]
 #define  dok_ew  dok_par[MAG_POZ,r,8]
-#define  dok_df  dok_par[MAG_POZ,r,A_DF]
 #define dok_kh  (dok_zew#"W" .and. ""#dok_kon )
 #define dok_wal dok_par[MAG_POZ,r,A_WALUTA]
+
+#ifdef A_DF
+#define dok_df  dok_par[MAG_POZ,r,A_DF]
+#else
+#ifdef A_CENVAT
+#define dok_df  .t.
+#else
+#define dok_df  .f.
+#endif
+#endif
 
 MEMVAR n_f,nk,dd,da,dv,d_o,kh,DOK,SCR,nim,il,gtot,chgpos,gil,;
        nz,stary_rok,MAG_BIEZ,mag_poz,r,operator,dok_rozch,;

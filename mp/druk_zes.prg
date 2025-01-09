@@ -174,8 +174,17 @@ field ilosc_f
 #define ilosc_f ilosc
 #endif
 
-#define dok_df  dok_par[MAG_POZ,i,A_DF]
 #define dok_wal dok_par[MAG_POZ,i,A_WALUTA]
+
+#ifdef A_DF
+#define dok_df  dok_par[MAG_POZ,i,A_DF]
+#else
+#ifdef A_CENVAT
+#define dok_df  .t.
+#else
+#define dok_df  .f.
+#endif
+#endif
 
 PROCEDURE zestawienia(_menu)
 MEMVAR menuzest
@@ -686,14 +695,14 @@ DEFAULT _dhead2 TO {||NIL}
      aeval(dok_par,{|x,y|i:=y,aeval(x,{|z,j|if(z[1]#"F",pzdok+=left(magazyny[i],2)+left(dokumenty[i,j],2),)})})
 #ifdef A_DF
      dfdok:=""
-#ifdef A_SUBDOK
+ #ifdef A_SUBDOK
      aeval(dok_par,{|x,y|i:=y,aeval(x,{|z,j|if(z[1]="F".and.z[A_DF],dfdok+=left(magazyny[i],2)+left(dokumenty[i,j],4),)})})
      //set relation to KEY_DOK+nr_dowodu into DM
-#define D_DF KEY_DOK+dm->sub_dok$dfdok
-#else
+  #define D_DF KEY_DOK+dm->sub_dok$dfdok
+ #else
      aeval(dok_par,{|x,y|i:=y,aeval(x,{|z,j|if(z[1]="F".and.z[A_DF],dfdok+=left(magazyny[i],2)+left(dokumenty[i,j],2),)})})
-#define D_DF KEY_DOK$dfdok
-#endif
+  #define D_DF KEY_DOK$dfdok
+ #endif
 #endif
 #ifdef A_CENVAT
      if pm=1 // netto
@@ -1703,8 +1712,8 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
       SELECT MAIN
       SEEK dm->(KEY_DOK+nr_dowodu)
       WHILE dm->(KEY_DOK+nr_dowodu)=KEY_DOK+nr_dowodu
-#ifndef A_DF
-#define WDFGR(i,c,v,d) WGR(i,c,v,d)
+#ifndef WDFGR
+  #define WDFGR(i,c,v,d) WGR(i,c,v,d)
 #endif
          w:=WDFGR(-ilosc_f,cena,val(proc_vat),dok_df)
          j:=ascan(was,{|x|x[1]=proc_vat})
@@ -4495,14 +4504,14 @@ ELSE
           if !longdok
              LASTDOK:=NR_DOWODU
              wd:=0
-#ifdef A_SUBOK
-#ifdef A_DF
-#undef dok_df
-#define dok_df df
+#ifdef A_SUBDOK
+  #ifdef A_DF
+    #undef dok_df
+    #define dok_df df
             if zby_flag.and.dok_f
                df:=dok_par[MAG_POZ,ascan(dokumenty[mag_poz],smb_dow+sub_dok,i),A_DF]
             endif
-#endif
+  #endif
 #endif
              flag:=0
           endif

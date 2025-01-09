@@ -130,6 +130,7 @@ local NumFlag:=.f.,b,x,y,key,mfl,maxlth:=0
        get:exitstate:=GE_NOEXIT
     else
        get:SetFocus()
+       setcursor(if(set(_SET_INSERT),2,1))
     endif
 #ifdef A_MYSZ
     mfl:=.t.
@@ -194,6 +195,7 @@ local NumFlag:=.f.,b,x,y,key,mfl,maxlth:=0
 
     end
 
+    setcursor(0)
     // de-activate the GET
     if get:HasFocus
       if get:type$"CM" .and. valtype(get:cargo)="L" .and. get:cargo
@@ -202,7 +204,6 @@ local NumFlag:=.f.,b,x,y,key,mfl,maxlth:=0
       get:KillFocus()
     else
       get:colordisp(hb_ATokens(get:colorspec,',')[1])
-      setcursor(if(set(_SET_INSERT),2,1))
     endif
 
   end
@@ -353,7 +354,7 @@ local bKeyBlock
 
   case (key == K_CTRL_RET .or. key == K_ALT_RETURN)
 
-    if get:type == "N" .or. get:type == "D" .and. type(get:name)="D"
+    if get:type == "N" .or. get:type == "D" //.and. type(GetReadVar(get))="D"
 
       getval(get)
 
@@ -930,7 +931,7 @@ return
 *  GetReadVar()
 *  Set READVAR() value from a GET.
 */
-static func GetReadVar(get)
+func GetReadVar(get)
 
 local name := upper(get:name)
 
@@ -1097,6 +1098,7 @@ return
 static proc getval(get)
   local valid:=.t.,r:=get:row,c:=get:col,g,t,l:=len(get:buffer),mes,pn,sgn,k
    pn:=readprocname
+/*
   if get:type="D"
      if empty(get:name)
         return
@@ -1111,8 +1113,9 @@ static proc getval(get)
        end
 #endif
      endif
-     t:=padr(get:name,50)
-  else
+     //t:=padr(get:name,50)
+     t:=hb_ValToStr()
+  else */
      t:=get:varget()
      k:=get:untransform()
      if get:changed
@@ -1132,13 +1135,13 @@ static proc getval(get)
           t:=int(t)*sgn+(t%1)*1000
        endif
 #endif
-     if t=k
-        if t=0
+     //if t=k
+        if empty(t)
           t:=space(50)
         else
-          t:=lTrim(sTr(t))+space(50)
+          t:=hb_ValToExp(t)+space(50)
         endif
-     else
+     /*else
         t:=str(t,l+20,l-get:decpos+20)
         for k:=len(t) to l step -1
            if SubStr(t,k,1)<>'0'
@@ -1146,27 +1149,64 @@ static proc getval(get)
            endif
         next k
         t:=ltrim(left(t,k))+space(50)
-     endif
-  endif
+     endif*/
+  //endif
   pn:=readprocname
   readprocname:=procname()
   mes:=window(1,25)
   colorselect(3)
-  @ mes[1],mes[2]+2 say "Kalkulator: + - * / ^ ( )"
+  @ mes[1],mes[2]+2 say "Kalkulator: + - * / ^ ( ) "+GetReadVar(get)
   colorselect(0)
   g:=getnew(mes[1]+1,mes[2]+1,{|SET|IF(SET=NIL,T,T:=SET)},"t","@S27")
   g:cargo:=.t.
-  g:setfocus()
-  tone(261.7,1);tone(130.8,1);tone(164.8,1)
   setcursor(mes[8])
+  g:setfocus()
   if t#" "
-     g:end()
+    g:end()
   endif
+  tone(261.7,1);tone(130.8,1);tone(164.8,1)
   do while .t.
-     g:exitstate:=GE_NOEXIT
+    g:exitstate:=GE_NOEXIT
+#if 0
+    if !GetReader(g)
+      exit
+    endif
+#ifdef A_MYSZ
+    if ( g:exitState == GE_MOUSE )
+      if !mousedrag(mysz,mes,{g})
+         exit
+      endif
+      loop
+    endif
+#endif
+
+    if ( g:exitState < GE_ENTER )
+      loop
+    endif
+#else
      while ( g:exitState < GE_ENTER )
+#ifdef A_MYSZ
+       k:=INKey(0, INKEY_KEYBOARD + INKEY_LDOWN )
+      if k=K_LBUTTONDOWN
+        k:={1,mcol(),mrow()}
+        if !mousedrag(k,mes,{g})
+          exit
+        endif
+        if k[1]=1 .and. g:row=k[3] .and. g:col<=k[2] .and. g:col+len(tran(g:original,g:picture))>k[2]
+          while k[2]>g:col+g:pos-1
+              g:right()
+          enddo
+          while k[2]<g:col+g:pos-1
+              g:left()
+          enddo
+        endif
+        loop
+      endif
+ #else
        k:=INkey(0)
-       if hb_keyChar(k)=','
+ #endif
+ 
+       if hb_keyChar(k)=',' .and. get:type="N"
           k:=hb_keyCode('.')
        endif
        GetApplyKey( g,k )
@@ -1175,6 +1215,7 @@ static proc getval(get)
         exit
      endif
      t:=g:buffer
+#endif     
      if type(t)=get:type
 #ifdef A_JMO
        if sgn#NIL

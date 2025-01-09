@@ -1515,7 +1515,7 @@ return get
 *****************************
 function findget(list,name)
 name:=lower(name)
-return ascan(list,{|g|lower(g:name)==name})
+return ascan(list,{|g|lower(GetReadVar(g))==name})
 *********************************
 function varput(list,name,value,ge) //ge ignoruj albo objekt z changed
 local pos,g,v
@@ -1532,7 +1532,7 @@ if pos<>0
   if g:postblock=NIL .or. v=g:varget()
   elseif empty(ge)
     Eval(g:postBlock, g, value, list, pos)
-  elseif valtype(ge)='O' .and. ! (ge:name==g:name)
+  elseif valtype(ge)='O' .and. ! (GetReadVar(ge)==GetReadVar(g))
     Eval(g:postBlock, ge, value, list, pos)
   endif
 endif
@@ -1784,8 +1784,9 @@ local txt,i,j,k,o,osk,getlist:={}
   txt:=get:untransform()
   k:=0
   if !get:type$'MC'
-     if get:type<>'N' .and. type(get:name)=get:type
-        txt:=get:name
+     i:=GetReadVar(get)  
+     if get:type<>'N' .and. Type(i)=get:type
+        txt:=i
      else
         txt:=icv(txt)
      endif

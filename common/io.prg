@@ -1211,6 +1211,9 @@ func mousedr(bx,cx,dx,r1,c1,r2,c2,scr,testbl)
       endif
       DispBegin()
       RESTSCREEN(max(0,r1),c1,min(MaxRow(),r2),c2,scr)
+      if row()>=r1 .and. row()<=r2 .and. col()>=c1 .and. col()<=c2
+         setpos(row()+deltay,col()+deltax)
+      endif
       c1+=deltax
       c2+=deltax
       r1+=deltay
@@ -1227,6 +1230,9 @@ func mousedr(bx,cx,dx,r1,c1,r2,c2,scr,testbl)
       else // za mały ruch, cofam
          DispBegin()
          RESTSCREEN(max(0,r1),c1,min(MaxRow(),r2),c2,scr)
+         if row()>=r1 .and. row()<=r2 .and. col()>=c1 .and. col()<=c2
+            setpos(row()+olds[1]-r1,col()+olds[2]-c1)
+         endif
          r1:=olds[1]
          c1:=olds[2]
          r2:=olds[3]
