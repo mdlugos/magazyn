@@ -1053,7 +1053,7 @@ elseIF year(dz1+D_OLZA) > year(DatY->d_z_rok+D_OLZA)
    xselect indeks
    key:=''
    do while !eof()
-      if .not. key==(key:=lower(trim(FIELD->baza))) .and. file(defa+"roboczy"+HB_ps()+key+".dbf")
+      if .not. key==(key:=lower(trim(_FIELD->baza))) .and. file(defa+"roboczy"+HB_ps()+key+".dbf")
          ?
          select 0
          nUSE (defa+"roboczy"+HB_ps()+key) READONLY ALIAS YYYY

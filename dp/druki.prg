@@ -1,4 +1,4 @@
-#define WARTOSC bin2d(field->d_wartosc)
+#define WARTOSC bin2d(_FIELD->d_wartosc)
 #ifdef A_DRUKCOMP
 request __run
 #endif
@@ -260,7 +260,7 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
       if ZES_DEF->baza#"MEMVAR"
          lock
          for i:=1 to l
-           FIELD->&(ap[i,2]):=MEMVAR->&(ap[i,2])
+           _FIELD->&(ap[i,2]):=MEMVAR->&(ap[i,2])
          next
          sel(baza,trim(zes_def->order))
          rel(make_subar(getlines(zes_def->relacje,.t.),4))
@@ -588,7 +588,7 @@ if dbseek(key)
           ? space(if(l<5,5,0))
 
 #ifdef A_DODATKI
-          ?? ccpi(cpi)+cpad(osoby->nazwisko,27-len(trim(field->opis)),,3)+TRIM(field->opis),dieta+'/'+grupa+':'
+          ?? ccpi(cpi)+cpad(osoby->nazwisko,27-len(trim(_FIELD->opis)),,3)+TRIM(_FIELD->opis),dieta+'/'+grupa+':'
 #else
 #ifdef A_SUMOS
           if i=len(darr) .or. darr[i+1,1]<>LEFT(darr[i,1],A_SUMOS)

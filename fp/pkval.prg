@@ -10,7 +10,7 @@ field dowod
 #define nr_dowodU SubStr(dowod,3)
 #endif
 #ifndef A_IDENT
-  #define A_IDENT len(FIELD->ident)
+  #define A_IDENT len(_FIELD->ident)
 #endif
 field lp,pozycja,data,ident,kontrahent,konto,kwota,rejestr,nazwa,numer_kol,czyma,link,nazwisko
 field sald_bie_m,sald_bie_w,syntet,khflag

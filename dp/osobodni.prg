@@ -5,7 +5,7 @@ Field kod_osoby,nazwisko,stanowisko,ile_pos,grupa,d_wartosc,wart_tot,posilek,dat
 
 
 #command REPLACE wartosc WITH <x> => field2bin('d_wartosc',<x>)
-#define WARTOSC bin2d(field->d_wartosc)
+#define WARTOSC bin2d(_FIELD->d_wartosc)
 
 MEMVAR CHANGED,diety,posilki,posstr,grupy,mies_rob,choicee,choicef,choiced,choiceg,choicew
 static poprec,oldrec,keyp,startrec,kos,il,di,gr
@@ -553,7 +553,7 @@ local i,totrec,da,kon,carry,w,d,coldtot,cnewtot,a,b
            dieta:=di
            ilE_POS:=il
 #ifdef A_DODATKI
-           field->opis:=osoby->stanowisko
+           _FIELD->opis:=osoby->stanowisko
 #endif
         endif
         showwar(_f,il,di)

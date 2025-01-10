@@ -45,7 +45,7 @@
    #define A_WE
    //#define A_JMALT
    #define A_KODY "CPV"
-   #define A_KODVAL {|g,y,z,_s|z:=select(),sel('CPV','CPV_CODE'),_s:=array(33),_s[12]:=!g:changed .or. dbseek(y),_s[10]:=UPPER(trim(y)),_s[5]:=if(asc(y)>64,12,1),if(_s[5]=1,,ordsetfocus((indexord()%2)+1)),_s[6]:=len(_s[10]),_s[12]:=_s[12].or.szukam(_s).and.(kw:=field->code,.t.),dbselectar(z),.t.}
+   #define A_KODVAL {|g,y,z,_s|z:=select(),sel('CPV','CPV_CODE'),_s:=array(33),_s[12]:=!g:changed .or. dbseek(y),_s[10]:=UPPER(trim(y)),_s[5]:=if(asc(y)>64,12,1),if(_s[5]=1,,ordsetfocus((indexord()%2)+1)),_s[6]:=len(_s[10]),_s[12]:=_s[12].or.szukam(_s).and.(kw:=_FIELD->code,.t.),dbselectar(z),.t.}
    #define DatE()    MEMVAR->dzisiaj
    //   #define A_KONTROLA (.t.)
    //   #define A_FFULL

@@ -32,11 +32,11 @@
 #endif
 
 #ifdef A_ANKER
- #define nazwA (nazwa+strpic(field->cenA,11,2,"@E ")+hb_UTF8ToStr(" zł ")+field->proc_vat+"%")
+ #define nazwA (nazwa+strpic(_FIELD->cenA,11,2,"@E ")+hb_UTF8ToStr(" zł ")+_FIELD->proc_vat+"%")
 #endif
 
 #ifdef A_FP600
- #define nazwA (nazwa+strpic(field->cenA,11,2,"@E ")+hb_UTF8ToStr(" zł ")+field->proc_vat+"%")
+ #define nazwA (nazwa+strpic(_FIELD->cenA,11,2,"@E ")+hb_UTF8ToStr(" zł ")+_FIELD->proc_vat+"%")
 #endif
 
 #ifndef STANY
@@ -560,7 +560,7 @@ DO CASE
         _spform={|p,l|right(p,l)}
 #ifdef A_ANKER
 #ifdef A_ZAGRODA
-      CASE pad(txt,hb_fieldlen('index'))=index .and. if(len(trim(field->tandem))>=6,dbseek(pad(field->tandem,hb_fieldlen('index'))),.t.)
+      CASE pad(txt,hb_fieldlen('index'))=index .and. if(len(trim(_FIELD->tandem))>=6,dbseek(pad(_FIELD->tandem,hb_fieldlen('index'))),.t.)
 #else
       CASE pad(txt,hb_fieldlen('index'))=index
 #endif
@@ -1005,7 +1005,7 @@ DO CASE
          LOCK recno()
          zaznacz:=at(chr(_skey),"[\];',./")-1
          if zaznacz<>0 .and. fieldpos([data_zazn])<>0
-            FIELD->data_zazn:=DatE()
+            _FIELD->data_zazn:=DatE()
          endif
          unlock recno()
          select (a)
@@ -1331,7 +1331,7 @@ endif
               next d
               INDX_MAT->lamus:=recno()
               SELECT INDX_MAT
-              field->data_popr:=DatY->d_z_mies1+1
+              _FIELD->data_popr:=DatY->d_z_mies1+1
            ENDIF
            for d:=1 to 4
             if !empty(a[d]) .and. b[d]#hb_FieldGet(a[d])

@@ -863,9 +863,9 @@ local b:=TBColumnNew(m[1],fb)
         endif
 #ifndef A_SX
     elseif m[1]=="HASLO"
-         B:block:={|x|EvaldB({|X|IF(X=NIL,X:=L2BIN(FIELD->HASLO),FIELD->HASLO:=BIN2L(PADR(UPPER(X),4))),X},x)}
+         B:block:={|x|EvaldB({|X|IF(X=NIL,X:=L2BIN(_FIELD->HASLO),_FIELD->HASLO:=BIN2L(PADR(UPPER(X),4))),X},x)}
     elseif m[1]=="HASLO_SPEC"
-         B:block:={|x|EvaldB({|X|IF(X=NIL,X:=L2BIN(FIELD->HASLO_SPEC),FIELD->HASLO_SPEC:=if(x="    ",0,BIN2L(PADR(lower(X),4)))),X},x)}
+         B:block:={|x|EvaldB({|X|IF(X=NIL,X:=L2BIN(_FIELD->HASLO_SPEC),_FIELD->HASLO_SPEC:=if(x="    ",0,BIN2L(PADR(lower(X),4)))),X},x)}
 #endif
     elseif left(m[2],1)$"PWGM"
          b:width:=maxcol()-1

@@ -947,7 +947,7 @@ endif
               IF m
 #ifndef A_AUTOFIX
               SELECT (ar[AR_DBF])
-              if FIELD->STATUS>STAT_BADDEK .and. !MAIN->(EOF())
+              if _FIELD->STATUS>STAT_BADDEK .and. !MAIN->(EOF())
                  MAIN->kwota-=if(MAIN->czyma,-1,1)*(&txt)   //FIELDGET(FIELDPOS(ad[AD_POLA,i,AP_FIELD]))
               ENDIF
               SELECT MAIN
@@ -1003,7 +1003,7 @@ endif
               IF m
 #ifndef A_AUTOFIX
               SELECT (ar[AR_DBF])
-              if FIELD->STATUS>STAT_BADDEK .and. !MAIN->(EOF())
+              if _FIELD->STATUS>STAT_BADDEK .and. !MAIN->(EOF())
                  MAIN->kwota-=if(MAIN->czyma,1,-1)*(&txt) //FIELDGET(FIELDPOS(ad[AD_POLA,i,AP_FIELD]))
               ENDIF
               SELECT MAIN

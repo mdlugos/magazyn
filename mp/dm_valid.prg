@@ -61,7 +61,7 @@
 #define ILDEC 3
 #endif
 #ifdef A_DF
-#command REPLACE [DM->]WARTOSC WITH <x> => field2bin('d_wartosc',[DM->]wartosc:=<x>,1)
+#command REPLACE [DM->]WARTOSC WITH <x> => field2bin('d_wartosc',DM->wartosc:=<x>,1)
 #define wartosC (bin2d(binfieldget([D_WARTOSC])))
 #endif
 
@@ -1942,7 +1942,7 @@ endif
             if dok="D" .and. dok_war#"+"
               sel("CENNIK",1)
               seek A_KOBSUR+dtos(da)
-              if A_KOBSUR=FIELD->dostawca+FIELD->surowiec
+              if A_KOBSUR=_FIELD->dostawca+_FIELD->surowiec
                 ce:=cena
                 tone(164.8,1)
                 tone(164.8,1)
@@ -2173,7 +2173,7 @@ func nzval(g,_f,getlist)
     if pm=1 .and. D_IZ il=0 .and. dok_war#"+" .and. dok="D"
               sel("CENNIK",1)
               seek A_KOBSUR+dtos(da)
-              if A_KOBSUR=FIELD->dostawca+FIELD->surowiec
+              if A_KOBSUR=_FIELD->dostawca+_FIELD->surowiec
                 ce:=cena
                 chg_cen:=.t.
                 tone(164.8,1)
@@ -2819,10 +2819,10 @@ DO CASE
       begin sequence
       SEL('KH','KH')
       go bottom
-      _skey:=FIELD->n1
+      _skey:=_FIELD->n1
       do while !bof()
         skip -1
-        if _skey-1<>(_skey:=FIELD->n1)
+        if _skey-1<>(_skey:=_FIELD->n1)
            exit
         endif
       enddo
@@ -3041,10 +3041,10 @@ PROCEDURE FIRM_EDIT(n,_s)
                    if tak(hb_UTF8ToStr("CZY NADAĆ KOLEJNY NUMER"),s[3],s[2]+5,.F.,.F.,,s)
                    begin sequence
                       go bottom
-                      n:=FIELD->n1
+                      n:=_FIELD->n1
                       do while !bof()
                          skip -1
-                         if n-1<>(n:=FIELD->n1)
+                         if n-1<>(n:=_FIELD->n1)
                             exit
                          endif
                       enddo
@@ -3467,7 +3467,7 @@ d:=hb_hgetdef(s,'invoiceHeaderList',{})
 if len(d)=0
   alarm('Brak faktur w podanym zakresie:'+HB_EOL()+hb_jsonencode(s,.t.))
 else
-  aeval(d,{|x|if(dbseek(x['ksefReferenceNumber']),,(dbappend(),field->nr_ksef:=x['ksefReferenceNumber'],field->nr_faktury:=x['invoiceReferenceNumber'],field->typ:=x['invoiceType'],field->netto:=val(x['net']),field->vat:=val(x['vat']),field->nazwa:=x['subjectBy','issuedByName','fullName']))})
+  aeval(d,{|x|if(dbseek(x['ksefReferenceNumber']),,(dbappend(),_FIELD->nr_ksef:=x['ksefReferenceNumber'],_FIELD->nr_faktury:=x['invoiceReferenceNumber'],_FIELD->typ:=x['invoiceType'],_FIELD->netto:=val(x['net']),_FIELD->vat:=val(x['vat']),_FIELD->nazwa:=x['subjectBy','issuedByName','fullName']))})
   unlock
 endif
 endif
@@ -3487,10 +3487,10 @@ _snagl:=d[1,1]+hb_UTF8ToStr("┬")+pad(d[2,1],d[2,3],hb_UTF8ToStr('─'))+hb_UTF
 _sbeg:=1
 _slth:=len(_spocz)
 if szukam(_s) .and. !eof()
-   n_ksef:=field->nr_ksef
+   n_ksef:=_FIELD->nr_ksef
    dv:=stod(SubStr(n_ksef,12,8))
    varput(getlistactive(),'dd',dv)
-   varput(getlistactive(),'n_f',pad(field->nr_faktury,DM->(hb_fieldlen('nr_faktury'))))
+   varput(getlistactive(),'n_f',pad(_FIELD->nr_faktury,DM->(hb_fieldlen('nr_faktury'))))
    if dataval(dv)
       varput(getlistactive(),'da',dv)
    endif

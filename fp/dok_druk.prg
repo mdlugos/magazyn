@@ -135,7 +135,7 @@ func obroty(w,m,da,k,l)
 DEFAULT k TO MAIN->(EvAlDb('{|DATA,REJESTR,LP,IDENT|'+IndexkeY(0)+'}'))
 DEFAULT l TO KONTA->(EvaldB(k,da,'','',''))
 IF da>DatY->d_z_rok
-  main->(dbeval({||if(field->czyma,m+=field->kwota,w+=field->kwota)},,{||EvaldB(k,field->data,field->rejestr,field->lp,field->ident)<=l}))
+  main->(dbeval({||if(_FIELD->czyma,m+=_FIELD->kwota,w+=_FIELD->kwota)},,{||EvaldB(k,_FIELD->data,_FIELD->rejestr,_FIELD->lp,_FIELD->ident)<=l}))
   w:=ROUND(w,A_ZAOKR);m:=ROUND(m,A_ZAOKR)
 ENDIF
 return ! main->( eof() .or. EvaldB(k,da,'','','')>l )
@@ -159,7 +159,7 @@ if f=NIL .or. f
               d:="left(konto,"+str(w,1)+")+SubStr(dtos(data),5)"
               main->(ordsetfocus(if(w<=A_STL,'MAIN_KS','MAIN_KT')))
               main->(dbseek(m))
-              main->(ordCondSet("konto='"+m+"'",,,{||field->konto=m},,,RECNO(),,,,))
+              main->(ordCondSet("konto='"+m+"'",,,{||_FIELD->konto=m},,,RECNO(),,,,))
               main->(ordCreate("."+HB_ps()+"main_tmp","X"+m,d,&("{||"+d+"}")))
 #ifndef A_CDX
               d:=select()

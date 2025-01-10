@@ -11,7 +11,7 @@
 #endif
 
 #command REPLACE wartosc WITH <x> => field2bin('d_wartosc',<x>)
-#define WARTOSC bin2d(field->d_wartosc)
+#define WARTOSC bin2d(_FIELD->d_wartosc)
 
 #define A_AUTOKOR
 

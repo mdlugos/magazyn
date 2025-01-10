@@ -70,10 +70,10 @@ FUNCTION __dbCopyXStruct( cFileName )
 
       AEval( aStruct, {| aField | ;
          dbAppend(), ;
-         FIELD->FIELD_NAME := aField[ DBS_NAME ], ;
-         FIELD->FIELD_TYPE := aField[ DBS_TYPE ], ;
-         FIELD->FIELD_LEN := aField[ DBS_LEN ], ;
-         FIELD->FIELD_DEC := aField[ DBS_DEC ] } )
+         _FIELD->FIELD_NAME := aField[ DBS_NAME ], ;
+         _FIELD->FIELD_TYPE := aField[ DBS_TYPE ], ;
+         _FIELD->FIELD_LEN := aField[ DBS_LEN ], ;
+         _FIELD->FIELD_DEC := aField[ DBS_DEC ] } )
 
    /* NOTE: CA-Cl*pper has a bug, where only a plain RECOVER statement is
             used here (without the USING keyword), so oError will always be NIL. */
@@ -126,10 +126,10 @@ FUNCTION __dbCreate( cFileName, cFileFrom, cRDD, lNew, cAlias, cCodePage, nConne
          dbUseArea( lNew, , cFileFrom, "" )
 
          dbEval( {|| AAdd( aStruct, { ;
-            FIELD->FIELD_NAME ,;
-            FIELD->FIELD_TYPE ,;
-            FIELD->FIELD_LEN ,;
-            FIELD->FIELD_DEC } ) } )
+            _FIELD->FIELD_NAME ,;
+            _FIELD->FIELD_TYPE ,;
+            _FIELD->FIELD_LEN ,;
+            _FIELD->FIELD_DEC } ) } )
          dbCloseArea()
 
          IF lNew

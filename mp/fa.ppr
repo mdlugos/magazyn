@@ -13,7 +13,7 @@ lpt:=""
 oprn:=Win_Prn():New( lpt )
 oprn:BinNumber:=0
 ;JUMP X
-IF dok_kop<2 .or. !empty(FIELD->NR_KSEF) THEN X
+IF dok_kop<2 .or. !empty(_FIELD->NR_KSEF) THEN X
 win:=Window(10,65,"W/BG,,,BG+/BG")
 DevPos(win[1],win[2]+3),DevOutPict("Wysyłanie do KSeF",,"BG+/BG")
 DevPos(win[1]+1,win[2]+3),DevOutPict("Tworzenie struktury:       ",,"W/BG")
@@ -50,7 +50,7 @@ IF(duplikat,wwout('       DUPLIKAT z dnia '+dtoc(dzisiaj)),)
 ?
 ?
 ? f,{||spec('(s24V')},trim(SubStr(dok_naz,4)),alltrim(nr_dowodu)+'/'+str(year(data),4),{||spec('(s12V')}
-IF empty(e:=trim(field->nr_ksef)) .or. empty(g:=field->ksef) THEN H3
+IF empty(e:=trim(_FIELD->nr_ksef)) .or. empty(g:=_FIELD->ksef) THEN H3
 ? '  Nr KSeF:',e
 ?? spec(P_12LPI)+spec('(s+6V')
 ? f,b:=MEMVAR->ksef_api+'web/verify/'+e+'/'+URLENCODE(HB_BASE64ENCODE(HB_SHA256(g,.t.)))
@@ -215,13 +215,13 @@ DevPos(win[1]+4,win[2]+2),DevOutPict(b,,"W/BG")
 IF EMPTY(b) THEN S6
 DevPos(win[1]+5,win[2]+3),DevOutPict("Tworzenie dokumentu xml:",,"W/BG")
 a:=space(4096+512*val(p)),ksef_fa(fa,@a)
-FIELD->ksef:=a
+_FIELD->ksef:=a
 ;DevPos(win[1]+5,win[2]+30),DevOutPict(a,,"W/BG")
 DevPos(win[1]+6,win[2]+3),DevOutPict("Wysyłka dokumentu xml:",,"W/BG")
 c:=ksef_sendfa(a,@b)
 IF c=NIL THEN S6
 DevPos(win[1]+6,win[2]+30),DevOutPict(c,,"W/BG")
-Field->nr_ksef:=c
+_FIELD->nr_ksef:=c
 fa:=NIL
 DevPos(win[3]-1,win[2]+3),DevOutPict('Gotowe!',,"W/BG")
 ;INKEY(0)

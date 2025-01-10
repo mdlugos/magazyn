@@ -2,7 +2,7 @@
 #include "dm_form.ch"
 #include "inkey.ch"
 #include "getexit.ch"
-#define WARTOSC bin2d(field->d_wartosc)
+#define WARTOSC bin2d(_FIELD->d_wartosc)
 MEMVAR CHANGED,diety,posilki,grupy,mies_rob,posstr,posgr
 static poprec,oldrec,keyp,startrec,dan,die,pg
 #ifdef A_DODATKI
@@ -224,11 +224,11 @@ local a:={},b:={},i
 #endif
    dbeval({||aadd(a,recno())},D_LAN,bl)
 #undef D_LAN
-   AEVAL(a,{|r,i|dbgoto(r),FIELD->pozycja:=STR(_fi+i,hb_fieldlen('pozycja'))})
+   AEVAL(a,{|r,i|dbgoto(r),_FIELD->pozycja:=STR(_fi+i,hb_fieldlen('pozycja'))})
    append blank
    aeval(b,{|p,i|fieldput(i,p)})
    if alias()="MAIN"
-      FIELD->ile_pos:=0
+      _FIELD->ile_pos:=0
    endif
    pozycja:=str(_fi,hb_fieldlen('pozycja'))
 #ifdef A_DODATKI
@@ -236,7 +236,7 @@ local a:={},b:={},i
       i:=hb_fieldlen('pozycja')
       select ZAPOT
       seek keyp
-      dbeval({||FIELD->danie:=str(val(danie)+1,i)},{||len(trim(danie))=i.and.danie>=menu->pozycja.and.reclock()},{||dtos(data)+posilek=keyp})
+      dbeval({||_FIELD->danie:=str(val(danie)+1,i)},{||len(trim(danie))=i.and.danie>=menu->pozycja.and.reclock()},{||dtos(data)+posilek=keyp})
       UNLOCK
       select MENU
    endif
@@ -321,9 +321,9 @@ local totrec
        totrec:=hb_fieldlen([pozycja])
        select ZAPOT
        seek keyp
-       dbeval({||FIELD->danie:=MENU->danie},{||len(trim(danie))=totrec.and.danie=menu->pozycja.and.reclock()},{||dtos(data)+posilek=keyp})
+       dbeval({||_FIELD->danie:=MENU->danie},{||len(trim(danie))=totrec.and.danie=menu->pozycja.and.reclock()},{||dtos(data)+posilek=keyp})
        seek keyp
-       dbeval({||FIELD->danie:=str(val(danie)-1,totrec)},{||len(trim(danie))=totrec.and.danie>menu->pozycja.and.reclock()},{||dtos(data)+posilek=keyp})
+       dbeval({||_FIELD->danie:=str(val(danie)-1,totrec)},{||len(trim(danie))=totrec.and.danie>menu->pozycja.and.reclock()},{||dtos(data)+posilek=keyp})
        UNLOCK
        select MENU
 #endif

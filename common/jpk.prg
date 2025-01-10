@@ -101,8 +101,8 @@ if empty(token)
    else
       s:=select()
       sel('MAGAZYNY')
-      LOCATE FOR field->numer=mag_biez
-      token['token']:=token(field->ksef_token)
+      LOCATE FOR _FIELD->numer=mag_biez
+      token['token']:=token(_FIELD->ksef_token)
       if s<>select()
          USE
          dbselectarea(s)
@@ -354,7 +354,7 @@ return hb_hash('Naglowek',hb_hash("KodFormularza","FA","WariantFormularza",D_KSE
 func ksef_fa(fa, filen)
 local element, node, s
 
-     DEFAULT filen TO str(year(FIELD->Data)%100,2)+strtran(trim(FIELD->smb_dow+FIELD->nr_dowodu),' ','0')+".xml"
+     DEFAULT filen TO str(year(_FIELD->Data)%100,2)+strtran(trim(_FIELD->smb_dow+_FIELD->nr_dowodu),' ','0')+".xml"
 
      if tree<>NIL
           alarm(hb_UTF8ToStr("Poprzedna faktura nie zakończona"))

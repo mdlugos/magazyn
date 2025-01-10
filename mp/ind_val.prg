@@ -775,7 +775,7 @@ endif
     a:=select()
     sel('SUROWCE','SUR_KOD')
     SAYl 'Dieta:'
-    GETl id picture "@K! "+replicate("X",(hb_fieldlen('skladnik'))) VALID {|g|!g:changed .or. SUROWCE->(szukam({,,,,1,len(trim(id)),'Surowce z Diety',{||field->skladnik+I+nazwa+I+field->jmag+' ='+str(field->przel)+' '+field->jedn},{|_skey,_s D_MYSZ|surinfo(_skey,_s,@id,ni D_MYSZ)} ,UpP(Trim(id))}).and.(DevPos(g:row,g:col+hb_fieldlen('skladnik')+1),dispout(left(nazwa,scr[4]-col())),.t.) )}
+    GETl id picture "@K! "+replicate("X",(hb_fieldlen('skladnik'))) VALID {|g|!g:changed .or. SUROWCE->(szukam({,,,,1,len(trim(id)),'Surowce z Diety',{||_FIELD->skladnik+I+nazwa+I+_FIELD->jmag+' ='+str(_FIELD->przel)+' '+_FIELD->jedn},{|_skey,_s D_MYSZ|surinfo(_skey,_s,@id,ni D_MYSZ)} ,UpP(Trim(id))}).and.(DevPos(g:row,g:col+hb_fieldlen('skladnik')+1),dispout(left(nazwa,scr[4]-col())),.t.) )}
     if dbseek(left(id,hb_fieldlen('skladnik')))
        sayl left(nazwa,scr[4]-col())
     endif

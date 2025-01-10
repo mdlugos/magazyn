@@ -2365,7 +2365,7 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
          lock recno()
          for i:=1 to l
           if valtype(ap[i])='A' .and. fieldpos(ap[i,2]) > 0
-           FIELD->&(ap[i,2]):=MEMVAR->&(ap[i,2])
+           _FIELD->&(ap[i,2]):=MEMVAR->&(ap[i,2])
           endif
          next
          sel(baza,trim(zes_def->order))

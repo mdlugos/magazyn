@@ -144,7 +144,7 @@ field  data,smb_dow,nr_dowodu,pozycja,nr_zlec,ilosc,index,numer_kol,;
   memvar wtot
 #endif
 #ifdef A_DF
-#command REPLACE [DM->]WARTOSC WITH <x> => field2bin('d_wartosc',[DM->]wartosc:=<x>,1)
+#command REPLACE [DM->]WARTOSC WITH <x> => field2bin('d_wartosc',DM->wartosc:=<x>,1)
 #define wartosC (bin2d(binfieldget([d_wartosc])))
 #endif
 
@@ -1646,7 +1646,7 @@ memvar exp_od,exp_do
 #endif
 #ifdef A_AF
 #ifdef A_KOB
-    field->mag_fk:=''
+    _FIELD->mag_fk:=''
 #endif
 #endif
     commit
@@ -1761,7 +1761,7 @@ begin sequence
           do while UpP(left(nr_zlec,a)+nr_mag+index)=txt .and. data<=ctod(st)
           c:=j:=i:=0
           z:=.t.
-          exec {||c+=cena,i+=ilosc_f,j+=field->ilosc_rozl,z:=z.and.field->rozliczone} rest while {||message(10),UpP(nr_zlec+nr_mag+index)=txt .and. data<=ctod(st)}
+          exec {||c+=cena,i+=ilosc_f,j+=_FIELD->ilosc_rozl,z:=z.and._FIELD->rozliczone} rest while {||message(10),UpP(nr_zlec+nr_mag+index)=txt .and. data<=ctod(st)}
           c:=ROUND(c/i,A_ZAOKR)
           if i#0
 #ifdef STANY
@@ -3385,12 +3385,12 @@ local rcrd,j,a,b,c,d,comdm,ames:={},x,y,z,cx,px
            ce:=round(ck,A_ZAOKR)
            wa:=round(il*ck,A_ZAOKR)
         ENDIF
-        if fieldpos('stanx')<>0 .and. FIELD->VALIDX .and. da>=FIELD->DATAX
-           if ROUND(FIELD->STANX+il-MAIN->ilosc,3)<0 .or. ROUND(il-MAIN->ilosc,3)>0 .or. ROUND(FIELD->STANX+il-MAIN->ILOSC-FIELD->MAXX,3)>0
-              FIELD->VALIDX:=.f.
+        if fieldpos('stanx')<>0 .and. _FIELD->VALIDX .and. da>=_FIELD->DATAX
+           if ROUND(_FIELD->STANX+il-MAIN->ilosc,3)<0 .or. ROUND(il-MAIN->ilosc,3)>0 .or. ROUND(_FIELD->STANX+il-MAIN->ILOSC-_FIELD->MAXX,3)>0
+              _FIELD->VALIDX:=.f.
            else
-              FIELD->STANX+=il-MAIN->ILOSC
-              FIELD->WARTOSCX+=wa-MAIN->WARTOSC
+              _FIELD->STANX+=il-MAIN->ILOSC
+              _FIELD->WARTOSCX+=wa-MAIN->WARTOSC
            endif
         endif
 #endif

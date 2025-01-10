@@ -679,10 +679,10 @@ elseIF year(DatY->d_z_mies1+1) > year(DatY->d_z_rok+1)
    nuse indeks new
    key:=''
    do while !eof()
-      if .not. key==(key:=lower(trim(FIELD->baza))) .and. file(defa+"roboczy"+HB_ps()+key+".dbf")
+      if .not. key==(key:=lower(trim(_FIELD->baza))) .and. file(defa+"roboczy"+HB_ps()+key+".dbf")
          ?
          nUSE (defa+"roboczy"+HB_ps()+key) READONLY NEW ALIAS ROB
-         IF type("FIELD->LP")#"U"
+         IF type("_FIELD->LP")#"U"
            ? "Tworzenie bazy",key
            COPY structure TO (key)
          else

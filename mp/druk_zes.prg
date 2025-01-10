@@ -417,9 +417,9 @@ r:=szukam({1,14,MaxRow(),,1,0,'FIRMY',{||numer_kol+if(""=uwagi,I,"*")+nazwa},{|_
       if r.and.valtype(g)='O'
          a:=MAIN->(len(EvAlDb(IndexKey(3)))-10-hb_fieldlen('index'))
       if len(t)>=main->(hb_fieldlen('nr_zlec'))
-         t:=firmy->(left(t,a-hb_fieldlen('numer_kol'))+FIELD->numer_kol)+SubStr(t,a+1)
+         t:=firmy->(left(t,a-hb_fieldlen('numer_kol'))+_FIELD->numer_kol)+SubStr(t,a+1)
       else
-         t:=FIRMY->(FIELD->numer_kol+SubStr(t,hb_fieldlen('numer_kol')+1))
+         t:=FIRMY->(_FIELD->numer_kol+SubStr(t,hb_fieldlen('numer_kol')+1))
       endif
          g:varput(t)
       endif
@@ -703,6 +703,8 @@ DEFAULT _dhead2 TO {||NIL}
      aeval(dok_par,{|x,y|i:=y,aeval(x,{|z,j|if(z[1]="F".and.z[A_DF],dfdok+=left(magazyny[i],2)+left(dokumenty[i,j],2),)})})
   #define D_DF KEY_DOK$dfdok
  #endif
+#else
+  #define D_DF dok_df
 #endif
 #ifdef A_CENVAT
      if pm=1 // netto

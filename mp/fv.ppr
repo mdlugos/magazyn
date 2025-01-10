@@ -2,7 +2,7 @@
 ;PRIVATE p_margin:={|x|oprn:LeftMargin:=oprn:PixelsPerInchX*x/10,''}
 PRIVATE fa,op,pr,fa_ksef,win
 ;inirest('jpk.ini')
-IF dok_kop<2 .or. ""<>FIELD->KSEF THEN X
+IF dok_kop<2 .or. ""<>_FIELD->KSEF THEN X
 win:=Window(10,65,"W/BG,,,BG+/BG")
 DevPos(win[1],win[2]+3),DevOutPict("Wysyłanie do KSeF",,"BG+/BG")
 DevPos(win[1]+1,win[2]+3),DevOutPict("Tworzenie struktury:       ",,"W/BG")
@@ -29,7 +29,7 @@ IF(fa=NIL,IF(op=NIL,,(oprn:=op,op:=NIL,set(23,pr))),(op:=oprn,oprn:=NIL,pr:=set(
 ? trim(SubStr(dok_naz,3))+' '+smb_dow+ltrim(nr_dowodu)
 ? spec(p_4xoff)
 ?
-g:=hb_jsondecode(field->ksef)
+g:=hb_jsondecode(_FIELD->ksef)
 IF empty(g) THEN H3
 b:=MEMVAR->ksef_api+'web/verify/'+g['Nr']+'/'+URLENCODE(g['Base64'])
 ?? 'Numer KSeF:',g['Nr'],'     '
@@ -146,9 +146,9 @@ c:=ksef_sendfa(defa+a,@b)
 DevPos(win[1]+6,win[2]+30),DevOutPict(c,,"W/BG")
 IF c=NIL THEN S6
 DevPos(win[1]+7,win[2]+3),DevOutPict("Generuję link weryfikacyjny:",,"W/BG")
-Field->nr_ksef:=FIELD->nr_faktury:=c
+_FIELD->nr_ksef:=_FIELD->nr_faktury:=c
 e:=b['invoiceHash','hashSHA','value'],MEMVAR->ksef_api+'web/verify/'+c+'/'+URLENCODE(e)
-|x|DevPos(win[1]+7,win[2]+3),DevOutPict(left(x,64),,"W/BG"),DevPos(win[1]+8,win[2]+3),DevOutPict(SubStr(x,65),,"W/BG"),FIELD->ksef:=hb_jsonencode({'Nr'=>c,'Plik'=>a,'Base64'=>e,'Url'=>x,'Fa'=>fa},.t.)
+|x|DevPos(win[1]+7,win[2]+3),DevOutPict(left(x,64),,"W/BG"),DevPos(win[1]+8,win[2]+3),DevOutPict(SubStr(x,65),,"W/BG"),_FIELD->ksef:=hb_jsonencode({'Nr'=>c,'Plik'=>a,'Base64'=>e,'Url'=>x,'Fa'=>fa},.t.)
 fa:=NIL
 DevPos(win[3]-1,win[2]+3),DevOutPict('Gotowe!',,"W/BG")
 ;INKEY(0)
