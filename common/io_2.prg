@@ -2226,8 +2226,8 @@ HB_FUNC ( BIN2D )
    if( hb_parclen( 1 ) >= sizeof( double ) )
    {
       const char * buf = hb_parc( 1 );
-
-      hb_retnd( HB_GET_LE_DOUBLE( buf ) );
+      hb_retnd( ( strspn( buf, " " ) < sizeof( double ) ) ? 
+          HB_GET_LE_DOUBLE( buf ) : 0 );
    }
    else
       hb_retnd ( hb_parnd( 1 ) );
