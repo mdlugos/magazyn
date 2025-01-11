@@ -2033,6 +2033,7 @@ HB_FUNC ( GETLINES )
 
 
 func getscrtxt(txt)
+   //__XSaveGetChar
 local ret:='',i,k:=4,l:=hb_blen(txt)/k
 
    for i:=0 to l-1

@@ -341,7 +341,7 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
         aadd(getlist,txt):display()
    next
    __setproc(procname(0)+zes_def->nr_zes)
-   readmodal(getlist)
+   READ SCREEN win
    select zes_def
    window(win)
    if ReadkeY()#K_ESC

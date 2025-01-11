@@ -2355,7 +2355,7 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
      endif
    next
    aeval(getlist,{|g|g:display()})
-   READ
+   READ SCREEN win
    //readmodal(getlist)
    select zes_def
    window(win)

@@ -11,6 +11,7 @@
 #undef A_MYSZ
 #endif
 #ifdef A_MYSZ
+#include "button.ch"
 static apro:={}
 #endif
 
@@ -1135,7 +1136,61 @@ win:=window(i,j)
        do while .t.
           if k<>0
           elseif b:stable
+#ifdef A_MYSZ
+         j:={0,0,0}
+         k:=inkey(0,INKEY_KEYBOARD + INKEY_LDOWN + INKEY_RDOWN)
+
+         if k=K_LBUTTONDOWN
+            j[1]:=1
+            j[3]:=mrow()
+            j[2]:=mcol()
+         elseif k=K_RBUTTONDOWN
+            j[1]:=2
+            j[3]:=mrow()
+            j[2]:=mcol()
+         endif
+
+         if j[1]<>0
+            if !mousedrag(j,win)
+               k:=0
+               loop
+            elseif j[1]=0
+               b:nTop    := win[1]+1
+               b:nLeft   := win[2]+1
+               b:nBottom := win[3]-1
+               b:nRight  := win[4]-1
+            else
+               k:=b:hitTest( j[3], j[2] ) 
+               switch k
+               case HTLEFT
+                  b:colpos:=b:freeze+1
+                  b:Invalidate()
+                  exit
+               case HTRIGHT
+                  b:colpos:=b:colCount
+                  b:Invalidate()
+                  exit
+               case HTHEADING
+               case HTHEADSEP
+                  b:rowpos:=1
+                  b:Invalidate()
+                  EXIT
+               case HTFOOTING
+               case HTFOOTSEP
+                  b:rowpos:=b:rowcount
+                  b:Invalidate()
+                  exit
+               case HTCELL
+                  tbmouse(b,j[3],j[2])
+                  b:Invalidate()
+                  exit
+               ENDSWITCH
+            endif
+            k:=0
+         endif
+#else            
              k:=inkey(0)
+#endif             
           else
              b:stabilize()
              k:=inkey()
@@ -1157,6 +1212,20 @@ win:=window(i,j)
           k:=0
 
           if x>0 .and. x<32 .and. c[x]#NIL .or. !hb_keyChar(x)==""
+             if x=K_DOWN .and. i=len(a) .and. b:rowpos=b:rowCount .and. (win[1]>0 .or. win[3]<maxrow())
+               if win[3]<maxrow()
+                  win[5]+=SaveScreen(win[3]+1,win[2],win[3]+1,win[4])
+                  win[3]++
+                  b:nBottom := win[3]-1
+                  RESTSCREEN(b:nRow+1,win[2],win[3],win[4],SAVESCREEN(b:nRow,win[2],win[3]-1,win[4]))
+               else
+                  win[5]:=SaveScreen(win[1]-1,win[2],win[1]-1,win[4])+win[5]
+                  win[1]--
+                  b:nTop := win[1]+1
+                  RESTSCREEN(win[1],win[2],b:nRow-1,win[4],SAVESCREEN(win[1]+1,win[2],b:nRow,win[4]))
+               endif
+             endif
+
              eval(c[if(x>31,K_ENTER,x)],b,a,i,c,n,p,v,w,@x)
              if x<0 .and. x>-31
                 k:=-x

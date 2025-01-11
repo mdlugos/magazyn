@@ -252,7 +252,7 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
         endif
         aadd(getlist,txt):display()
    next
-   readmodal(getlist)
+   READ SCREEN win
    select zes_def
    window(win)
    if readkey()#27

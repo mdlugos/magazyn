@@ -342,9 +342,16 @@ endif
   #endif
  #endif
  #ifdef D_CZ
-      devout(", cena "+tran(cenA_zaK,WAPICT)+hb_UTF8ToStr(" zł."))
+   x:=(scr[4]-col()-1)
+   i:=12+max(0,int(Log(abs(cenA_zaK))/log(10)))
+   x-=i
+   #ifdef A_CENVAT
+     x-=i
+     x:=Int(x/2)
+   #endif
+     devout(", cena "+strtran(hb_ntoc(cenA_zaK,x),'.',',')+hb_UTF8ToStr(" zł."))
   #ifdef A_CENVAT
-     sayl "Brutto: "+tran(cenA_zaK*(100+val(indx_mat->proc_vat))/100,WAPICT)
+     devout(" Brutto: "+strtran(hb_ntoc(cenA_zaK*(100+val(indx_mat->proc_vat))/100,x),'.',','))
   #endif
   #undef D_CZ
  #endif
