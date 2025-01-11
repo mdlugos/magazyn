@@ -194,7 +194,6 @@ DO CASE
    setpos(11,maxcol()/2+25)
    m:=1
    aczojs(txt,"",@m)
-   altd()
    if stary_rok#NIL .and. m=1
       stary_rok:=NIL
    elseif m#0

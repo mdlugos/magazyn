@@ -1098,64 +1098,42 @@ return
 static proc getval(get)
   local valid:=.t.,r:=get:row,c:=get:col,g,t,l:=len(get:buffer),mes,pn,sgn,k
    pn:=readprocname
-/*
-  if get:type="D"
-     if empty(get:name)
-        return
-     endif
-     if ( get:changed )
-       get:Assign()
-       updated(@valid)
-#ifdef A_LAN
-       if ( !valid )
-         get:exitState := GE_NOEXIT
-         return
-       end
-#endif
-     endif
-     //t:=padr(get:name,50)
-     t:=hb_ValToStr()
-  else */
-     t:=get:varget()
-     k:=get:untransform()
-     if get:changed
-       get:reset()
-       if .not. k==get:untransform() // var nie byl ustawiony
-         get:varput(k)
-         get:reset()
-         t:=k
-       endif
-       get:changed:=.t. //a bo ja wiem co robi reset
-     endif
+    t:=get:varget()
+    k:=get:untransform()
+    if get:changed
+      get:reset()
+      if .not. k==get:untransform() // var nie byl ustawiony
+        get:varput(k)
+        get:reset()
+        t:=k
+      endif
+      get:changed:=.t. //a bo ja wiem co robi reset
+    endif
 #ifdef A_JMO
-       if "r."$get:buffer
-          g:=get:varget()
-          sgn:=abs(eval(get:block,1)) //jaki przelicznik
-          get:varput(g)
-          t:=int(t)*sgn+(t%1)*1000
-       endif
+    if "r."$get:buffer
+      g:=get:varget()
+      sgn:=abs(eval(get:block,1)) //jaki przelicznik
+      get:varput(g)
+      t:=int(t)*sgn+(t%1)*1000
+    endif
 #endif
-     //if t=k
-        if empty(t)
-          t:=space(50)
-        else
-          t:=hb_ValToExp(t)+space(50)
-        endif
-     /*else
-        t:=str(t,l+20,l-get:decpos+20)
-        for k:=len(t) to l step -1
-           if SubStr(t,k,1)<>'0'
-              exit
-           endif
-        next k
-        t:=ltrim(left(t,k))+space(50)
-     endif*/
-  //endif
+    if empty(t)
+      t:=''
+    elseif get:type='N'
+      t:=hb_ntoc(t)
+    else
+      t:=hb_ValToExp(t)
+    endif
+    t+=space(50)
   pn:=readprocname
   readprocname:=procname()
   mes:=window(1,25)
   colorselect(3)
-  @ mes[1],mes[2]+2 say "Kalkulator: + - * / ^ ( ) "+GetReadVar(get)
+  @ mes[1],mes[2]+2 say "Kalkulator: + - "+if(get:type='D','',"* / ^ ( )")
+  g:=GetReadVar(get)
+  if type(g)<>'U'
+    @ mes[3],mes[2]+2 say "Zmienna: "+g
+  endif
   colorselect(0)
   g:=getnew(mes[1]+1,mes[2]+1,{|SET|IF(SET=NIL,T,T:=SET)},"t","@S27")
   g:cargo:=.t.
