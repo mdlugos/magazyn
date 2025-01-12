@@ -13,6 +13,7 @@ ANNOUNCE GETSYS
 static Updated
 #ifdef A_MYSZ
 static mysz
+#include "button.ch"
 #endif
 static oldUpdated := .f.
 static oldexit := GE_NOEXIT
@@ -156,24 +157,21 @@ local NumFlag:=.f.,b,x,y,key,mfl,maxlth:=0
             b:=2
          endif
          key:=0
-         if .t.
-            if get:row=y .and. get:col<=x .and. get:col+len(tran(get:original,get:picture))>x
-               if !get:HasFocus
-                  loop
-               endif
-               while x>get:col+get:pos-1
-                  get:right()
-               enddo
-               while x<get:col+get:pos-1
-                  get:left()
-               enddo
-               loop
+        if get:hitTest(y,x)=HTCLIENT
+            if !get:HasFocus
+              loop
             endif
-            get:exitState := GE_MOUSE
-            mysz:={b,x,y}
-            exit
-         endif
-         mfl=.f.
+            while x>get:col+get:pos-1
+              get:right()
+            enddo
+            while x<get:col+get:pos-1
+              get:left()
+            enddo
+            loop
+        endif
+        get:exitState := GE_MOUSE
+        mysz:={b,x,y}
+        exit
       enddo
       if key = 0
         loop
@@ -764,7 +762,7 @@ local exitState, ret := .t. ,b
     if mysz[1]=2
        ret := .f.
     else
-    b:=ascan(getlist,{|g|g:row=mysz[3] .and. g:col<=mysz[2] .and. g:col+len(tran(g:varGet(),g:picture))-1>=mysz[2]})
+    b:=ascan(getlist,{|g|g:hitTest(mysz[3],mysz[2])=HTCLIENT})
     if b=0
        ret:=.f.
     else
@@ -1170,7 +1168,8 @@ static proc getval(get)
         if !mousedrag(k,mes,{g})
           exit
         endif
-        if k[1]=1 .and. g:row=k[3] .and. g:col<=k[2] .and. g:col+len(tran(g:original,g:picture))>k[2]
+        if k[1]=1 .and. g:hitTest(k[3],k[2])=HTCLIENT
+        //if k[1]=1 .and. g:row=k[3] .and. g:col<=k[2] .and. g:col+len(tran(g:original,g:picture))>k[2]
           while k[2]>g:col+g:pos-1
               g:right()
           enddo

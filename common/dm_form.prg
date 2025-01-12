@@ -6,6 +6,7 @@
 //iif(hb_gtInfo( HB_GTI_COMPATBUFFER ),2,4)
 
 #ifdef A_MYSZ
+#include "button.ch"
 
 static proc drag_mysz(_f,w)
    local dr:=_frow-_fscr0,mr:=_fskip*(_fl-_fj+1)+_frow
@@ -92,7 +93,7 @@ rmpos:=_fposg
 
 #ifdef A_MYSZ
 if job#NIL
-   job:=ascan(getlist,{|g|g:row=job[3] .and. g:col<=job[2] .and. g:col+len(tran(g:varGet(),g:picture))-1>=job[2]})
+   job:=ascan(getlist,{|g|g:hitTest(job[3],job[2])=HTCLIENT})
    if job#0
      rmpos:=job
    endif
@@ -282,7 +283,7 @@ READmodal(getlist,@rmpos)
 #ifdef A_MYSZ
          if !stat .and. readkey()=GE_MOUSE
            job:=readkey(,)
-           job:=ascan(getlist,{|g|g:row=job[3] .and. g:col<=job[2] .and. g:col+len(tran(g:varGet(),g:picture))>=job[2]})
+           job:=ascan(getlist,{|g|g:hitTest(job[3],job[2])=HTCLIENT})
            if job#0
               rmpos:=job
            endif
