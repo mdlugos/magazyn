@@ -291,10 +291,9 @@ endif
   
   set cursor off
   stos:={}
-  @ scr[1],scr[2],scr[3],scr[4] BOX UNICODE '╔═╗║╝═╚║' color 'RG+/BG'
-  @ 9,3 SAW 'Wpisywanie nowej, poprawianie lub kasowanie starej Karty Materiału' UNICODE color 'RG+/BG'
-  SET COLOR TO BG+/B
-  hb_scroll(scr[1]+1,scr[2]+1,scr[3]-1,scr[4]-1,0)
+  SET COLOR TO BG+/B*
+  @ scr[1],scr[2],scr[3],scr[4] BOX UNICODE '╔═╗║╝═╚║ '
+  @ 9,3 SAW 'Wpisywanie nowej, poprawianie lub kasowanie starej Karty Materiału' UNICODE
 
 #ifdef A_JMO
   #define smiaR(x,d) if(miar_opcja,tran(int(x/(lam:=i_lam(d))->przel),"#### ###")+if(x%(lam)->przel=0,"","r"+tran(abs(x)%(lam)->przel,"@B ###")),x)
@@ -437,7 +436,7 @@ endif
     endif
   next
 
-  DevPos(scr[1],scr[4]-len(ni) ); DevOut(ni,"RG+/BG" )
+  DevPos(scr[1],scr[4]-len(ni) ); DevOut(ni)
 #ifdef A_SZYM
   if !empty(beg)
 #ifdef STANY

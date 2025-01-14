@@ -398,8 +398,12 @@ endif
           //4,maxcol()/2-29,7,maxcol()/2+30,
           menuscr[5]:=savescreen(menuscr[1],menuscr[2],menuscr[3],menuscr[4]) 
           @ menuscr[1],menuscr[2],menuscr[3],menuscr[4] BOX UNICODE "╔═╗║╝═╚║ "
-          @ menuscr[1],(1+menuscr[2]+menuscr[4])*.5-4 SAY " M E N U " COLOR if(iscolor(),_sbkgr,"W+")
-
+          @ menuscr[1],(1+menuscr[2]+menuscr[4])*.5-4 BOX " M E N U " UNICODE COLOR if(iscolor(),_sbkgr,"W+") 
+          IF STARY_ROK<>NIL
+            @ menuscr[1],menuscr[2]+3 BOX str(year(stary_rok),5)+' ! ' UNICODE
+            @ menuscr[1],menuscr[4]-10 BOX str(year(stary_rok),5)+' ! ' UNICODE
+          endif
+          
           @ MaxRow()-2,0,MaxRow(),maxcol() BOX UNICODE "╔═╗║╝═╚║ "
 
           @ MaxRow()-1,1 SAY "                     -wybór opcji    -                  -wyjście" UNICODE color if(iscolor(),_sbnorm,"W+")
@@ -419,9 +423,9 @@ endif
           @ MaxRow()-1,53 say "Esc"
 
   IF STARY_ROK#NIL
-     @ MaxRow()-1,72 say str(year(stary_rok),4)+' !' COLOR if(iscolor(),"*"+_sbkgr,"W*+")
+     @ MaxRow()-1,maxcol()-7  say str(year(stary_rok),4)+' !' COLOR if(iscolor(),"*"+_sbnorm,"W+*")
   else
-     @ MaxRow()-1,72 say "      " COLOR if(iscolor(),"*"+_sbkgr,"W*+")
+     @ MaxRow()-1,maxcol()-7 say "      " COLOR if(iscolor(),_sbkgr,"W+")
   ENDIF
 
       SET MESSAGE TO menuscr[1]+1 CENTER

@@ -68,7 +68,7 @@
 #else
  #ifdef A_SHORTIND
       #ifdef A_KODY
-       #define TOPLINE 'Kod┬Nazwa'+repl('─',40-len(KoD))+'┬'+hb_upadr(A_KODY,len(KoD),'─')+'┬──────Stan┬─jm─┬Cena'
+       #define TOPLINE 'Kod┬Nazwa'+repl('─',40-Indx_mat->(hb_FieldLen([KoD])))+'┬'+hb_upadr(A_KODY,Indx_mat->(hb_FieldLen([KoD])),'─')+'┬──────Stan┬─jm─┬Cena'
        #undef D_KODY
        #define D_KODY 48
       #else
@@ -99,16 +99,16 @@
        #define TOPLINE 'Kod kresk.─┬Nazwa────────────────────────────┬Kod──┬C.Zak┬───Stan┬─jm─┬Cena'
       #else
 #ifdef STANY
-       #define TOPLINE 'Kod kresk.─┬Nazwa───────────────────────────────────┬──────────┬'+hb_upadr(A_KODY,len(KoD),'─')+'┬───Stan┬─jm─┬Cena'
+       #define TOPLINE 'Kod kresk.─┬Nazwa───────────────────────────────────┬──────────┬'+hb_upadr(A_KODY,Indx_mat->(hb_FieldLen([KoD])),'─')+'┬───Stan┬─jm─┬Cena'
 #else
-       #define TOPLINE 'Kod kresk.─┬Nazwa───────────────────────────────────┬──────────┬'+hb_upadr(A_KODY,len(KoD),'─')+LARMG+'┬───Stan┬─jm─┬Cena'
+       #define TOPLINE 'Kod kresk.─┬Nazwa───────────────────────────────────┬──────────┬'+hb_upadr(A_KODY,Indx_mat->(hb_FieldLen([KoD])),'─')+LARMG+'┬───Stan┬─jm─┬Cena'
 #endif
       #endif
      #endif
     #else
      #ifdef A_7
       #ifdef A_KODY
-       #define TOPLINE 'Kod───┬Nazwa'+repl('─',49-len(KoD))+'┬'+hb_upadr(A_KODY,len(KoD),'─')+'┬─────Stan┬jm'
+       #define TOPLINE 'Kod───┬Nazwa'+repl('─',49-Indx_mat->(hb_FieldLen([KoD])))+'┬'+hb_upadr(A_KODY,Indx_mat->(hb_FieldLen([KoD])),'─')+'┬─────Stan┬jm'
        #define D_KODY 55
       #else
        #define TOPLINE 'Kod───┬Nazwa──────────────────────────────────────'+LARMG+'┬─────Stan┬─jm─┬Cena'
@@ -127,7 +127,7 @@ MEMVAR mag_biez,mag_poz,magazyny,mag_link,adres_mag,changed,srec,hlink,stary_rok
        dok,jmiar,miar_opcja,iord,s,SB,se,s3,s2,s1,da,i,W,Wb,We,W3,W2,W1,il,chg,;
        k_pola,irec
 
-field nr_mag,index,nazwa,stan,smb_dow,nr_dowodu,nr_zlec,ilosc,KTO_PISAL,kod,;
+field nr_mag,index,nazwa,stan,smb_dow,nr_dowodu,nr_zlec,ilosc,KTO_PISAL,KoD,;
       przel,WAZNOSC,nr_rys,rodz_opak,gram,polka,jm,jm_opcja,cena,proc_vat,data_popr,;
       cena_zak,proc_mar,zaznacz,wartosc,sww
 
@@ -246,7 +246,7 @@ if(len(trim(nazwA))>38,chr(26)," "),left(nazwA,30)+if(len(trim(nazwA))>30,chr(26
   ENDIF
 #else
  #ifdef A_KODY
-  #define LARTXT pad(nazwA,45-len(KoD))+ret+INDX_MAT->KoD
+  #define LARTXT pad(nazwA,45-Indx_mat->(hb_FieldLen([KoD])))+ret+INDX_MAT->KoD
  #else
   #define LARTXT nazwA
  #endif
@@ -371,7 +371,7 @@ ret := hb_UTF8ToStr(ret)
    #ifdef A_7
     #ifdef A_KODY
      #undef LARTXT
-     #define LARTXT pad(nazwA,54-len(KoD))+ret+INDX_MAT->KoD
+     #define LARTXT pad(nazwA,54-Indx_mat->(hb_FieldLen([KoD])))+ret+INDX_MAT->KoD
      #define SHORTTXT
     #else
      #ifdef A_FA
