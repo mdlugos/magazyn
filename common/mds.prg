@@ -230,9 +230,9 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
   _srowe:=if(_srowe=NIL,MaxRow(),min(MaxRow(),int(_srowe)))
   _srowb:=if(_srowb=NIL,0,int(_srowb))
 
-  _srow=ROW()
-  _scol=COL()
-  _scr=SAVESCREEN(_srowb,_scol1-1,_srowe,_scol2)
+  _srow:=ROW()
+  _scol:=COL()
+  _scr:=SAVESCREEN(_srowb,_scol1-1,_srowe,_scol2)
   _scolor:=setcolor(_snorm)
 
   _srown:=_srowe-_srowb-1  // max ilosc wierszy
@@ -462,12 +462,20 @@ return .f.
 func mysz(_s,bx,cx,dx,myszflag)
   local ret:=.f.
   if dx>=_srow1 .and. dx<_srow2 .and. cx>=_scol1 .and. cx<_scol2 .and. bx=1
-    _scr:=hb_BSubStr(_scr,1+max(0,_srow1-_srowb-1)*(_scoln+2)*D_REST)
+    //cut _scr
+    _scr:=hb_BSubStr(_scr,1+max(0,_srow1-_srowb-1)*(_scoln+2)*D_REST,(_srow2-_srow1+2)*(_scoln+2)*D_REST)
     --_srow1
     --_scol1
     ret := mousedr(@bx,@cx,@dx,@_srow1,@_scol1,@_srow2,@_scol2,@_scr,{||dx<=_srowb .or. dx>=_srowe})
     ++_srow1
     ++_scol1
+    //expand _scr
+    if _srowb<_srow1-1
+      _scr:=SAVESCREEN(_srowb,_scol1-1,_srow1-2,_scol2)+_scr
+    endif
+    if _srowe>_srow2
+      _scr+=SAVESCREEN(_srow2+1,_scol1-1,_srowe,_scol2)
+    endif
   endif
   if bx=2 .or. cx>=_scol2 .or. cx <_scol1 .or. dx < _srow1-1 .or. dx>_srow2
     if myszflag
@@ -503,7 +511,7 @@ func mysz(_s,bx,cx,dx,myszflag)
     if ret
       if bx=0 //był drag
         if _srowb<_srow1-1
-          _scr:=SAVESCREEN(_srowb,_scol1-1,_srow1-2,_scol2)+_scr
+          //moved up _scr:=SAVESCREEN(_srowb,_scol1-1,_srow1-2,_scol2)+_scr
         elseif _srowb>_srow1-1
           _sbf:=.f.
           if _srowb>0
@@ -520,7 +528,7 @@ func mysz(_s,bx,cx,dx,myszflag)
           enddo 
         endif
         if _srowe>_srow2
-          _scr+=SAVESCREEN(_srow2+1,_scol1-1,_srowe,_scol2)
+          //moved up _scr+=SAVESCREEN(_srow2+1,_scol1-1,_srowe,_scol2)
         elseif _srowe<_srow2
           _sef:=.f.
           if _srowe<MaxRow()

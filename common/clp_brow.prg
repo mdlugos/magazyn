@@ -276,20 +276,8 @@ ENDIF
          txt = ordKeyVal() //EvAlDb(txt)
          //@ 16,41
          @ scr_buf[3]-3,scr_buf[2]+40 get txt picture "@KS34"
-         __SetProc(0)
-         do while .t.
-            ReadModal(GetList)
-            i:=ReadkeY()
-            IF i<>14
-               exit
-            ENDIF
-            i:=ReadKey(,)
-            if !mousedrag(i,scr_buf,getlist).or. i[1]=1
-              exit
-            endif
-         enddo
-         // READ
-         getlist:={}
+
+         READ SCREEN scr_buf
 
          if TYPE("txt") = "C"
            txt = trim(txt)
@@ -358,20 +346,7 @@ ENDIF
       txt=STRTRAN(txt,"!",".nie.")+SPACE(160)
       @ scr_buf[1]+8, scr_buf[2]+4 get txt picture "@KS70"
 
-      __SetProc(0)
-      do while .t.
-         ReadModal(GetList)
-         i:=ReadkeY()
-         IF i<>K_CTRL_N
-            exit
-         ENDIF
-         i:=ReadKey(,)
-         if !mousedrag(i,scr_buf,getlist).or. i[1]=1
-           exit
-         endif
-      enddo
-      // READ
-      getlist:={}
+      READ SCREEN scr_buf
    
       txt=STRTRAN(ALLTRIM(txt),".i.",".AND.")
       txt=STRTRAN(txt,".lub.",".OR.")

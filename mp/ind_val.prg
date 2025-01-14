@@ -179,7 +179,7 @@ zawiesz:='S'$out
 
 @ w[1]+1,w[2]+2 SAY "Towar na kwit:" GET waga picture "Y"
 @ w[1]+2,w[2]+2 SAY "      e-sklep:" GET zawiesz picture "Y"
-read
+read screen w
 if readkey()#K_ESC
    out:=if(waga,"1","")+if(zawiesz,"S","")
    get:varput(out)
@@ -198,7 +198,7 @@ cotw:=SubStr(out,4,1)>'0'
 @ w[1]+1,w[2]+2 SAY "Towar na wagę:" UNICODE GET waga picture "Y"
 @ w[1]+2,w[2]+2 SAY "   Zawieszony:" GET zawiesz picture "Y"
 @ w[1]+3,w[2]+2 SAY " Cena otwarta:" GET cotw picture "Y"
-read
+read screen w
 if readkey()#K_ESC
    out:=if(waga,"1","0")+if(zawiesz,"1","0")+if(cotw,"4","0")
    get:varput(out)

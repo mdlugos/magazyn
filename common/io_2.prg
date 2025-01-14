@@ -1830,7 +1830,7 @@ local txt,i,j,k,o,osk,getlist:={}
     endif
     @ win[1]+1,win[2]+1 GET txt PICTURE "@S"+lTrim(sTr(win[4]-win[2]-1))
     kibord(chr(K_END))
-    read
+    read screen win
   endif
 
   IF lastkey()=K_ESC

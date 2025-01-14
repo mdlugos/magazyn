@@ -9,13 +9,19 @@
 #include "button.ch"
 
 static proc drag_mysz(_f,w)
-   local dr:=_frow-_fscr0,mr:=_fskip*(_fl-_fj+1)+_frow
+   local dr:=_frow-_fscr0,mr:=_fskip*(_fl-_fj+1)+_frow,ret
    local blo:={|dy,r,i|r:=_fscr0+dr+dy, i:=Int((w[3]-r)/_fskip)+1, dy+_fscr0<0 .or. _fskip*i+r>maxrow()}
-   if mousedr(@w[1],@w[2],@w[3],@_fscr0,@_fco1,@mr,@_fco2,@_fscr,blo)
+   if mr<MaxRow()
+      _fscr:=hb_BLeft(_fscr,D_REST*(_fco2-_fco1+1)*(mr+1-_fscr0))
+   endif
+   ret:=mousedr(@w[1],@w[2],@w[3],@_fscr0,@_fco1,@mr,@_fco2,@_fscr,blo)
+   if mr<MaxRow()
+      _fscr+=savescreen(mr+1,_fco1,MaxRow(),_fco2)
+   endif
+   if ret
       _frow:=_fscr0+dr
-
       if mr<MaxRow()
-         _fscr+=savescreen(mr+1,_fco1,MaxRow(),_fco2)
+         //moved up _fscr+=savescreen(mr+1,_fco1,MaxRow(),_fco2)
       elseif _frow+(_fl-_fj+1)*_fskip>maxrow()
          _fl:=Int((maxrow()-_frow)/_fskip)+_fj-1
          RESTSCREEN(_fskip*(_fl-_fj+1)+_frow,_fco1,mr,_fco2,hb_BSubStr(_fscr,D_REST*(_fco2-_fco1+1)*(_fskip*(_fl-_fj+1)+_frow-_fscr0)+1))

@@ -159,6 +159,7 @@ elseif key=K_INS .or. key=43
    getlist[2]:postblock:={|g|if(g:changed .and. empty(getlist[3]:varget()),(getlist[3]:varput(g:varget()),getlist[3]:display()),),.t.}
 #endif
    i:=1
+   __setproc(procname(0))
    do while .t.
 #ifdef A_LAN
    if !lock
@@ -166,8 +167,11 @@ elseif key=K_INS .or. key=43
       exit
    endif
 #endif
-    //__setproc(procname(0));   readmodal(getlist,@i)
-    READ SCREEN win POSITION @i SAVE 
+    readmodal(getlist,@i)
+    if readkey()=14 .and. mousedrag(readkey(,),win,GetList)
+      loop
+    endif
+    //READ SCREEN win POSITION @i SAVE 
 
    set order to "firm_num"
    if !updated() .or. ReadkeY()=K_ESC

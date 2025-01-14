@@ -163,7 +163,7 @@ local getlist,a,b,c,d,scr
         endif
 #endif
         @ _skey[1]+4,_skey[2]+14 get b picture "@!" valid {|r|r:=b=' '.or.aczojs(grupy),if(r,choiceg:=b,),r} when choicef='J  '
-        read
+        read screen _skey
         message(_skey)
         if readkey()=27
            return .f.
@@ -607,6 +607,7 @@ do while _fpopkey .and. (!_fnowy .or. _fi=1)
       cx:=mcol()
       dx:=mrow()
       _fkey:=14
+      readkey(_fkey,{bx,cx,dx})
    endif
 #else
    _fkey:=inkey(0)

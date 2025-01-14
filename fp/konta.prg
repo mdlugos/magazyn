@@ -237,6 +237,7 @@ local win,getlist:={},nk,na,chg:=.f.,pos,snt,r,lock,wasl,spw,spm,skw,skm,a,kha,o
 #ifdef A_OPCJE
    @ win[1]+3,win[2]+2 say "Opcje:" get opc
 #endif
+   __setproc(0)
    do while .t.
 #ifdef A_LAN
    if !lock
@@ -244,8 +245,12 @@ local win,getlist:={},nk,na,chg:=.f.,pos,snt,r,lock,wasl,spw,spm,skw,skm,a,kha,o
       exit
    endif
 #endif
-   READ SCREEN win POSITION @pos SAVE 
-   //__setproc(0); readmodal(getlist,@pos)
+   //READ SCREEN win POSITION @pos SAVE 
+   readmodal(getlist,@i)
+   if readkey()=14 .and. mousedrag(readkey(,),win,GetList)
+     loop
+   endif
+
    chg:=chg.or.updated()
    if !chg .or. ReadkeY()=K_ESC
       chg:=.f.

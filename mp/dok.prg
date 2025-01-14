@@ -3820,6 +3820,7 @@ else
         cx:=mcol()
         dx:=mrow()
         _fkey:=GE_MOUSE
+        readkey(_fkey,{bx,cx,dx})
      endif
 #else
    _fkey:=inkey(2)
@@ -3852,6 +3853,7 @@ endif
         cx:=mcol()
         dx:=mrow()
         _fkey:=GE_MOUSE
+        readkey(_fkey,{bx,cx,dx})
      endif
 #else
    _fkey:=inkey(0)

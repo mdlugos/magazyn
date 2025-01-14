@@ -1098,7 +1098,7 @@ DO CASE
             getlist:={}
             bl:=message(hb_UTF8ToStr("NIE POTRAFIĘ PRZEPISAĆ DO WŁASNEJ KARTOTEKI;- INDEKS ZAJĘTY;PROSZĘ PODAĆ NOWY SYTMBOL:"))
             @ bl[3]-1,bl[4]-18 get _skey[2] picture "@RK ####-###-###-###" valid !(dbseek(mag_biez+_skey[2],.f.) .and. stan#0 .and. cenA_zaK#_skey[3])
-            read
+            read screen bl
             message(bl)
             if !updated()
                hlink:=NIL
@@ -1132,7 +1132,7 @@ DO CASE
             getlist:={}
             _skey:=message(hb_UTF8ToStr("PROSZĘ PODAĆ PROCENT MARŻY:    %"))
             @ _skey[1]+1,_skey[4]-5 get proc_mar picture "@K ##"
-            read
+            read screen _skey
             message(_skey)
          endif
          hlink:=NIL
@@ -1306,7 +1306,7 @@ endif
       @ bl[1]+4,bl[2]+2 GET a[3] picture "@K" valid {|g,r|r:=!empty(a[3]).and.aczojs(txt),if(r.and.len(getlist)<7,(SetPos( bl[1]+4, bl[2]+14 ),b[3]:=indx_mat->(&(a[3])),AAdd(GetList,_GET_( b[3], "b[3]", "@KS46", , ):display())) ,),empty(a[3]).or.r}
       @ bl[1]+5,bl[2]+2 GET a[4] picture "@K" valid {|g,r|r:=!empty(a[4]).and.aczojs(txt),if(r.and.len(getlist)<8,(SetPos( bl[1]+5, bl[2]+14 ),b[4]:=indx_mat->(&(a[4])),AAdd(GetList,_GET_( b[4], "b[4]", "@KS46", , ):display())) ,),empty(a[4]).or.r}
       @ bl[1]+1,bl[2]+20 Say "Podaj wartość:" UNICODE
-      read
+      read SCREEN bl
       window(bl)
       if readkey()=K_ESC .or. ALARM(hb_UTF8ToStr("CZY NA PEWNO CHCESZ ZAMIENIĆ WSZYSTKIE TOWARY ZACZYNAJĄCE SIĘ NA:")+_spocz,{"TAK","NIE"},2,2)#1
          return .f.
