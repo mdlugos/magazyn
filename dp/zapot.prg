@@ -948,7 +948,7 @@ FIELD INDEX,NAZWA,stan,jm,data_przy,waznosc
 #else
 #define D_KODY
 #endif
-        SZUKAM({0,1,MaxRow(),,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
+        SZUKAM({0,2,,,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
         +hb_UTF8ToStr(IF(WAZNOSC>0 .and. STANY->STAN>0 .and. STANY->DATA_PRZY+WAZNOSC<date(),"°","│"));
         +STR(STANY->STAN)+" "+JM},{|_skey,_s D_MYSZ|if(_skey=13,.f.,STANMAG(_skey,_s D_MYSZ))},"",.F.})
 return

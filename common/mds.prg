@@ -108,7 +108,7 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
   DEFAULT _sef TO .F.            // end-of-file
   DEFAULT _sm TO 1
   DEFAULT _si TO 0
-  IF _scol1#NIL;_scol1:=int(++_scol1);ENDIF
+  //IF _scol1#NIL;_scol1:=int(++_scol1);ENDIF
 
   DEFAULT _skproc TO array(32)
   DEFAULT _skproc[1]  TO {|_skey,_s|_SHOME(_s)}  //HOME
@@ -190,6 +190,9 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
     set cursor on
   ENDIF
 
+  _srow:=ROW()
+  _scol:=COL()
+
   if _sinfo=NIL
     _sinfo:={|k,s|_Sinfo(k,s)}
   endif
@@ -214,7 +217,7 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
   if _scol1=NIL.or._scol2=NIL
      _stxt:=min(maxcol()-1,len(eval(_sprompt,0,_s,.t.)))
      if _scol2=NIL .and. _scol1=NIL
-        _scol1:=min(maxcol()-_stxt,max(1,col()-Round(_stxt/2,0)))
+        _scol1:=min(maxcol()-_stxt,max(1,_scol-Round(_stxt/2,0)))
         _scol2:=_scol1+_stxt
      elseif _scol1=NIL
         _scol1:=max(1,min(maxcol(),_scol2)-_stxt)
@@ -229,9 +232,6 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
 
   _srowe:=if(_srowe=NIL,MaxRow(),min(MaxRow(),int(_srowe)))
   _srowb:=if(_srowb=NIL,0,int(_srowb))
-
-  _srow:=ROW()
-  _scol:=COL()
   _scr:=SAVESCREEN(_srowb,_scol1-1,_srowe,_scol2)
   _scolor:=setcolor(_snorm)
 

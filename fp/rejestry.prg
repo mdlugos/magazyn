@@ -47,7 +47,7 @@ if valtype(ar[AR_LINES])$"MC"
 #endif
 endif
 
-return szukam({0,0,,,1,0,hb_UTF8ToStr("Lp┬Data─┬─Dowód─┬")+padc("Identyfikacja",A_IDENT,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬")+ar[AR_HEADER],ar[AR_LINES],{|k,s|rejinfo(k,s,ar,view)},""})
+return szukam({0,,,,1,0,hb_UTF8ToStr("Lp┬Data─┬─Dowód─┬")+padc("Identyfikacja",A_IDENT,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬")+ar[AR_HEADER],ar[AR_LINES],{|k,s|rejinfo(k,s,ar,view)},""})
 **********************************
 stat func rejinfo(key,_s,ar,view)
 

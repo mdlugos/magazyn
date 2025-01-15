@@ -15,7 +15,7 @@ memvar rejestry
 proc konta()
 
 sel("konta","kont_num")
-szukam({0,0,,,1,0,,,{|key,s|koninfo(key,s)},""})
+szukam({0,,,,1,0,,,{|key,s|koninfo(key,s)},""})
 return
 ***********************
 function konval(g,f,kh,list,pos) // get , for , kh
@@ -34,7 +34,7 @@ if valtype(f)='C'
    f:=&f
 endif
 f9:=setkey(K_F9,nil)
-if szukam({0,0,,,1,0,,,{|key,x|koninfo(key,x,kh,k,f)},''}) .and. eval(r,g,konto,list,pos)
+if szukam({0,,,,1,0,,,{|key,x|koninfo(key,x,kh,k,f)},''}) .and. eval(r,g,konto,list,pos)
    r:=recno()
    k:=firmy->(recno())
    g:varput(konta->konto)

@@ -279,7 +279,7 @@ SELECT MAIN
 #endif
   f5:=setkey(-4,{|k|k:=setkey(-4,),aczojs(zamowienie[mag_poz],"",0),setkey(-4,k)})
 #ifdef A_OBR
-  f6:=setkey(-5,{|k,s|k:=setkey(-2,),s:=push_stat(),dbselectar("stanowis"),ordsetfocus("kont_naz"),szukam({0,10,MaxRow(),,8,0,"",{||konto+I+opis_koszt},{|_skey|_skey=K_ESC},""}),pop_stat(s),setkey(-5,k)})
+  f6:=setkey(-5,{|k,s|k:=setkey(-2,),s:=push_stat(),dbselectar("stanowis"),ordsetfocus("kont_naz"),szukam({0,,,,8,0,"",{||konto+I+opis_koszt},{|_skey|_skey=K_ESC},""}),pop_stat(s),setkey(-5,k)})
 #else
   f6:=setkey(-5,{|k|k:=setkey(-5,),aczojs(stanowis[mag_poz],"",0),setkey(-5,k)})
 #endif
@@ -413,7 +413,7 @@ if valtype(g)='O'
    endif
 */
 endif
-r:=szukam({1,14,MaxRow(),,1,0,'FIRMY',{||numer_kol+if(""=uwagi,I,"*")+nazwa},{|_skey,_s|if(_skey=13,_s[12]:=.t.,gfirma(_skey,_s,getlist,{}))},""})
+r:=szukam({1,,,,1,0,'FIRMY',{||numer_kol+if(""=uwagi,I,"*")+nazwa},{|_skey,_s|if(_skey=13,_s[12]:=.t.,gfirma(_skey,_s,getlist,{}))},""})
       if r.and.valtype(g)='O'
          a:=MAIN->(len(EvAlDb(IndexKey(3)))-10-hb_fieldlen('index'))
       if len(t)>=main->(hb_fieldlen('nr_zlec'))

@@ -1167,7 +1167,7 @@ procedure dok2(_f,getlist)
 #endif
     get:display()
     if dok_kh
-       get:postblock:={|g|szukam({1,14,MaxRow(),,1,0,'FIRMY',,{|_skey,_s|gfirma(_skey,_s,getlist,_f)},TRIM(d_o)})}
+       get:postblock:={|g|szukam({1,,,,1,0,'FIRMY',,{|_skey,_s|gfirma(_skey,_s,getlist,_f)},TRIM(d_o)})}
     elseif dok_zew="W" .and. dok="M"
        get:postblock:={||!empty(SubStr(d_o,3)).or.aczojs(magazyny),.t.}
 #ifdef A_MULTIDI

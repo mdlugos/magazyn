@@ -2306,7 +2306,7 @@ if it_zesmnu#NIL
    goto it_Zesmnu
 endif
 setpos(row()+recno(),col())
-if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
+if szukam({1,,,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
    it_zesmnu:=recno()
    ap:=getlines(POLA,.t.)
    l:=len(ap)

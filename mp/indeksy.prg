@@ -176,9 +176,9 @@ private hlink:=NIL
             _spocz:=trim(right(g:varget(),indx_mat->(hb_fieldlen(index))))
          endif
       endif
+      _scol1:=_scol2:=NIL
       DEFAULT _spocz TO ''
       DEFAULT _srowb TO 1
-      //DEFAULT _scol1 TO 0
       DEFAULT _srowe TO MaxRow()-1
       DEFAULT _sbeg  TO 1
       DEFAULT _slth  TO 0
@@ -1226,9 +1226,9 @@ endif
  #endif
 #endif
 #ifdef A_OLZA
-    szukam({1,max(0,maxcol()-79),MaxRow(),maxcol(),0,0,hb_UTF8ToStr("Data┬─Dokument┬Zlecenie─┬─Przychód┬──Rozchód┬───"+WANAZ+"┬"+smiaR+"┬")+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"Z",NR_MAG+INDEX+"Z"})
+    szukam({1,,,,0,0,hb_UTF8ToStr("Data┬─Dokument┬Zlecenie─┬─Przychód┬──Rozchód┬───"+WANAZ+"┬"+smiaR+"┬")+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"Z",NR_MAG+INDEX+"Z"})
 #else
-    szukam({1,max(0,maxcol()-77),MaxRow(),maxcol(),0,0,hb_UTF8ToStr("Data┬──Dokument┬Koszty┬─Przychód┬─Rozchód─┬───"+WANAZ+"┬"+smiaR+"┬")+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"Z",NR_MAG+INDEX+"Z"})
+    szukam({1,,,,0,0,hb_UTF8ToStr("Data┬──Dokument┬Koszty┬─Przychód┬─Rozchód─┬───"+WANAZ+"┬"+smiaR+"┬")+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"Z",NR_MAG+INDEX+"Z"})
 #endif
 #undef smiaR
     set filter to
@@ -1276,7 +1276,8 @@ endif
    
    case _skey=-7 //F8
       miar_opcja=!miar_opcja
-      aeval(_srec,{|x,i|dbgoto(x),setpos(_srow1+i-1,_scol1),dispout(padr(eval(_sprompt,0,_s),_scol2-COL()))},1,_si)
+//      REFRESH LINE <row> DIRECTION <d> => SETPOS(<row>,_scol1) ; dispout(padr(eval(_sprompt,<d>,_s),_scol2-COL()))
+      aeval(_srec,{|x,i|dbgoto(x), setpos(_srow1+i-1,_scol1),dispout(padr(eval(_sprompt,1,_s),_scol2-COL()))},1,_si)
       SAVE LINE _sm+_srow1-1
 #ifdef A_LAN
       go _srec[_sm] // onerefresh off

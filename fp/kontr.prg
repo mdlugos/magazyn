@@ -14,7 +14,7 @@ local k,st:=push_stat(),f9:=setkey(K_F9,nil)
        kh:=g:varget()
     endif
     k:=UpP(trim(kh))
-    if szukam({1,10,,,1,len(k),hb_UTF8ToStr("Nr┬")+left(fieldname(2),1)+lower(trim(SubStr(fieldname(2),2))),{||fieldget(1)+I+fieldget(2)+I+fieldget(3)},{|key,s|khinfo(key,s)},k})
+    if szukam({1,,,,1,len(k),hb_UTF8ToStr("Nr┬")+left(fieldname(2),1)+lower(trim(SubStr(fieldname(2),2))),{||fieldget(1)+I+fieldget(2)+I+fieldget(3)},{|key,s|khinfo(key,s)},k})
        if g#NIL
           g:varput(numer_kol)//+' '+nazwA)
           @ g:row,g:col+A_NRLTH SAY left(' '+nazwA,win[4]-col())
@@ -33,7 +33,7 @@ return .f.
 ***********************
 proc kontrahenci()
     sel("firmy","firm_num")
-    szukam({1,10,,,1,0,hb_UTF8ToStr("Nr┬")+left(fieldname(2),1)+lower(trim(SubStr(fieldname(2),2))),{||fieldget(1)+I+fieldget(2)+I+fieldget(3)},{|key,s|khinfo(key,s)},""})
+    szukam({1,,,,1,0,hb_UTF8ToStr("Nr┬")+left(fieldname(2),1)+lower(trim(SubStr(fieldname(2),2))),{||fieldget(1)+I+fieldget(2)+I+fieldget(3)},{|key,s|khinfo(key,s)},""})
 return
 ***********************
 func khinfo(key,_s)

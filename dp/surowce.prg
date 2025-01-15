@@ -209,19 +209,19 @@ if empty(deep)
 #endif
   getlist[1]:reader:=getlist[4]:reader:=getlist[5]:reader:=getlist[6]:reader:=getlist[7]:reader:=;
   {|g,k|k:=setkey(-1,{|p,g|g:=getactive(),g:changed:=;
-  SZUKAM({2,1,,,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
+  SZUKAM({2,2,,,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
   +hb_UTF8ToStr(IF(WAZNOSC>0 .and. STANY->STAN>0 .and. STANY->DATA_PRZY+WAZNOSC<date(),"°","│"));
   +STR(STANY->STAN)+" "+JM},{|k,s D_MYSZ|stanmag(k,s D_MYSZ)},"",.T.}).and.showhead(getlist);
   }),eval(greader,g),setkey(-1,k)}
   getlist[2]:reader:=;
   {|g,k|k:=setkey(-1,{|p,g|g:=getactive(),g:changed:=;
-  SZUKAM({2,1,,,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
+  SZUKAM({2,2,,,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
   +hb_UTF8ToStr(IF(WAZNOSC>0 .and. STANY->STAN>0 .and. STANY->DATA_PRZY+WAZNOSC<date(),"°","│"));
   +STR(STANY->STAN)+" "+JM},{|k,s|stanmag(k,s)},UpP(trim(na)),.T.}).and.showhead(getlist);
   }),eval(greader,g),setkey(-1,k)}
   getlist[3]:reader:=;
   {|g,k|k:=setkey(-1,{|p,g|g:=getactive(),g:changed:=;
-  SZUKAM({2,1,,,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
+  SZUKAM({2,2,,,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA D_KODY;
   +hb_UTF8ToStr(IF(WAZNOSC>0 .and. STANY->STAN>0 .and. STANY->DATA_PRZY+WAZNOSC<date(),"°","│"));
   +STR(STANY->STAN)+" "+JM},{|k,s|stanmag(k,s)},UpP(trim(in)),.T.}).and.showhead(getlist);
   }),eval(greader,g),setkey(-1,k)}
@@ -806,9 +806,9 @@ do case
        set order to tag zap_skl
         set relation to RELEWY->(dseek(,'data,posilek,dieta',zapot->data,zapot->posilek,'')) into relewy
        dbseek(surowce->skladnik,.f.)
-       szukam({1,min(maxcol()-27,col()+5),MaxRow(),,1,6,hb_UTF8ToStr("Data───┬P┬")+padc(hb_UTF8ToStr("Dieta"),A_DILTH,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬ile ")+trim(surowce->jmaG),{||tran(Dtos(data)+posilek+dieta,hb_UTF8ToStr("@R ####.##.##│X│")+REPLICATE("X",A_DILTH))+I+str(ILOSC)},{|k,s|RELe(k,s,upden)},surowce->skladnik+left(dtos(mies_rob),6)})
+       szukam({1,col()+6,,,1,6,hb_UTF8ToStr("Data───┬P┬")+padc(hb_UTF8ToStr("Dieta"),A_DILTH,hb_UTF8ToStr("─"))+hb_UTF8ToStr("┬ile ")+trim(surowce->jmaG),{||tran(Dtos(data)+posilek+dieta,hb_UTF8ToStr("@R ####.##.##│X│")+REPLICATE("X",A_DILTH))+I+str(ILOSC)},{|k,s|RELe(k,s,upden)},surowce->skladnik+left(dtos(mies_rob),6)})
     elseif choice=3
-       SZUKAM({1,1,,,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA;
+       SZUKAM({1,2,,,1,0,hb_UTF8ToStr("PRZEGLĄD MAGAZYNU SPOŻYWCZEGO"),{||INDEX+I+NAZWA;
        +hb_UTF8ToStr(IF(WAZNOSC>0 .and. STANY->STAN>0 .and. STANY->DATA_PRZY+WAZNOSC<date(),"°","│"));
        +STR(STANY->STAN)+" "+JM},{|_skey,_s D_MYSZ|if(_skey=13,.f.,STANMAG(_skey,_s D_MYSZ))},trim(surowce->indx_mat),.F.})
 #ifdef A_ELZ
