@@ -1226,9 +1226,9 @@ endif
  #endif
 #endif
 #ifdef A_OLZA
-    szukam({1,,,,0,0,hb_UTF8ToStr("Data┬─Dokument┬Zlecenie─┬─Przychód┬──Rozchód┬───"+WANAZ+"┬"+smiaR+"┬")+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"Z",NR_MAG+INDEX+"Z"})
+    szukam({1,,,,0,0,hb_UTF8ToStr("Data┬─Dokument┬Zlecenie─┬─Przychód┬──Rozchód┬───"+WANAZ+"┬")+StrTran(smiaR+hb_UTF8ToStr("┬")+str(wb,10,CEOKR),' ',hb_UTF8ToStr('─')),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"Z",NR_MAG+INDEX+"Z"})
 #else
-    szukam({1,,,,0,0,hb_UTF8ToStr("Data┬──Dokument┬Koszty┬─Przychód┬─Rozchód─┬───"+WANAZ+"┬"+smiaR+"┬")+str(wb,10,CEOKR),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"Z",NR_MAG+INDEX+"Z"})
+    szukam({1,,,,0,0,hb_UTF8ToStr("Data┬──Dokument┬Koszty┬─Przychód┬─Rozchód─┬───"+WANAZ+"┬")+StrTran(smiaR+hb_UTF8ToStr("┬")+str(wb,10,CEOKR),' ',hb_UTF8ToStr('─')),{|D,_s|ltab(D,_s)},{|_skey,_s|tab(_skey,_s)},NR_MAG+INDEX+dtos(DatY->DATA_GRAN)+"Z",NR_MAG+INDEX+"Z"})
 #endif
 #undef smiaR
     set filter to

@@ -215,7 +215,8 @@ local _scur,_srins,_selar,_scolor,_stxt,_skey,_srow,_scol,bx,cx,dx,myszflag,job
   endif
 
   if _scol1=NIL.or._scol2=NIL
-     _stxt:=min(maxcol()-1,len(eval(_sprompt,0,_s,.t.)))
+     //                                      -2 = jesteśmy na górze i pojedziemy w dół dla Ltab w magazynie    
+     _stxt:=min(maxcol()-1,len(eval(_sprompt,-2,_s,.t.)))
      if _scol2=NIL .and. _scol1=NIL
         _scol1:=min(maxcol()-_stxt,max(1,_scol-Round(_stxt/2,0)))
         _scol2:=_scol1+_stxt
