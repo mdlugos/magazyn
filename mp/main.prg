@@ -101,6 +101,7 @@ if parametr='MAGDEF='
    parametr:=mag_biez
    mag_biez:=operator
    operator:=''
+   HB_SETENV("MAGDEF",defa)
 else
    defa:=getenv("MAGDEF")
 endif
@@ -163,6 +164,7 @@ defa:=atail(defa)
       parametr:=mag_biez
       mag_biez:=operator
       operator:=''
+      HB_SETENV("DIETADEF",txt)
    else
       txt:=getenv("DIETADEF")
    endif
@@ -170,11 +172,14 @@ defa:=atail(defa)
       txt:=Stuff(defa,i,7,'dieta')
 #ifdef __PLATFORM__UNIX
       if SubStr(defa,i,1)=='M'; txt:=Stuff(txt,i,1,'D');endif
-      if SubStr(defa,i,1)=='A'; txt:=Stuff(txt,i,1,'I');endif
-      if SubStr(defa,i,1)=='G'; txt:=Stuff(txt,i,1,'E');endif
-      if SubStr(defa,i,1)=='A'; txt:=Stuff(txt,i,1,'T');endif
-      if SubStr(defa,i,1)=='Z'; txt:=Stuff(txt,i,1,'A');endif
+      if SubStr(defa,++i,1)=='A'; txt:=Stuff(txt,i,1,'I');endif
+      if SubStr(defa,++i,1)=='G'; txt:=Stuff(txt,i,1,'E');endif
+      if SubStr(defa,++i,1)=='A'; txt:=Stuff(txt,i,1,'T');endif
+      if SubStr(defa,++i,1)=='Z'; txt:=Stuff(txt,i,1,'A');endif
 #endif      
+      if hb_dirExists(txt)
+        HB_SETENV("DIETADEF",txt)
+      endif
    endif
    SET PATH TO (set(_SET_PATH)+HB_OsPathListSeparator()+txt+'roboczy'+HB_ps()+HB_OsPathListSeparator()+txt)
 #endif

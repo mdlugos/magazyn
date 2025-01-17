@@ -77,6 +77,7 @@ public defa
 if parametr='FKDEF='
    defa:=SubStr(parametr,7)
    parametr:=menu
+   HB_SETENV("FKDEF",defa)
 else
    defa:=getenv("FKDEF")
 endif
@@ -117,6 +118,26 @@ aeval(defa,{|x|a+=HB_OsPathListSeparator()+x},i)
 SET PATH TO (a)
 
 defa:=atail(defa)
+
+if parametr='MAGDEF='
+   txt:=SubStr(parametr,8)
+   parametr:=NIL
+   HB_SETENV("MAGDEF",txt)
+else
+   txt:=getenv("MAGDEF")
+endif
+if empty(txt) .and. 0<>(i:=rat('fk',lower(defa)))
+   txt:=Stuff(defa,i,2,'zbyt')
+#ifdef __PLATFORM__UNIX
+   if SubStr(defa,i,1)=='F'; txt:=Stuff(txt,i,1,'Z');endif
+   if SubStr(defa,++i,1)=='K'
+      txt:=Stuff(txt,i,3,'byt')
+   endif
+#endif
+   if hb_dirExists(txt)
+      HB_SETENV("MAGDEF",txt)
+   endif
+endif
 
 STARY_ROK=NIL
 

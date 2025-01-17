@@ -14,9 +14,9 @@ request descend
 #ifdef A_EXT
 request A_EXT
 #endif
-PROCEDURE MAIN(parametr)
+PROCEDURE MAIN(parametr, txt)
 
-local scr_menu,menu,i,txt,a
+local scr_menu,menu,i,a
 
    hb_gtInfo( HB_GTI_WINTITLE , "Dieta" )
 #ifdef A_WIN_PRN
@@ -26,7 +26,9 @@ public defa
 
 if parametr='DIETADEF='
    defa:=SubStr(parametr,10)
-   parametr:=NIL
+   parametr:=txt
+   txt:=NIL
+   HB_SETENV("DIETADEF",defa)
 else
    defa:=getenv("DIETADEF")
 endif
@@ -67,6 +69,29 @@ aeval(defa,{|x|a+=HB_OsPathListSeparator()+x},i)
 SET PATH TO (a)
 
 defa:=atail(defa)
+
+if parametr='MAGDEF='
+   txt:=SubStr(parametr,8)
+   parametr:=NIL
+   HB_SETENV("MAGDEF",txt)
+else
+   txt:=getenv("MAGDEF")
+endif
+if empty(txt) .and. 0<>(i:=rat('dieta',lower(defa)))
+   txt:=Stuff(defa,i,5,'magazyn')
+#ifdef __PLATFORM__UNIX
+   if SubStr(defa,i,1)=='D'; txt:=Stuff(txt,i,1,'M');endif
+   if SubStr(defa,++i,1)=='I'; txt:=Stuff(txt,i,1,'A');endif
+   if SubStr(defa,++i,1)=='E'; txt:=Stuff(txt,i,1,'G');endif
+   if SubStr(defa,++i,1)=='T'; txt:=Stuff(txt,i,1,'A');endif
+   if SubStr(defa,++i,1)=='A'
+      txt:=Stuff(txt,i,3,'ZYN')
+   endif
+#endif      
+  if hb_dirExists(txt)
+     HB_SETENV("MAGDEF",txt)
+  endif
+endif
 
 SETPOS(3,0)
 

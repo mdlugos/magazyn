@@ -207,10 +207,9 @@ local i,l,win,ap,txt,jh,jf,jl,jt,el,x,y
 memvar p_rown
 #endif
 */
-IF !FILE("ZES_DEF.DBF")
+if sel("zes_def")=0
    RETURN .f.
 ENDIF
-sel("zes_def")
 if it_zesmnu#NIL
    goto it_Zesmnu
 endif

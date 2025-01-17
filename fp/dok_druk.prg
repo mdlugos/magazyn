@@ -288,10 +288,9 @@ memvar landscape,p_rownl
 #endif
 #endif
 
-IF !FILE("zes_def.dbf")
+if sel("zes_def")=0
    RETURN .f.
 ENDIF
-sel("zes_def")
 if it_zesmnu#NIL
    goto it_Zesmnu
 endif

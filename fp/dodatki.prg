@@ -104,19 +104,35 @@ memvar it_menudod
           browse()
       case m = 5
          if hb_gtInfo( HB_GTI_ISGRAPHIC )
-            aczojs({"98x32","80x25 (Norm)",hb_UTF8ToStr("Zmieniaj ilość linii"),hb_UTF8ToStr("Zmieniaj wielkość czcionki"),hb_UTF8ToStr("Pełny ekran (Alt+Enter)")},"",@m)
-            do case
-            case m=1
-            SetMode(32,98)
-            case m=2
-            SetMode(25,80)
-            case m=3
-            hb_gtInfo( HB_GTI_RESIZEMODE, HB_GTI_RESIZEMODE_ROWS )
-            case m=4
-            hb_gtInfo( HB_GTI_RESIZEMODE, HB_GTI_RESIZEMODE_FONT )
-            case m=5
-            hb_gtInfo( HB_GTI_ISFULLSCREEN, ! hb_gtInfo( HB_GTI_ISFULLSCREEN ) )
-            endcase
+            a:={"98x32","80x25 (Norm)",hb_UTF8ToStr("Pełny ekran (Alt+Enter)"),hb_UTF8ToStr("Zmieniaj wielkość czcionki")}
+#ifndef __PLATFORM__UNIX            
+         aadd(a,hb_UTF8ToStr("Zmieniaj ilość linii"))
+#endif
+         aczojs(a,"",@m)
+         do case
+         case m=0
+         case m=1
+         SetMode(32,98)
+         case m=2
+         SetMode(25,80)
+         case m=3
+         hb_gtInfo( HB_GTI_ISFULLSCREEN, ! hb_gtInfo( HB_GTI_ISFULLSCREEN ) )
+         otherwise
+#ifdef __PLATFORM__UNIX            
+            //if hb_gtInfo( HB_GTI_VERSION )='XWC'
+               a:={'29','27','21','20','18','15','14','13','12','11','10','9','8','7','6'}
+               txt:=hb_gtInfo( HB_GTI_FONTSEL ) //'-*-fixed-medium-r-*-*-18-*-*-*-*-*-iso10646-1'
+               b:=ascan(a,{|x|'*-'+x+'-*'$txt})
+               m:=b
+               if aczojs(a,"",@m)
+                  txt:=strtran(txt,'*-'+a[b]+'-*','*-'+a[m]+'-*')
+                  hb_gtInfo( HB_GTI_FONTSEL, txt ) 
+               endif
+            //endif
+#else            
+            hb_gtInfo( HB_GTI_RESIZEMODE, if(m=4, HB_GTI_RESIZEMODE_FONT, HB_GTI_RESIZEMODE_ROWS))
+#endif
+         endcase
          else
            m:=2
            aczojs({"80x25 (Norm)","80x43","80x50","128x50"},"",@m)
