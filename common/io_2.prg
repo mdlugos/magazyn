@@ -316,6 +316,9 @@ endif
   endif
 //#endif
 #ifdef D_HWPRN
+#define D_FIXEDF 'Lucida Console'
+#define D_PROPF 'Verdana'
+
   if !empty(oprn)
 #ifdef A_HPDF
     if !valtype(oprn)='O'
@@ -352,7 +355,7 @@ endif
     oprn:LeftMargin:=0
     oprn:RightMargin:=oprn:PageWidth*2
     oprn:BottomMargin:=oprn:PageHeight - 3 * oprn:LineHeight + 1
-    oprn:SetFont('Courier New',12,-10,,,,255)
+    oprn:SetFont(D_FIXEDF,12,-10,,,,255)
     oprn:TopMargin:=oprn:LineHeight
     ccpi(,4)
     INIT PRINTER
@@ -711,7 +714,7 @@ while valtype(oprn)='O' .and. ""<>x
         fw:=oprn:FontWidth
       endif
 #ifdef A_WIN_PRN
-      oprn:SetFont('Arial',,{0,0},,,,255)
+      oprn:SetFont(D_PROPF,,{0,0},,,,255)
 #else
       oprn:SetFont('Helvetica',,{0,0},,,,255)
 #endif
@@ -720,7 +723,7 @@ while valtype(oprn)='O' .and. ""<>x
       endif
    elseif eval(b,p_poff) // .and. fw<>NIL
 #ifdef A_WIN_PRN
-      oprn:SetFont('Courier New',,fw,,,,255)
+      oprn:SetFont(D_FIXEDF,,fw,,,,255)
 #else
       oprn:SetFont('Courier',,fw,,,,255)
 #endif
@@ -1049,7 +1052,8 @@ endif
 if Valtype(oprn)='O'
    statcpi:=x
 #ifdef A_WIN_PRN
-   oprn:SetFont(if(x=9,'Arial','Courier New'),,{-5,-6,{3,-25},-10,-12,-15,{3,-50},-20,{0,0}}[x],,,,255)
+   //oprn:SetFont(if(x=9,'Arial','Courier New'),,{-5,-6,{3,-25},-10,-12,-15,{3,-50},-20,{0,0}}[x],,,,255)
+   oprn:SetFont(if(x=9,D_PROPF,D_FIXEDF),,{-5,-6,{3,-25},-10,-12,-15,{3,-50},-20,{0,0}}[x],,,,255)
 #else
    oprn:SetFont(if(x=9,'Helvetica','Courier'),,{-5,-6,{3,-25},-10,-12,-15,{3,-50},-20,{0,0}}[x],,,,255)
 #endif

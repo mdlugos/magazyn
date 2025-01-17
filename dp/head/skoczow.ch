@@ -8,6 +8,10 @@
 #define A_XPRN
 #define A_NORMY
 #define PLWIN
+#ifdef __PLATFORM__WINDOWS   
+   //#define A_ZEBRA
+   #define A_WIN_PRN eval(MEMVAR->do_getoprn)
+#endif   
 #define PROC_EN memvar->proc_en
 #define A_WO_JAD '  3'
 #define A_WODA '  6'

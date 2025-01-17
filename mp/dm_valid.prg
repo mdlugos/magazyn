@@ -1015,7 +1015,7 @@ func cenpz(_f,getlist) //zawsze na końcu po zmianach il, wa, ce ,ck
   #else //automar
    #ifdef A_WEBRUT
     if dok_p_r<>'F'
-      if ReadVar()$'CK,WA'
+      if ReadVar()$'CE,WA'
         wz:=Round(Round(pm*10000*wa,0)/(100+val(pv)),0)/100
         cz:=pm*wz/il
         showvat(_f)
@@ -1029,12 +1029,9 @@ func cenpz(_f,getlist) //zawsze na końcu po zmianach il, wa, ce ,ck
         if !_fnowy
           vat(proc_vat,-VATPZGR(pm*cena,val(proc_vat)))
         endif
-
-
+        
         vt:= round( A_WEBRUT vat() , A_ZAOKR)
-
         vat(pv,VATPZGR(wz,val(pv)))
-
         vt:=pm* (wz + round( A_WEBRUT vat() , A_ZAOKR) -vt)
 
         avat:=cx

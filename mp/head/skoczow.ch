@@ -8,7 +8,7 @@
 #define PLWIN
 #ifdef __PLATFORM__WINDOWS   
    //#define A_ZEBRA
-   #define A_WIN_PRN .t.
+   #define A_WIN_PRN eval(MEMVAR->do_getoprn)
 #endif   
 #define UpP(x) UPPER(x)
 #define A_ZLEC11
