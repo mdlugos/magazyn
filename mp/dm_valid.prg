@@ -3268,26 +3268,26 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
 #define DevpoS( x, y ) DevPos( wr + x, y )
     
       @  9,_scol1+1 SAW 'Poprawianie dopisywanie kasowanie firmy'
-      @ 11,_scol1+1 SAW 'Nr'
+      @ 10,_scol1+1 SAW 'Nr'
 #ifdef A_KHFILLZERO
-      @ 12,_scol1 GEW n picture "@K" valid {|g|empty(n) .or.(n:=padl(alltrim(n),A_NRLTH,"0"),.t.)}
+      @ 11,_scol1 GEW n picture "@K" valid {|g|empty(n) .or.(n:=padl(alltrim(n),A_NRLTH,"0"),.t.)}
 #else
-      @ 12,_scol1 GEW n picture "@K" valid {|g|empty(n) .or.(n:=str(val(n),A_NRLTH),.t.)}
+      @ 11,_scol1 GEW n picture "@K" valid {|g|empty(n) .or.(n:=str(val(n),A_NRLTH),.t.)}
 #endif
-      GETl f picture "@KS"+lTrim(sTr(_scoln-A_NRLTH-1))
+      GETl f picture "@KS"+lTrim(sTr(_scoln-A_NRLTH-1)) //SEND cargo:=.t.
 #ifdef A_FFULL
       getlist[2]:postblock:={||if(empty(b),(b:=pad(f,len(b)),getlist[3]:display()),),.t.}
-      @ 11,_scol1+A_NRLTH+2 SAW 'Nazwa skrócona firmy:' UNICODE
-      @ 12,_scol2-20 SAW 'Nazwa pełna firmy:' UNICODE
-      @ 13,_scol1 GEW b PICTURE '@KS'+lTrim(sTr(_scol2-col()))
-      @ 14,_scol1+1 SAW 'Adres:'
-      GETL a PICTURE '@KS'+lTrim(sTr(_scol2-col()))
-      DevpoS(15,_scol1)
+      @ 10,_scol1+A_NRLTH+2 SAW 'Nazwa skrócona firmy:' UNICODE
+      @ 11,_scol2-20 SAW 'Nazwa pełna firmy:' UNICODE
+      @ 12,_scol1 GEW b PICTURE '@KS'+lTrim(sTr(_scol2-col())) SEND cargo:=.t.
+      @ 13,_scol1+1 SAW 'Adres:'
+      GETL a PICTURE '@KS'+lTrim(sTr(_scol2-col())) SEND cargo:=.t.
 #else
-      @ 11,_scol1+A_NRLTH+2 SAW 'Nazwa firmy'
-      @ 14,_scol1+1 SAW 'Kod,Miasto' GET a PICTURE '@K !'+replicate("X",_scoln-12)
-      @ 16,_scol1+1 SAW 'ulica i nr' GET b PICTURE '@KS'+lTrim(sTr(_scoln-12))
+      @ 10,_scol1+A_NRLTH+2 SAW 'Nazwa firmy'
+      @ 12,_scol1+1 SAW 'Kod,Miasto' GET a PICTURE '@K !'+replicate("X",_scoln-12) SEND cargo:=.t.
+      @ 13,_scol1+1 SAW 'ulica i nr' GET b PICTURE '@KS'+lTrim(sTr(_scoln-12)) SEND cargo:=.t.
 #endif
+      setpos(row()+1,s[2]+1)
 #ifdef A_TPD
       SAYL "T.p. dni:" GET tp PICTURE "@K###"
 #endif
@@ -3309,16 +3309,16 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
 #ifdef A_KHKONTO
       SAYL "Konto:" GET k picture "@KS"+lTrim(sTr(_scol2-col()-8))
 #endif
-      @ row()+1,_scol1 GET u PICTURE '@KS'+lTrim(sTr(_scoln)) send cargo:=.t.
+      @ row()+1,s[2]+1 GET u PICTURE '@KS'+lTrim(sTr(_scoln)) send cargo:=.t.
 #ifdef A_WL
-      if row()>=19
+      if row()>=s[3]-1
         atail(getlist):picture:= '@KS'+lTrim(sTr(_scoln-10))
         setpos(row(),s[4]-10)
       else
         setpos(row()+1,s[2]+1)
       endif
       DEFAULT h TO 'n/n'
-      SAYL "BL" GET h PICTURE "@KS"+lTrim(sTr(_scol2-col())) VALID {||if(empty(h),(h:=getwl(i,),if(h='n/n',,kibord(chr(10))),.f.),.t.)}
+      SAYL "BL" GET h PICTURE "@KS"+lTrim(sTr(_scol2-col())) VALID {||if(empty(h),(h:=getwl(i,),if(h='n/n',,kibord(chr(10))),.f.),.t.)} SEND cargo:=.t.
 #endif      
       set color to (_snorm)
       do while .t.
@@ -3330,7 +3330,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
          case empty(f)
               if eof()
                  loop
-              elseif tak(hb_UTF8ToStr('WYKASOWAĆ FIRMĘ'),_s[3],s[1]+6,.f.,.F.,,s)
+              elseif tak(hb_UTF8ToStr('WYKASOWAĆ FIRMĘ'),s[3],s[1]+6,.f.,.F.,,s)
                  lock
                  delete
                  unlock
@@ -3351,7 +3351,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
               endif
               do case
                  case empty(n) .or. found()
-                   if tak(hb_UTF8ToStr("CZY NADAĆ KOLEJNY NUMER"),_s[3],s[1]+6,.F.,.F.,,s)
+                   if tak(hb_UTF8ToStr("CZY NADAĆ KOLEJNY NUMER"),s[3],s[1]+6,.F.,.F.,,s)
                       SET ORDER TO "FIRM_NUM"
                       GO BOTTOM
 #ifdef A_KHFILLZERO
@@ -3369,12 +3369,12 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
                       endif
                       loop
                    ENDIF
-                 case tak('NOWA FIRMA',_s[3],s[1]+6,.F.,.F.)
+                 case tak('NOWA FIRMA',s[3],s[1]+6,.F.,.F.)
                    APPEND BLANK
               otherwise
                    loop
               ENDcase
-         case !tak('POPRAWA',_s[3],s[1]+6,.F.,.F.,,s)
+         case !tak('POPRAWA',s[3],s[1]+6,.F.,.F.,,s)
               loop
          endcase
 

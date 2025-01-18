@@ -411,7 +411,7 @@ endif
      if a=0
         a:=NIL
      else
-      a:=-1
+      // for tests only a:=-1
       if dok_zew#"W"
          a--
          #ifdef A_KSEF
