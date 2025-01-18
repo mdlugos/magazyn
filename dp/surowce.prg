@@ -816,7 +816,7 @@ do case
        select cennik
        setpos(row()+2,col())
        dbseek(surowce->skladnik)
-       szukam({1,,,,0,,'Cena za '+surowce->jmaG,{||dtoc(data)+I+str(cena)},{|k,s|cen(k,s)},surowce->skladnik+chr(0),surowce->skladnik+hb_UCHAR(0x0A0)})
+       szukam({1,,,,0,,'Cena za '+surowce->jmaG,{||dtoc(data)+I+str(cena)},{|k,s|cen(k,s)},surowce->skladnik+chr(0),surowce->skladnik+hb_UChar(0x0A0)})
        dbseek(surowce->skladnik,.f.)
        select surowce
        REFRESH LINE _srow1-1+_sm DIRECTION 0

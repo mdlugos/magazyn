@@ -78,7 +78,7 @@ func dok //append - .t. append blank .f. - noedit
        endif
        ad:=ar[AR_DOKUMENTY,i]
        if smb_doW<>ad[AD_SMB]
-          seek ad[AD_SMB]+HB_UCHAR(0x0A0)
+          seek ad[AD_SMB]+hb_UChar(0x0A0)
           skip -1
           r:=0
        else
@@ -114,7 +114,7 @@ func dok //append - .t. append blank .f. - noedit
                 if s<>' '
                   exit
                 endif
-                seek ad[AD_SMB]+left(nr_dowodU,x)+HB_UCHAR(0x0A0)
+                seek ad[AD_SMB]+left(nr_dowodU,x)+hb_UChar(0x0A0)
                 IF smb_doW#ad[AD_SMB]
                    exit
                 ENDIF
@@ -123,7 +123,7 @@ func dok //append - .t. append blank .f. - noedit
               endif
             next x
           goto r
-          seek ad[AD_SMB]+left(nr_dowodU,x)+HB_UCHAR(0x0A0)
+          seek ad[AD_SMB]+left(nr_dowodU,x)+hb_UChar(0x0A0)
           skip -1
 
           if x>0 .and. str(1+val(SubStr(nr_dowodU,x+1)),i-x)='*'

@@ -1426,7 +1426,7 @@ do while !eof()
      exit
   endif
   if txt+DTOS(do)<kod_osoby+DTOS(Data)
-     seek txt+HB_UCHAR(0x0A0)
+     seek txt+hb_UChar(0x0A0)
      loop
   endif
   im:=w:=0
@@ -1481,7 +1481,7 @@ do while !eof()
      exit
   endif
 
-  seek txt+HB_UCHAR(0x0A0)
+  seek txt+hb_UChar(0x0A0)
 enddo
 
 UNLOCK
@@ -1940,7 +1940,7 @@ do while !eof() .and. data<=do
          loop
       endif
    elseif b=dtos(data)
-      seek (dtos(data)+HB_UCHAR(0x0A0))
+      seek (dtos(data)+hb_UChar(0x0A0))
       seek (b:=dtos(data)+p)
       loop
    else
@@ -2120,7 +2120,7 @@ do while data<=do .and. !eof()
    ?? spec(chr(13)+P_UON+space(P_COLN))
    ?? spec(P_UOFF)
    endif
-   seek key+HB_UCHAR(0x0A0)
+   seek key+hb_UChar(0x0A0)
 enddo
 #ifndef A_DRUKCOMP
 ?

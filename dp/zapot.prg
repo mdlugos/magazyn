@@ -232,7 +232,7 @@ local i,j,k,l,a,b,g:='',h:=''
                 h+=x[2];
              ) })
    if empty(d)
-      return pad(HB_UCHAR(0x0A0),relewy->(hb_fieldlen('dieta')))
+      return pad(hb_UChar(0x0A0),relewy->(hb_fieldlen('dieta')))
    endif
    if len(d)=len(f)
       return space(relewy->(hb_fieldlen('dieta')))
@@ -341,7 +341,7 @@ local i,j,k,l,a,b,g:='',h:=''
    d:=''
    aeval(f,{|x|if(x[3],d+=x[1],c+=x[1])})
    if empty(d)
-      return pad(HB_UCHAR(0x0A0),relewy->(hb_fieldlen('dieta')))
+      return pad(hb_UChar(0x0A0),relewy->(hb_fieldlen('dieta')))
    endif
    if empty(c)
       return space(relewy->(hb_fieldlen('dieta')))
@@ -391,7 +391,7 @@ local aZap:={{},{},{}},rec,mes,d,e,f:={},i,j
 #else
 #ifdef A_DISUM
               i:=ascan(aZap[1],surowce->(recno()))
-              if i<>0 .and. round(azap[2,i,1]-ilosc,3)=0 .and. diand(d,SubStr(azap[1,i],3),f)=HB_UCHAR(0x0A0)
+              if i<>0 .and. round(azap[2,i,1]-ilosc,3)=0 .and. diand(d,SubStr(azap[1,i],3),f)=hb_UChar(0x0A0)
                  aZap[1,i,2]:=dior(d,azap[1,i,2],f)
                  aZap[2,i,2]+=e
                  aZap[3,i]+=",("+left(dania->nazwa,at(" ",dania->nazwa)-1)+") "+hb_ntoc(e*ilosc/surowce->przel,3)+" "+trim(surowce->jmaG)

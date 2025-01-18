@@ -332,7 +332,7 @@ endif
 #ifdef A_OLZA
        przegl:=!canopen
 #else
-       przegl:=!canopen .OR. kto_pisal#HB_UCHAR(0x00A0)
+       przegl:=!canopen .OR. kto_pisal#hb_UChar(0x00A0)
 #endif
 #ifdef A_LAN
        if !przegl
@@ -556,7 +556,7 @@ procedure dok1(_f)
                 if s<>' '
                   exit
                 endif
-                seek KEY_PAR+left(nr_dowodU,x) + HB_UCHAR(0x00A0) 
+                seek KEY_PAR+left(nr_dowodU,x) + hb_UChar(0x00A0) 
                 while KEY_DOK=KEY_PAR .and. pozycja=D_LP0 D_WAR D_LAN
                   skip
                 ENDDO
@@ -1452,7 +1452,7 @@ memvar exp_od,exp_do
 #ifndef A_MM
       nr_mag := mag_biez
 #endif
-      kto_pisal := HB_UCHAR(0x00A0)+chr(0)
+      kto_pisal := hb_UChar(0x00A0)+chr(0)
       data := da
 #ifdef D_DIETA_OR_ODDO
       dflag:=.f.
@@ -1781,7 +1781,7 @@ begin sequence
           endif
           enddo
           if left(nr_zlec,a)+nr_mag+index=txt
-             seek txt + HB_UCHAR(0x00A0)
+             seek txt + hb_UChar(0x00A0)
           endif
        enddo
        next k
@@ -1814,7 +1814,7 @@ begin sequence
           endif
           enddo
           if left(nr_zlec,a)+nr_mag+index=txt
-             seek txt + HB_UCHAR(0x00A0)
+             seek txt + hb_UChar(0x00A0)
           endif
        enddo
 #endif
@@ -1894,7 +1894,7 @@ begin sequence
               message(10)
               j:=darr[i]
               SUROWCE->(dbseek(SubStr(j,c,k),.f.))
-              darr[i]:=surowce->indx_mat+" "+left(j,c-1)+" "+left(surowce->nazwa,40)+HB_UCHAR(0x00A0)+SubStr(j,-8)+" "+surowce->jmag
+              darr[i]:=surowce->indx_mat+" "+left(j,c-1)+" "+left(surowce->nazwa,40)+hb_UChar(0x00A0)+SubStr(j,-8)+" "+surowce->jmag
           next
           if (dpos:=min(_flp+1,len(darr)))=1
              @ _frow+2,_fco1+5 say 'Zapotrzebowanie na ten dzień pod [F8]' UNICODE color _sbkgr
@@ -1980,35 +1980,35 @@ begin sequence
 #ifdef A_CIEZKO
               if surowce->skladnik==skladnik
                  --i
-                 darr[i]:=surowce->indx_mat+" WS     "+surowce->nazwa+HB_UCHAR(0x00A0)+str(ilosc+val(SubStr(darr[i],-13)),8,3)+" "+surowce->jmag
+                 darr[i]:=surowce->indx_mat+" WS     "+surowce->nazwa+hb_UChar(0x00A0)+str(ilosc+val(SubStr(darr[i],-13)),8,3)+" "+surowce->jmag
                  adel(darr,i+1)
                  asize(darr,len(darr)-1)
               else
                  surowce->(dbseek(ro_zapot->skladnik,.f.))
-                 darr[i]:=surowce->indx_mat+" WS     "+surowce->nazwa+HB_UCHAR(0x00A0)+str(ilosc,8,3)+" "+surowce->jmag
+                 darr[i]:=surowce->indx_mat+" WS     "+surowce->nazwa+hb_UChar(0x00A0)+str(ilosc,8,3)+" "+surowce->jmag
               endif
               j:=posilek
 #else
 #ifdef A_DODATKI
               if surowce->skladnik==skladnik .and. j==posilek
                  --i
-                 darr[i]:=surowce->indx_mat+" W"+posilek+"     "+surowce->nazwa+HB_UCHAR(0x00A0)+str(ilosc+val(SubStr(darr[i],-13)),8,3)+" "+surowce->jmag
+                 darr[i]:=surowce->indx_mat+" W"+posilek+"     "+surowce->nazwa+hb_UChar(0x00A0)+str(ilosc+val(SubStr(darr[i],-13)),8,3)+" "+surowce->jmag
                  adel(darr,i+1)
                  asize(darr,len(darr)-1)
               else
                  surowce->(dbseek(ro_zapot->skladnik,.f.))
-                 darr[i]:=surowce->indx_mat+" W"+posilek+"     "+surowce->nazwa+HB_UCHAR(0x00A0)+str(ilosc,8,3)+" "+surowce->jmag
+                 darr[i]:=surowce->indx_mat+" W"+posilek+"     "+surowce->nazwa+hb_UChar(0x00A0)+str(ilosc,8,3)+" "+surowce->jmag
               endif
               j:=posilek
 #else
               if surowce->skladnik==skladnik .and. j==posilek .and. k==dieta
                  --i
-                 darr[i]:=surowce->indx_mat+" "+pad("W"+posilek+dieta,main->(hb_fieldlen('nr_zlec')))+" "+surowce->nazwa+HB_UCHAR(0x00A0)+str(ilosc+val(SubStr(darr[i],-13)),9,3)+" "+surowce->jmag
+                 darr[i]:=surowce->indx_mat+" "+pad("W"+posilek+dieta,main->(hb_fieldlen('nr_zlec')))+" "+surowce->nazwa+hb_UChar(0x00A0)+str(ilosc+val(SubStr(darr[i],-13)),9,3)+" "+surowce->jmag
                  adel(darr,i+1)
                  asize(darr,len(darr)-1)
               else
                  surowce->(dbseek(ro_zapot->skladnik,.f.))
-                 darr[i]:=surowce->indx_mat+" "+pad("W"+posilek+dieta,main->(hb_fieldlen('nr_zlec')))+" "+surowce->nazwa+HB_UCHAR(0x00A0)+str(ilosc,9,3)+" "+surowce->jmag
+                 darr[i]:=surowce->indx_mat+" "+pad("W"+posilek+dieta,main->(hb_fieldlen('nr_zlec')))+" "+surowce->nazwa+hb_UChar(0x00A0)+str(ilosc,9,3)+" "+surowce->jmag
               endif
               j:=posilek
               k:=dieta
@@ -2275,11 +2275,11 @@ endif
 #endif //oddo
 #ifdef A_DIETA //#else  //oddo
          if dok$dok_di
-           il:=-val(SubStr(nim,rat(HB_UCHAR(0x00A0),nim)+1))
+           il:=-val(SubStr(nim,rat(hb_UChar(0x00A0),nim)+1))
            nz:=SubStr(nim,hb_fieldlen('index')+2,hb_fieldlen('nr_zlec'))
            @ _fk+1,_fco1+48 say right(nim,4)
            txt:=SubStr(nim,hb_fieldlen('INDEX')+2+hb_fieldlen('nr_zlec')+1)
-           j:=rat(HB_UCHAR(0x00A0),txt)
+           j:=rat(hb_UChar(0x00A0),txt)
            txt:=left(nim,hb_fieldlen('INDEX')+2)+trim(nz)+' '+TRIM(left(txt,j-1))+' '+SubStr(txt,j+1)
            @ _fk+2,_fco1+1 SAY "ZAPOTRZEBOWANIE: "+txt+space(60-len(txt)) color _sbkgr
            nim:=pad(left(nim,hb_fieldlen('index')),46)
@@ -2817,7 +2817,7 @@ if si#STANY->(nr_mag+index)
       b:=wartosc
 #endif
    endif
-   seek si+dtos(da)+HB_UCHAR(0x0A0)
+   seek si+dtos(da)+hb_UChar(0x0A0)
 #ifdef A_WA
    exec {||a+=ilosc,b+=wartosc} rest while nr_mag+index=si
 #else
@@ -3067,10 +3067,10 @@ endif
 #ifdef A_KASA
           @ _fk,_fco1+5 SAY SubStr(nim,hb_fieldlen('index')+2,46)
 #else
-          il:=-val(SubStr(nim,rat(HB_UCHAR(0x00A0),nim)+1))
+          il:=-val(SubStr(nim,rat(hb_UChar(0x00A0),nim)+1))
           nz:=SubStr(nim,hb_fieldlen('index')+2,main->(hb_fieldlen('nr_zlec')))
           txt:=SubStr(nim,hb_fieldlen('INDEX')+main->(hb_fieldlen('nr_zlec'))+3)
-          p:=rat(HB_UCHAR(0x00A0),txt)
+          p:=rat(hb_UChar(0x00A0),txt)
           txt:=left(nim,hb_fieldlen('INDEX')+2)+trim(nz)+' '+trim(left(txt,p-1))+SubStr(txt,p)
           if _fi>=_flp
              @ _fk+2,_fco1+1 SAY "ZAPOTRZEBOWANIE: "+txt+space(60-len(txt)) color _sbkgr
@@ -3827,7 +3827,7 @@ else
 #endif
    if _fkey=0
      DatY->(dbgoto(1))
-     if dm->kto_pisal#HB_UCHAR(0x00A0) .or. dm->data<=max(DatY->d_z_mies1,DatY->data_gran)
+     if dm->kto_pisal#hb_UChar(0x00A0) .or. dm->data<=max(DatY->d_z_mies1,DatY->data_gran)
         loop //niepotrzebny refr
      elseif _fi=_fl
         skip _fj+1-_fi
@@ -3875,7 +3875,7 @@ endif
     case _fkey=K_DOWN;_fkey:=K_PGDN
 
 #ifdef A_ZATW
-    case _fkey=61 .and. canopen .and. iS_spec .and. dm->data>max(DatY->d_z_mies1,DatY->data_gran) .and. dm->kto_pisal#HB_UCHAR(0x00A0)
+    case _fkey=61 .and. canopen .and. iS_spec .and. dm->data>max(DatY->d_z_mies1,DatY->data_gran) .and. dm->kto_pisal#hb_UChar(0x00A0)
        if dm->kto_pisal#operator
          select DM
          LOCK
@@ -3906,14 +3906,14 @@ endif
 #endif
        select DM
        lock
-       kto_pisal:=HB_UCHAR(0x00A0)+kto_pisal
+       kto_pisal:=hb_UChar(0x00A0)+kto_pisal
        changed:=.t.
        UNLOCK
        @ _fscr0,_fco1 say "OTWARTY !   "
         tone(164.8,1)
         tone(164.8,1)
 #ifdef A_DF
-       if dok_df .and. kto_pisal#HB_UCHAR(0x00A0)+chr(0)
+       if dok_df .and. kto_pisal#hb_UChar(0x00A0)+chr(0)
           dispout(hb_UTF8ToStr(" - PONOWNY WYDRUK PARAGONU NIEMOŻLIWY !"))
           inkey(5)
        endif

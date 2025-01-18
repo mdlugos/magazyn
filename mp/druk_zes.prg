@@ -1646,7 +1646,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
        EXIT
 #else
        if mag_biez=D_MM
-          seek D_MM + HB_UCHAR(0x00A0)
+          seek D_MM + hb_UChar(0x00A0)
        endif
        if eof()
           EXIT
@@ -1971,7 +1971,7 @@ ELSE
        EXIT
 #else
        if mag_biez=D_MM
-          seek mag_biez + HB_UCHAR(0x00A0)
+          seek mag_biez + hb_UChar(0x00A0)
        endif
        if eof()
           EXIT
@@ -2487,7 +2487,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
        EXIT
 #else
        if mag_biez=nr_mag
-          seek mag_biez + HB_UCHAR(0x00A0)
+          seek mag_biez + hb_UChar(0x00A0)
        endif
        if eof()
           EXIT
@@ -2721,7 +2721,7 @@ ELSE
      EXIT
 #else
        if mag_biez=nr_mag
-          seek mag_biez + HB_UCHAR(0x00A0)
+          seek mag_biez + hb_UChar(0x00A0)
        endif
        if eof()
           EXIT
@@ -5229,7 +5229,7 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
    seek TXT+DTOS(od)
    sum -warT_ewiD to w rest while data<=do .and. nr_mag+smb_dow+konto_kosz=txt
    if nr_mag+smb_dow+konto_kosz=txt
-      seek txt + HB_UCHAR(0x00A0)
+      seek txt + hb_UChar(0x00A0)
    endif
    if w=0
       loop
@@ -5271,7 +5271,7 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
    seek TXT+DTOS(od)
    IF nr_mag+smb_dow+konto_kosz+DTOS(DATA)>TXT+DTOS(DO) .OR. EOF()
       IF nr_mag+smb_dow+konto_kosz=txt
-         seek TXT + HB_UCHAR(0x00A0)
+         seek TXT + hb_UChar(0x00A0)
       ENDIF
       LOOP
    ENDIF
@@ -5373,7 +5373,7 @@ DO WHILE nr_mag+smb_dow+konto_kosz<=I_DO .AND. !EOF()
     skip
   enddo
   if nr_mag+smb_dow+konto_kosz=txt
-     seek txt + HB_UCHAR(0x00A0)
+     seek txt + hb_UChar(0x00A0)
   endif
   ?? speC(HB_BCHAR(13)+P_UON+SPACE(80))
   ?? spec(P_UOFF)
@@ -5422,7 +5422,7 @@ DO WHILE nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)<=I_DO .AND. !EOF()
    seek TXT+DTOS(od)
    sum -warT_ewiD to w rest while data<=do .and. nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)=txt
    if nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)=txt
-      seek txt + HB_UCHAR(0x00A0)
+      seek txt + hb_UChar(0x00A0)
    endif
    if w=0
       loop
@@ -5464,7 +5464,7 @@ DO WHILE nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)<=I_DO .AND. !EOF()
    seek TXT+DTOS(od)
    IF nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)+DTOS(DATA)>TXT+DTOS(DO) .OR. EOF()
       IF nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)=txt
-         seek TXT + HB_UCHAR(0x00A0)
+         seek TXT + hb_UChar(0x00A0)
       ENDIF
       LOOP
    ENDIF
@@ -5566,7 +5566,7 @@ DO WHILE nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)<=I_DO .AND. !EOF()
     skip
   enddo
   if nr_mag+smb_dow+stano_kosz+SubStr(konto_kosz,5)=txt
-     seek txt + HB_UCHAR(0x00A0)
+     seek txt + hb_UChar(0x00A0)
   endif
   ?? speC(HB_BCHAR(13)+P_UON+SPACE(80))
   ?? spec(P_UOFF)

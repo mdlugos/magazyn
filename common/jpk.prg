@@ -307,7 +307,13 @@ static func adres2arr(adres)
           a:={substr(adres,i+1),left(adres,i-1)}
      elseif i=2
           s:=a[1]
-          a[1]:=a[2]
+          a[1]:=alltrim(a[2])
+          a[2]:=s
+     else
+          s:=a[1]
+          a[1]:=alltrim(a[2])
+          aeval(a,{|x|a[1]+=', '+alltrim(x)},3)
+          asize(a,2)
           a[2]:=s
      endif
      aeval(a,{|x,i|a[i]:=alltrim(x)})

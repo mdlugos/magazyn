@@ -208,10 +208,10 @@ DO WHILE .T.
      set order to 1
 #ifdef A_FK
     znalaz:= szukam({1,,,,1,0,hb_UTF8ToStr("Przegląd ")+dok,;
-        {||nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)+hb_UTF8ToStr(if(data>DatY->d_z_mies1 .and. kto_pisal=HB_UCHAR(0x00A0),"│","┼"))+D_KH+I+DTOV(data)+I+D_KH1},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
+        {||nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)+hb_UTF8ToStr(if(data>DatY->d_z_mies1 .and. kto_pisal=hb_UChar(0x00A0),"│","┼"))+D_KH+I+DTOV(data)+I+D_KH1},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
 #else
     znalaz:= szukam({1,,,,1,0,hb_UTF8ToStr("Przegląd ")+dok,;
-        {||nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)+hb_UTF8ToStr(if(data>DatY->d_z_mies1 .and. kto_pisal=HB_UCHAR(0x00A0),"│","┼"))+DTOV(data)+I+dost_odb},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
+        {||nr_dowodu+"/"+str(D_LPVALFIELD(POZYCJA),2)+hb_UTF8ToStr(if(data>DatY->d_z_mies1 .and. kto_pisal=hb_UChar(0x00A0),"│","┼"))+DTOV(data)+I+dost_odb},{|_skey,_s|nkprzeg(_skey,_s,_f,nk2)},KEY_PAR})
 #endif
      firMy->(dbgoto(rf))
     if znalaz
@@ -281,7 +281,7 @@ do case
 #ifdef A_OLZA
   #define DEF_WAR
 #else
-  #define DEF_WAR kto_pisal=HB_UCHAR(0x00A0) .and.
+  #define DEF_WAR kto_pisal=hb_UChar(0x00A0) .and.
 #endif
 #define DEF_WAR1
 #ifdef A_LAN
@@ -297,9 +297,9 @@ do case
      private changed:=.f.
 #else
  #ifdef A_LAN
-     private changed:=if( kto_pisal#HB_UCHAR(0x00A0) .and. data>max(DatY->d_z_mies1,DatY->data_gran).and. ( _flp=0 .or. _skey=13 .and. pozycja=D_LP0 DEF_WAR1),if(nowydm,,1),.f.)
+     private changed:=if( kto_pisal#hb_UChar(0x00A0) .and. data>max(DatY->d_z_mies1,DatY->data_gran).and. ( _flp=0 .or. _skey=13 .and. pozycja=D_LP0 DEF_WAR1),if(nowydm,,1),.f.)
  #else
-     private changed:=if( kto_pisal#HB_UCHAR(0x00A0) .and. data>max(DatY->d_z_mies1,DatY->data_gran) .and. ( _flp=0 .or. _skey=13 .and. pozycja=D_LP0 DEF_WAR1),,.f.)
+     private changed:=if( kto_pisal#hb_UChar(0x00A0) .and. data>max(DatY->d_z_mies1,DatY->data_gran) .and. ( _flp=0 .or. _skey=13 .and. pozycja=D_LP0 DEF_WAR1),,.f.)
  #endif
 #endif
      _skey:=ordnumber()
@@ -1318,7 +1318,7 @@ LOCAL ZNALAZ,recf,RECM,RECS,RECI,RECD,rec1,rec2,PRZE:=IL,A,B,c,d,j,oldp,dpushl,a
      nim:=pad(left(nim,hb_fieldlen('index')),46)
  #else
      //nz:=SubStr(nim,hb_fieldlen('index')+2,6)
-     //prze:=-val(SubStr(nim,rat(HB_UCHAR(0x00A0),nim)+1))
+     //prze:=-val(SubStr(nim,rat(hb_UChar(0x00A0),nim)+1))
      //nim:=pad(left(nim,hb_fieldlen('index')),46)
  #endif
  #ifdef A_FA
@@ -3228,12 +3228,20 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
 #endif
 #endif
       DEFAULT f TO nazwa
-      DEFAULT a TO adres
+      DEFAULT a TO trim(adres)
 #ifdef A_FFULL
-      DEFAULT b TO longname
+      DEFAULT b TO trim(longname)
 #else
-      b:=SUBSTR(a,25)
-      a:=LEFT(a,23)
+      c:=at(',',left(a,30))
+      if c=0
+         c:=hb_RAt(' ',left(a,24))
+      endif
+      if c>10
+         b:=alltrim(SubStr(a,c+1))
+         a:=trim(left(a,c-1))
+      else
+         b:=''
+      endif
 #endif
 #ifdef A_CENSPEC
       c:=cennik
@@ -3277,11 +3285,12 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
       GETl f picture "@KS"+lTrim(sTr(_scoln-A_NRLTH-1)) //SEND cargo:=.t.
 #ifdef A_FFULL
       getlist[2]:postblock:={||if(empty(b),(b:=pad(f,len(b)),getlist[3]:display()),),.t.}
+      SAYL 'Nazwa pełna firmy:' UNICODE
       @ 10,_scol1+A_NRLTH+2 SAW 'Nazwa skrócona firmy:' UNICODE
-      @ 11,_scol2-20 SAW 'Nazwa pełna firmy:' UNICODE
       @ 12,_scol1 GEW b PICTURE '@KS'+lTrim(sTr(_scol2-col())) SEND cargo:=.t.
       @ 13,_scol1+1 SAW 'Adres:'
-      GETL a PICTURE '@KS'+lTrim(sTr(_scol2-col())) SEND cargo:=.t.
+      @ 13,_scol2-20 SAW '(kod Miasto, ulica)'
+      @ 13,_scol1+8 GEW a PICTURE '@KS'+lTrim(sTr(_scol2-col())) SEND cargo:=.t.
 #else
       @ 10,_scol1+A_NRLTH+2 SAW 'Nazwa firmy'
       @ 12,_scol1+1 SAW 'Kod,Miasto' GET a PICTURE '@K !'+replicate("X",_scoln-12) SEND cargo:=.t.
@@ -3330,7 +3339,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
          case empty(f)
               if eof()
                  loop
-              elseif tak(hb_UTF8ToStr('WYKASOWAĆ FIRMĘ'),s[3],s[1]+6,.f.,.F.,,s)
+              elseif tak(hb_UTF8ToStr('WYKASOWAĆ FIRMĘ'),s[3],s[2]+6,.f.,.F.,,s)
                  lock
                  delete
                  unlock
@@ -3351,7 +3360,7 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
               endif
               do case
                  case empty(n) .or. found()
-                   if tak(hb_UTF8ToStr("CZY NADAĆ KOLEJNY NUMER"),s[3],s[1]+6,.F.,.F.,,s)
+                   if tak(hb_UTF8ToStr("CZY NADAĆ KOLEJNY NUMER"),s[3],s[2]+6,.F.,.F.,,s)
                       SET ORDER TO "FIRM_NUM"
                       GO BOTTOM
 #ifdef A_KHFILLZERO
@@ -3369,12 +3378,12 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
                       endif
                       loop
                    ENDIF
-                 case tak('NOWA FIRMA',s[3],s[1]+6,.F.,.F.)
+                 case tak('NOWA FIRMA',s[3],s[2]+6,.F.,.F.)
                    APPEND BLANK
               otherwise
                    loop
               ENDcase
-         case !tak('POPRAWA',s[3],s[1]+6,.F.,.F.,,s)
+         case !tak('POPRAWA',s[3],s[2]+6,.F.,.F.,,s)
               loop
          endcase
 
@@ -3383,7 +3392,15 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
            U = ""
          ENDIF
          uwagi:=u
-         adres:=a+" "+b
+#ifdef A_FFULL
+         longname:=b
+         adres:=a
+#else         
+         if !empty(b)
+            a:=trim(a)+', '+b
+         endif
+         adres:=trim(a)
+#endif
 #ifdef A_CENSPEC
          cennik:=c
 #endif
@@ -3397,9 +3414,6 @@ PROCEDURE FIRM_EDIT(n,_s,f,b,a,i,h)
          konto:=k
 #endif
          nazwa:=f
-#ifdef A_FFULL
-         longname:=b
-#endif
          numer_kol:=n
 #ifdef A_VAT
          ident:=i

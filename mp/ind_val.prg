@@ -912,7 +912,7 @@ endif
     go top
     txt=nr_mag
     do while !eof() .and. !dbseek(txt+indx_mat->index)
-      seek txt + HB_UCHAR(0x00A0)
+      seek txt + hb_UChar(0x00A0)
       txt=nr_mag
     enddo
     if !eof()
@@ -1004,7 +1004,7 @@ endif
     go top
     txt=nr_mag
     do while !eof() .and. !dbseek(txt+indx_mat->index)
-      seek txt + HB_UCHAR(0x00A0)
+      seek txt + hb_UChar(0x00A0)
       txt=nr_mag
     enddo
     if !eof()
@@ -1081,7 +1081,7 @@ endif
 #ifndef STANY
         txt:=nr_mag
         do while !eof() .and. !dbseek(txt+indx_mat->index)
-           seek txt + HB_UCHAR(0x00A0)
+           seek txt + hb_UChar(0x00A0)
            txt=nr_mag
         enddo
         if eof()

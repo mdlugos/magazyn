@@ -2041,7 +2041,7 @@ func getscrtxt(txt)
 local ret:='',i,k:=4,l:=hb_blen(txt)/k
 
    for i:=0 to l-1
-      ret+=HB_UCHAR(bin2w(hb_bsubstr(txt,i*k+1,2)))
+      ret+=hb_UChar(bin2w(hb_bsubstr(txt,i*k+1,2)))
    next i
 
 return ret
