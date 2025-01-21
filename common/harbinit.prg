@@ -98,20 +98,20 @@ PROCEDURE __SetHelpK()
     SetKey( K_F1, {| p, l, v | __XHelp( p, l, v ) } )
       
   if hb_gtInfo( HB_GTI_ISGRAPHIC )
-  #ifdef __PLATFORM__UNIX   
-     hb_gtInfo( HB_GTI_FONTSEL,'-*-fixed-medium-r-*-*-18-*-*-*-*-*-iso10646-1')
-     // 29,27,21,20,18,15,14,13,12,11,10,9,8,7,6
-  #else
-     hb_gtInfo( HB_GTI_FONTNAME , "Lucida Console" )
-     hb_gtInfo( HB_GTI_FONTWIDTH, 10  )
-     hb_gtInfo( HB_GTI_FONTSIZE , 20 )
-  #endif   
+     if hb_gtInfo( HB_GTI_FONTSEL,'-*-fixed-medium-r-*-*-18-*-*-*-*-*-iso10646-1')=NIL
+        hb_gtInfo( HB_GTI_FONTNAME , "Lucida Console" )
+        hb_gtInfo( HB_GTI_FONTWIDTH, 10  )
+        hb_gtInfo( HB_GTI_FONTSIZE , 20 )
+        
+        //qtc fix
+        //hb_gtInfo( HB_GTI_FONTATTRIBUTE, hb_bitOr( hb_gtInfo( HB_GTI_FONTATTRIBUTE ), HB_GTI_FONTA_NOSTRETCH) )
+     endif
      //hb_gtInfo( HB_GTI_WINTITLE , "Rozruch" )
      hb_gtInfo( HB_GTI_ALTENTER, .T. )  // allow alt-enter for full screen
      SetCursor( 0 )
      hb_gtInfo( HB_GTI_CLOSABLE, .t. )
      hb_gtInfo( HB_GTI_CLOSEMODE, 1) //Generates HB_K_CLOSE keyboard event (does not close application)
-  #ifdef __PLATFORM__WINDOWS
+#ifdef __PLATFORM__WINDOWS
   else
 #ifdef A_UNICODE
    //hb_Run('chcp 65001 > NUL')
@@ -121,7 +121,7 @@ PROCEDURE __SetHelpK()
    setmode(min(MaxRow(),maxcol()*5/16)+1,maxcol()+1)
    //hb_Run('mode con: cols='+hb_ntoc(maxcol()+1)+'  lines='+hb_ntoc(maxrow()+1))
    //setmode(,) //fix problems ?
-  #endif   
+#endif   
   endif
 #ifdef A_ADS
    RddRegister( "ADS", 1 )
