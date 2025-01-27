@@ -28,7 +28,7 @@ proc main(path, ip, port, lpt)
   LOCAL nConnection, nI, aI
   local sql //:= 'SELECT a.Symbol AS [Index], a.Nazwa ,c.CenaBrutto AS [Cena] FROM [ModelDanychContainer].[Asortymenty] AS a INNER JOIN [ModelDanychContainer].[PozycjeCennika] AS c ON c.Cennik_Id = 100000 and a.id = c.Asortyment_Id WHERE a.INDEX="'
   local LastId:=0
-   altd()
+  
    Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
    HB_LANGSELECT('PL')
    HB_CDPSELECT('PL852')

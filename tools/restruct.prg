@@ -14,7 +14,6 @@ REQUEST VFPCDX, ADS
 
 proc main (db, cdpfrom, cdpto)
 local a,b
-   altd()
 
 hb_default( @cdpfrom, 'PL852' )
 hb_default( @cdpto, 'PLWIN' )
@@ -168,9 +167,23 @@ proc append_field(x,i)
       elseif !'B'$hb_BSubStr(c,2) .and. c<>'C' //QMWP
          f:=trim(f)
       endif
+   //elseif left(c,1)$'CQMWP'
+   //   f:=''
    endif
    select 2
-   FieldPut(i,f)
+   if !empty(f)
+      n:=errorblock({|e|break(e)})
+      begin sequence
+         FieldPut(i,f)
+      recover using c
+         //errorblock(n)
+         //eval(n,c)
+         ?
+         ? e:description,x[1]
+         ?
+      end sequence
+      errorblock(n)
+   endif
 return
 ********************
 func findfile(x)

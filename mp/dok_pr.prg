@@ -322,7 +322,7 @@ if doc_opcja
            _sfor:={||pozycja#D_LP0}
 #endif
 #ifdef A_DOKCOLOR
-         DEFAULT _scol2 TO min(maxcol(),_scol1+1+len(eval(_sprompt,0,_s,.t.)))
+         //DEFAULT _scol2 TO min(maxcol(),_scol1+1+len(eval(_sprompt,0,_s,.t.)))
          a:=_sprompt
          _sprompt:={|d,_s,z,x|x:=eval(a,d,_s,z),if(z=.t.,x,(devout(left(x,_scol2-_scol1-1),A_DOKCOLOR ),''))}
 #endif

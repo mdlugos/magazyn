@@ -728,7 +728,7 @@ procedure dok1(_f)
       n_f:=nr_faktury
 #ifdef A_KSEF
       n_ksef:=nr_ksef
-      xml_ksef:=binfieldget('KSEF',.t.)
+      xml_ksef:=binfieldget([KSEF])
 #endif
 #ifdef A_DATAVAT
       dv:=data_vat
@@ -858,7 +858,7 @@ PROCEDURE DOK10(_f)
    if dok_fk
    @ _frow,_fco1+2 say "Zapłacono:" UNICODE
    @ _frow,_fco1+26 say "dnia:"
-   @ _frow,_fco2+36 say "pozostało:" UNICODE
+   @ _frow,_fco2-36 say "pozostało:" UNICODE
    ++_frow
    endif
  #endif
@@ -970,7 +970,7 @@ PROCEDURE DOK10(_f)
 #ifdef A_PZBRUT
        ?? hb_UTF8ToStr("     WARTOŚĆ   w tym VAT")
 #else
-       ?? hb_UTF8ToStr("     WARTOŚĆ         VAT")
+       ?? hb_UTF8ToStr("     WARTOŚĆ      VAT")
 #endif
     endif
 #endif
@@ -1328,7 +1328,7 @@ procedure dok2(_f,getlist)
 #ifdef A_FK
    if dok_fk
    @ _fscr0+3,_fco1+9 get tp valid {|g,r|r:=dataval(tp).and.g:changed,if(r.and.tp<dd,(dd:=tp,x:=g,aeval(getlist,{|g|if(g:name=='dd',(g:display(),eval(g:postblock,x)),)})),),if(r.and.(empty(dazapl).or.dazapl=g:original),(dazapl:=tp,getlist[ascan(getlist,{|x|x:name="dazapl"})]:display()),),.t.}
-   @ _fscr0+3,_fco2-49 get zaplac picture WAPIC valid {|g|setpos(3,66),devout(tran(wartosc+wart_vat-zaplac,WAPIC),_sbkgr),if(empty(dazapl).and.g:changed,(dazapl:=tp,getlist[ascan(getlist,{|x|x:name="dazapl"})]:display()),),.t.}
+   @ _fscr0+3,_fco2-49 get zaplac picture WAPIC valid {|g|setpos(_fscr0+3,_fco2-13),devout(tran(wartosc+wart_vat-zaplac,WAPIC),_sbkgr),if(empty(dazapl).and.g:changed,(dazapl:=tp,getlist[ascan(getlist,{|x|x:name="dazapl"})]:display()),),.t.}
    @ _fscr0+3,_fco2-31 get dazapl
    endif
 #endif
@@ -1374,7 +1374,7 @@ procedure dok2(_f,getlist)
       aadd(getlist,get)
 #ifdef A_DATAVAT
     //if dok_zew$'UV' .and. pm=1
-       @ _fscr0+4,_fco2-29 GET dv
+       @ _frow-1,_fco2-32 GET dv
     //endif
 #endif
 #else
@@ -1709,11 +1709,12 @@ memvar exp_od,exp_do
 #endif
 #ifdef A_KSEF
   if dok$DOK_KSEF .AND. empty(darr) .and. !empty(xml_ksef)
-    if xml_ksef="<?xml"
+    if "?xml"$xml_ksef
        a:=xml2json(xml_ksef) //'FaWiersz')
     else
        a:=hb_jsondecode(xml_ksef)
     endif
+    altd()
     a:=a['Faktura','Fa','FaWiersz']
     darr:=getlines(hb_jsonencode(a,.t.),.t.)
        if (dpos:=min(_flp+1,len(darr)))=1
@@ -4155,7 +4156,7 @@ ELSE
    endif
 #ifdef A_FK
    if dok_fk
-      @ _frow-1,_fco2+24 say WBR(wt,vt)-zaplac PICTURE WAPIC COLOR _Sbkgr
+      @ _frow-1,_fco2-24 say WBR(wt,vt)-zaplac PICTURE WAPIC COLOR _Sbkgr
    endif
 #endif
 ENDIF

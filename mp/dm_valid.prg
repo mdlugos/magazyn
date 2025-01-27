@@ -3445,7 +3445,8 @@ if !(NOWYDM .or. pozycja = D_LP0) .or. d<19 .or. d>=35
    return .t.
 endif
 sel:=select()
-sel('ksef',0)
+sel('ksef','ksef_nr') //index creation
+set order to 0
 go bottom
 d:=max(DatY->d_z_mies1+1,stod(SubStr(n_ksef,12,8)))
 da:=dd:=dv:=d
@@ -3459,29 +3460,31 @@ s:=max(max(DatY->d_z_mies1+1,stod(SubStr(nr_ksef,12,8))),d-31)
 endif
 set order to tag ksef_nr
 if d>=s
-//SAVE SCREEN TO scr
-//SET COLOR TO _snorm
-//CLEAR SCREEN
-token:=ksef_initsession()
-if token=NIL
-   //REST SCREEN FROM scr
-   dbselectar(sel)
-   n_ksef:=stuff(n_ksef,19,17,space(17))
-   return .t.
-endif
-s:=max(d-10,s)
-d:=min(date(),s+10)
-s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject2', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(s,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(d,'YYYY-MM-DD')+'T23:59:59'}})
-curl('Query/Invoice/Sync?PageSize=100&PageOffset=0','-X POST -H Content-Type:application/json -H sessionToken:'+token,s,@ans)
-//REST SCREEN FROM scr
-s:=hb_JsonDecode(SubStr(ans,at('{',ans)))
-d:=hb_hgetdef(s,'invoiceHeaderList',{})
-if len(d)=0
-  alarm('Brak faktur w podanym zakresie:'+HB_EOL()+hb_jsonencode(s,.t.))
-else
-  aeval(d,{|x|if(dbseek(x['ksefReferenceNumber']),,(dbappend(),_FIELD->nr_ksef:=x['ksefReferenceNumber'],_FIELD->nr_faktury:=x['invoiceReferenceNumber'],_FIELD->typ:=x['invoiceType'],_FIELD->netto:=val(x['net']),_FIELD->vat:=val(x['vat']),_FIELD->nazwa:=x['subjectBy','issuedByName','fullName']))})
-  unlock
-endif
+   //SAVE SCREEN TO scr
+   //SET COLOR TO _snorm
+   //CLEAR SCREEN
+   token:=ksef_initsession()
+   if token=NIL .and. d>s
+      //REST SCREEN FROM scr
+      dbselectar(sel)
+      n_ksef:=stuff(n_ksef,19,17,space(17))
+      return .t.
+   endif
+   if token<>NIL
+      s:=max(d-10,s)
+      d:=min(date(),s+10)
+      s:=hb_jsonencode({'queryCriteria'=>{'subjectType'=>'subject2', 'type'=>'range', 'invoicingDateFrom'=>hb_dtoc(s,'YYYY-MM-DD')+'T00:00:00', 'invoicingDateTo'=> hb_dtoc(d,'YYYY-MM-DD')+'T23:59:59'}})
+      curl('Query/Invoice/Sync?PageSize=100&PageOffset=0','-X POST -H Content-Type:application/json -H sessionToken:'+token,s,@ans)
+      //REST SCREEN FROM scr
+      s:=hb_JsonDecode(SubStr(ans,at('{',ans)))
+      d:=hb_hgetdef(s,'invoiceHeaderList',{})
+      if len(d)=0
+         alarm('Brak faktur w podanym zakresie:'+HB_EOL()+hb_jsonencode(s,.t.))
+      else
+         aeval(d,{|x|if(dbseek(x['ksefReferenceNumber']),,(dbappend(),_FIELD->nr_ksef:=x['ksefReferenceNumber'],_FIELD->nr_faktury:=x['invoiceReferenceNumber'],_FIELD->typ:=x['invoiceType'],_FIELD->netto:=val(x['net']),_FIELD->vat:=val(x['vat']),_FIELD->nazwa:=x['subjectBy','issuedByName','fullName']))})
+         unlock
+      endif
+   endif
 endif
 _s:=array(_sLEN)
 _spocz:=trim(n_ksef)
@@ -3506,7 +3509,24 @@ if szukam(_s) .and. !eof()
    if dataval(dv)
       varput(getlistactive(),'da',dv)
    endif
-   ksef_getfa(trim(n_ksef),@token,@xml_ksef)
+   if empty(xml_ksef)
+      if !empty(_FIELD->xml)
+         if _FIELD->xml='<'
+            xml_ksef:=binfieldget([XML])
+         else
+            xml_ksef:=MemoRead(findfile(trim(_FIELD->xml)))
+         endif
+      else
+         d:=ksef_getfa(trim(n_ksef),@token)
+         if d<>NIL
+            xml_ksef:=d
+            LOCK
+            binfieldput('KSEF',xml_ksef)
+            UNLOCK
+         endif
+      endif
+      varput(getlistactive(),'xml_ksef',dv)
+   endif
    //s:=xml2json(xml_ksef,'Faktura')
    //altd()
    //hb_memowrit('fra.xml',xml_ksef,.f.)

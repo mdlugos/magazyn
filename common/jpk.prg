@@ -91,7 +91,7 @@ endif
 return hb_BSubStr(bin,HB_HEXTONUM(hb_BSubStr(bin,1,2))+1,HB_HEXTONUM(hb_BSubStr(bin,3,2)))
 
 func ksef_initsession()
-local ans,s,i,j,nip:=trim(strtran(memvar->firma_NIP,'-'))
+local ans,s,i,j,nip
 //    local scr
 
 if empty(token)
@@ -101,6 +101,11 @@ if empty(token)
    else
       s:=select()
       sel('MAGAZYNY')
+      if type('_FIELD->ksef_token')='U'
+         USE
+         dbselectarea(s)
+         return NIL
+      endif
       LOCATE FOR _FIELD->numer=mag_biez
       token['token']:=token(_FIELD->ksef_token)
       if s<>select()
@@ -128,6 +133,7 @@ if !empty(token['sessiontoken'])
    endif
 endif
 if empty(token['sessiontoken'])
+   nip:=trim(strtran(memvar->firma_NIP,'-'))
    curl('Session/AuthorisationChallenge','-X POST -H Content-Type:application/json',hb_jsonencode({"contextIdentifier"=>{"type"=>"onip","identifier"=>nip}}),@ans)
    j:=at('{',ans)
    if j<=5 .or. empty(j:=hb_jsondecode(substr(ans,j))) .or. !hb_hhaskey(j,"timestamp")
@@ -201,8 +207,10 @@ local scr,i
 
    curl('Invoice/Get/'+b,'-X GET -H sessionToken:'+d,,@ans)
    //restore screen from scr
+   i:=at('?xml',ans)
+   i:=rat('<',left(ans,i))
 
-   if empty(i:=at('<?xml',ans))
+   if empty(i)
       //hb_memowrit('get.txt',ans,.f.)
       alarm(ans)
       return NIL
@@ -479,7 +487,9 @@ local c,d,a,b,n,h
             d:=mxmlGetOpaque( node )
             if empty(d)
                b :=mxmlGetFirstChild( node )
-               b :=mxmlGetNextSibling( b )
+               if !empty(b)
+                  b :=mxmlGetNextSibling( b )
+               endif
                d :=getnode( b )
             else
                if !empty(b:=hb_ctot(d,"YYYY-MM-DDThh:mm:ss.fffZ")) .and. hb_TtoN(b)%1<>0
@@ -522,9 +532,11 @@ local a,t:=mxmlNewXML()
    endif
    if empty(e)
       e:=''
-      a :=mxmlGetFirstChild( a )
-      a :=mxmlGetNextSibling( a )
-      a :=mxmlGetNextSibling( a )
+      if !empty(a :=mxmlGetFirstChild( a ))
+         if !empty(a :=mxmlGetNextSibling( a ))
+            a :=mxmlGetNextSibling( a )
+         endif
+      endif
    else
       a:=mxmlfindelement(a,a,e,,,MXML_DESCEND)
    endif
