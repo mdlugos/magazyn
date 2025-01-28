@@ -286,7 +286,12 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
           endif
           i:=findfile(txt)
           if !empty(i)
-             buf:=getlines(memoread(i),.t.)
+             i:=memoread(i)
+             if i=hb_utf8Chr(0xFEFF)
+               i:=hb_bsubstr(i,4)
+             endif
+             buf:=getlines(i,.t.)
+             i:=NIL
           endif
         else
           buf:=getlines(txt,.t.)
@@ -862,13 +867,18 @@ return
 #define A_WO_JAD '  3'
 #endif
 procedure wydruk_JAD(di,gr,kop,wo)
-local a,b,c,d,i,x,p:=.f.
+local a,b,c,d,i,x,y,p:=.f.
 DEFAULT kop TO 1
 gr:=trim(gr)
 di:=trim(di)
 a:={''}
 b:={''}
-x:=getlines(memoread('podpis.txt'),.t.)
+y:=findfile('podpis.txt')
+y:=memoread(y) 
+if y=hb_utf8Chr(0xFEFF)
+   y:=hb_bsubstr(y,4)
+endif
+x:=getlines(y,.t.)
 
 #ifdef A_WIN_PRN
  oprn:=NIL
@@ -886,7 +896,12 @@ if !empty(gr) .and. di>='0' .and. len(di)=2
  d:=if(len(a)<len(b),a,b)
  if max(len(a),len(b))>67-len(x)
     aadd(d,'')
-    aeval(getlines(memoread('podpis2.txt'),.t.),{|x|aadd(d,x)})
+    c:=findfile('podpis2.txt')
+    c:=memoread(c) 
+    if c=hb_utf8Chr(0xFEFF)
+      c:=hb_bsubstr(c,4)
+    endif
+    aeval(getlines(c,.t.),{|x|aadd(d,x)})
     p:=.t.
  endif
 else
@@ -911,7 +926,7 @@ endif
  next i
    if !p
       ?
-      ? memoread('podpis.txt')
+      ? y //podpis.txt
    endif
  eject
  next kop

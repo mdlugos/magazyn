@@ -527,7 +527,11 @@ if od<=zmienna3
 #ifdef A_DDBF
 use (di+"DATY") readonly shared
 #else
-   txt:=asize(hb_ATokens(memoread(di+"daty.ini"),.t.),3)
+   txt:=memoread(di+"daty.ini")
+   if txt=hb_utf8Chr(0xFEFF)
+      txt:=hb_bsubstr(txt,4)
+   endif
+   txt:=asize(hb_ATokens(txt,.t.),3)
    for i:=1 to 3
      txt[i]:=&(SubStr(txt[i],at(":=",txt[i])+2))
    next i
@@ -757,7 +761,13 @@ END
   SET PRINT OFF
 #ifdef A_WIN_PRN
   if oprn:=A_WIN_PRN
-     x:=getlines(memoread(set(_SET_PRINTFILE,'')),.t.)
+      x:=set(_SET_PRINTFILE,'')
+      x:=memoread(x) 
+      if x=hb_utf8Chr(0xFEFF)
+         x:=hb_bsubstr(x,4)
+      endif
+
+     x:=getlines(x,.t.)
      if !empty(x)
        set printer to
        Print(1)

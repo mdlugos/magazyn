@@ -619,7 +619,12 @@ if !empty(buf) .and. valtype(buf)$"MC"
         endif
         i:=findfile(i)
         IF !empty(i)
-           aadd(ppd,{x,buf:=getlines(memoread(i),.t.)})
+           i:=memoread(i)
+           if i=hb_utf8Chr(0xFEFF)
+            i:=hb_bsubstr(i,4)
+           endif
+           buf:=getlines(i,.t.)
+           aadd(ppd,{x,buf})
         endif
      endif
      x:=NIL
@@ -1084,7 +1089,12 @@ endif
                   endif
                   i:=findfile(i)
                   IF !empty(i)
-                     aadd(ppd,{x,buf:=getlines(memoread(i),.t.)})
+                     i:=memoread(i)
+                     if i=hb_utf8Chr(0xFEFF)
+                      i:=hb_bsubstr(i,4)
+                     endif
+                     buf:=getlines(i,.t.)
+                     aadd(ppd,{x,buf})
                   endif
                endif
             else

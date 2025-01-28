@@ -38,6 +38,9 @@ endif
   
     IF FILE(htext).or.FILE(htext:=defa+"pomoc"+HB_ps()+htext)
        txt:=MEMOREAD(htext)
+       if txt=hb_utf8Chr(0xFEFF)
+         txt:=hb_bsubstr(txt,4)
+       endif
        exit
 #ifdef A_HBGET
     elseif n=3 .and. !empty(procnm)
@@ -137,7 +140,7 @@ osk:=HB_SETKEYSAVE()
     txt=MEMOEDIT(txt,r1+2,c1+3,r2-2,c2-3,.T.,"hufunc",ll,8,l,c,cl,cc)
     k:=lastkey()
     if k=K_CTRL_W .or. k=K_F10 .or. k=K_CTRL_L
-          HB_MEMOWRIT(HTEXT,strtran(txt,chr(141)+chr(10)),.f.)
+          HB_MEMOWRIT(HTEXT,strtran(txt,chr(141)+chr(10)))
     elseif k=K_CTRL_P .and. 1=alarm(hb_UTF8ToStr("Czy drukować"),{"Tak","Nie"},2)
           set console off
           k:=hb_ATokens(hardcr(txt),.t.)
@@ -181,8 +184,11 @@ osk:=HB_SETKEYSAVE()
         n:=defa+n
        endif
        txt:=memoread(n)
+       if txt=hb_utf8Chr(0xFEFF)
+         txt:=hb_bsubstr(txt,4)
+       endif
        else
-        MEMOWRIT(n,strtran(txt,chr(141)+chr(10)),.f.)
+        HB_MEMOWRIT(n,strtran(txt,chr(141)+chr(10)))
      endif
      message(m)
      loop

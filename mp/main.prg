@@ -538,9 +538,12 @@ IF menu
       if len(bckp)>12
         txt:=bckp
       else
-        txt:=memoread(defa+bckp)
+         txt:=memoread(findfile(defa+bckp))
+         if txt=hb_utf8Chr(0xFEFF)
+            txt:=hb_bsubstr(txt,4)
+         endif
       endif
-      aeval(year2bckp,{|x|__run(strtran(bckp,'%1',str(x,4)))})
+      aeval(year2bckp,{|x|__run(strtran(txt,'%1',str(x,4)))})
 #else
       ERRORLEVEL(40)
 #endif
@@ -879,7 +882,11 @@ field index
     select 10
  
     if Empty(Findfile('daty.dbf')) .and. !Empty(txt:=Findfile("daty.ini"))
-      a:=getlines(memoread(txt))
+      a:=memoread(txt)
+      if a=hb_utf8Chr(0xFEFF)
+       a:=hb_bsubstr(a,4)
+      endif
+      a:=getlines(a)
       aeval(a,{|x,i,c|c:=getlines(x,':='),if(len(c)=2,a[i]:={c[1],type(c[2]),10,2,,c[2]},)})
       dbcreate('daty',a)
       nUSE daty
@@ -893,7 +900,7 @@ field index
        nUSE daty
        txt:=''
        aeval(dbstruct(),{|x|txt+=x[1]+':='+x[1]+HB_EOL()})
-       memowrit(set(_SET_DEFAULT)+"daty.ini",txt)
+       hb_memowrit(set(_SET_DEFAULT)+"daty.ini",txt)
        inisave("daty.ini")
     endif
     txt:="daty.ini"

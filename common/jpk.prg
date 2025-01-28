@@ -114,7 +114,11 @@ if empty(token)
       endif
    endif
    s:=findfile('session.json')
-   token['sessiontoken']:=if(empty(s),,hb_jsondecode(memoread(s)))
+   s:=memoread(s)
+   if s=hb_utf8Chr(0xFEFF)
+      s:=hb_bsubstr(s,4)
+   endif
+   token['sessiontoken']:=if(empty(s),,hb_jsondecode(s))
 endif
 
 //    save screen to scr
@@ -159,7 +163,11 @@ if empty(token['sessiontoken'])
       return NIL
    endif
    ans:=HB_BASE64ENCODE(ans)
-   s:=HB_MEMOREAD(findfile("InitSessionTokenRequest.xml"))
+   s:=findfile("InitSessionTokenRequest.xml")
+   s:=MEMOREAD(s)
+   if s=hb_utf8Chr(0xFEFF)
+      s:=hb_bsubstr(s,4)
+   endif
    i:=at('<Challenge></Challenge>',s)+11
    if i>20
         s:=stuff(s,i,0,j["challenge"])
@@ -182,7 +190,7 @@ if empty(token['sessiontoken'])
    endif
    j:=at('{',ans)
    ans:=SubStr(ans,j)
-   hb_memowrit(defa+'session.json',ans,.f.)
+   hb_memowrit(defa+'session.json',ans)
    token['sessiontoken']:=hb_jsondecode(ans)
    HB_IDLESLEEP(1) // jak za szybko to błąd
 endif
@@ -207,9 +215,8 @@ local scr,i
 
    curl('Invoice/Get/'+b,'-X GET -H sessionToken:'+d,,@ans)
    //restore screen from scr
-   i:=at('?xml',ans)
-   i:=rat('<',left(ans,i))
-
+   //i:=at('<?xml',ans)
+   i:=at('<',ans)
    if empty(i)
       //hb_memowrit('get.txt',ans,.f.)
       alarm(ans)
@@ -223,7 +230,7 @@ func ksef_sendfa(c,b,d)
 local a,ans,i,scr
 
    if len(c)<1024
-      c:=memoread(c)
+      c:=hb_memoread(c) //no BOM removal this time
    endif
 
    b:={'invoiceHash'=>{'fileSize'=>hb_blen(c), 'hashSHA'=> {'algorithm'=> 'SHA-256', 'encoding'=> 'Base64', 'value'=> HB_BASE64ENCODE(HB_SHA256(c,.t.))}}, 'invoicePayload'=> {'type'=> 'plain', 'invoiceBody'=>HB_BASE64ENCODE(c)}}
@@ -242,7 +249,7 @@ local a,ans,i,scr
    if empty(i:=at('{',ans)) .or.;
       empty(i:=hb_jsondecode(SubStr(ans,i))) .or.;
       empty(i:=hb_HGetDef(i,'elementReferenceNumber',''))
-      hb_memowrit('send.txt',ans,.f.)
+      hb_memowrit('send.txt',ans)
       alarm(ans)
       //restore screen from scr
       return NIL
@@ -262,7 +269,7 @@ local a,ans,i,scr
       endif
       c:=hb_HGetDef(i,"processingCode",400)
       if c>=400
-        hb_memowrit('status.txt',ans,.f.)
+        hb_memowrit('status.txt',ans)
         alarm(ans)
         //restore screen from scr
         return NIL

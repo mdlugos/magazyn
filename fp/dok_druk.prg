@@ -68,6 +68,9 @@ if valtype(buf)$"MC"
      x:=findfile(x)
      IF !empty(x)
         buf:=memoread(x)
+        if buf=hb_utf8Chr(0xFEFF)
+         buf:=hb_bsubstr(buf,4)
+        endif
      endif
      x:=NIL
   endif
@@ -386,7 +389,11 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
           endif
           i:=findfile(txt)
           if !empty(i)
-             buf:=getlines(memoread(i),.t.)
+             buf:=memoread(i)
+             if buf=hb_utf8Chr(0xFEFF)
+               buf:=hb_bsubstr(buf,4)
+             endif
+             buf:=getlines(buf,.t.)
           endif
         else
           buf:=getlines(txt,.t.)

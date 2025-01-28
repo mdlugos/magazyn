@@ -480,7 +480,11 @@ private HLINK
         else
            j:=findfile(buf)
            if !empty(j)
-              dok_co:=getlines(memoread(j),.t.)
+              j:=memoread(j)
+              if j=hb_utf8Chr(0xFEFF)
+               j:=hb_bsubstr(j,4)
+              endif
+              dok_co:=getlines(j,.t.)
               aadd(apcomp,{buf,dok_co})
            endif
         endif
@@ -665,38 +669,38 @@ procedure dok1(_f)
             nk-=2
           endif
 *******************************/
-
           if pozycja=D_LP0 D_WAR D_LAN
-      nr_dowodu:=nk //  str(nk,5)
-      _fpopkey:=.t.
-      nowydm:=.f.
-      data:=da
-      data_dost:=dd
+            nr_dowodu:=nk //  str(nk,5)
+            _fpopkey:=.t.
+            nowydm:=.f.
+            data:=da
+            data_dost:=dd
 #ifdef A_KSEF
-      nr_ksef:=n_ksef
-      binfieldput('KSEF',xml_ksef)
+/*potem wybór spośród zerowych nie daje rady tego przywrócić 
+            nr_ksef:=n_ksef
+            binfieldput('KSEF',xml_ksef)*/
 #endif
-      wtoT:=0
+            wtoT:=0
 #ifdef A_SUBDOK
-      sub_dok:=SubStr(dok,3)
+            sub_dok:=SubStr(dok,3)
 #endif
 #ifdef A_VAT
-      wart_vat:=0
+            wart_vat:=0
 #endif
 #ifdef A_FA
 #ifdef A_FK
-      zaplacono:=0
-      data_zap:=ctod("")
+            zaplacono:=0
+            data_zap:=ctod("")
 #endif
-      czekiem:=przelewem:=0
-      replace wartosc with 0
-      uwagi:=nr_czeku:=""
-      termin_p:=ctod("")
+            czekiem:=przelewem:=0
+            replace wartosc with 0
+            uwagi:=nr_czeku:=""
+            termin_p:=ctod("")
 #ifdef A_DATAVAT
-      data_vat:=dv
+            data_vat:=dv
 #endif
-      UW = "BEZ UWAG "
-      putVAT()
+            UW = "BEZ UWAG "
+            putVAT()
 #endif
           endif
       ENDIF
@@ -1314,13 +1318,12 @@ procedure dok2(_f,getlist)
     @ row(),11+col() get nazwis picture "@S20K"
 #endif
     @ row(),9+col() get sp picture "@S18K"
-    @ row(),12+col() get st picture "@KS"+lTrim(sTr(_fco2-col()-2))
-      atail(getlist):cargo:=.t.
+    @ row(),12+col() get st picture "@KS"+lTrim(sTr(_fco2-col()-2)) send cargo:=.t.
     endif
 #endif
 #ifdef A_KSEF
     @ _frow-1,_fco1+11 GET n_ksef SEND block:={||n_ksef}   //tylko odczyt
-    @ _frow-1,_fco1+50 GET xml_ksef PICTURE "@KS"+hb_ntoc(_fco2-_fco1-51) SEND block:={|x|if(x=NIL.or.!empty(x).or.ksef_getfa(n_ksef,,@x)=NIL.and.alarm(hb_UTF8ToStr('Błąd:')+HB_EOL()+x)<>NIL,xml_ksef,xml_ksef:=x)}
+    @ _frow-1,_fco1+50 GET xml_ksef PICTURE "@KS"+hb_ntoc(_fco2-_fco1-51) /*SEND block:={|x|if(x=NIL.or.!empty(x).or.ksef_getfa(n_ksef,,@x)=NIL.and.alarm(hb_UTF8ToStr('Błąd:')+HB_EOL()+x)<>NIL,xml_ksef,xml_ksef:=x)}*/ SEND CARGO:=.t.
 #endif
     @ _frow,_fco1+2 GET uw picture "@KS76" send cargo:=.t.
     return
@@ -1345,7 +1348,7 @@ procedure dok2(_f,getlist)
 #endif
 #ifdef A_KSEF
       @ _frow-2,_fco1+11 get n_ksef picture "@K" VALID ksef_valid() // WHEN NOWYDM .or. pozycja=D_LP0
-      @ _frow-2,_fco1+50 GET xml_ksef PICTURE "@S"+hb_ntoc(_fco2-_fco1-51) SEND block:={||xml_ksef}
+      @ _frow-2,_fco1+50 GET xml_ksef PICTURE "@S"+hb_ntoc(_fco2-_fco1-51)/*SEND block:={||xml_ksef}*/ send cargo:=.t.
 #endif
       @ _frow,_fco1+2 GET n_f PICTURE "@KS13"
 #ifndef A_GOCZ
@@ -1709,18 +1712,28 @@ memvar exp_od,exp_do
 #endif
 #ifdef A_KSEF
   if dok$DOK_KSEF .AND. empty(darr) .and. !empty(xml_ksef)
-    if "?xml"$xml_ksef
+    if xml_ksef='<' //<?xml
        a:=xml2json(xml_ksef) //'FaWiersz')
     else
        a:=hb_jsondecode(xml_ksef)
     endif
-    altd()
-    a:=a['Faktura','Fa','FaWiersz']
-    darr:=getlines(hb_jsonencode(a,.t.),.t.)
+    //enova
+    if (b:=a,ascan({"ROOT","DOKUMENT","POZYCJE","POZYCJA"},{|x|b:=hb_HGetDef(b,x,NIL),b=NIL})=0)
+      aeval(b,{|x,i|b[i]:=hb_jsonencode(x,.f.)})
+      darr:=b
+      if (dpos:=min(_flp+1,len(darr)))=1
+         @ _frow+4,_fco1+1 say 'Pozycje z KSeF pod [F8]' color _sbkgr
+      endif
+      dflag:=dm->(pozycja=D_LP0) .and. dpos>0
+   //ksef  
+    elseif (b:=a,ascan({'Faktura','Fa','FaWiersz'},{|x|b:=hb_HGetDef(b,x,NIL),b=NIL})=0)
+       aeval(b,{|x,i|b[i]:=hb_jsonencode(x,.f.)})
+       darr:=b
        if (dpos:=min(_flp+1,len(darr)))=1
           @ _frow+4,_fco1+1 say 'Pozycje z KSeF pod [F8]' color _sbkgr
        endif
        dflag:=dm->(pozycja=D_LP0) .and. dpos>0
+     endif 
   endif
 #endif
 #ifdef A_ODDO

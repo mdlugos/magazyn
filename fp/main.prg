@@ -442,7 +442,11 @@ set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_ps())
 
 #ifdef A_LAN
    if Empty(Findfile('daty.dbf')) .and. !Empty(txt:=Findfile("daty.ini"))
-     a:=getlines(memoread(txt))
+      a:=memoread(txt)
+      if a=hb_utf8Chr(0xFEFF)
+       a:=hb_bsubstr(a,4)
+      endif
+     a:=getlines(a)
      aeval(a,{|x,i,c|c:=getlines(x,':='),if(len(c)=2,a[i]:={c[1],type(c[2]),10,2,,c[2]},)})
      dbcreate('daty',a)
      nUSE daty
@@ -465,7 +469,7 @@ set default to (defa+if(stary_rok#NIL,str(year(stary_rok),4),"roboczy")+HB_ps())
 
       //aeval(dbstruct(),{|x|__mvPublic(x[1]) ,txt+=x[1]+':='+x[1]+HB_EOL()})
 
-      memowrit(set(_SET_DEFAULT)+"daty.ini",txt)
+      HB_memowrit(set(_SET_DEFAULT)+"daty.ini",txt)
       inisave("daty.ini")
    endif
    txt:="daty.ini"

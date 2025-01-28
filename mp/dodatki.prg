@@ -128,9 +128,14 @@ DO CASE
          #define D_Z1 nowy->d_z_mies1
          #define D_Z3 nowy->d_z_rok
 #else
-         txt:=hb_ATokens(memoread(txt+"daty.ini"),.t.)
-         #define D_Z1 &(SubStr(txt[1],at(':=',txt[1])+2))
-         #define D_Z3 &(SubStr(txt[3],at(':=',txt[3])+2))
+         txt:=memoread(txt+"daty.ini")
+         if txt=hb_utf8Chr(0xFEFF)
+            txt:=hb_bsubstr(txt,4)
+         endif
+         txt:=hb_ATokens(txt,.t.)
+         aeval(txt,{|x,i|x:=substr(x,at(':=',x)+2),txt[i]:=&x},1,3)
+         #define D_Z1 txt[1]
+         #define D_Z3 txt[3]
 #endif
          if D_Z1#D_Z3
             alarm(hb_UTF8ToStr("Otwarcie niemożliwe;Nowy rok jest zamknięty do ")+dtoc(D_Z1)+" .")
@@ -370,8 +375,14 @@ IF dz1>DatY->d_z_mies1
      nuse (defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty") alias stary readonly
      #define D_Z1 stary->d_z_mies1
 #else
-     m:=hb_ATokens(memoread(defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty.ini"),.t.)[1]
-     #define D_Z1 &(SubStr(m,at(':=',m)+2))
+      m:=memoread(defa+str(year(DatY->d_z_rok),4)+HB_ps()+"daty.ini")
+      if m=hb_utf8Chr(0xFEFF)
+         m:=hb_bsubstr(m,4)
+      endif
+      m:=hb_ATokens(m,.t.)[1]
+      m:=SubStr(m,at(':=',m)+2)
+      m:=&m
+      #define D_Z1 m
 #endif
      if D_Z1<DatY->d_z_rok
         alarm("Najpierw zamknij rok"+str(year(D_Z1+D_OLZA),5)+hb_UTF8ToStr(" !;Nie można teraz zamknąć roku")+str(year(DatY->d_z_rok+D_OLZA),5)+" !")
@@ -707,8 +718,14 @@ if stary_rok=dz1
      #define D_Z1 ndat->d_z_mies1
 #else
      use
-     m:=hb_ATokens(memoread(dz2+"daty.ini"),.t.)[1]
-     #define D_Z1 &(SubStr(m,at(':=',m)+2))
+     m:=memoread(dz2+"daty.ini")
+     if m=hb_utf8Chr(0xFEFF)
+        m:=hb_bsubstr(m,4)
+     endif
+     m:=hb_ATokens(m,.t.)[1]
+     m:=SubStr(m,at(':=',m)+2)
+     m:=&m
+     #define D_Z1 m
 #endif
    set color to (_sel)
    ? hb_UTF8ToStr("SPRAWDZENIE ZGODNOŚCI STANU KOŃCOWEGO I BILANSU OTWARCIA NOWEGO ROKU.")+chr(7)
@@ -1273,7 +1290,11 @@ SET PRINT OFF
 
 #ifdef D_HWPRN
   if oprn:=D_HWPRN
-     x:=getlines(memoread(set(_SET_PRINTFILE,'')),.t.)
+     x:=memoread(set(_SET_PRINTFILE,''))
+     if x=hb_utf8Chr(0xFEFF)
+        x:=hb_bsubstr(x,4)
+     endif
+     x:=getlines(x,.t.)
      if !empty(x)
        set printer to
        Print(1)

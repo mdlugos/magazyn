@@ -1034,7 +1034,11 @@ do while .t.
    elseif key=K_ESC
       exit
    elseif key=K_ALT_B //.and. fseek(h,0,2) < 65536
-      hb_gtInfo( HB_GTI_CLIPBOARDDATA , memoread(f) )
+      key:=memoread(f)
+      if key=hb_utf8Chr(0xFEFF)
+         key:=hb_bsubstr(key,4)
+      endif
+      hb_gtInfo( HB_GTI_CLIPBOARDDATA , key )
    elseif key>0 .and. key<32 .and. c[key]#NIL
       eval(c[key],b)
       if scrlflag=1

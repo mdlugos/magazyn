@@ -265,7 +265,11 @@ private gt
         else
           x:=findfile(y)
           if !empty(x)
-             l:=getlines(memoread(x),.t.)
+            x:=memoread(x)
+            if x=hb_utf8Chr(0xFEFF)
+               x:=hb_bsubstr(x,4)
+            endif
+             l:=getlines(x,.t.)
              aadd(apcomp,{y,l})
           else
              l:=getlines(l,.t.)
@@ -2396,11 +2400,13 @@ if szukam({1,,,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
           if !"."$txt
             txt+=".ppz"
           endif
-          buf:=getlines(memoread(findfile(txt)),.t.)
-        else
-          buf:=getlines(txt,.t.)
-          txt:=NIL
+          txt:=memoread(findfile(txt))
+          if txt=hb_utf8Chr(0xFEFF)
+            txt:=hb_bsubstr(txt,4)
+          endif
         endif
+        buf:=getlines(txt,.t.)
+        txt:=NIL
         aadd(apcomp,{zes_def->(recno()),buf})
       endif
 #ifdef A_PCL

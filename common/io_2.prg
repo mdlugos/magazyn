@@ -146,6 +146,9 @@ local a,l:=0,i,j,c,y
    x:=findfile(x)
    if ""#x
       a:=memoread(x)
+      if a=hb_utf8Chr(0xFEFF)
+         a:=hb_bsubstr(a,4)
+      endif
       a:=hb_ATokens(a,.t.)
       l:=len(a)
    endif
@@ -176,6 +179,9 @@ procedure inisave(name)
 local i,txt,j,b,c
    name:=findfile(name)
    txt:=memoread(name)
+   if txt=hb_utf8Chr(0xFEFF)
+      txt:=hb_bsubstr(txt,4)
+   endif
 
    txt:=getlines(txt,.t.)
    for i:=1 to len(txt)

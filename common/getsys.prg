@@ -1310,9 +1310,12 @@ osk:=HB_SETKEYSAVE()
            n:=defa+n
           endif
           txt:=memoread(n)
+          if txt=hb_utf8Chr(0xFEFF)
+            txt:=hb_bsubstr(txt,4)
+          endif
          else
           k:=strtran(txt,chr(141)+chr(10))
-          HB_MEMOWRIT(n,k,.f.)
+          HB_MEMOWRIT(n,k)
          endif
        elseif k$"BX"
         bp:=3-bp

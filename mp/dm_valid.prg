@@ -3511,21 +3511,26 @@ if szukam(_s) .and. !eof()
    endif
    if empty(xml_ksef)
       if !empty(_FIELD->xml)
-         if _FIELD->xml='<'
-            xml_ksef:=binfieldget([XML])
-         else
-            xml_ksef:=MemoRead(findfile(trim(_FIELD->xml)))
+         if _FIELD->xml='<' //<?xml
+            d:=binfieldget([XML])
+         elseif !empty(d:=findfile(trim(_FIELD->xml)))
+            d:=memoread(d)
+            if d=hb_utf8Chr(0xFEFF)
+             d:=hb_bsubstr(d,4)
+            endif
          endif
       else
          d:=ksef_getfa(trim(n_ksef),@token)
-         if d<>NIL
-            xml_ksef:=d
+      endif
+      if !empty(d)
+         xml_ksef:=d // na wypadek gdyby get był tylko readonly
+         varput(getlistactive(),'xml_ksef',d) // na wypadek gdyby 
+         if ! _FIELD->xml='<' //<?xml
             LOCK
-            binfieldput('KSEF',xml_ksef)
+            binfieldput([XML],xml_ksef)
             UNLOCK
          endif
       endif
-      varput(getlistactive(),'xml_ksef',dv)
    endif
    //s:=xml2json(xml_ksef,'Faktura')
    //altd()
