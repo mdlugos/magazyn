@@ -50,7 +50,7 @@ static group,dekl := .f.,groupd,ver
 static token := {=>}
 memvar mag_poz,mag_biez,magazyny,adres_mag,defa,_snorm
 
-
+#ifdef A_KSEF
 **************************
 func curl(res,line,post,ans)
 
@@ -425,7 +425,7 @@ local element, node, s
      //SET DATE A_SET_DAT
 
 return s
-
+#endif //KSEF
 //json2xml
 static function addtree(node,subtree,i)
 local j,e,t:=valtype(subtree),k,v

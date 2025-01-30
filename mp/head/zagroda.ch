@@ -1,8 +1,8 @@
-#define PC852 "PLWIN"
 
 #ifndef __PLATFORM__DOS
+  #define PC852 "PL852"
   #define A_UNICODE 'UTF8EX'
-  #define A_KSEF
+  //#define A_KSEF
   #define A_WL
 #endif
 
