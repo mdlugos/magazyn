@@ -1,4 +1,4 @@
-#include   'hbgtinfo.ch'
+#include "hbgtinfo.ch"
 
 #ifdef A_OLDA
 #define D_OLZA 32
@@ -133,7 +133,7 @@ DO CASE
             txt:=hb_bsubstr(txt,4)
          endif
          txt:=hb_ATokens(txt,.t.)
-         aeval(txt,{|x,i|x:=substr(x,at(':=',x)+2),txt[i]:=&x},1,3)
+         aeval(txt,{|x,i|txt[i]:=&(substr(x,at(':=',x)+2))},1,3)
          #define D_Z1 txt[1]
          #define D_Z3 txt[3]
 #endif

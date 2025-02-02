@@ -1719,7 +1719,7 @@ memvar exp_od,exp_do
     endif
     //enova
     if (b:=a,ascan({"ROOT","DOKUMENT","POZYCJE","POZYCJA"},{|x|b:=hb_HGetDef(b,x,NIL),b=NIL})=0)
-      aeval(b,{|x,i|b[i]:=hb_jsonencode(x,.f.)})
+      //aeval(b,{|x,i|b[i]:=hb_jsonencode(x,.f.)})
       darr:=b
       if (dpos:=min(_flp+1,len(darr)))=1
          @ _frow+4,_fco1+1 say 'Pozycje z KSeF pod [F8]' color _sbkgr
@@ -3040,7 +3040,8 @@ static proc azapchoice(g,_f,getlist)
 &:_sb:={|g,a|_txt:='',aeval(a,_sb1),g:varput(Left(_txt,Len(_txt)-3))}
 {|a,g,r,k|a:=make_subar(getlines(g:varget()),9),aeval(a,_bp),k:=setkey(-41,NIL),r:=arredit(a,{'Pakiet','Surowce','J.M.',hb_UTF8ToStr('Ilość'),'Cena',hb_UTF8ToStr('Wartość'),'%V','Brutto'},_ap,{,_bvi,,_bv,_bv},{,,.f.,,,.f.,.f.,.f.,.f.},2,8,{|s,a,i|_p:=Trim(a[i,1]),_s:=0,aeval(a,{|x|if(Trim(x[1])==_p,_s+=x[8],)}),_s}),setkey(-41,k),if(r,eval(_sb,g,a),)
 */
-       if (dflag:=aczojs(darr,@nim,@pos,,hb_UTF8ToStr("Zbiorówka ")+hb_ntos(len(darr))+" pozycji"))
+       arredit(darr)
+       if .f. //(dflag:=aczojs(darr,@nim,@pos,,hb_UTF8ToStr("Zbiorówka ")+hb_ntos(len(darr))+" pozycji"))
 #else
        if (dflag:=aczojs(darr,@nim,@pos,,hb_UTF8ToStr("Zbiorówka ")+hb_ntos(len(darr))+" pozycji"))
 #endif

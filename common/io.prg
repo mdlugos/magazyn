@@ -925,26 +925,26 @@ static proc ins(a,i,c)
    asize(a,len(a)+1)
    ains(a,i)
    //a[i]:=array(len(a[i+1]))
-   a[i]:=aclone(a[i+1])
-   aeval(a[i+1],{|x,y|a[i,y]:={NIL,'',ctod(''),0,.f.}[1+at(valtype(x),'CDNL')]},c)
+   a[i]:=hb_HClone(a[i+1])
+   hb_HEval(a[i+1],{|y,x|a[i,y]:={NIL,'',ctod(''),0,.f.}[1+at(valtype(x),'CDNL')]},c)
 return
 **************
 static proc add(a,i,c)
 local j
-   if ascan(atail(a),{|x|!empty(x)},c)=0
+   if hb_HScan(atail(a),{|k,x|!empty(x)},c)=0
       return
    endif
    j:=len(a)+1
    asize(a,j)
-   a[j]:=aclone(a[i])
-   aeval(a[i],{|x,y|a[j,y]:={NIL,'',ctod(''),0,.f.}[1+at(valtype(x),'CDNL')]},c)
+   a[j]:=hb_HClone(a[i])
+   hb_HEval(a[i],{|y,x|a[j,y]:={NIL,'',ctod(''),0,.f.}[1+at(valtype(x),'CDNL')]},c)
 return
 ***************
 static proc del(b,a,i)
 local j,z
    z:=len(a)-1
    if z=0
-      aeval(a[1],{|x,y|a[1,y]:={NIL,'',ctod(''),0,.f.}[1+at(valtype(x),'CDNL')]})
+      hb_HEval(a[1],{|y,x|a[1,y]:={NIL,'',ctod(''),0,.f.}[1+at(valtype(x),'CDNL')]})
    elseif i>z
       b:up()
       b:forcestable()
@@ -958,25 +958,27 @@ local j,z
 return
 *************
 static function mkblock(j)
-return {||_a[j]}
+return {|x|if(x=NIL,hb_HGetDef(_a,j),_a[j]:=x)}
 *************
 static proc do_enter(b,a,i,c,n,p,v,w,k)
-local j,x
+local j,x,y
              b:forcestable()
-             j:=b:colpos-1
-             if valtype(w[j])='L' .and. !w[j]
+             //j:=b:colpos-1
+             j:=hb_HKeyAt(n,b:colpos-1)
+             if valtype(hb_HGetDef(w,j))='L' .and. !w[j]
                 k:= - K_TAB
                 return
              endif
              if !empty(k) .and. k#K_ENTER
                 kibord({k})
              endif
-             k:=_GET_( a[i,j],'a[i,j]', p[j], v[j], w[j] )
+             a[i,j]:=hb_HGetDef(a[i],j)
+             k:=_GET_( a[i,j],'a[i,j]', hb_HGetDef(p,j), hb_HGetDef(v,j), hb_HGetDef(w,j) )
              if valtype(a[i,j])='C'
                 if empty(k:picture)
                    k:picture:="@KS"
                 endif
-                x:=(b:GetColumn(j+1)):Width
+                x:=(b:GetColumn(b:colpos)):Width
                 if right(k:picture,1)='S'
                    k:picture+=lTrim(sTr(x))
                 endif
@@ -1006,33 +1008,85 @@ return
 *************
 FUNCTION ARREDIT(a,n,p,v,w,r,t,tb)
 local saved_a:=_a,i,win,b,j,k,c,x,fr:=1
-j:=len(a[1])
 
-if j=0
-   return .f.
-endif
+   if !valtype(a)$'AH'
+      return .f.
+   endif
+   if len(a)<1
+      if empty(n)
+         return .f.
+      elseif valtype(n)='A'
+         _a:=aclone(n)
+         afill(_a,space(5))
+      else
+         _a:=hb_HClone(n)
+         hb_HEval(_a,{|k|hb_HSet(_a,k,space(5))})
+      endif
+      aadd(a,_a)
+   endif
+   if valtype(a[1])='A'
+      aeval(a,{|x,y|i:=y,a[i]:=_a:={=>},hb_HSetAutoAdd(_a,.t.,space(5)),aeval(x,{|x,i|hb_HSet(_a,i,x)})})
+   endif
 
-DEFAULT p TO {}
-DEFAULT v TO {}
-DEFAULT w TO {}
+   _a:=a[1]
+
+   hb_HSetAutoAdd(_a,.t.,space(5))
+
+   if (k:=valtype(n))='A'
+      k:=n
+      n:={=>}
+      aeval(k,{|x,i|hb_HSet(n,hb_HKeyAt(_a,i),x)})
+   elseif k<>'H'
+      n:={=>}
+      hb_heval(_a,{|k,x|if(valtype(x)$'CDNL',hb_HSet(n,k,k),)})
+   endif
+   if valtype(p)='A'
+      k:=p
+      p:={=>}
+      aeval(k,{|x,i|hb_HSet(p,hb_HKeyAt(n,i),x)})
+   endif
+   if valtype(v)='A'
+      k:=v
+      v:={=>}
+      aeval(k,{|x,i|hb_HSet(v,hb_HKeyAt(n,i),x)})
+   endif
+   if valtype(w)='A'
+      k:=w
+      n:={=>}
+      aeval(k,{|x,i|hb_HSet(w,hb_HKeyAt(n,i),x)})
+   endif
+
+   DEFAULT p TO {=>}
+   DEFAULT v TO {=>}
+   DEFAULT w TO {=>}
+
+   j:=max(len(_a:=a[1]),len(n))
+
+   if j=0
+      _a:=saved_a
+     return .f.
+   endif
+
 DEFAULT r TO 1
 DEFAULT tb TO {||NIL}
-asize(p,j)
-asize(v,j)
-asize(w,j)
+
+   hb_HSetAutoAdd(_a,.t.,space(5))
+   hb_HSetAutoAdd(n,.t.,NIL)
+   hb_HSetAutoAdd(p,.t.,NIL)
+   hb_HSetAutoAdd(v,.t.,NIL)
+   hb_HSetAutoAdd(w,.t.,NIL)
 
 i:=max(5,len(a))
 if t<>NIL
    i+=2
 endif
-if valtype(n)='A'
+
+
+if hb_HScan(n,{|k,v|v<>NIL})>0
   i+=2
-  asize(n,j)
-else
-  n:=array(j)
 endif
-_a:=a[1]
- aeval(_a,{|x,y|if(x=NIL,x:=_a[y]:=space(5),),j+=max(if(n[y]=NIL,0,len(n[y])),len(Tran(x,p[y])))})
+
+hb_HEval(n,{|y,x|j+=max(if(x=NIL,0,len(x)),len(Tran(hb_HGetDef(_a,y),hb_HGetDef(p,y))))})
 
 win:=window(i,j)
 
@@ -1042,9 +1096,9 @@ win:=window(i,j)
        if valtype(n)='A'
           b:headsep:=hb_UTF8ToStrBox('┬─')
        endif
-       b:gotopblock:={||i:=1,_a:=a[i],i}
-       b:gobottomblock:={||i:=len(a),_a:=a[i],i}
-       b:skipblock:={|n,l|l:=i,i+=n,i:=max(1,min(i,len(a))),_a:=a[i],i-l}
+       b:gotopblock:={||i:=1,_a:=a[i],hb_HSetAutoAdd(_a,.t.,space(5)),i}
+       b:gobottomblock:={||i:=len(a),_a:=a[i],hb_HSetAutoAdd(_a,.t.,space(5)),i}
+       b:skipblock:={|n,l|l:=i,i+=n,i:=max(1,min(i,len(a))),_a:=a[i],hb_HSetAutoAdd(_a,.t.,space(5)),i-l}
        if t<>NIL
           b:footsep:=hb_UTF8ToStrBox('┴─')
        endif
@@ -1055,43 +1109,42 @@ win:=window(i,j)
        b:addcolumn(c)
 
 
-       for j:=1 to len(a[1])
-         c:=tbcolumnnew(,mkblock(j))
-         if valtype(n)='A'
-           c:heading:=n[j]
-         endif
-         c:picture:=p[j]
-         c:width:=max(if(n[j]=NIL,0,len(n[j])),len(Tran(a[1,j],p[j])))
+       for j:=1 to len(n)
+         k:=hb_HKeyAt(n,j)
+         c:=tbcolumnnew(,mkblock(k))
+         c:heading:=n[k]
+         c:picture:=hb_HGetDef(p,k)
+         c:width:=max(if(n[k]=NIL,0,len(n[k])),len(Tran(hb_HGetDef(a[1],k),c:picture)))
          if t<>NIL
             c:Footing:=Space(c:width)
          endif
          b:addcolumn(c)
 
-
-             if valtype(x:=v[j])='C'
+             if valtype(x:=hb_HGetDef(v,k))='C'
                if x<>'{|'
-                  v[j]:=hb_macroBlock(x) 
+                  v[k]:=hb_macroBlock(x) 
                else
-                  v[j]:=&x
+                  v[k]:=&x
                endif
              endif
 
-             if valtype(x:=w[j])='C'
+             if valtype(x:=hb_HGetDef(w,k))='C'
                if x<>'{|'
-                  w[j]:=hb_macroBlock(x) 
+                  w[k]:=hb_macroBlock(x) 
                else
-                  w[j]:=&x
+                  w[k]:=&x
                endif
              endif
 
-             if valtype(w[j])='L' .and. w[j]
-                w[j]:=NIL
+             if valtype(hb_HGetDef(w,k))='L' .and. w[k]
+                w[k]:=NIL
              endif
 
        next j
 
-       for j:=1 to len(a[1])
-           if valtype(w[j])='L'
+       for j:=1 to len(n)
+           k:=hb_HKeyAt(n,j)
+           if valtype(hb_HGetDef(w,k))='L'
               Loop
            endi
            fr:=b:freeze:=j
@@ -1235,6 +1288,7 @@ win:=window(i,j)
              eval(x,procname(0),b,a,i,c,n,p,v,w)
           endif
           _a:=a[i]
+          hb_HSetAutoAdd(_a,.t.,space(5))
           j:=eval(tb,b,a,i,1,c,n,p,v,w,@k)
           if t<>NIL .and. j<>NIL
              x:=(b:GetColumn(t+1))
