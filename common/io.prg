@@ -1195,8 +1195,8 @@ win:=window(i,j)
        c[K_CTRL_PGDN]:={|b|b:gobottom()}
        c[K_END]      :={|b|b:end()}
        c[K_HOME]     :={|b|b:colpos:=fr+1,b:refreshcurrent()}
-       c[K_ENTER]    :={|b,a,i,c,n,p,v,w,k|do_enter(b,a,i,c,n,p,v,w,@k)}
        if !ro
+         c[K_ENTER]    :={|b,a,i,c,n,p,v,w,k|do_enter(b,a,i,c,n,p,v,w,@k)}
          c[K_DEL]      :={||del(b,a,n,i,r)}
          c[K_INS]      :={||ins(a,n,i,r),b:RefreshAll()}
        endif
@@ -1333,15 +1333,17 @@ win:=window(i,j)
           endif
        enddo
 
+      if !ro
        For j:=Len(a) TO 1 step -1
          if Len(a)=1
             Exit
          endif
-         if ascan(a[j],{|x|!empty(x)})=0
+         if hb_HScan(n,{|y|!empty(hb_HGetDeF(a[j],y))},r)=0
             adel(a,j)
             asize(a,len(a)-1)
          endif
        next j
+      endif
 
 window(win)
 
