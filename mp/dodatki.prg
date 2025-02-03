@@ -229,7 +229,7 @@ DO CASE
       if hb_gtInfo( HB_GTI_ISGRAPHIC )
          a:={"98x32","80x25 (Norm)",hb_UTF8ToStr("Pełny ekran (Alt+Enter)"),hb_UTF8ToStr("Zmieniaj wielkość czcionki")}
          txt:=hb_gtInfo( HB_GTI_FONTSEL )
-         if txt=NIL  //hb_gtInfo( HB_GTI_VERSION )<>'XWC'
+         if empty(txt)  //hb_gtInfo( HB_GTI_VERSION )<>'XWC'
             aadd(a,hb_UTF8ToStr("Zmieniaj ilość linii"))
          endif
          aczojs(a,"",@m)
@@ -242,7 +242,7 @@ DO CASE
          case m=3
          hb_gtInfo( HB_GTI_ISFULLSCREEN, ! hb_gtInfo( HB_GTI_ISFULLSCREEN ) )
          otherwise
-         if txt=NIL  //hb_gtInfo( HB_GTI_VERSION )='XWC'
+         if empty(txt)  //hb_gtInfo( HB_GTI_VERSION )='XWC'
             hb_gtInfo( HB_GTI_RESIZEMODE, if(m=4, HB_GTI_RESIZEMODE_FONT, HB_GTI_RESIZEMODE_ROWS))
          else
             a:={'29','27','21','20','18','15','14','13','12','11','10','9','8','7','6'}
@@ -282,7 +282,7 @@ DO CASE
             elseif m=10
             setmode(60,132)
             endif
-            setmode(,)
+            //setmode(,)
          endif
       endif
       init screen

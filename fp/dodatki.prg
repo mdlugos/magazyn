@@ -110,10 +110,11 @@ memvar it_menudod
       case m = 5
          if hb_gtInfo( HB_GTI_ISGRAPHIC )
             a:={"98x32","80x25 (Norm)",hb_UTF8ToStr("Pełny ekran (Alt+Enter)"),hb_UTF8ToStr("Zmieniaj wielkość czcionki")}
-#ifndef __PLATFORM__UNIX            
-         aadd(a,hb_UTF8ToStr("Zmieniaj ilość linii"))
-#endif
-         aczojs(a,"",@m)
+            txt:=hb_gtInfo( HB_GTI_FONTSEL )
+            if empty(txt)  //hb_gtInfo( HB_GTI_VERSION )<>'XWC'
+               aadd(a,hb_UTF8ToStr("Zmieniaj ilość linii"))
+            endif
+            aczojs(a,"",@m)
          do case
          case m=0
          case m=1
@@ -123,36 +124,45 @@ memvar it_menudod
          case m=3
          hb_gtInfo( HB_GTI_ISFULLSCREEN, ! hb_gtInfo( HB_GTI_ISFULLSCREEN ) )
          otherwise
-#ifdef __PLATFORM__UNIX            
-            //if hb_gtInfo( HB_GTI_VERSION )='XWC'
+            if empty(txt)  //hb_gtInfo( HB_GTI_VERSION )='XWC'
+               hb_gtInfo( HB_GTI_RESIZEMODE, if(m=4, HB_GTI_RESIZEMODE_FONT, HB_GTI_RESIZEMODE_ROWS))
+            else
                a:={'29','27','21','20','18','15','14','13','12','11','10','9','8','7','6'}
-               txt:=hb_gtInfo( HB_GTI_FONTSEL ) //'-*-fixed-medium-r-*-*-18-*-*-*-*-*-iso10646-1'
+               // txt:=hb_gtInfo( HB_GTI_FONTSEL ) '-*-fixed-medium-r-*-*-18-*-*-*-*-*-iso10646-1'
                b:=ascan(a,{|x|'*-'+x+'-*'$txt})
                m:=b
                if aczojs(a,"",@m)
                   txt:=strtran(txt,'*-'+a[b]+'-*','*-'+a[m]+'-*')
                   hb_gtInfo( HB_GTI_FONTSEL, txt ) 
                endif
-            //endif
-#else            
-            hb_gtInfo( HB_GTI_RESIZEMODE, if(m=4, HB_GTI_RESIZEMODE_FONT, HB_GTI_RESIZEMODE_ROWS))
-#endif
-         endcase
+            endif
+            endcase
          else
            m:=2
-           aczojs({"80x25 (Norm)","80x43","80x50","128x50"},"",@m)
-
-           if m=2
-              setmode(43,80)
+           aczojs({"80x25 (Norm)","80x30","80x43","80x50","80x60","132x25","132x30","132x43","132x50","132x60"},"",@m)
+           if m=1
+           setmode(25,80)
+           elseif m=2
+           setmode(30,80)
            elseif m=3
-              setmode(50,80)
+           setmode(43,80)
            elseif m=4
-              setmode(50,128)
-           elseif m=1
-              setmode(25,80)
+           setmode(50,80)
+           elseif m=5
+           setmode(60,80)
+           elseif m=6
+           setmode(25,132)
+           elseif m=7
+           setmode(30,132)
+           elseif m=8
+           setmode(43,132)
+           elseif m=9
+           setmode(50,132)
+           elseif m=10
+           setmode(60,132)
            endif
          endif
-         setmode(,)
+         //setmode(,)
 
       case m = 6
    if stary_rok#NIL
