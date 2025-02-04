@@ -3,13 +3,16 @@
 #else
 #define binfieldget(x) hb_FieldGet(x)
 #define binfieldput(x,y) hb_FieldPut(x,y)
-#ifndef EvAlDb
-  #define EvAlDb(x) &(x)
 #endif
-#ifndef EvaldB
-  #define EvaldB eVal
+
+#ifndef HB_UTF8EX_SORT //"+">"-"
+  #ifndef EvAlDb
+    #define EvAlDb(x) &(x)
+  #endif
+  #ifndef EvaldB
+    #define EvaldB eVal
+  #endif    
 #endif    
-#endif
 
 #define hb_UTF8ToStrBox(x) x
 

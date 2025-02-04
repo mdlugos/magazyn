@@ -207,7 +207,7 @@ static proc mDOK4(_f,getlist,deep)
   getlist[1]:reader:=getlist[2]:reader:={|g|setkey(-8,{|p,g|g:=getactive(),p:=setkey(-8,NIL),f9(g,_f,getlist),setkey(-8,p)}),getreader(g),setkey(-8,NIL)}
   fpstart:=0
 #ifdef A_LPNUM
-  setkey(402,{|p,g|g:=getactive(),if(_fnowy.or.updated(NIL),tone(130,3),doinsline(_f,getlist,g,{||dtos(data)+posilek=relewy->(dtos(data)+posilek)}))})
+  setkey(402,{|p,g|g:=getactive(),if(_fnowy.or.updated(NIL),tone(130,3),doinsline(_f,getlist,g,{||dtos(data)+posilek==relewy->(dtos(data)+posilek)}))})
 #endif
 RETURN
 #ifdef A_LPNUM
@@ -236,7 +236,7 @@ local a:={},b:={},i
       i:=hb_fieldlen('pozycja')
       select ZAPOT
       seek keyp
-      dbeval({||_FIELD->danie:=str(val(danie)+1,i)},{||len(trim(danie))=i.and.danie>=menu->pozycja.and.reclock()},{||dtos(data)+posilek=keyp})
+      dbeval({||_FIELD->danie:=str(val(danie)+1,i)},{||len(trim(danie))=i.and.danie>=menu->pozycja.and.reclock()},{||dtos(data)+posilek==keyp})
       UNLOCK
       select MENU
    endif
@@ -321,9 +321,9 @@ local totrec
        totrec:=hb_fieldlen([pozycja])
        select ZAPOT
        seek keyp
-       dbeval({||_FIELD->danie:=MENU->danie},{||len(trim(danie))=totrec.and.danie=menu->pozycja.and.reclock()},{||dtos(data)+posilek=keyp})
+       dbeval({||_FIELD->danie:=MENU->danie},{||len(trim(danie))=totrec.and.danie=menu->pozycja.and.reclock()},{||dtos(data)+posilek==keyp})
        seek keyp
-       dbeval({||_FIELD->danie:=str(val(danie)-1,totrec)},{||len(trim(danie))=totrec.and.danie>menu->pozycja.and.reclock()},{||dtos(data)+posilek=keyp})
+       dbeval({||_FIELD->danie:=str(val(danie)-1,totrec)},{||len(trim(danie))=totrec.and.danie>menu->pozycja.and.reclock()},{||dtos(data)+posilek==keyp})
        UNLOCK
        select MENU
 #endif
@@ -417,7 +417,7 @@ local a,b,c,i,j,k
     set relation to
     dbseek(dseek(,'data,posilek,dieta',da,po,'0'))
     c:=.f.
-    dbeval({||c:=.t.},{||ile_pos<>0 .and. dieta>='0' .and. SubStr(dieta,2,1)='/' .and. SubStr(dieta,3,1)>='0' .and. empty(SubStr(dieta,4)) .and. dind(dieta,d) .and. dind(dieta,di)},{||!c .and. data=da .and. posilek=po})
+    dbeval({||c:=.t.},{||ile_pos<>0 .and. dieta>='0' .and. SubStr(dieta,2,1)='/' .and. SubStr(dieta,3,1)>='0' .and. empty(SubStr(dieta,4)) .and. dind(dieta,d) .and. dind(dieta,di)},{||!c .and. data=da .and. posilek==po})
 #else
     if len(d)<=1
      return dind(d,di)
@@ -433,7 +433,7 @@ local a,b,c,i,j,k
     set relation to
     dbseek(dseek(,'data,posilek,dieta',da,po,'0'))
     c:=.f.
-    dbeval({||c:=.t.},{||ile_pos<>0 .and. dieta>='0' .and. empty(SubStr(dieta,2)) .and. dind(dieta,d) .and. dind(dieta,di)},{||!c .and. data=da .and. posilek=po})
+    dbeval({||c:=.t.},{||ile_pos<>0 .and. dieta>='0' .and. empty(SubStr(dieta,2)) .and. dind(dieta,d) .and. dind(dieta,di)},{||!c .and. data=da .and. posilek==po})
 #endif
     dbgoto(b[2])
     dbselectarea(b[1])

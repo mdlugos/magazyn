@@ -1047,7 +1047,7 @@ do while data=da .and. posilek=po
 #ifdef A_GREX
    j:=relewy->(recno())
    relewy->(dbseek(dseek(,'data,posilek,dieta',da,po,'0')))
-   relewy->(dbeval({|y|y:=left(dieta,3),if(dind(y,di).and.dind(y,menu->dieta).and.(empty(gr).or.dind(y,'/'+gr)),txt+=','+y,)},{||left(dieta,1)>='0'.and.SubStr(dieta,2,1)='/'.and.SubStr(dieta,3,1)>='0'.and.empty(SubStr(dieta,4))},{||data=da .and. posilek=po}))
+   relewy->(dbeval({|y|y:=left(dieta,3),if(dind(y,di).and.dind(y,menu->dieta).and.(empty(gr).or.dind(y,'/'+gr)),txt+=','+y,)},{||left(dieta,1)>='0'.and.SubStr(dieta,2,1)='/'.and.SubStr(dieta,3,1)>='0'.and.empty(SubStr(dieta,4))},{||data=da .and. posilek==po}))
    relewy->(dbgoto(j))
    if empty(txt)
       skip

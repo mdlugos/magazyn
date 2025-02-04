@@ -1628,9 +1628,9 @@ memvar exp_od,exp_do
            if dok_kon="&:"
            x:=&("{||nz:=nr_zlec,MAIN->NR_ZLEC:="+trim(SubStr(dok_kon,3))+"}")
 #ifndef A_LAN
-           dbeval(x,,{||KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu)})
+           dbeval(x,,{||KEY_DOK+nr_dowodu==dm->(KEY_DOK+nr_dowodu)})
 #else
-           dbeval(x,{||RECLOCK(.F.,hb_UTF8ToStr("NIE POTRAFIĘ ZMIENIĆ NUMERU KONTA POZYCJI")+D_LPSTRFIELD(POZYCJA) ,.F.)},{||KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu)})
+           dbeval(x,{||RECLOCK(.F.,hb_UTF8ToStr("NIE POTRAFIĘ ZMIENIĆ NUMERU KONTA POZYCJI")+D_LPSTRFIELD(POZYCJA) ,.F.)},{||KEY_DOK+nr_dowodu==dm->(KEY_DOK+nr_dowodu)})
            unlock
 #endif
            else
@@ -2734,7 +2734,7 @@ IF p='DOK4'
 #define D_LAN
 #define D_LAN0
 #endif
-   dbeval({||aadd(a,recno())},D_LAN,{||KEY_DOK+nr_dowodu=dm->(KEY_DOK+nr_dowodu)})
+   dbeval({||aadd(a,recno())},D_LAN,{||KEY_DOK+nr_dowodu==dm->(KEY_DOK+nr_dowodu)})
    AEVAL(a,{|r,i|dbgoto(r),pozycja:=D_LPPUT(_fi+i) D_LAN0})
 #undef D_LAN
 #undef D_LAN0

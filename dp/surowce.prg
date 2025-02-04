@@ -459,9 +459,9 @@ stat proc f9(g,_f,getlist)
             surowce->(dbgoto(s))
             dbseek(surowce->skladnik)
 #ifdef A_LAN
-            dbeval({||dbdelete()},{||reclock()},{||skladnik=surowce->skladnik})
+            dbeval({||dbdelete()},{||reclock()},{||skladnik==surowce->skladnik})
 #else
-            dbeval({||dbdelete()},,{||skladnik=surowce->skladnik})
+            dbeval({||dbdelete()},,{||skladnik==surowce->skladnik})
 #endif
             select surowce
             return

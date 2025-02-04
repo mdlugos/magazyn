@@ -1,15 +1,18 @@
 #ifdef A_UNICODE
 #define hb_UTF8ToStr(x) x
 #else
-#ifndef EvAlDb
-  #define EvAlDb(x) &(x)
-#endif
-#ifndef EvaldB
-  #define EvaldB eVal
-#endif    
 #define binfieldget(x) hb_FieldGet(x)
 #define binfieldput(x,y) hb_FieldPut(x,y)
 #endif
+
+#ifndef HB_UTF8EX_SORT //"+">"-"
+  #ifndef EvAlDb
+    #define EvAlDb(x) &(x)
+  #endif
+  #ifndef EvaldB
+    #define EvaldB eVal
+  #endif    
+#endif    
 
 #define hb_UTF8ToStrBox(x) x
 
