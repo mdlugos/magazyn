@@ -466,10 +466,9 @@ IF dz1>DatY->d_z_mies1
   #define D_HWPRN A_WIN_PRN
 #endif
 #ifdef D_HWPRN
-  //if D_HWPRN
-    oprn:=.f.
-    set printer to zamkn.prn
-  //endif
+   oprn:=.f.
+   delete file (findfile('zamkn.prn'))
+   set printer to ('.'+HB_ps()+'zamkn.prn')
 #endif
   if dz1>DatY->d_z_mies1
     dz2:=DatY->d_z_mies1

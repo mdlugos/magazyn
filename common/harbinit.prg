@@ -98,7 +98,7 @@ PROCEDURE __SetHelpK()
     SetKey( K_F1, {| p, l, v | __XHelp( p, l, v ) } )
       
   if hb_gtInfo( HB_GTI_ISGRAPHIC )
-     if hb_gtInfo( HB_GTI_FONTSEL,'-*-fixed-medium-r-*-*-18-*-*-*-*-*-iso10646-1')=NIL
+     if empty(hb_gtInfo( HB_GTI_FONTSEL,'-*-fixed-medium-r-*-*-18-*-*-*-*-*-iso10646-1'))
         hb_gtInfo( HB_GTI_FONTNAME , "Lucida Console" )
         hb_gtInfo( HB_GTI_FONTWIDTH, 10  )
         hb_gtInfo( HB_GTI_FONTSIZE , 20 )

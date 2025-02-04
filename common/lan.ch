@@ -3,6 +3,12 @@
 #else
 #define binfieldget(x) hb_FieldGet(x)
 #define binfieldput(x,y) hb_FieldPut(x,y)
+#ifndef EvAlDb
+  #define EvAlDb(x) &(x)
+#endif
+#ifndef EvaldB
+  #define EvaldB eVal
+#endif    
 #endif
 
 #define hb_UTF8ToStrBox(x) x
@@ -13,14 +19,6 @@
 #define sTr(x) hb_nToc(x)
 
 #define HB_MACRO2STRING(x) [x]
-
-
-#ifndef EvAlDb
-  #define EvAlDb(x) &(x)
-#endif
-#ifndef EvaldB
-  #define EvaldB eVal
-#endif    
 
 #command SET RDD DEFAULT [TO] <x> => REQUEST <x>;rddsetdefault(<"x">)
 #command @ <top>, <left>, <bottom>, <right> BOX UNICODE <string> [COLOR <color>] => ;

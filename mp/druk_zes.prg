@@ -415,7 +415,7 @@ if valtype(g)='O'
 endif
 r:=szukam({1,,,,1,0,'FIRMY',{||numer_kol+if(""=uwagi,I,"*")+nazwa},{|_skey,_s|if(_skey=13,_s[12]:=.t.,gfirma(_skey,_s,getlist,{}))},""})
       if r.and.valtype(g)='O'
-         a:=MAIN->(len(EvAlDb(IndexKey(3)))-10-hb_fieldlen('index'))
+         a:=MAIN->(len(ordKeyVal(3))-10-hb_fieldlen('index'))
       if len(t)>=main->(hb_fieldlen('nr_zlec'))
          t:=firmy->(left(t,a-hb_fieldlen('numer_kol'))+_FIELD->numer_kol)+SubStr(t,a+1)
       else
@@ -481,7 +481,7 @@ endif
 
 I_OD=UpP(TRIM(I_OD))
 I_DO=UpP(TRIM(I_DO))
-a:=len(EvAlDb(IndexKey()))-10-hb_fieldlen('index')
+a:=len(ordKeyVal())-10-hb_fieldlen('index')
 #ifdef A_OBR
 stanowis->(ordsetfocus("kont_num"))
 return({od,do,i_od,i_do,i_gr,bkey,bpic,-1,hb_UTF8ToStr("ZESTAWIENIE ROZCHODÓW W/G KONT"),{||NIL},{|x,y|;
@@ -545,7 +545,7 @@ if readkey()=27
 endif
 I_OD=UpP(TRIM(I_OD))
 I_DO=UpP(TRIM(I_DO))
-a:=len(EvAlDb(INDEXKEY()))-10-hb_fieldlen('index')
+a:=len(ordKeyVal())-10-hb_fieldlen('index')
 
 return({od,do,i_od,i_do,i_gr,bkey,bpic,1,hb_UTF8ToStr("ZESTAWIENIE PRZYCHODÓW W/G KONT"),{||NIL},{||;
   FIRMY->(IF(i_gr>=a.and.DBSEEK(SubStr(MAIN->NR_ZLEC,a+1-A_NRLTH,A_NRLTH)),(QOUT("  "+nazwa),QOUT(adres)),)),HB_BCHAR(13)+replicate('_',78)}})
@@ -808,13 +808,15 @@ jm_o:=TAK("CZY W ALTERNATYWNEJ JEDNOSTCE MIARY",,,miar_opcja,.F.)
 #define jM (if(jm_o,jm_opcja,jm))
 #endif
 
-DO WHILE EvaldB(bkey)<=I_DO .AND. !EOF()
+//DO WHILE EvaldB(bkey)<=I_DO .AND. !EOF()
+DO WHILE EvaldB({|a|ordKeyVal()<=a},I_DO) .AND. !EOF()
   ++i_mul
   TXT:=EvaldB(bkey)
   seek TXT+DTOS(od)
-  IF EvaldB(bkey)+DTOS(DATA)>TXT+DTOS(do) .OR. EOF()
-     IF EvaldB(bkey)=txt
-        seek TXT+"Z"
+  IF EvaldB({|a|ordKeyVal()>a},TXT+DTOS(do)) .OR. EOF()
+     IF ordKeyVal()=txt
+        seek TXT LAST
+        skip
      ENDIF
      LOOP
   ENDIF
@@ -882,13 +884,14 @@ DO WHILE EvaldB(bkey)<=I_DO .AND. !EOF()
      txth:=''
   endif
   //endif
-  ? padl("GRUPA:"+TranR(left(EvaldB(bkey),i_gr),bpic),24)+":"
-  do while txt=left(EvaldB(bkey),i_gr) .and. EvaldB(bkey)<=i_do .and. !EOF()
-     IF EvaldB(bkey)+DTOS(DATA)>TXT+DTOS(do)
-        IF EvaldB(bkey)=txt
-           seek TXT+"Z"
+  ? padl("GRUPA:"+TranR(left(ordKeyVal(),i_gr),bpic),24)+":"
+  do while txt=left(ordKeyVal(),i_gr) .and. EvaldB({|a|ordKeyVal()<=a},i_do) .and. !EOF()
+     IF EvaldB({|a|ordKeyVal()>a},TXT+DTOS(do))
+        IF ordKeyVal()=txt
+           seek TXT LAST
+           skip
         ENDIF
-        IF txt=left(EvaldB(bkey),i_gr)
+        IF txt=left(ordKeyVal(),i_gr)
            txt:=EvaldB(bkey)
            seek TXT+DTOS(od)
         ENDIF
@@ -900,7 +903,7 @@ DO WHILE EvaldB(bkey)<=I_DO .AND. !EOF()
 #else
      indx_mat->(dbseek(main->index,.f.))
 #endif
-     do while txt=EvaldB(bkey) .and. data<=do
+     do while ordKeyVal()=txt .and. data<=do
         sel:=i_lam(data)
         W+=wd:=D_WARTOSC
         addVAT(V,vd:=D_VAT)
@@ -930,18 +933,18 @@ if !zby_flag
      indx_mat->(dbseek(main->index,.f.))
     #endif
     #ifdef A_FA
-     EXEC {||sel:=i_lam(data),w+=D_WARTOSC,v+=D_VAT} rest while EvaldB(bkey)=txt .and. data<=do
+     EXEC {||sel:=i_lam(data),w+=D_WARTOSC,v+=D_VAT} rest while ordKeyVal()=txt .and. data<=do
 else
-     EXEC {||w+=D_WARTOSC,v+=D_VAT} rest while EvaldB(bkey)=txt .and. data<=do
+     EXEC {||w+=D_WARTOSC,v+=D_VAT} rest while ordKeyVal()=txt .and. data<=do
 endif
     #else
-     EXEC {||sel:=i_lam(data),w+=D_WARTOSC} rest while EvaldB(bkey)=txt .and. data<=do
+     EXEC {||sel:=i_lam(data),w+=D_WARTOSC} rest while ordKeyVal()=txt .and. data<=do
     #endif
   #else
     #ifdef A_FA
-     EXEC {||w+=D_WARTOSC,v+=D_VAT} rest while EvaldB(bkey)=txt .and. data<=do
+     EXEC {||w+=D_WARTOSC,v+=D_VAT} rest while ordKeyVal()=txt .and. data<=do
     #else
-     EXEC {||w+=D_WARTOSC} rest while EvaldB(bkey)=txt .and. data<=do
+     EXEC {||w+=D_WARTOSC} rest while ordKeyVal()=txt .and. data<=do
     #endif
   #endif
 #endif
@@ -1090,13 +1093,13 @@ jm_o:=TAK("CZY W ALTERNATYWNEJ JEDNOSTCE MIARY",,,miar_opcja,.F.)
 #ifdef D_JMTOT
   grt:={}
 #endif
-DO WHILE EvaldB(bkey)<=I_DO .AND. !EOF()
-
+DO WHILE EvaldB({|a|ordKeyVal()<=a},I_DO) .AND. !EOF()
   TXT:=EvaldB(bkey)
   seek TXT+DTOS(od)
-  IF EvaldB(bkey)+DTOS(DATA)>TXT+DTOS(do) .OR. EOF()
-     IF EvaldB(bkey)=txt
-        seek TXT+"Z"
+  IF EvaldB({|a|ordKeyVal()>a},TXT+DTOS(do)) .OR. EOF()
+     IF ordKeyVal()=txt
+        seek TXT LAST
+        skip
      ENDIF
      LOOP
   ENDIF
@@ -1169,7 +1172,7 @@ endif
   ENDIF
 
   ? ccpi(4)
-  ? "GRUPA: ",TranR(left(EvaldB(bkey),i_gr),bpic)
+  ? "GRUPA: ",TranR(left(ordKeyVal(),i_gr),bpic)
   //if i_gr>=len(nr_zlec)
   txth:=eval(_dhead2)
   if valtype(txth)$'MC'
@@ -1184,8 +1187,8 @@ endif
 #ifdef A_FA
   iv:=0
 #endif
-  do while txt=left(EvaldB(bkey),i_gr) .and. EvaldB(bkey)<=i_do .and. !EOF()
-     IF EvaldB(bkey)+DTOS(DATA)>TXT+DTOS(do)
+  do while txt=left(ordKeyVal(),i_gr) .and. EvaldB({|a|ordKeyVal()<=a},i_do) .and. !EOF()
+    IF EvaldB({|a|ordKeyVal()>a},TXT+DTOS(do))
         IF EvaldB(bkey)=txt
            seek TXT+"Z"
         ENDIF
@@ -1330,8 +1333,8 @@ endif
 #endif
       skip
       INDX_MAT->(dbgoto(j))
-       IF EvaldB(bkey)+DTOS(DATA)>TXT+DTOS(do) .or. eof() .or. (sel)->data_popr#(i_lam(data))->data_popr
-         if multiflag>1
+       IF EvaldB({|a|ordKeyVal()>a},TXT+DTOS(do)) .or. eof() .or. (sel)->data_popr#(i_lam(data))->data_popr
+       if multiflag>1
 if wa_flag
             ? STR(MULTIFLAG,6)+"|"+;
               TrAN(iw/ir,"@EZ ",A_ZAOKR,13)+"|"+;
@@ -1350,9 +1353,9 @@ endif
        ENDIF
     ELSE
 #ifdef A_FA
-      SUM D_ILOSC,D_WARTOSC,D_VAT,1 TO IR,IW,iv,MULTIFLAG rest WHILE EvaldB(bkey)+DTOS(DATA)<=TXT+DTOS(do) .and. (sel)->data_popr=(i_lam(data))->data_popr
+      SUM D_ILOSC,D_WARTOSC,D_VAT,1 TO IR,IW,iv,MULTIFLAG rest WHILE EvaldB({|a|ordKeyVal()<=a},TXT+DTOS(do)) .and. (sel)->data_popr=(i_lam(data))->data_popr
 #else
-      SUM D_ILOSC,D_WARTOSC,1 TO IR,IW,MULTIFLAG rest WHILE EvaldB(bkey)+DTOS(DATA)<=TXT+DTOS(do) .and. (sel)->data_popr=(i_lam(data))->data_popr
+      SUM D_ILOSC,D_WARTOSC,1 TO IR,IW,MULTIFLAG rest WHILE EvaldB({|a|ordKeyVal()<=a},TXT+DTOS(do)) .and. (sel)->data_popr=(i_lam(data))->data_popr
 #endif
       INDX_MAT->(dbgoto(j))
 if wa_flag
@@ -1557,7 +1560,6 @@ static PROCEDURE W_REJ()
 
 MEMVAR GETLIST,NAZWA_MAG,dok_par,dokumenty
 LOCAL OD,DO,TXT,i,wd,wp,wc,dok_i,wv,W,v,was,j,k,wn,wat,wnt:=0,wag,wvt:=0,wpt:=0,wct:=0,dok_sp,wdt:=0,mag_poz,mag_biez,cl,cc,kl,x,lp
-local ok
 
 OD := DatY->data_gran+1
 DO := IF(DatY->data_gran>DatY->d_z_MIES2,DatE(),DatY->d_z_MIES1)
@@ -1620,7 +1622,6 @@ dok_sp:=upper(alltrim(dok_sp))+'  '
   mag_poz:=ascan(magazyny,mag_biez)
 #endif
   wag:={}
-  ok:=EvAlDb('{||'+IndexkeY(0)+'}')
   i:=0
 IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
   @ 8,0 CLEAR
@@ -1668,7 +1669,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
     txt:=mag_biez+txt
 #endif
     SEEK TXT+DTOS(OD)
-    IF eof() .or. EvaldB(ok)>txt + dtos(DO)
+    IF eof() .or. EvaldB({|a|ordKeyVal()>a},txt + dtos(DO))
       LOOP
     ENDIF
 
@@ -1698,7 +1699,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
     ? "DOKUMENTY ",TranR(txt,"##/XX")," RAZEM : "
 #endif
 #endif
-    sum wartoSC,przelewem,czekiem,warT_vaT to wd,wp,wc,wv while !eof().and. EvaldB(ok)<=txt + dtos(DO)
+    sum wartoSC,przelewem,czekiem,warT_vaT to wd,wp,wc,wv while !eof().and. EvaldB({|a|ordKeyVal()<=a},txt + dtos(DO))
     wat:={}
     if dok_par[mag_poz,i,2]$"UV"
 #ifdef A_CENVAT
@@ -1708,7 +1709,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
       wd+=wv
 #endif
     go j
-    do while !eof().and.EvaldB(ok)<=txt + dtos(DO)
+    do while !eof().and.EvaldB({|a|ordKeyVal()<=a},txt + dtos(DO))
       was:={}
       aeval(stawkizby,{|x|if(val(x)#0,aadd(was,{x,0,bin2D(binfieldget(D_NVAT+ltrim(x)))}),)})
       SELECT MAIN
@@ -1993,13 +1994,13 @@ ELSE
     txt:=mag_biez+txt
 #endif
     SEEK TXT+DTOS(OD)
-    IF eof() .or. EvaldB(ok)>txt + dtos(DO)
+    IF eof() .or. EvaldB({|a|ordKeyVal()>a},txt + dtos(DO))
       LOOP
     ENDIF
     wd:=WN:=wv:=lp:=0
     wat:={{stawkizby[1],0,0}}
     dok_i:=""#dok_par[mag_poz,i,3]
-    DO WHILE !eof().and.EvaldB(ok)<=txt + dtos(DO)
+    DO WHILE !eof().and.EvaldB({|a|ordKeyVal()<=a},txt + dtos(DO))
       if prow()+10>P_ROWN
         IF STRONA>0
          ?? speC(HB_BCHAR(0x0D)+HB_BCHAR(0x0C))
@@ -2100,7 +2101,7 @@ ELSE
       ?? "|"+strpic(wn,cl-1,A_ZAOKR,"@E ")+"|"+strpic(wv,cl-1,A_ZAOKR,"@E ")
       ENDIF
       specout(P_UOFF)
-      do while !eof().and.EvaldB(ok)<=txt + dtos(DO) .and. prow()+3<P_ROWN
+      do while prow()+3<P_ROWN .and. !eof() .and. EvaldB({|a|ordKeyVal()<=a},txt + dtos(DO)) 
 #ifdef A_15CALI
             ? str(++lp,3)+"|"+D_SUBDOK+"|"+DTOV(DATA)
             if dok_i .and. FIRMY->(dbseek(DM->(D_KH),.f.))
@@ -2291,7 +2292,7 @@ ELSE
 #ifndef A_15CALI
       specout(P_UOFF)
 #endif
-      if !eof().and.EvaldB(ok)<=txt + dtos(DO)
+      if !eof().and.EvaldB({|a|ordKeyVal()<=a},txt + dtos(DO))
         ?
 #ifdef A_MM
         ? "    DOKUMENTY ",txt," DO PRZENIESIENIA:" D_KL
@@ -2407,7 +2408,6 @@ static PROCEDURE W_zak()
 
 MEMVAR GETLIST,NAZWA_MAG,dok_par,dokumenty
 LOCAL OD,DO,TXT,i,wd,wn,wv,dok_i,was,j,k,wat,wdt:=0,wnt:=0,wag,wvt:=0,dok_zak,w,v,mag_poz,mag_biez,cc,cl,kl,lp
-local ok
 
   dok_zak:=""
 #ifdef A_SUBDOK
@@ -2457,7 +2457,6 @@ dok_zak:=upper(alltrim(dok_zak))+'  '
   mag_poz:=ascan(magazyny,mag_biez)
 #endif
   wag:={}
-  ok:=EvaldB('{||'+IndexkeY(0)+'}')
 IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
   @ 8,0 CLEAR
   DO WHILE .t.
@@ -2509,7 +2508,7 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
     txt:=mag_biez+txt
 #endif
     SEEK TXT+DTOS(OD)
-    IF eof() .or. EvaldB(ok)>txt + dtos(DO)
+    IF eof() .or. EvaldB({|a|ordKeyVal()>a},txt + dtos(DO))
       LOOP
     ENDIF
 
@@ -2547,13 +2546,13 @@ IF TAK("CZY ZESTAWIENIE SYNTETYCZNE",22,,.T.,.T.)
     ? "DOKUMENTY ",TranR(txt,"##/XX")," RAZEM : "
 #endif
 #endif
-    sum wartoSC,warT_vaT to wd,wv rest while !eof().and.EvaldB(ok)<=txt + dtos(DO)
+    sum wartoSC,warT_vaT to wd,wv rest while !eof().and.EvaldB({|a|ordKeyVal()<=a},txt + dtos(DO))
     wat:={}
     if dok_par[mag_poz,i,2]$"UV"
       wn:=wd
       wd+=wv
     go j
-    do while !eof().and.EvaldB(ok)<=txt + dtos(DO)
+    do while !eof().and.EvaldB({|a|ordKeyVal()<=a},txt + dtos(DO))
       was:={}
       aeval(stawki,{|x|if(val(x)#0,aadd(was,{x,0,bin2D(binfieldget(D_NVAT+ltrim(x)))}),)})
       SELECT MAIN
@@ -2743,13 +2742,13 @@ ELSE
     txt:=mag_biez+txt
 #endif
     SEEK TXT+DTOS(OD)
-    IF eof() .or. eval(ok)>txt + dtos(DO)
+    IF eof() .or. EvaldB({|a|ordKeyVal()>a},txt + dtos(DO))
       LOOP
     ENDIF
     lp:=wd:=WN:=wv:=0
     wat:={{stawki[1],0,0}}
     dok_i:=""#dok_par[mag_poz,i,3]
-    do while !eof().and.EvaldB(ok)<=txt + dtos(DO)
+    do while !eof().and.EvaldB({|a|ordKeyVal()<=a},txt + dtos(DO))
       if prow()+10>P_ROWN
         IF STRONA>0
          ?? speC(HB_BCHAR(13)+HB_BCHAR(12))
@@ -2858,7 +2857,7 @@ ELSE
       ?? "|"+strpic(wn,cl-1,A_ZAOKR,"@E ")+"|"+strpic(wv,cl-1,A_ZAOKR,"@E ")
       ENDIF
       specout(P_UOFF)
-        do while !eof().and.EvaldB(ok)<=txt + dtos(DO) .and. prow()+3<P_ROWN
+        do while !eof().and.EvaldB({|a|ordKeyVal()<=a},txt + dtos(DO)) .and. prow()+3<P_ROWN
 #ifdef A_15CALI
 #ifdef A_KPRwVAT
             ? str(++lp,3)+'|'+DTOV(data_vat)+'|'+nr_kpr
@@ -3018,7 +3017,7 @@ ELSE
 #ifndef A_15CALI
       specout(P_UOFF)
 #endif
-      if !eof().and.EvaldB(ok)<=txt + dtos(DO)
+      if !eof().and.EvaldB({|a|ordKeyVal()<=a},txt + dtos(DO))
         ?      //31
 #ifdef A_MM
         ? padl("DOKUMENTY",14 D_KPR ),txt,"         PRZENIESIENIE :" D_KL
@@ -3203,20 +3202,18 @@ if pcount()<5
 #ifndef A_STSIMPLE
 IF tak(hb_UTF8ToStr("CZY KOJEJNOŚĆ W/G NAZW"),20,,.F.,.F.)
    set order to 1
-   bkey:=EvAlDb('{||'+IndexkeY(0)+'}')
    SEEK MAG_BIEZ LAST
-   I_DO:=MAG_BIEZ+SubStr(EvaldB(bkey),3)
+   I_DO:=MAG_BIEZ+SubStr(ordKeyVal(),3)
    SEEK MAG_BIEZ
-   I_OD:=MAG_BIEZ+SubStr(EvaldB(bkey),3)
+   I_OD:=MAG_BIEZ+SubStr(ordKeyVal(),3)
    @ 19,05 SAY 'MAT. "od" :' GET I_OD PICTURE "@KR! ##/"+repl("X",len(i_do)-2) valid {||if(i_do<i_od,(i_do:=i_od),),.t.}
    @ 20,05 SAY 'MAT. "do" :' GET I_DO PICTURE "@KR! ##/"+repl("X",len(i_do)-2) valid {||if(i_do<i_od,(i_do:=i_od)=NIL,.t.)}
 ELSE
 #endif
-   bkey:=EvAlDb('{||'+IndexkeY(0)+'}')
     SEEK MAG_BIEZ LAST
-    I_DO:=MAG_BIEZ+SubStr(EvaldB(bkey),3)
+    I_DO:=MAG_BIEZ+SubStr(ordKeyVal(),3)
     SEEK MAG_BIEZ
-    I_OD:=MAG_BIEZ+SubStr(EvaldB(bkey),3)
+    I_OD:=MAG_BIEZ+SubStr(ordKeyVal(),3)
     @ 20,05 SAY 'MAT. "od" :' GET I_OD PICTURE "@KR! ##/"+ INDEXPIC valid {||if(i_do<i_od,(i_do:=i_od),),.t.}
     @ 20,45 SAY 'MAT. "do" :' GET I_DO PICTURE "@KR! ##/"+ INDEXPIC valid {||if(i_do<i_od,(i_do:=i_od)=NIL,.t.)}
 #ifndef A_STSIMPLE
@@ -3229,10 +3226,6 @@ endif
 
 I_OD=UpP(TRIM(I_OD))
 I_DO=UpP(TRIM(I_DO))
-
-else
-
-   bkey:=EvAlDb('{||'+IndexkeY(0)+'}')
 
 endif
 
@@ -3252,7 +3245,7 @@ IF i_gr=NIL
 
 i_gr:=2
 
-@ 22,10 SAY 'grupowanie według pierwszych' UNICODE GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=len(EvaldB(bkey))
+@ 22,10 SAY 'grupowanie według pierwszych' UNICODE GET I_gr picture "##" valid i_gr>=0 .and. i_gr<=len(ordKeyVal())
   SAYL " znaków klucza" UNICODE
 read
 
@@ -3302,7 +3295,7 @@ spgr:=pgr:=rgr:=skgr:=0
 #ifdef D_JMTOT
 gri:={}
 #endif
-DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
+DO WHILE EvaldB({|a|ordKeyVal()<=a},I_DO) .AND. !EOF()
 
    TXT:=NR_MAG+INDEX
 
@@ -3442,7 +3435,7 @@ endif
   do while s#0 .or. w#0 .or. !eof() .and. NR_MAG+INDEX+DTOS(DATA)<=STANY->(NR_MAG+index)+DTOS(DO)
 
     SP:=SR:=WP:=WR:=0
-    last_gr:=left(STANY->(EvaldB(BKEY)),i_gr)
+    last_gr:=left(STANY->(ordKeyVal()),i_gr)
 
 #ifdef D_JMTOT
   IF prow()+len(gri)>P_ROWN .OR. STANY->NR_MAG#MAG_BIEZ
@@ -3660,7 +3653,7 @@ njob:=D_PCL-pcol()
   SELECT STANY
   SKIP
 
-  if EvaldB(BKEY)#last_gr
+  if ordKeyVal()#last_gr
   if wa_flag
 #ifndef D_JMTOT
      if !t_gr
@@ -3707,7 +3700,7 @@ if strona>0
    ?? speC(HB_BCHAR(13)+P_UON+SPACE(136))
    ?? spec(P_UOFF)
    IF t_GR
-     ? Tran(SubStr(EvaldB(BKEY),3),"@R "+ INDEXPIC )+"|"
+     ? Tran(SubStr(ordKeyVal(),3),"@R "+ INDEXPIC )+"|"
    ELSE
      ? HEADER_1
    ENDIF
@@ -3763,7 +3756,7 @@ DO CASE
     D_G:=DatY->d_z_ROK
 ENDCASE
 
-DO WHILE EvaldB(BKEY)<=I_DO .AND. !EOF()
+DO WHILE EvaldB({|a|ordKeyVal()<=a},I_DO) .AND. !EOF()
 
    TXT:=NR_MAG+INDEX+DTOS(d_g)+"Z"
 #ifdef A_WA

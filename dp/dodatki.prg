@@ -485,7 +485,7 @@ seek dtos(mies_rob)
 EXECUTE {|c|c:=cennik[ascan(posilki,posilek)],D_LAN,relewy->(field2bin([d_wartosc],ile_pos*c)) ,setpos(23,0),qqout(DATA,posilek,dieta,STRPIC(ile_pos*c,12,A_ZAOKR,"@E "),ILE_POS,STRPIC(c,7,A_ZAOKR,"@E ",.t.))} REST
 #else
 
-LOCAL txt,carry,carry_key,carry_di,carry_1,carry_di_1,i,di,ko,da,w,bir,bit,x,tot_rec,tot_w
+LOCAL txt,carry,carry_key,carry_di,carry_1,carry_di_1,i,di,ko,da,w,bit,x,tot_rec,tot_w
 memvar mies_rob,posilki,diety
 field data,nr_zlec,posilek,ile_pos,dieta,nr_mag,pozycja,wartosc,wart_tot,d_wartosc,smb_dow,nr_dowodu,grupa
 
@@ -580,8 +580,8 @@ endif
 #ifdef A_WIN_PRN
   if !empty(A_WIN_PRN)
     oprn:=.f.
-    erase import.prn
-    set printer to import.prn
+    erase (findfile('import.prn'))
+    set printer to ('.'+HB_ps()+'import.prn')
   endif
 #endif
 select relewy
@@ -599,15 +599,12 @@ select relewy
 #endif
 
 seek dtos(od)
-//w:=IndexkeY()
-//bir:={||&w}
-w:=strtran(strtran(UpP(w),'POSILEK','SubStr(NR_ZLEC,2,1)'),'DIETA','SubStr(NR_ZLEC,3)')
-bit:={||&w}
+w:=strtran(strtran(UpP(IndexkeY()),'POSILEK','SubStr(NR_ZLEC,2,1)'),'DIETA','SubStr(NR_ZLEC,3)')
 
 USE TMP NEW EXCLUSIVE
 carry_key:="";tot_rec:=tot_w:=0
 BEGIN SEQUENCE
-ordcreate('TMP','TMP',w,bit)
+ordcreate('TMP','TMP',w,{||&w})
 DO WHILE relewy->( data<=do .and. !eof() ) .or. data<=do .and. !eof()
   //TXT:=trim(DTOS(DATA)+SubStr(nr_zlec,2))
   TXT:=dseek(,'data,nr_zlec',data,Trim(nr_zlec))
@@ -615,15 +612,15 @@ DO WHILE relewy->( data<=do .and. !eof() ) .or. data<=do .and. !eof()
   ko:=SubStr(nr_zlec,2,1)
   di:=trim(SubStr(nr_zlec,3))
   //IF !eof() .and. ( RELEWY->(eval(bir))>eval(bit) .or. relewy->(eof()) )
-  IF !eof() .and. ( RELEWY->(ordKeyVal())>eval(bit) .or. relewy->(eof()) )
+  IF !eof() .and. ( EvaldB({||RELEWY->(ordKeyVal())>ordKeyVal()}) .or. relewy->(eof()) )
   if ascan(posilki,ko)=0 .or. !dival(,di)
       print(1)
       ?? DATA,NR_ZLEC
       ?? hb_UTF8ToStr(" NIEPRAWIDŁOWY KOD ROZCHODU, PROSZĘ POPRAWIĆ W MAGAZYNIE !!!")+chr(7)+chr(7)+chr(7)+chr(7)
       ?
       set print off
-      w:=eval(bit)
-      seek left(w,len(w)-1)+chr(asc(right(w,1))+1)
+      seek ordKeyVal() LAST
+      skip
       loop
     endif
     if carry_key#dtos(da)+ko
@@ -735,7 +732,7 @@ DO WHILE relewy->( data<=do .and. !eof() ) .or. data<=do .and. !eof()
      WHILE carry_key=dtos(data)+posilek
        w:=0
        aeval(carry_di,{|x|if(dind(x[1],dieta),w+=x[2],)})
-
+       LOCK      
        REPLACE wartosc WITH w
 #ifdef A_GREX
        IF ile_pos#0 .AND. W=0 .and. dieta>='0' .and. SubStr(dieta,2)='/' .and. SubStr(dieta,3)>='0' .and. empty(SubStr(dieta,4))

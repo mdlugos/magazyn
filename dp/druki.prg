@@ -1513,7 +1513,7 @@ stat func osprint(txt,l,od,do,aip,awp,anp,igr,wgr,an,strona)
   osoby->(dbseek( txt, .f. ))
   if prow()+l+2>P_ROWN
    if strona>0
-      specout(ccpi(4)+chr(13))
+      specout(ccpi(4)+chr(13)+chr(12))
    endif
    setprc(0,0)
 ?? padr(firma_n,P_COLN-15)+"dnia "+dtoc(DatE())
@@ -1613,7 +1613,7 @@ KoCalc(od,do,{|txt,l,aip,awp,anp|osprint(txt,l,od,do,aip,awp,anp,igr,wgr,an,@str
 
 if strona>0
 if prow()+(ag+3)*ak*ad+5>P_ROWN
-   specout(ccpi(4)+chr(13))
+   specout(ccpi(4)+chr(13)+chr(12))
    setprc(0,0)
 ?? padr(firma_n,P_COLN-15)+"dnia "+dtoc(DatE())
 ?
@@ -1674,7 +1674,7 @@ for i=1 to ag
          if igr[i,j,k]#0
             ++m
 if prow()+5>P_ROWN
-   specout(ccpi(4)+chr(13))
+   specout(ccpi(4)+chr(13)+chr(12))
    setprc(0,0)
 ?? padr(firma_n,P_COLN-15)+"dnia "+dtoc(DatE())
 ?
@@ -1879,7 +1879,7 @@ do while da<=do
 #endif
             if prow()>P_ROWN
               setprc(0,0)
-?? spec(chr(13)+ccpi(4))+padr(firma_n,P_COLN-15)+"dnia "+dtoc(DatE())
+?? spec(chr(13)+ccpi(4)+chr(12))+padr(firma_n,P_COLN-15)+"dnia "+dtoc(DatE())
 ?
 ? "Zapotrzebowanie dekadowe za okres od",od,"do",do,hb_UTF8ToStr("włącznie.")
 ? hb_UTF8ToStr("na podstawie zapotrzebowań, na jedną osobę.")

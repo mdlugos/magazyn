@@ -278,8 +278,8 @@ endif
   oprn:=A_WIN_PRN
   if valtype(oprn)='O' .or. .t.=oprn
     oprn:=.f.
-    delete file zamkn.prn
-    set printer to zamkn.prn
+    delete file (findfile('zamkn.prn'))
+    set printer to ('.'+HB_ps()+'zamkn.prn')
   endif
 #endif
   m:=.f.
