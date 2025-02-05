@@ -70,7 +70,7 @@ static landscape:=.f.
 field kod_osoby,nazwisko,ile_pos,grupa,posilek,DATA,d_wartosc,dieta,nazwa,;
 gramatura,jedn,danie,skladnik,ilosc,element,przel,gram,opis,pozycja,wart_tot
 
-#define eject   specout(P_EJECT);setprc(0,0)
+#define eject   specout(ccpi(4)+P_EJECT);setprc(0,0)
 
 ******************
 proc zestawienia
@@ -349,8 +349,7 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
             exit
          endif
          jt:=j
-         ?? spec(chr(13)+chr(12))
-         setprc(0,0)
+         eject
 
       enddo
       if strona=0
@@ -839,10 +838,10 @@ endif
 ? A_WADO
 //"     Wystawił:                                      Zatwierdził:"
 #endif
+      eject
 #ifdef A_PCL
       specout(P_PORT)
 #endif
-      eject
 end sequence
 #ifdef A_WIN_PRN
       if valtype(oprn)='O'
@@ -1513,7 +1512,8 @@ stat func osprint(txt,l,od,do,aip,awp,anp,igr,wgr,an,strona)
   osoby->(dbseek( txt, .f. ))
   if prow()+l+2>P_ROWN
    if strona>0
-      specout(ccpi(4)+chr(13)+chr(12))
+      specout(ccpi(4))
+      eject
    endif
    setprc(0,0)
 ?? padr(firma_n,P_COLN-15)+"dnia "+dtoc(DatE())
@@ -1613,8 +1613,8 @@ KoCalc(od,do,{|txt,l,aip,awp,anp|osprint(txt,l,od,do,aip,awp,anp,igr,wgr,an,@str
 
 if strona>0
 if prow()+(ag+3)*ak*ad+5>P_ROWN
-   specout(ccpi(4)+chr(13)+chr(12))
-   setprc(0,0)
+   specout(ccpi(4))
+   eject
 ?? padr(firma_n,P_COLN-15)+"dnia "+dtoc(DatE())
 ?
 ? hb_UTF8ToStr("Koszty żywienia za okres od"),od,"do",do,hb_UTF8ToStr("włącznie")
@@ -1674,8 +1674,7 @@ for i=1 to ag
          if igr[i,j,k]#0
             ++m
 if prow()+5>P_ROWN
-   specout(ccpi(4)+chr(13)+chr(12))
-   setprc(0,0)
+   eject
 ?? padr(firma_n,P_COLN-15)+"dnia "+dtoc(DatE())
 ?
 ? hb_UTF8ToStr("Koszty żywienia za okres od"),od,"do",do,hb_UTF8ToStr("włącznie")
@@ -1878,8 +1877,8 @@ do while da<=do
          if len(txt)+pcol()>135
 #endif
             if prow()>P_ROWN
-              setprc(0,0)
-?? spec(chr(13)+ccpi(4)+chr(12))+padr(firma_n,P_COLN-15)+"dnia "+dtoc(DatE())
+              eject
+?? padr(firma_n,P_COLN-15)+"dnia "+dtoc(DatE())
 ?
 ? "Zapotrzebowanie dekadowe za okres od",od,"do",do,hb_UTF8ToStr("włącznie.")
 ? hb_UTF8ToStr("na podstawie zapotrzebowań, na jedną osobę.")
