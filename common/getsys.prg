@@ -1271,6 +1271,12 @@ static proc getchr(get,expandable)
         sayl '^Y'
         sayl '^W'
         sayl "F2"
+
+        n:=GetReadVar(get)
+        if type(n)<>'U'
+          sayl "Zmienna: &"+n
+        endif
+     
         //hb_gtInfo( HB_GTI_BOXCP, bcp)
         SET COLOR TO W
 

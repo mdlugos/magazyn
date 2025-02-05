@@ -2327,18 +2327,20 @@ if szukam({1,,,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
    k:=0
    for i:=1 to l
       if valtype(ap[i])$'MC'
-        (&(trim(SubStr(ap[i],3))),txt:=NIL)
+         txt:=trim(SubStr(ap[i],3))
+        (&txt,txt:=NIL)
       else
         k+=1
+        j:=alltrim(ap[i,2])
         if ZES_DEF->baza#"MEMVAR"
-          if ZES_DEF->(fieldpos(ap[i,2])) > 0
-             j:=(ap[i,2])
+          if ZES_DEF->(fieldpos(j)) > 0
              PRIVATE &j
              &j:=ZES_DEF->&j
           endif
         endif
         @ win[1]+k,win[2]+1 say padl(ap[i,1],15)
-        txt:=GETnew(row(),col()+1,memvarblock(ap[i,2]),ap[i,2])
+        SetPos( row(),col()+1 ) ; txt := _GET_( &j, j,,,)
+        aadd(getlist,txt)
         if !empty(ap[i,5])
            txt:preblock:=&(trim((ap[i,5])))
         endif
@@ -2348,16 +2350,15 @@ if szukam({1,,,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
         if !empty(ap[i,3])
            txt:picture:=ap[i,3]
         endif
-        if ZES_DEF->(type(ap[i,2]))=if(ZES_DEF->baza="MEMVAR","C" ,"M")
+        if ZES_DEF->(type(j))=if(ZES_DEF->baza="MEMVAR","C" ,"M")
            txt:cargo:=.t.
            if empty(txt:picture)
               txt:picture:='@S45'
            endif
         endif
-        aadd(getlist,txt)
+        txt:display()
      endif
    next
-   aeval(getlist,{|g|g:display()})
    READ SCREEN win
    //readmodal(getlist)
    select zes_def

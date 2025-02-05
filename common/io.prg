@@ -995,7 +995,7 @@ local j,x,y
                 kibord({k})
              endif
              a[i,j]:=hb_HGetDeF(a[i],j)
-             k:=_GET_( a[i,j],'a[i,j]', hb_HGetDef(p,j), hb_HGetDef(v,j), hb_HGetDef(w,j) )
+             k:=_GET_( a[i,j], 'a[i,j]', hb_HGetDef(p,j), hb_HGetDef(v,j), hb_HGetDef(w,j) )
              if valtype(a[i,j])='C'
                 if empty(k:picture)
                    k:picture:="@KS"

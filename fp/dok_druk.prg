@@ -315,11 +315,14 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
    private getlist:={}
    select 0
    for i:=1 to l
+        x:=alltrim(ap[i,2])
         if ZES_DEF->baza#"MEMVAR"
-           MEMVAR->&(ap[i,2]):=ZES_DEF->&(ap[i,2])
+           PRIVATE &x
+           MEMVAR->&x:=ZES_DEF->&x
         endif
         @ win[1]+i,win[2]+1 say padl(ap[i,1],15)
-        txt:=GETnew(row(),col()+1,memvarblock(ap[i,2]),ap[i,2])
+        SetPos( row(),col()+1 ) ; txt := _GET_( &x, x,,,)
+        aadd(getlist,txt)
         if !empty(ap[i,5])
            txt:preblock:=&(ap[i,5])
         endif
@@ -329,18 +332,18 @@ if szukam({1,col(),,,0,0,"Zestawienia",{||nr_zes+" "+nazwa}})
         if !empty(ap[i,3])
            txt:picture:=ap[i,3]
         endif
-        if ZES_DEF->(type(ap[i,2]))=if(ZES_DEF->baza="MEMVAR","C" ,"M")
+        if ZES_DEF->(type(x))=if(ZES_DEF->baza="MEMVAR","C" ,"M")
            txt:cargo:=.t.
            if empty(txt:picture)
               txt:picture:='@S45'
            endif
 #ifdef A_HBGET
-           if len(MEMVAR->&(ap[i,2]))<45
-              MEMVAR->&(ap[i,2]):=pad(MEMVAR->&(ap[i,2]),45)
+           if len(MEMVAR->&x)<45
+              MEMVAR->&x:=pad(MEMVAR->&x,45)
            endif
 #endif
         endif
-        aadd(getlist,txt):display()
+        txt:display()
    next
    __setproc(procname(0)+zes_def->nr_zes)
    READ SCREEN win

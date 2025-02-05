@@ -1302,10 +1302,10 @@ endif
       endif
       b:=aclone(a)
       @ bl[1]+1,bl[2]+2 Say "Wybierz pola:"
-      @ bl[1]+2,bl[2]+2 GET a[1] picture "@K" valid {|g,r|r:=!empty(a[1]).and.aczojs(txt),if(r.and.len(getlist)<5,(SetPos( bl[1]+2, bl[2]+14 ),b[1]:=indx_mat->(&(a[1])),AAdd(GetList,_GET_( b[1], "b[1]", "@KS46", , ):display())) ,),empty(a[1]).or.r}
-      @ bl[1]+3,bl[2]+2 GET a[2] picture "@K" valid {|g,r|r:=!empty(a[2]).and.aczojs(txt),if(r.and.len(getlist)<6,(SetPos( bl[1]+3, bl[2]+14 ),b[2]:=indx_mat->(&(a[2])),AAdd(GetList,_GET_( b[2], "b[2]", "@KS46", , ):display())) ,),empty(a[2]).or.r}
-      @ bl[1]+4,bl[2]+2 GET a[3] picture "@K" valid {|g,r|r:=!empty(a[3]).and.aczojs(txt),if(r.and.len(getlist)<7,(SetPos( bl[1]+4, bl[2]+14 ),b[3]:=indx_mat->(&(a[3])),AAdd(GetList,_GET_( b[3], "b[3]", "@KS46", , ):display())) ,),empty(a[3]).or.r}
-      @ bl[1]+5,bl[2]+2 GET a[4] picture "@K" valid {|g,r|r:=!empty(a[4]).and.aczojs(txt),if(r.and.len(getlist)<8,(SetPos( bl[1]+5, bl[2]+14 ),b[4]:=indx_mat->(&(a[4])),AAdd(GetList,_GET_( b[4], "b[4]", "@KS46", , ):display())) ,),empty(a[4]).or.r}
+      @ bl[1]+2,bl[2]+2 GET a[1] picture "@K" valid {|g,r|r:=!empty(a[1]).and.aczojs(txt),if(r.and.len(getlist)<5,(SetPos( bl[1]+2, bl[2]+14 ),b[1]:=indx_mat->(&(a[1])),AAdd(GetList,_GET_( b[1], "b", "@KS46", , ):display())) ,),empty(a[1]).or.r}
+      @ bl[1]+3,bl[2]+2 GET a[2] picture "@K" valid {|g,r|r:=!empty(a[2]).and.aczojs(txt),if(r.and.len(getlist)<6,(SetPos( bl[1]+3, bl[2]+14 ),b[2]:=indx_mat->(&(a[2])),AAdd(GetList,_GET_( b[2], "b", "@KS46", , ):display())) ,),empty(a[2]).or.r}
+      @ bl[1]+4,bl[2]+2 GET a[3] picture "@K" valid {|g,r|r:=!empty(a[3]).and.aczojs(txt),if(r.and.len(getlist)<7,(SetPos( bl[1]+4, bl[2]+14 ),b[3]:=indx_mat->(&(a[3])),AAdd(GetList,_GET_( b[3], "b", "@KS46", , ):display())) ,),empty(a[3]).or.r}
+      @ bl[1]+5,bl[2]+2 GET a[4] picture "@K" valid {|g,r|r:=!empty(a[4]).and.aczojs(txt),if(r.and.len(getlist)<8,(SetPos( bl[1]+5, bl[2]+14 ),b[4]:=indx_mat->(&(a[4])),AAdd(GetList,_GET_( b[4], "b", "@KS46", , ):display())) ,),empty(a[4]).or.r}
       @ bl[1]+1,bl[2]+20 Say "Podaj wartość:" UNICODE
       read SCREEN bl
       window(bl)

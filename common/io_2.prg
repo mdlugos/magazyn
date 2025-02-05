@@ -1975,6 +1975,8 @@ if valtype(delim)=='N'
    return a
 endif
 
+DEFAULT delim TO .t.
+
 a:=hb_ATokens(txt,delim)
 
 i:=len(a)
