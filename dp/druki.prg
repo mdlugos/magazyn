@@ -1518,7 +1518,7 @@ stat func osprint(txt,l,od,do,aip,awp,anp,igr,wgr,an,strona)
    setprc(0,0)
 ?? padr(firma_n,P_COLN-15)+"dnia "+dtoc(DatE())
 ?
-? hb_UTF8ToStr("Koszty żywienia za okres od",od,"do",do,"włącznie strona"+str(++strona,3))
+? hb_UTF8ToStr("Koszty żywienia za okres od"),od,"do",do,hb_UTF8ToStr("włącznie strona")+str(++strona,3)
 ?
 #ifdef A_NARZUT
    if anp<>NIL
@@ -1617,7 +1617,7 @@ if prow()+(ag+3)*ak*ad+5>P_ROWN
    setprc(0,0)
 ?? padr(firma_n,P_COLN-15)+"dnia "+dtoc(DatE())
 ?
-? hb_UTF8ToStr("Koszty żywienia za okres od",od,"do",do,"włącznie")
+? hb_UTF8ToStr("Koszty żywienia za okres od"),od,"do",do,hb_UTF8ToStr("włącznie")
 ?
 ? "strona"+str(++strona,3)
 #ifdef A_NARZUT
@@ -1678,7 +1678,7 @@ if prow()+5>P_ROWN
    setprc(0,0)
 ?? padr(firma_n,P_COLN-15)+"dnia "+dtoc(DatE())
 ?
-? hb_UTF8ToStr("Koszty żywienia za okres od",od,"do",do,"włącznie")
+? hb_UTF8ToStr("Koszty żywienia za okres od"),od,"do",do,hb_UTF8ToStr("włącznie")
 ?
 ? "strona"+str(++strona,3)
 ?
