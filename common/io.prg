@@ -1048,7 +1048,7 @@ local saved_a:=_a,i,win,b,j,k,c,x,fr:=1,ro:=n=NIL,h:=!ro
       aadd(a,_a)
    endif
 
-   _a:=a[1]
+   _a:=atail(a)
 
    if valtype(_a)='H'
       //aeval(a,{|x,y|i:=y,a[i]:=_a:={=>},hb_HSetAutoAdd(_a,.t.,space(5)),aeval(x,{|x,i|hb_HSet(_a,i,x)})})
@@ -1120,7 +1120,8 @@ hb_HEval(n,{|y,x|j+=max(if(x=NIL,0,len(x)),len(Tran(hb_HGetDeF(_a,y),hb_HGetDef(
 
 win:=window(i,j)
 
-       i:=1
+       i:=len(a)
+       _a:=a[i]
        b:=tbrowsenew(win[1]+1,win[2]+1,win[3]-1,win[4]-1)
        b:colsep:=hb_UTF8ToStrBox('│')
        if h
@@ -1142,12 +1143,16 @@ win:=window(i,j)
        for j:=1 to len(n)
          k:=hb_HKeyAt(n,j)
          c:=tbcolumnnew(,mkblock(k))
-         c:heading:=n[k]
-         c:picture:=hb_HGetDef(p,k)
-         c:width:=max(if(n[k]=NIL,0,len(n[k])),len(Tran(hb_HGetDeF(_a,k),c:picture)))
+         if !empty(n[k])
+            c:heading:=n[k]
+         endif
+         if !empty(hb_HGetDef(p,k))
+            c:picture:=hb_HGetDef(p,k)
+         endif
+         /*c:width:=max(if(n[k]=NIL,0,len(n[k])),len(Tran(hb_HGetDeF(_a,k),c:picture)))
          if t<>NIL
             c:Footing:=Space(c:width)
-         endif
+         endif*/
          b:addcolumn(c)
 
              if valtype(x:=hb_HGetDef(v,k))='C'
